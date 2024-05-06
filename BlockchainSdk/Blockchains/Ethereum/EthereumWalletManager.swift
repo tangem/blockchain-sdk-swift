@@ -230,10 +230,10 @@ extension EthereumWalletManager: TransactionSender {
                         self.wallet.addPendingTransaction(record)
                         return TransactionSendResult(hash: hash)
                     }
-                    .mapError { SendTxError(error: $0, tx: tx) }
+                    .mapSendError(tx: tx)
                     .eraseToAnyPublisher()
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }

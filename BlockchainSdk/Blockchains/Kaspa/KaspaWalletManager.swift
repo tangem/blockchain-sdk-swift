@@ -54,12 +54,11 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .flatMap { [weak self] tx -> AnyPublisher<KaspaTransactionResponse, Error> in
                 guard let self = self else { return .emptyFail }
                 
+                let encodedRawTransactionData = try? JSONEncoder().encode(tx)
+                
                 return self.networkService
                     .send(transaction: KaspaTransactionRequest(transaction: tx))
-                    .mapError { error in
-                        let encodedRawTransactionData = try? JSONEncoder().encode(tx)
-                        return SendTxError(error: error, tx: encodedRawTransactionData?.hexString.lowercased())
-                    }
+                    .mapSendError(tx: encodedRawTransactionData?.hexString.lowercased())
                     .eraseToAnyPublisher()
             }
             .handleEvents(receiveOutput: { [weak self] in
@@ -70,7 +69,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .map {
                 TransactionSendResult(hash: $0.transactionId)
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

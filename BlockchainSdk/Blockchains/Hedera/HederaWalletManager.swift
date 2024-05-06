@@ -374,12 +374,14 @@ extension HederaWalletManager: WalletManager {
         }
         .withWeakCaptureOf(self)
         .flatMap { walletManager, compiledTransaction in
+            let transactionRawData = try? compiledTransaction.toBytes()
+            
             return walletManager
                 .networkService
                 .send(transaction: compiledTransaction)
-                .eraseToAnyPublisher()
+                .mapSendError(tx: transactionRawData?.hexString)
         }
-        .mapSendError()
+        .eraseSendError()
         .withWeakCaptureOf(self)
         .handleEvents(
             receiveOutput: { walletManager, sendResult in

@@ -263,10 +263,9 @@ extension VeChainWalletManager: WalletManager {
                 return walletManager
                     .networkService
                     .send(transaction: rawTransactionData)
-                    .mapError { SendTxError(error: $0, tx: rawTransactionData.hexString.lowercased()) }
-                    .eraseToAnyPublisher()
+                    .mapSendError(tx: rawTransactionData.hexString.lowercased())
             }
-            .mapSendError()
+            .eraseSendError()
             .withWeakCaptureOf(self)
             .handleEvents(
                 receiveOutput: { walletManager, sendResult in

@@ -76,7 +76,7 @@ extension SolanaWalletManager: TransactionSender {
                 self.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

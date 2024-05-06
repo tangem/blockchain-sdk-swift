@@ -90,7 +90,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                 return tx.hexString.lowercased()
             }
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                guard let self else { return .anyFail(error: WalletError.empty) }
+                guard let self else { return .emptyFail }
                 
                 let txHashPublisher: AnyPublisher<String, Error>
                 
@@ -112,10 +112,10 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                     self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
-                .mapError { SendTxError(error: $0, tx: tx) }
+                .mapSendError(tx: tx)
                 .eraseToAnyPublisher()
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

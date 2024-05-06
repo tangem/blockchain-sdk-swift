@@ -86,7 +86,7 @@ extension CardanoWalletManager: TransactionSender {
 
                     return self.networkService
                         .send(transaction: builtTransaction)
-                        .mapError { SendTxError(error: $0, tx: builtTransaction.hexString.lowercased()) }
+                        .mapSendError(tx: builtTransaction.hexString.lowercased())
                         .eraseToAnyPublisher()
                 }
                 .tryMap { [weak self] hash in
@@ -99,7 +99,7 @@ extension CardanoWalletManager: TransactionSender {
                     self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
-                .mapSendError()
+                .eraseSendError()
                 .eraseToAnyPublisher()
     }
     

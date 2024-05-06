@@ -91,7 +91,19 @@ extension Publisher {
 }
 
 extension Publisher where Failure == Error {
-    func mapSendError() -> Publishers.MapError<Self, SendTxError> {
+    func mapSendError(tx: String? = nil) -> Publishers.MapError<Self, Error> {
+        mapError { error in
+            if let sendError = error as? SendTxError {
+                return sendError
+            } else if let providerError = error as? MultiNetworkProviderError {
+                return SendTxError(error: providerError.networkError, tx: tx, lastRetryHost: providerError.lastRetryHost)
+            } else {
+                return SendTxError(error: error, tx: tx)
+            }
+        }
+    }
+    
+    func eraseSendError() -> Publishers.MapError<Self, SendTxError> {
         mapError { error in
             SendTxError(error: error)
         }

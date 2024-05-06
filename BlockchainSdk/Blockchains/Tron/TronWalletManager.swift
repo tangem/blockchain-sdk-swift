@@ -56,9 +56,7 @@ class TronWalletManager: BaseManager, WalletManager {
             
             return self.networkService
                 .broadcastHex(data)
-                .mapError { error in
-                    SendTxError(error: error, tx: data.hexString)
-                }
+                .mapSendError(tx: data.hexString)
                 .eraseToAnyPublisher()
         }
         .tryMap { [weak self] broadcastResponse -> TransactionSendResult in
@@ -72,7 +70,7 @@ class TronWalletManager: BaseManager, WalletManager {
             self?.wallet.addPendingTransaction(record)
             return TransactionSendResult(hash: hash)
         }
-        .mapSendError()
+        .eraseSendError()
         .eraseToAnyPublisher()
     }
 

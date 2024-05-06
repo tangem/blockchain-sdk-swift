@@ -167,7 +167,7 @@ private extension Hedera.Transaction {
 // MARK: - Unit tests support
 
 extension HederaTransactionBuilder.CompiledTransaction {
-    /// - Note: For use in unit tests only.
+    /// - Note: For use in unit tests only or set send transaction error.
     func toBytes() throws -> Data {
         return try innerTransaction.toBytes()
     }

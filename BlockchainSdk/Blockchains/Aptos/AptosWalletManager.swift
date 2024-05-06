@@ -124,9 +124,7 @@ extension AptosWalletManager: WalletManager {
                 return walletManager
                     .networkService
                     .submitTransaction(data: rawTransactionData)
-                    .mapError { error in
-                        SendTxError(error: error, tx: rawTransactionData.hexString.lowercased())
-                    }
+                    .mapSendError(tx: rawTransactionData.hexString.lowercased())
                     .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
@@ -136,7 +134,7 @@ extension AptosWalletManager: WalletManager {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: transactionHash)
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

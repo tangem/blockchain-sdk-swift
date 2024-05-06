@@ -117,7 +117,7 @@ struct MultiNetworkProviderError: LocalizedError {
         (networkError as? MoyaError)?.helpAnchor ?? defaultMoyaError.helpAnchor
     }
     
-    var defaultMoyaError: MoyaError {
+    private var defaultMoyaError: MoyaError {
         .underlying(networkError, nil)
     }
 }

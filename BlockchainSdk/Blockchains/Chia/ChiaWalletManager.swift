@@ -68,12 +68,12 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
+                
+                let encodedTransactionData = try? JSONEncoder().encode(spendBundle)
+                
                 return self.networkService
                     .send(spendBundle: spendBundle)
-                    .mapError { error in
-                        let encodedTransactionData = try? JSONEncoder().encode(spendBundle)
-                        return SendTxError(error: error, tx: encodedTransactionData?.hexString.lowercased())
-                    }
+                    .mapSendError(tx: encodedTransactionData?.hexString.lowercased())
                     .eraseToAnyPublisher()
             }
             .map { [weak self] hash in
@@ -82,7 +82,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

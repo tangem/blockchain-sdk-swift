@@ -31,18 +31,9 @@ public struct SendTxError: LocalizedError {
     
     // MARK: - Init
     
-    init(error: Error, tx: String? = nil) {
-        // Need be use ....
-        if let sendError = error as? Self {
-            self = sendError
-        } else if let providerError = error as? MultiNetworkProviderError {
-            self.error = providerError.networkError
-            self.tx = tx
-            self.lastRetryHost = providerError.lastRetryHost
-        } else {
-            self.error = error
-            self.tx = tx
-            self.lastRetryHost = nil
-        }
+    init(error: Error, tx: String? = nil, lastRetryHost: String? = nil) {
+        self.error = error
+        self.tx = tx
+        self.lastRetryHost = nil
     }
 }

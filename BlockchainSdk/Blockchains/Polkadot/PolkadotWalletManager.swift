@@ -81,8 +81,9 @@ extension PolkadotWalletManager: TransactionSender {
             guard let self = self else {
                 return .emptyFail
             }
-            return self.networkService.submitExtrinsic(data: image)
-                .mapError { SendTxError(error: $0, tx: image.hexString) }
+            return self.networkService
+                .submitExtrinsic(data: image)
+                .mapSendError(tx: image.hexString)
                 .eraseToAnyPublisher()
         }
         .tryMap { [weak self] hash in
@@ -91,7 +92,7 @@ extension PolkadotWalletManager: TransactionSender {
             self?.wallet.addPendingTransaction(record)
             return TransactionSendResult(hash: hash)
         }
-        .mapSendError()
+        .eraseSendError()
         .eraseToAnyPublisher()
     }
     

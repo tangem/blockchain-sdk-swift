@@ -81,10 +81,10 @@ extension BinanceWalletManager: TransactionSender {
                         return TransactionSendResult(hash: hash)
 
                     }
-                    .mapError { SendTxError(error: $0, tx: tx.encodeForSignature().hexString.lowercased()) }
+                    .mapSendError(tx: tx.encodeForSignature().hexString.lowercased())
                     .eraseToAnyPublisher() ?? .emptyFail
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }

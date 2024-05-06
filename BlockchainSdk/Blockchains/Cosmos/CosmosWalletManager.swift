@@ -86,9 +86,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 return self.networkService
                     .send(transaction: transaction)
-                    .mapError { error in
-                        SendTxError(error: error, tx: transaction.hexString.lowercased())
-                    }
+                    .mapSendError(tx: transaction.hexString.lowercased())
                     .eraseToAnyPublisher()
             }
             .handleEvents(receiveOutput: { [weak self] hash in
@@ -99,7 +97,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .map {
                 TransactionSendResult(hash: $0)
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

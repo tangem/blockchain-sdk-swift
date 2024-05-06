@@ -74,9 +74,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 
                 return self.networkService
                     .send(message: message)
-                    .mapError { error in
-                        SendTxError(error: error, tx: message)
-                    }
+                    .mapSendError(tx: message)
                     .eraseToAnyPublisher()
             }
             .map { [weak self] hash in
@@ -85,7 +83,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 

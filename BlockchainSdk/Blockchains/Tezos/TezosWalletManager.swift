@@ -100,10 +100,10 @@ extension TezosWalletManager: TransactionSender {
                         self.wallet.addPendingTransaction(record)
                         return TransactionSendResult(hash: rawTransaction)
                     }
-                    .mapError { SendTxError(error: $0, tx: rawTransaction) }
+                    .mapSendError(tx: rawTransaction)
                     .eraseToAnyPublisher()
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

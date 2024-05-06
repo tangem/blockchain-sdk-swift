@@ -130,19 +130,19 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: hash).tryMap {[weak self] sendResponse in
+            .flatMap {[weak self] rawTransactionHash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(transaction: rawTransactionHash).tryMap {[weak self] sendResponse in
                     guard let self = self else { throw WalletError.empty }
                     
                     let mapper = PendingTransactionRecordMapper()
-                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: rawTransactionHash)
                     self.wallet.addPendingTransaction(record)
-                    return TransactionSendResult(hash: hash)
+                    return TransactionSendResult(hash: rawTransactionHash)
                 }
-                .mapError { SendTxError(error: $0, tx: hash) }
+                .mapSendError(tx: rawTransactionHash)
                 .eraseToAnyPublisher() ?? .emptyFail
             }
-            .mapSendError()
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
