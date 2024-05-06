@@ -12,7 +12,7 @@ struct EstimationFeeAddressFactory {
     func makeAddress(for blockchain: Blockchain) throws -> String {
         switch blockchain {
         case .koinos:
-            // TODO: Implement address for Koinos fee estimation
+            // TODO: [KOINOS] Implement address for Koinos fee estimation
             return ""
         case .chia:
             // Can not generate and doesn't depend on destination
