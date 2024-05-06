@@ -63,30 +63,18 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithCurveSelection: [String]
 
     private let sdk: TangemSdk
-    private lazy var walletManagerFactory = WalletManagerFactory(
-        config: .init(
-            blockchairApiKeys: [],
-            blockcypherTokens: [],
-            infuraProjectId: "",
-            nowNodesApiKey: "",
-            getBlockCredentials: .init(credentials: []),
-            kaspaSecondaryApiUrl: nil,
-            tronGridApiKey: "",
-            hederaArkhiaApiKey: "", 
-            polygonScanApiKey: "",
-            tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-            fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-            chiaTangemApiKeys: .init(mainnetApiKey: ""),
-            quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
-            quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
-            defaultNetworkProviderConfiguration: .init(logger: .verbose)
-        ), 
-        dependencies: .init(
-            accountCreator: SimpleAccountCreator { [weak self] in self?.card },
-            dataStorage: InMemoryBlockchainDataStorage { return nil }
-        ), 
-        apiList: .init()
-    )
+    private lazy var walletManagerFactory = {
+        let utils = ConfigUtils()
+        return WalletManagerFactory(
+            config: utils.parseKeysJson(),
+            dependencies: .init(
+                accountCreator: SimpleAccountCreator { [weak self] in self?.card },
+                dataStorage: InMemoryBlockchainDataStorage { return nil }
+            ),
+            apiList: utils.parseProvidersJson()
+        )
+    }()
+
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
