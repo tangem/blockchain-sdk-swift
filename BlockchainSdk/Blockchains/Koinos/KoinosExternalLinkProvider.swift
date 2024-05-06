@@ -9,6 +9,7 @@
 import Foundation
 
 // TODO: [KOINOS] Implement KoinosExternalLinkProvider
+// https://tangem.atlassian.net/browse/IOS-6760
 struct KoinosExternalLinkProvider {
     private let isTestnet: Bool
     

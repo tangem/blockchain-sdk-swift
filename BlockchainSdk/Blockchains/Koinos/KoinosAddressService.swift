@@ -9,6 +9,7 @@
 import Foundation
 
 // TODO: [KOINOS] Implement KoinosAddressService
+// https://tangem.atlassian.net/browse/IOS-6759
 struct KoinosAddressService {
     private let isTestnet: Bool
     
