@@ -16,7 +16,7 @@ public struct BitcoinAddressService {
     let bech32: BitcoinBech32AddressService
     
     init(networkParams: INetwork) {
-        legacy = BitcoinLegacyAddressService(networkParams: networkParams, scriptType: .p2pkh)
+        legacy = BitcoinLegacyAddressService(networkParams: networkParams, scriptType: .p2sh)
         bech32 = BitcoinBech32AddressService(networkParams: networkParams)
     }
 }
