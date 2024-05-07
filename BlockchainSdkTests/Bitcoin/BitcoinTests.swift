@@ -152,4 +152,27 @@ class BitcoinTests: XCTestCase {
         XCTAssertEqual(buildToSignResult.map { $0.hexString }, expectedHashes.map { $0.hexString })
         XCTAssertEqual(signedTx?.hexString, expectedSignedTransaction.hexString)
     }
+    
+    func testLitecoinGenerateP2SHAddress() throws {
+        let addressService = BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams(), scriptType: .p2sh)
+        let walletPublicKey = Data(hex: "046DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D744A863B14DE2457D82BEE322416523E336530760C4533AEE980F4A4CDB9A98D")
+        let p2shAddress = "MSQR9YLb4HXggKHMnGh9JqvwgDV5soodw4"
+        
+        let legacy = try addressService.makeAddress(from: walletPublicKey, type: .legacy)
+        XCTAssertEqual(legacy.value, p2shAddress)
+    }
+    
+    func testLitecoinP2SHAddressIsValid() throws {
+        let addressService = BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams(), scriptType: .p2sh)
+        let expectedLegacyAddress = "MSQR9YLb4HXggKHMnGh9JqvwgDV5soodw4"
+        
+        XCTAssertTrue(addressService.validate(expectedLegacyAddress))
+    }
+    
+    func testLitecoinP2SHAddressIsNotValid() throws {
+        let addressService = BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams(), scriptType: .p2sh)
+        let expectedLegacyAddress = "MSQR9YLb4HXggKHMkGh9JqvwgDV5soodw4"
+        
+        XCTAssertFalse(addressService.validate(expectedLegacyAddress))
+    }
 }

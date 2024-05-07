@@ -11,9 +11,15 @@ import BitcoinCore
 
 public class BitcoinLegacyAddressService {
     private let converter: IAddressConverter
+    private let scriptType: ScriptType
 
-    init(networkParams: INetwork) {
+    // script type parameter should be set explicitly for test builds only
+    // it is required to be able to generate p2sh addresses for litecoin
+    // (see https://tangem.atlassian.net/browse/IOS-6344)
+    // for p2sh case generated address correctly passed validation here https://litecoin-project.github.io/p2sh-convert/
+    init(networkParams: INetwork, scriptType: ScriptType = .p2pkh) {
         converter = Base58AddressConverter(addressVersion: networkParams.pubKeyHash, addressScriptVersion: networkParams.scriptHash)
+        self.scriptType = scriptType
     }
 }
 
@@ -52,7 +58,7 @@ extension BitcoinLegacyAddressService: AddressProvider {
                                   external: true,
                                   hdPublicKeyData: publicKey.blockchainKey)
 
-        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2sh).stringValue
+        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: scriptType).stringValue
         return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
