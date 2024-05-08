@@ -127,14 +127,14 @@ extension CardanoWalletManager: DustRestrictable {
     }
 }
 
-// MARK: - WithdrawalSuggestionProvider
+// MARK: - WithdrawalNotificationProvider
 
-extension CardanoWalletManager: WithdrawalSuggestionProvider {
+extension CardanoWalletManager: WithdrawalNotificationProvider {
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         return nil
     }
 
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         // If token will be sent
         guard let token = amount.type.token else {
             return nil
