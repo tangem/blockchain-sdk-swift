@@ -74,7 +74,7 @@ extension CardanoTransactionBuilder {
     }
 
     func getFee(amount: Amount, destination: String, source: String) throws -> Decimal {
-        let inputAmountType = try inputAmountType(amount: amount, fee: .zeroCoin(for: .cardano(extended: false)))
+        let inputAmountType = try inputAmountType(amount: amount, fee: .zeroCoin(for: .cardano(extended: false)), feeCalculation: true)
 
         let input = try buildCardanoSigningInput(
             source: source,
@@ -90,6 +90,7 @@ extension CardanoTransactionBuilder {
     /// - If the amount is `Cardano` then will return  just `amount`
     /// - If the amount is a `token` and enough for the change then will return `minAdaValue`
     /// - If the amount is a `token` and not enough for the change then will return `balance - fee`
+    /// - If the amount is a `token` and not enough for the minValue then will return `minAdaValue`
     func buildCardanoSpendingAdaValue(amount: Amount, fee: Amount) throws -> UInt64 {
         let uint64Amount = (amount.value * amount.decimalValue).roundedDecimalNumber.uint64Value
 
@@ -136,9 +137,14 @@ extension CardanoTransactionBuilder {
         let minAmount = try CardanoMinAdaAmount(tokenBundle: tokenBundle.serializedData())
         let balance = outputs.reduce(0, { $0 + $1.amount })
         let minChange = try minChange(exclude: token)
-        let change = balance - minAmount
 
-        // If wallet doesn't have enough balance for minimum change
+        // The wallet doesn't have enough balance
+        if minAmount > balance {
+            return minAmount
+        }
+
+        let change = balance - minAmount
+        // If the wallet doesn't have enough balance for minimum change
         // Then spend all ADA
         if change > 0, change < minChange {
             let spendingAdaValue = balance - fee
@@ -174,7 +180,7 @@ extension CardanoTransactionBuilder {
         }
     }
 
-    func inputAmountType(amount: Amount, fee: Amount) throws -> InputAmountType {
+    func inputAmountType(amount: Amount, fee: Amount, feeCalculation: Bool) throws -> InputAmountType {
         let uint64AdaAmount = try buildCardanoSpendingAdaValue(amount: amount, fee: fee)
 
         switch amount.type {
@@ -182,6 +188,14 @@ extension CardanoTransactionBuilder {
             return .ada(uint64AdaAmount)
         case .token(let token):
             let uint64TokenAmount = (amount.value * amount.decimalValue).roundedDecimalNumber.uint64Value
+            if feeCalculation {
+                let balance = outputs.reduce(0, { $0 + $1.amount })
+                // If we'll try to build the transaction with adaValue more then balance
+                // We'll receive the error from the WalletCore
+                let adaValue = min(balance, uint64AdaAmount)
+                return .token(token: token, amount: uint64TokenAmount, adaValue: adaValue)
+            }
+
             return .token(token: token, amount: uint64TokenAmount, adaValue: uint64AdaAmount)
         case .reserve:
             throw BlockchainSdkError.notImplemented
@@ -189,7 +203,7 @@ extension CardanoTransactionBuilder {
     }
 
     func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
-        let amount = try inputAmountType(amount: transaction.amount, fee: transaction.fee.amount)
+        let amount = try inputAmountType(amount: transaction.amount, fee: transaction.fee.amount, feeCalculation: false)
 
         return try buildCardanoSigningInput(
             source: transaction.sourceAddress,
