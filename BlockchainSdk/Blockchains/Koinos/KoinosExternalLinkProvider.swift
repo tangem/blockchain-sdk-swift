@@ -8,10 +8,16 @@
 
 import Foundation
 
-// TODO: [KOINOS] Implement KoinosExternalLinkProvider
-// https://tangem.atlassian.net/browse/IOS-6760
 struct KoinosExternalLinkProvider {
     private let isTestnet: Bool
+    
+    private var baseExplorerUrl: String {
+        if isTestnet {
+            "https://harbinger.koinosblocks.com"
+        } else {
+            "https://koinosblocks.com"
+        }
+    }
     
     init(isTestnet: Bool) {
         self.isTestnet = isTestnet
@@ -20,14 +26,14 @@ struct KoinosExternalLinkProvider {
 
 extension KoinosExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        fatalError("Not implemented")
+        nil
     }
     
     func url(transaction hash: String) -> URL? {
-        fatalError("Not implemented")
+        URL(string: "\(baseExplorerUrl)/tx/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        fatalError("Not implemented")
+        URL(string: "\(baseExplorerUrl)/address/\(address)")
     }
 }
