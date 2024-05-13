@@ -71,7 +71,7 @@ class BlockchainSdkTests: XCTestCase {
                          "0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9aDb"]
         
         _ = testCases.map {
-            let checksummed = EthereumAddressService().toChecksumAddress($0)
+            let checksummed = ethAddressService.toChecksumAddress($0)
             XCTAssertNotNil(checksummed)
             XCTAssertTrue(ethAddressService.validate($0))
             XCTAssertTrue(ethAddressService.validate(checksummed!))
