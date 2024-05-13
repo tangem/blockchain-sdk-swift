@@ -14,7 +14,11 @@ import BitcoinCore
 struct TelosWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let txBuilder = try EthereumTransactionBuilder(chainId: input.blockchain.chainId)
+        guard let chainId = input.blockchain.chainId else {
+            throw EthereumWalletAssemblyError.chainIdNotFound
+        }
+
+        let txBuilder = EthereumTransactionBuilder(chainId: chainId)
         let networkService = EthereumNetworkService(
             decimals: input.blockchain.decimalCount,
             providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),

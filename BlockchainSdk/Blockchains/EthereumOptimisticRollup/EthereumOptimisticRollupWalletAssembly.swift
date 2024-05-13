@@ -10,8 +10,12 @@ import Foundation
 
 struct EthereumOptimisticRollupWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
+        guard let chainId = input.blockchain.chainId else {
+            throw EthereumWalletAssemblyError.chainIdNotFound
+        }
+
         let providers = networkProviderAssembly.makeEthereumJsonRpcProviders(with: input)
-        let txBuilder = try EthereumTransactionBuilder(chainId: input.blockchain.chainId)
+        let txBuilder = EthereumTransactionBuilder(chainId: chainId)
         let networkService = EthereumNetworkService(
             decimals: input.blockchain.decimalCount,
             providers: providers,

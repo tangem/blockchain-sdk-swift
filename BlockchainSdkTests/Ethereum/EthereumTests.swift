@@ -53,7 +53,7 @@ class EthereumTests: XCTestCase {
         )
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(chainId: 1)
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
         transactionBuilder.update(nonce: nonce)
         let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
@@ -84,7 +84,7 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(chainId: 1)
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
         transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
@@ -128,7 +128,7 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(chainId: 137)
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 137)
         transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
@@ -170,7 +170,7 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(chainId: 137)
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 137)
         transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
@@ -206,7 +206,7 @@ class EthereumTests: XCTestCase {
         )
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
-        let transactionBuilder = try EthereumTransactionBuilder(chainId: 1)
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
         transactionBuilder.update(nonce: nonce)
 
         // when
@@ -218,7 +218,7 @@ class EthereumTests: XCTestCase {
         )
 
         // then
-        XCTAssertEqual(l1Data.hexString, "02F8760181C485076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C080A028EF61340BD939BC2195FE537567866003E1A15D3C71FF63E1590620AA636276A067CBE9D8997F761AECB703304B3800CCF555C9F3DC64214B297FB1966A3B6D83")
+        XCTAssertEqual(l1Data.hexString, "02F30181C485076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C0")
     }
 
     func testParseBalance() {

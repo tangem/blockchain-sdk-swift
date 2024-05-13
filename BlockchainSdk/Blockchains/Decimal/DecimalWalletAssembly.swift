@@ -12,7 +12,11 @@ import TangemSdk
 struct DecimalWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let txBuilder = try DecimalTransactionBuilder(chainId: input.blockchain.chainId)
+        guard let chainId = input.blockchain.chainId else {
+            throw EthereumWalletAssemblyError.chainIdNotFound
+        }
+
+        let txBuilder = DecimalTransactionBuilder(chainId: chainId)
         let networkService = DecimalNetworkService(
             decimals: input.blockchain.decimalCount,
             providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),

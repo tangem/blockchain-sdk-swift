@@ -14,6 +14,10 @@ import BitcoinCore
 struct EthereumWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
+        guard let chainId = input.blockchain.chainId else {
+            throw EthereumWalletAssemblyError.chainIdNotFound
+        }
+
         let blockcypherProvider: BlockcypherNetworkProvider? = {
             switch input.blockchain {
             case .ethereum:
@@ -27,7 +31,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             }
         }()
 
-        let txBuilder = try EthereumTransactionBuilder(chainId: input.blockchain.chainId)
+        let txBuilder = EthereumTransactionBuilder(chainId: chainId)
         let networkService = EthereumNetworkService(
             decimals: input.blockchain.decimalCount,
             providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
@@ -38,4 +42,8 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
         return EthereumWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService)
     }
     
+}
+
+enum EthereumWalletAssemblyError: Error {
+    case chainIdNotFound
 }

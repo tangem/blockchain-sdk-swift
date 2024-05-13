@@ -25,18 +25,17 @@ final class EthereumOptimisticRollupWalletManager: EthereumWalletManager {
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         super.getFee(destination: destination, value: value, data: data)
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, layer2Fees -> AnyPublisher<([Fee], Decimal), Never> in
+            .flatMap { walletManager, layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
                 // We use EthereumFeeParameters without increase
                 guard let fee = layer2Fees.first else {
-                    throw BlockchainSdkError.failedToLoadFee
+                    return .anyFail(error: BlockchainSdkError.failedToLoadFee)
                 }
 
-                return try walletManager
+                return walletManager
                     .getLayer1Fee(destination: destination, value: value, data: data, fee: fee)
                     .map { (layer2Fees, $0) }
                     .eraseToAnyPublisher()
             }
-            .switchToLatest()
             .map { layer2Fees, layer1Fee -> [Fee] in
                 layer2Fees.map { fee in
                     let newAmount = Amount(with: fee.amount, value: fee.amount.value + layer1Fee)
@@ -56,21 +55,27 @@ private extension EthereumOptimisticRollupWalletManager {
         value: String?,
         data: Data?,
         fee: Fee
-    ) throws -> some Publisher<Decimal, Never> {
-        let hexTransactionData = try txBuilder.buildDummyTransactionForL1(destination: destination, value: value, data: data, fee: fee)
-        return networkService
-            .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: hexTransactionData))
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, response in
-                guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: walletManager.wallet.blockchain.decimalCount) else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
+    ) -> AnyPublisher<Decimal, Error> {
+        do {
+            let hexTransactionData = try txBuilder.buildDummyTransactionForL1(destination: destination, value: value, data: data, fee: fee)
+            return networkService
+                .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: hexTransactionData))
+                .withWeakCaptureOf(self)
+                .tryMap { walletManager, response in
+                    guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: walletManager.wallet.blockchain.decimalCount) else {
+                        throw BlockchainSdkError.failedToLoadFee
+                    }
 
-                return value
-            }
-            // We can ignore errors so as not to block users
-            // This L1Fee value is only needed to inform users. It will not used in the transaction
-            // Unfortunately L1 fee doesn't work well
-            .replaceError(with: 0)
+                    return value
+                }
+                // We can ignore errors so as not to block users
+                // This L1Fee value is only needed to inform users. It will not used in the transaction
+                // Unfortunately L1 fee doesn't work well
+                .replaceError(with: 0)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        } catch {
+            return .anyFail(error: error)
+        }
     }
 }

@@ -18,11 +18,7 @@ class EthereumTransactionBuilder {
 
     private var nonce: Int = -1
 
-    init(chainId: Int?) throws {
-        guard let chainId else {
-            throw EthereumTransactionBuilderError.chainIdNotFount
-        }
-
+    init(chainId: Int) {
         self.chainId = chainId
     }
 
@@ -32,15 +28,7 @@ class EthereumTransactionBuilder {
 
     func buildForSign(transaction: Transaction) throws -> Data {
         let input = try buildSigningInput(transaction: transaction)
-        let txInputData = try input.serializedData()
-        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
-        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
-
-        if preSigningOutput.error != .ok {
-            Log.debug("EthereumPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
-            throw WalletError.failedToBuildTx
-        }
-
+        let preSigningOutput = try buildTxCompilerPreSigningOutput(input: input)
         return preSigningOutput.dataHash
     }
 
@@ -52,40 +40,26 @@ class EthereumTransactionBuilder {
 
     func buildDummyTransactionForL1(destination: String, value: String?, data: Data?, fee: Fee) throws -> Data {
         let valueData = BigUInt(Data(hex: value ?? "0x0"))
-        let input: EthereumSigningInput = try {
-            switch fee.amount.type {
-            case .coin:
-                return try buildSigningInput(
-                    destination: .user(user: destination, value: valueData),
-                    fee: fee,
-                    parameters: EthereumTransactionParams(data: data)
-                )
-            case .token(let token):
-                return try buildSigningInput(
-                    destination: .contract(
-                        user: destination,
-                        contract: token.contractAddress,
-                        value: valueData
-                    ),
-                    fee: fee,
-                    parameters: EthereumTransactionParams(data: data)
-                )
-            case .reserve:
-                throw BlockchainSdkError.notImplemented
-            }
-        }()
+        switch fee.amount.type {
+        case .coin:
+            let input = try buildSigningInput(
+                destination: .user(user: destination, value: valueData),
+                fee: fee,
+                parameters: EthereumTransactionParams(data: data)
+            )
+            return try buildTxCompilerPreSigningOutput(input: input).data
 
-        // Dummy data from the public documentation:
-        // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-        let signature = Data(hex: "28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa63627667cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
-        let hash = Data(hex: "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53")
-        let publicKey = Data(hex: "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a")
-        let output = try buildSigningOutput(
-            input: input,
-            signatureInfo: .init(signature: signature, publicKey: publicKey, hash: hash)
-        )
+        case .token(let token):
+            let input = try buildSigningInput(
+                destination: .contract(user: destination, contract: token.contractAddress, value: valueData),
+                fee: fee,
+                parameters: EthereumTransactionParams(data: data)
+            )
 
-        return output.encoded
+            return try buildTxCompilerPreSigningOutput(input: input).data
+        case .reserve:
+            throw BlockchainSdkError.notImplemented
+        }
     }
 
     // MARK: - Transaction data builder
@@ -110,6 +84,19 @@ class EthereumTransactionBuilder {
 }
 
 private extension EthereumTransactionBuilder {
+    func buildTxCompilerPreSigningOutput(input: EthereumSigningInput) throws -> TxCompilerPreSigningOutput {
+        let txInputData = try input.serializedData()
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
+        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
+
+        if preSigningOutput.error != .ok {
+            Log.debug("EthereumPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
+            throw EthereumTransactionBuilderError.walletCoreError(message: preSigningOutput.errorMessage)
+        }
+
+        return preSigningOutput
+    }
+
     func buildSigningInput(transaction: Transaction) throws -> EthereumSigningInput {
         guard let amountValue = transaction.amount.bigUIntValue else {
             throw EthereumTransactionBuilderError.invalidAmount
@@ -251,7 +238,6 @@ extension EthereumTransactionBuilder {
 
 enum EthereumTransactionBuilderError: Error {
     case feeParametersNotFound
-    case chainIdNotFount
     case invalidSignatureCount
     case invalidAmount
     case invalidNonce

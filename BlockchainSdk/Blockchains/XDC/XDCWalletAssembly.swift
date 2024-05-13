@@ -10,7 +10,11 @@ import Foundation
 
 struct XDCWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let txBuilder = try XDCTransactionBuilder(chainId: input.blockchain.chainId)
+        guard let chainId = input.blockchain.chainId else {
+            throw EthereumWalletAssemblyError.chainIdNotFound
+        }
+
+        let txBuilder = XDCTransactionBuilder(chainId: chainId)
         let networkService = XDCNetworkService(
             decimals: input.blockchain.decimalCount,
             providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
