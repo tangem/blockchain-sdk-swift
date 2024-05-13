@@ -40,9 +40,9 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
             .eraseToAnyPublisher()
     }
     
-    func send(blob: String) -> AnyPublisher<Bool, Error> {
+    func send(blob: String) -> AnyPublisher<String, Error> {
         return request(.submit(tx: blob, url: baseUrl))
-            .tryMap { xrpResponse -> Bool in
+            .tryMap { xrpResponse -> String in
                 guard let code = xrpResponse.result?.engine_result_code else {
                     throw WalletError.failedToSendTx
                 }
@@ -54,7 +54,11 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
                     }
                 }
                 
-                return true
+                guard let hash = xrpResponse.result?.tx_json?.hash else {
+                    throw WalletError.failedToSendTx
+                }
+
+                return hash
             }
             .eraseToAnyPublisher()
     }
