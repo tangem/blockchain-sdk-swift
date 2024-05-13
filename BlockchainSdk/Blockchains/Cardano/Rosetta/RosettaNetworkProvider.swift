@@ -129,7 +129,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             
             guard let (index, hash) = parseIdentifier(coin.coinIdentifier?.identifier),
                   let amountValue = coin.amount?.value,
-                  let amount = Decimal(string: amountValue) else {
+                  let amount = Decimal(amountValue) else {
                 return nil
             }
 
