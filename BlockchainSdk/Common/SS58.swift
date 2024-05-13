@@ -10,11 +10,11 @@ import Foundation
 import Sodium
 
 /// Set of tools for working with ss58
-enum SS58 {
+struct SS58 {
     /// If data is bigger than 32 bytes we need to hash it, otherwise just return plain data
     /// - Parameter data: public key data
     /// - Returns: either plain or hashed data
-    static func accountData(from data: Data) -> Data {
+    func accountData(from data: Data) -> Data {
         guard data.count > Constants.publicKeySize else { return data }
         return data.blake2hash(outputLength: Int(Constants.publicKeySize))
     }
@@ -23,7 +23,7 @@ enum SS58 {
     /// see https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json `prefix` value
     /// - Parameter address: Base58 encoded address, e.g. j4UiniaZ4GBrMQmjFPapb4fKMmXHxsPbVF4Lny1jHXSuWBKTS
     /// - Returns: The network type
-    static func networkType(from address: String) throws -> UInt {
+    func networkType(from address: String) throws -> UInt {
         let decodedData = address.base58DecodedData
         
         guard decodedData.count >= Constants.maxPrefixSize else {
@@ -47,7 +47,7 @@ enum SS58 {
     /// - Parameter data: data from accountData(from:)
     /// - Parameter type: see https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json `prefix` value
     /// - Returns: Base58 encoded address string, e.g. j4UiniaZ4GBrMQmjFPapb4fKMmXHxsPbVF4Lny1jHXSuWBKTS
-    static func address(from data: Data, type: UInt) -> String {
+    func address(from data: Data, type: UInt) -> String {
         let networkCode = UInt16(type) & 0b0011_1111_1111_1111
         var result: [UInt8]
 
@@ -67,7 +67,7 @@ enum SS58 {
     /// Raw representation (without the prefix) was used in the older protocol versions
     /// - Parameter string: Base58 encoded address string, e.g. j4UiniaZ4GBrMQmjFPapb4fKMmXHxsPbVF4Lny1jHXSuWBKTS
     /// - Returns: Base58 decoded data without ss58 prefix and checksum
-    static func bytes(string: String, raw: Bool = true) -> Data {
+    func bytes(string: String, raw: Bool = true) -> Data {
         var decoded = string.base58DecodedData
         guard let networkTypeBytes = try? networkType(from: string) else {
             return decoded
@@ -84,7 +84,7 @@ enum SS58 {
     /// - Parameter address: Base58 encoded address string, e.g. j4UiniaZ4GBrMQmjFPapb4fKMmXHxsPbVF4Lny1jHXSuWBKTS
     /// - Parameter type: see https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json `prefix` value
     /// - Returns: true if address is valid, otherwise false
-    static func isValidAddress(_ address: String, type: UInt) -> Bool {
+    func isValidAddress(_ address: String, type: UInt) -> Bool {
         let data = address.base58DecodedData
 
         guard let networkType = try? networkType(from: address),
@@ -100,7 +100,7 @@ enum SS58 {
 
     /// Calculates checksum using blake2hash
     /// - Returns: checksum
-    static func checksum(for data: Data) -> Data {
+    func checksum(for data: Data) -> Data {
         let hash = (Constants.prefix + data).blake2hash(outputLength: 64)
         let checksum = Data(hash).prefix(Constants.checksumSize)
         return checksum
@@ -121,7 +121,7 @@ fileprivate extension SS58 {
     }
 }
 
-public extension Data {
+fileprivate extension Data {
     func blake2hash(outputLength: Int) -> Data {
         guard let hash = Sodium().genericHash.hash(message: self.bytes, outputLength: outputLength) else {
             return Data([])
