@@ -32,11 +32,11 @@ class StellarNetworkProvider: HostProvider {
         stellarSdk.accounts.checkTargetAccount(address: address, token: token)
     }
     
-    public func send(transaction: String) -> AnyPublisher<Bool, Error> {
+    public func send(transaction: String) -> AnyPublisher<String, Error> {
         return stellarSdk.transactions.postTransaction(transactionEnvelope: transaction)
-            .tryMap{ submitTransactionResponse throws  -> Bool in
+            .tryMap{ submitTransactionResponse throws  -> String in
                 if submitTransactionResponse.transactionResult.code == .success {
-                    return true
+                    return submitTransactionResponse.transactionHash
                 } else {
                     throw "Result code: \(submitTransactionResponse.transactionResult.code)"
                 }

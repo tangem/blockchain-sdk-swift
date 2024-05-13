@@ -130,8 +130,8 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: hash).tryMap {[weak self] sendResponse in
+            .flatMap {[weak self] transactionData -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(transaction: transactionData).tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
                     let mapper = PendingTransactionRecordMapper()
@@ -139,7 +139,7 @@ extension StellarWalletManager: TransactionSender {
                     self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
-                .mapError { SendTxError(error: $0, tx: hash) }
+                .mapError { SendTxError(error: $0, tx: transactionData) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
