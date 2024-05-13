@@ -124,7 +124,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .radiant:
             return "m/44'/512'/0'/0/0"
         case .koinos:
-            return "m/44'/659'/0/0"
+            return "m/44'/659'/0'/0/0"
         }
     }
 }
