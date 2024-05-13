@@ -133,20 +133,13 @@ final class HederaWalletManager: BaseManager {
 
     private func updateWalletWithPendingTransferTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
         let mapper = HederaPendingTransactionRecordMapper(blockchain: wallet.blockchain)
-        let pendingTransaction = mapper.mapToTransferPendingTransactionRecord(
-            transaction: transaction,
-            hash: sendResult.hash
-        )
+        let pendingTransaction = mapper.mapToTransferRecord(transaction: transaction, hash: sendResult.hash)
         wallet.addPendingTransaction(pendingTransaction)
     }
 
     private func updateWalletWithPendingTokenAssociationTransaction(_ token: Token, sendResult: TransactionSendResult) {
         let mapper = HederaPendingTransactionRecordMapper(blockchain: wallet.blockchain)
-        let pendingTransaction = mapper.mapToTokenAssociationPendingTransactionRecord(
-            token: token,
-            hash: sendResult.hash,
-            accountId: wallet.address
-        )
+        let pendingTransaction = mapper.mapToTokenAssociationRecord(token: token, hash: sendResult.hash, accountId: wallet.address)
         wallet.addPendingTransaction(pendingTransaction)
     }
 

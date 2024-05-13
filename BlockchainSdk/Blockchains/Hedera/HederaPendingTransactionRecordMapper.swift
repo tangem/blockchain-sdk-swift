@@ -12,10 +12,7 @@ struct HederaPendingTransactionRecordMapper {
     let blockchain: Blockchain
 
     /// - Note: Just a shim for `PendingTransactionRecordMapper.mapToPendingTransactionRecord(transaction:hash:date:isIncoming:)`.
-    func mapToTransferPendingTransactionRecord(
-        transaction: Transaction,
-        hash: String
-    ) -> PendingTransactionRecord {
+    func mapToTransferRecord(transaction: Transaction, hash: String) -> PendingTransactionRecord {
         let innerMapper = PendingTransactionRecordMapper()
 
         return innerMapper.mapToPendingTransactionRecord(
@@ -26,11 +23,7 @@ struct HederaPendingTransactionRecordMapper {
         )
     }
 
-    func mapToTokenAssociationPendingTransactionRecord(
-        token: Token,
-        hash: String,
-        accountId: String
-    ) -> PendingTransactionRecord {
+    func mapToTokenAssociationRecord(token: Token, hash: String, accountId: String) -> PendingTransactionRecord {
         let amount = Amount(with: blockchain, type: .token(value: token), value: .zero)
         let fee = Fee(.zeroCoin(for: blockchain))
 
