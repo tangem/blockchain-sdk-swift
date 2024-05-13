@@ -121,17 +121,13 @@ final class HederaWalletManager: BaseManager {
         saveAssociatedTokensIfNeeded(newValue: accountBalance.associatedTokensContractAddresses)
         tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
 
+        let allTokenBalances = accountBalance.tokenBalances.reduce(into: [:]) { result, element in
+            result[element.contractAddress] = element.balance
+        }
+
         // Using HTS tokens balances from a remote list of tokens for tokens in a local list
         cardTokens
-            .map { token in
-                guard
-                    let balance = accountBalance.tokenBalances.first(where: { token.contractAddress == $0.contractAddress })
-                else {
-                    return Amount(with: token, value: .zero)
-                }
-
-                return Amount(with: token, value: balance.balance)
-            }
+            .map { Amount(with: $0, value: allTokenBalances[$0.contractAddress] ?? .zero) }
             .forEach { wallet.add(amount: $0) }
     }
 
