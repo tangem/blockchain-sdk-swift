@@ -8,7 +8,6 @@
 
 import XCTest
 @testable import BlockchainSdk
-@testable import TangemSdk
 
 // Hardcoded addresses provided via 'subkey' command line tool
 // either 'subkey generate -n <network>'
@@ -37,25 +36,25 @@ final class SS58Tests: XCTestCase {
         XCTAssertNotEqual(data, addressData)
     }
     
-    func testNetworkTypesFromAddresses() {
+    func testNetworkTypesFromAddresses() throws {
         let polkadotAddress = "14iZ16K231zixpvaca4t2jMmt5DeDqeqTgfBBFCE3oUcA7v1"
-        let polkadotNetworkType = try? ss58.networkType(from: polkadotAddress)
+        let polkadotNetworkType = try ss58.networkType(from: polkadotAddress)
         
         XCTAssertEqual(polkadotNetworkType, 0)
         
         let kusamaAddress = "CjPfzHY5h3ZLftZwfqFTKPufCVEo9Tjm4tanfDg5wW3KfM8"
-        let kusamaNetworkType = try? ss58.networkType(from: kusamaAddress)
+        let kusamaNetworkType = try ss58.networkType(from: kusamaAddress)
         
         XCTAssertEqual(kusamaNetworkType, 2)
         
         // azero uses generic substrate addresses
         let azeroAddress = "5FndavgJ6H2KnHUZ8C7u5QAFThV3Se2z3E4nanMCYJtZKSh8"
-        let azeroNetworkType = try? ss58.networkType(from: azeroAddress)
+        let azeroNetworkType = try ss58.networkType(from: azeroAddress)
         
         XCTAssertEqual(azeroNetworkType, 42)
         
         let joystreamAddress = "j4UW8myxisJrqbiGPah1vsf9ka3soLpGRLdUPS9Fdi8sFGXMa"
-        let joystreamNetworkType = try? ss58.networkType(from: joystreamAddress)
+        let joystreamNetworkType = try ss58.networkType(from: joystreamAddress)
         
         XCTAssertEqual(joystreamNetworkType, 126)
     }
