@@ -105,9 +105,9 @@ extension XRPWalletManager: TransactionSender {
 
                 return try self.txBuilder.buildForSend(transaction: response.0, signature: response.1)
             }
-            .flatMap{[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(blob: hash)
-                    .tryMap{[weak self] response in
+            .flatMap{[weak self] transactionData -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(blob: transactionData)
+                    .tryMap{[weak self] hash in
                         guard let self = self else { throw WalletError.empty }
                         
                         let mapper = PendingTransactionRecordMapper()
@@ -115,7 +115,7 @@ extension XRPWalletManager: TransactionSender {
                         self.wallet.addPendingTransaction(record)
                         return TransactionSendResult(hash: hash)
                     }
-                    .mapError { SendTxError(error: $0, tx: hash) }
+                    .mapError { SendTxError(error: $0, tx: transactionData) }
                     .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()

@@ -13,7 +13,7 @@ import Combine
 protocol XRPNetworkServiceType {
     var host: String { get }
     func getFee() -> AnyPublisher<XRPFeeResponse, Error>
-    func send(blob: String) -> AnyPublisher<Bool, Error>
+    func send(blob: String) -> AnyPublisher<String, Error>
     func getInfo(account: String) -> AnyPublisher<XrpInfoResponse, Error>
     func checkAccountCreated(account: String) -> AnyPublisher<Bool, Error>
 }
@@ -32,7 +32,7 @@ class XRPNetworkService: MultiNetworkProvider, XRPNetworkServiceType {
         }
     }
     
-    func send(blob: String) -> AnyPublisher<Bool, Error> {
+    func send(blob: String) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
             provider.send(blob: blob)
         }
