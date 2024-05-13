@@ -20,14 +20,14 @@ struct KoinosExternalLinkProvider {
 
 extension KoinosExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        nil
+        fatalError("Not implemented")
     }
     
     func url(transaction hash: String) -> URL? {
-        nil
+        fatalError("Not implemented")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        nil
+        fatalError("Not implemented")
     }
 }

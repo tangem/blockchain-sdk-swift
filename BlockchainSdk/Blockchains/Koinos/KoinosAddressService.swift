@@ -30,6 +30,6 @@ extension KoinosAddressService: AddressProvider {
 
 extension KoinosAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        false
+        fatalError("Not implemented")
     }
 }
