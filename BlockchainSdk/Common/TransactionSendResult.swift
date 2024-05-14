@@ -31,7 +31,7 @@ public struct SendTxError: LocalizedError {
     
     // MARK: - Init
     
-    init(error: Error, tx: String? = nil, lastRetryHost: String? = nil) {
+    public init(error: Error, tx: String? = nil, lastRetryHost: String? = nil) {
         self.error = error
         self.tx = tx
         self.lastRetryHost = nil
