@@ -506,6 +506,7 @@
 		DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
 		DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
 		DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
+		DAE343C62BF36329001B3F38 /* KoinosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE343C52BF36329001B3F38 /* KoinosTests.swift */; };
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
@@ -1346,6 +1347,7 @@
 		DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaDummyAccountStorage.swift; sourceTree = "<group>"; };
 		DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaAddressService.swift; sourceTree = "<group>"; };
 		DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaWalletManager.swift; sourceTree = "<group>"; };
+		DAE343C52BF36329001B3F38 /* KoinosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTests.swift; sourceTree = "<group>"; };
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
@@ -2020,6 +2022,7 @@
 				2DB84D422B721CB000C1CDD1 /* Aptos */,
 				B67C5A262B8288F600A33A68 /* Hedera */,
 				2DB613CE2B912CFB007CFA9B /* Radiant */,
+				DAE343C42BF3630A001B3F38 /* Koinos */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -3299,6 +3302,14 @@
 				DA570CEE27A802BE007F34EB /* SolanaError+.swift */,
 			);
 			path = Solana;
+			sourceTree = "<group>";
+		};
+		DAE343C42BF3630A001B3F38 /* Koinos */ = {
+			isa = PBXGroup;
+			children = (
+				DAE343C52BF36329001B3F38 /* KoinosTests.swift */,
+			);
+			path = Koinos;
 			sourceTree = "<group>";
 		};
 		DAED921D27A14F1B00F188D7 /* Polkadot */ = {
@@ -4923,6 +4934,7 @@
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
 				2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */,
+				DAE343C62BF36329001B3F38 /* KoinosTests.swift in Sources */,
 				2D78F40F2A5CA55100962CCA /* ChiaTests.swift in Sources */,
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
