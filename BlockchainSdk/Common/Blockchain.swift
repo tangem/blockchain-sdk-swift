@@ -76,6 +76,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case taraxa(testnet: Bool)
     case radiant(testnet: Bool)
     case base(testnet: Bool)
+    case joystream(curve: EllipticCurve)
 
     public var isTestnet: Bool {
         switch self {
@@ -130,7 +131,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa:
+                .kaspa,
+                .joystream:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -155,6 +157,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polkadot(let curve, _),
                 .kusama(let curve),
                 .azero(let curve, _),
+                .joystream(let curve),
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
@@ -236,6 +239,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .azero,
                 .chia:
             return 12
+        case .joystream:
+            return 10
         case .near:
             return 24
         case .algorand:
@@ -362,6 +367,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "TARA"
         case .radiant:
             return "RXD"
+        case .joystream:
+            return "JOY"
         }
     }
 
@@ -692,6 +699,7 @@ extension Blockchain: Codable {
         case .taraxa: return "taraxa"
         case .radiant: return "radiant"
         case .base: return "base"
+        case .joystream: return "joystream"
         }
     }
 
@@ -776,6 +784,7 @@ extension Blockchain: Codable {
         case "taraxa": self = .taraxa(testnet: isTestnet)
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
+        case "joystream": self = .joystream(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -974,6 +983,8 @@ private extension Blockchain {
             case .network: return "base"
             case .coin: return "base-ethereum"
             }
+        case .joystream:
+            return "joystream"
         }
     }
 
@@ -1042,7 +1053,7 @@ extension Blockchain {
             return TezosWalletAssembly()
         case .solana:
             return SolanaWalletAssembly()
-        case .polkadot, .kusama, .azero:
+        case .polkadot, .kusama, .azero, .joystream:
             return SubstrateWalletAssembly()
         case .tron:
             return TronWalletAssembly()
