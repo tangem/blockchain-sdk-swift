@@ -77,6 +77,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/434'/0'/0/0"
         case .azero:
             return "m/44'/643'/0'/0'/0'"
+        case .joystream:
+            return "m/44'/1014'/0'/0/0"
         case .tron:
             return "m/44'/195'/0'/0/0"
         case .arbitrum:
