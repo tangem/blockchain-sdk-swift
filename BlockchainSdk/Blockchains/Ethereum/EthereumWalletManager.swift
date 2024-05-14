@@ -89,7 +89,7 @@ extension EthereumWalletManager: EthereumNetworkProvider {
         let serializedTransaction = tx.hexString.lowercased().addHexPrefix()
         return networkService
             .send(transaction: serializedTransaction)
-            .mapError { SendTxError(error: $0, tx: serializedTransaction) }
+            .mapSendError(tx: serializedTransaction)
             .eraseToAnyPublisher()
     }
 

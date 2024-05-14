@@ -137,6 +137,8 @@ public struct ExternalLinkProviderFactory {
             return RadiantExternalLinkProvider()
         case .base:
             return BaseExternalLinkProvider(isTestnet: isTestnet)
+        case .joystream:
+            return JoystreamExternalLinkProvider()
         }
     }
 }
