@@ -33,7 +33,7 @@ class PolkadotTransactionBuilder {
             https://github.com/paritytech/polkadot/blob/3b68869e14f84b043aa65bd83f9fe44359e4d626/runtime/westend/src/lib.rs#L982
         */
         switch network {
-        case .polkadot, .azero:
+        case .polkadot, .azero, .joystream:
             return Data(hexString: "0x0500")
         case .kusama:
             return Data(hexString: "0x0400")
@@ -115,6 +115,11 @@ class PolkadotTransactionBuilder {
             return specVersion < 2028
         case .westend, .azero:
             return false
+        case .joystream:
+            // specVersion at the moment of initial implementation is '2003'
+            // currently appending '00' before address bytes creates invalid transactions
+            // this may change at some point in the future and new logic may look similar to polkadot and kusama cases
+            return true
         }
     }
 

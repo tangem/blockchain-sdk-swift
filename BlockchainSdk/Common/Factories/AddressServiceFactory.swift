@@ -119,6 +119,8 @@ public struct AddressServiceFactory {
             return HederaAddressService(isTestnet: isTestnet)
         case .radiant:
             return RadiantAddressService()
+        case .joystream(let curve):
+            return PolkadotAddressService(network: .joystream(curve: curve))
         }
     }
 }
