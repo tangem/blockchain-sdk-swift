@@ -10,7 +10,7 @@ import BitcoinCore
 @testable import BlockchainSdk
 import XCTest
 
-final class KoinosTests: XCTestCase {
+final class KoinosAddressTests: XCTestCase {
     private let addressService = KoinosAddressService(networkParams: BitcoinNetwork.mainnet.networkParams)
 
     func testMakeAddress() {
