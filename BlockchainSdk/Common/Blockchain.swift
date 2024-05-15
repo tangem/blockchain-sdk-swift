@@ -366,7 +366,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .radiant:
             return "RXD"
         case .koinos:
-            return "KOIN"
+            return isTestnet ? "tKOIN" : "KOIN"
         }
     }
 
