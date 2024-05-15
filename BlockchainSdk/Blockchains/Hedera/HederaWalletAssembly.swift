@@ -25,8 +25,7 @@ struct HederaWalletAssembly: WalletManagerAssembly {
 
         let networkService = HederaNetworkService(
             consensusProvider: consensusProvider,
-            restProviders: restProviders,
-            decimalCount: blockchain.decimalCount
+            restProviders: restProviders
         )
 
         let transactionBuilder = HederaTransactionBuilder(

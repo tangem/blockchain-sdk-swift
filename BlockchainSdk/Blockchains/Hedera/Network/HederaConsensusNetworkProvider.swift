@@ -24,7 +24,7 @@ final class HederaConsensusNetworkProvider {
         self.callbackQueue = callbackQueue
     }
 
-    func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
+    func getBalance(accountId: String) -> some Publisher<Int, Error> {
         return Deferred {
             Future { promise in
                 let result = Result { try AccountId.fromString(accountId) }
@@ -37,7 +37,8 @@ final class HederaConsensusNetworkProvider {
                 .accountId(accountId)
                 .execute(networkProvider.client)
         }
-        .map(\.hbars.value)
+        .map(\.hbars.tinybars)
+        .map(Int.init)
         .receive(on: callbackQueue)
     }
 

@@ -14,16 +14,13 @@ final class HederaNetworkService {
 
     private let consensusProvider: HederaConsensusNetworkProvider
     private let restProviders: [HederaRESTNetworkProvider]
-    private let decimalCount: Int
 
     init(
         consensusProvider: HederaConsensusNetworkProvider,
-        restProviders: [HederaRESTNetworkProvider],
-        decimalCount: Int
+        restProviders: [HederaRESTNetworkProvider]
     ) {
         self.consensusProvider = consensusProvider
         self.restProviders = restProviders
-        self.decimalCount = decimalCount
         currentProviderIndex = 0
     }
 
@@ -61,9 +58,11 @@ final class HederaNetworkService {
             .zip(tokenBalancesPublisher)
             .map { hbarBalance, tokenBalances in
                 let tokenBalances = tokenBalances.tokens.map { tokenBalance in
-                    let balance = Decimal(tokenBalance.balance) / pow(10, tokenBalance.decimals)
-
-                    return HederaAccountBalance.TokenBalance(contractAddress: tokenBalance.tokenId, balance: balance)
+                    return HederaAccountBalance.TokenBalance(
+                        contractAddress: tokenBalance.tokenId,
+                        balance: tokenBalance.balance,
+                        decimalCount: tokenBalance.decimals
+                    )
                 }
 
                 return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: tokenBalances)
@@ -116,7 +115,7 @@ final class HederaNetworkService {
     }
 
     /// - Note: For Hbar balance fetching, the Mirror Node acts as a primary, and the Consensus Node is a backup.
-    private func makeHbarBalancePublisher(accountId: String) -> some Publisher<Decimal, Error> {
+    private func makeHbarBalancePublisher(accountId: String) -> some Publisher<Int, Error> {
         let primaryHbarBalancePublisher = providerPublisher { provider in
             return provider
                 .getBalance(accountId: accountId)
@@ -128,9 +127,6 @@ final class HederaNetworkService {
             }
 
             return balance.balance
-        }
-        .map { [decimalCount] balance in
-            return Decimal(balance) / pow(10, decimalCount)
         }
 
         let fallbackHbarBalancePublisher = consensusProvider
