@@ -8,6 +8,8 @@
 
 import Foundation
 
+// https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/transaction-methods/submit/
+
 struct XrpResponse: Codable {
     let result: XrpResult?
     
@@ -33,6 +35,7 @@ struct XrpResult: Codable {
     let error_exception: String?
     let state: XrpState?
     let error_code: Int?
+    let tx_json: XrpTxJson?
 }
 
 struct XrpAccountData: Codable {
@@ -59,4 +62,8 @@ struct XrpState: Codable {
 
 struct XRPValidatedLedger: Codable {
     let reserve_base: Int?
+}
+
+struct XrpTxJson: Codable {
+    let hash: String
 }
