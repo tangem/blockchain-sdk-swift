@@ -171,7 +171,7 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
         switch amount.type {
         case .coin:
             try validateCardanoCoinWithdrawal(amount: amount, fee: fee, hasAnotherTokenWithBalance: hasAnotherTokenWithBalance)
-        case .token(let token):
+        case .token:
             try validateCardanoTokenWithdrawal(amount: amount, fee: fee, hasAnotherTokenWithBalance: hasAnotherTokenWithBalance)
         case .reserve:
             throw BlockchainSdkError.notImplemented
@@ -189,7 +189,7 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
             throw ValidationError.balanceNotFound
         }
 
-        let minChange = try minChange(exclude: amount.type)
+        let minChange = try minChange()
         var change = adaBalance - amount.value
 
         if amount.type == fee.type {
@@ -229,8 +229,8 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
             return
         }
 
-        let minChange = try minChange(exclude: amount.type)
-        var change = adaBalance - minAdaDecimal
+        let minChange = try minChange()
+        let change = adaBalance - minAdaDecimal
 
         // If there not enough ada balance to change
         guard change < minChange.value else {
@@ -246,8 +246,8 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
         }
     }
 
-    private func minChange(exclude: Amount.AmountType) throws -> Amount {
-        let minChangeValue = try transactionBuilder.minChange(exclude: exclude.token)
+    private func minChange() throws -> Amount {
+        let minChangeValue = try transactionBuilder.minChange(exclude: nil)
         let minChangeDecimal = Decimal(minChangeValue) / wallet.blockchain.decimalValue
         return Amount(with: wallet.blockchain, value: minChangeDecimal)
     }
