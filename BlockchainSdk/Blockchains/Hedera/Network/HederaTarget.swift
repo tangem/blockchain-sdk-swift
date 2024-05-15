@@ -19,6 +19,7 @@ struct HederaTarget {
 extension HederaTarget {
     enum Target {
         case getAccounts(publicKey: String)
+        case getAccountBalance(accountId: String)
         case getTokens(accountId: String)
         case getExchangeRate
     }
@@ -31,7 +32,8 @@ extension HederaTarget: TargetType {
         switch target {
         case .getAccounts,
              .getTokens,
-             .getExchangeRate:
+             .getExchangeRate,
+             .getAccountBalance:
             return configuration.url
         }
     }
@@ -40,6 +42,8 @@ extension HederaTarget: TargetType {
         switch target {
         case .getAccounts:
             return "accounts"
+        case .getAccountBalance:
+            return "balances"
         case .getTokens(let accountId):
             return "accounts/\(accountId)/tokens"
         case .getExchangeRate:
@@ -51,7 +55,8 @@ extension HederaTarget: TargetType {
         switch target {
         case .getAccounts,
              .getTokens,
-             .getExchangeRate:
+             .getExchangeRate,
+             .getAccountBalance:
             return .get
         }
     }
@@ -62,6 +67,11 @@ extension HederaTarget: TargetType {
             let parameters: [String: Any] = [
                 "balance": false,
                 "account.publickey": publicKey,
+            ]
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
+        case .getAccountBalance(let accountId):
+            let parameters: [String: Any] = [
+                "account.id": accountId,
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
         case .getTokens:
@@ -82,6 +92,7 @@ extension HederaTarget: TargetType {
 
         switch target {
         case .getAccounts,
+             .getAccountBalance,
              .getTokens,
              .getExchangeRate:
             if let headersKeyInfo = configuration.headers {
