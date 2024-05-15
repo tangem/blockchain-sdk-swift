@@ -14,13 +14,16 @@ final class HederaNetworkService {
 
     private let consensusProvider: HederaConsensusNetworkProvider
     private let restProviders: [HederaRESTNetworkProvider]
+    private let decimalCount: Int
 
     init(
         consensusProvider: HederaConsensusNetworkProvider,
-        restProviders: [HederaRESTNetworkProvider]
+        restProviders: [HederaRESTNetworkProvider],
+        decimalCount: Int
     ) {
         self.consensusProvider = consensusProvider
         self.restProviders = restProviders
+        self.decimalCount = decimalCount
         currentProviderIndex = 0
     }
 
@@ -46,8 +49,7 @@ final class HederaNetworkService {
     }
 
     func getBalance(accountId: String) -> some Publisher<HederaAccountBalance, Error> {
-        let hbarBalancePublisher = consensusProvider
-            .getBalance(accountId: accountId)
+        let hbarBalancePublisher = makeHbarBalancePublisher(accountId: accountId)
 
         let tokenBalancesPublisher = providerPublisher { provider in
             return provider
@@ -110,6 +112,33 @@ final class HederaNetworkService {
                 }
 
                 return HederaTransactionInfo(isPending: isPending, transactionHash: transactionInfo.hash)
+            }
+    }
+
+    /// - Note: For Hbar balance fetching, the Mirror Node acts as a primary, and the Consensus Node is a backup.
+    private func makeHbarBalancePublisher(accountId: String) -> some Publisher<Decimal, Error> {
+        let primaryHbarBalancePublisher = providerPublisher { provider in
+            return provider
+                .getBalance(accountId: accountId)
+                .eraseToAnyPublisher()
+        }
+        .tryMap { accountBalance in
+            guard let balance = accountBalance.balances.first(where: { $0.account == accountId }) else {
+                throw HederaError.accountBalanceNotFound
+            }
+
+            return balance.balance
+        }
+        .map { [decimalCount] balance in
+            return Decimal(balance) / pow(10, decimalCount)
+        }
+
+        let fallbackHbarBalancePublisher = consensusProvider
+            .getBalance(accountId: accountId)
+
+        return primaryHbarBalancePublisher
+            .catch { _ in
+                return fallbackHbarBalancePublisher
             }
     }
 }
