@@ -135,16 +135,7 @@ extension CardanoWalletManager: WithdrawalNotificationProvider {
     }
 
     func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalNotification? {
-        // If token will be sent
-        guard let token = amount.type.token else {
-            return nil
-        }
-
         do {
-            guard let bigUIntValue = amount.bigUIntValue else {
-                throw WalletError.empty
-            }
-
             let adaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
             let minAmountDecimal = Decimal(adaValue) / wallet.blockchain.decimalValue
             let amount = Amount(with: wallet.blockchain, value: minAmountDecimal)
@@ -162,26 +153,24 @@ extension CardanoWalletManager: WithdrawalNotificationProvider {
 
 extension CardanoWalletManager: CardanoWithdrawalRestrictable {
     func validateCardanoWithdrawal(amount: Amount, fee: Amount) throws {
-        let hasAnotherTokenWithBalance = wallet.amounts
-            .filter { $0.key != amount.type }
-            .contains { amountType, amount in
-                amountType.isToken && amount.value > 0
-            }
-
         switch amount.type {
         case .coin:
-            try validateCardanoCoinWithdrawal(amount: amount, fee: fee, hasAnotherTokenWithBalance: hasAnotherTokenWithBalance)
+            try validateCardanoCoinWithdrawal(amount: amount, fee: fee)
         case .token:
-            try validateCardanoTokenWithdrawal(amount: amount, fee: fee, hasAnotherTokenWithBalance: hasAnotherTokenWithBalance)
+            try validateCardanoTokenWithdrawal(amount: amount, fee: fee)
         case .reserve:
             throw BlockchainSdkError.notImplemented
         }
     }
 
-    private func validateCardanoCoinWithdrawal(amount: Amount, fee: Amount, hasAnotherTokenWithBalance: Bool) throws {
+    private func validateCardanoCoinWithdrawal(amount: Amount, fee: Amount) throws {
         assert(!amount.type.isToken, "Only coin validation")
 
-        guard hasAnotherTokenWithBalance else {
+        let hasTokensWithBalance = wallet.amounts.contains { amountType, amount in
+            amountType.isToken && amount.value > 0
+        }
+
+        guard hasTokensWithBalance else {
             return
         }
 
@@ -201,21 +190,20 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
         }
     }
 
-    private func validateCardanoTokenWithdrawal(amount: Amount, fee: Amount, hasAnotherTokenWithBalance: Bool) throws {
+    private func validateCardanoTokenWithdrawal(amount: Amount, fee: Amount) throws {
         assert(amount.type.isToken, "Only token validation")
 
         guard var adaBalance = wallet.amounts[.coin]?.value else {
             throw ValidationError.balanceNotFound
         }
 
-        guard var tokenBalance = wallet.amounts[amount.type]?.value else {
+        guard let tokenBalance = wallet.amounts[amount.type]?.value else {
             throw ValidationError.balanceNotFound
         }
 
         // the fee will be spend in any case
         adaBalance -= fee.value
 
-        let isTokenBalanceLeft = amount.value < tokenBalance
         let minAdaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
         let minAdaDecimal = Decimal(minAdaValue) / wallet.blockchain.decimalValue
 
@@ -223,6 +211,13 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
         if minAdaDecimal > adaBalance {
             throw ValidationError.cardanoInsufficientBalanceToSendToken
         }
+
+        let isTokenBalanceLeft = amount.value < tokenBalance
+        let hasAnotherTokenWithBalance = wallet.amounts
+            .filter { $0.key != amount.type }
+            .contains { amountType, amount in
+                amountType.isToken && amount.value > 0
+            }
 
         // If there has to be a change for any token in the transaction
         guard isTokenBalanceLeft || hasAnotherTokenWithBalance else {
