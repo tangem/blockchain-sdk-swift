@@ -155,9 +155,9 @@ extension TransactionValidator where Self: MaximumAmountRestrictable, Self: Dust
     }
 }
 
-// MARK: - DustRestrictable, CardanoWithdrawalRestrictable e.g. CardanoWalletManager
+// MARK: - DustRestrictable, CardanoTransferRestrictable e.g. CardanoWalletManager
 
-extension TransactionValidator where Self: DustRestrictable, Self: CardanoWithdrawalRestrictable {
+extension TransactionValidator where Self: DustRestrictable, Self: CardanoTransferRestrictable {
     func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
@@ -165,7 +165,7 @@ extension TransactionValidator where Self: DustRestrictable, Self: CardanoWithdr
 
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateCardanoWithdrawal(amount: amount, fee: fee.amount)
+        try validateCardanoTransfer(amount: amount, fee: fee.amount)
         try validateDust(amount: amount, fee: fee.amount)
     }
 }

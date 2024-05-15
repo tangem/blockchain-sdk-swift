@@ -149,10 +149,10 @@ extension CardanoWalletManager: WithdrawalNotificationProvider {
     }
 }
 
-// MARK: - CardanoWithdrawalRestrictable
+// MARK: - CardanoTransferRestrictable
 
-extension CardanoWalletManager: CardanoWithdrawalRestrictable {
-    func validateCardanoWithdrawal(amount: Amount, fee: Amount) throws {
+extension CardanoWalletManager: CardanoTransferRestrictable {
+    func validateCardanoTransfer(amount: Amount, fee: Amount) throws {
         switch amount.type {
         case .coin:
             try validateCardanoCoinWithdrawal(amount: amount, fee: fee)
