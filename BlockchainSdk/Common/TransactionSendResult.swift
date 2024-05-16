@@ -22,6 +22,10 @@ public struct SendTxError: LocalizedError {
     public let lastRetryHost: String?
     
     public var errorDescription: String? {
+        error.localizedDescription
+    }
+    
+    var description: String {
         """
             description: \(error.localizedDescription)
             tx: \(tx ?? "undefined")
@@ -34,6 +38,6 @@ public struct SendTxError: LocalizedError {
     public init(error: Error, tx: String? = nil, lastRetryHost: String? = nil) {
         self.error = error
         self.tx = tx
-        self.lastRetryHost = nil
+        self.lastRetryHost = lastRetryHost
     }
 }

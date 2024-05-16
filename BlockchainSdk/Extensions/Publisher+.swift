@@ -104,9 +104,9 @@ extension Publisher where Failure == Error {
     /*
      This method is used to override a network error when sending a transaction after all chains publishers.
      */
-    public func eraseSendError(tx: String? = nil) -> Publishers.MapError<Self, SendTxError> {
+    public func eraseSendError() -> Publishers.MapError<Self, SendTxError> {
         mapError { error in
-            SendTxErrorFactory().make(error: error, with: tx)
+            SendTxErrorFactory().make(error: error)
         }
     }
 }
