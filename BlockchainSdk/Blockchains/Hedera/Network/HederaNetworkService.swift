@@ -95,6 +95,9 @@ final class HederaNetworkService {
             .map(TransactionSendResult.init(hash:))
     }
 
+    /// Expects `transactionHash` in a format suitable for Hedera Consensus node (like `0.0.3573746@1714034073.123382080`).
+    /// - Note: Hedera Mirror node uses a slightly different format of TX ids, so the conversion between
+    /// Consensus and Mirror formats is performed using `HederaTransactionIdConverter`.
     func getTransactionInfo(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
         let fallbackHbarBalancePublisher = makeFallbackTransactionInfoPublisher(transactionHash: transactionHash)
         let converter = HederaTransactionIdConverter()
@@ -146,6 +149,7 @@ final class HederaNetworkService {
         }
     }
 
+    /// - Note: For Hbar tx status fetching, the Mirror Node acts as a primary node, and the Consensus Node is a backup one.
     private func makeFallbackTransactionInfoPublisher(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
         return consensusProvider
             .getTransactionInfo(transactionHash: transactionHash)
@@ -165,7 +169,7 @@ final class HederaNetworkService {
             }
     }
 
-    /// - Note: For Hbar balance fetching, the Mirror Node acts as a primary, and the Consensus Node is a backup.
+    /// - Note: For Hbar balance fetching, the Mirror Node acts as a primary node, and the Consensus Node is a backup one.
     private func makeHbarBalancePublisher(accountId: String) -> some Publisher<Int, Error> {
         let primaryHbarBalancePublisher = providerPublisher { provider in
             return provider
