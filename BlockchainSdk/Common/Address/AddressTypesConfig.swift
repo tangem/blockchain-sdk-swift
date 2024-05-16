@@ -76,7 +76,8 @@ struct AddressTypesConfig {
              .flare,
              .taraxa,
              .radiant,
-             .base:
+             .base,
+             .joystream:
             return [.default]
         }
     }
