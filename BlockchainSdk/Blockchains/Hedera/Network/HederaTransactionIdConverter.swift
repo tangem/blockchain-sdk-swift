@@ -11,38 +11,42 @@ import Foundation
 struct HederaTransactionIdConverter {
     /// Conversion from `0.0.3573746@1714011910.250372802` to `0.0.3573746-1714011910-250372802`.
     func convertFromConsensusToMirror(_ transactionId: String) throws -> String {
-        let firstStageParts = transactionId.split(separator: "@")
+        let firstStageParts = transactionId.components(separatedBy: Constants.consensusTimestampSeparator)
 
         guard firstStageParts.count == 2 else {
             throw ConversionError.conversionFromConsensusToMirrorFailed(transactionId: transactionId)
         }
 
-        let intermediateResult = firstStageParts[0] + "-" + firstStageParts[1]
-        let secondStageParts = intermediateResult.split(separator: ".")
+        let secondStageParts = firstStageParts[1].components(separatedBy: Constants.consensusNanosecondsSeparator)
 
-        guard secondStageParts.count >= 2, let lastPart = secondStageParts.last else {
+        guard secondStageParts.count == 2 else {
             throw ConversionError.conversionFromConsensusToMirrorFailed(transactionId: transactionId)
         }
 
-        return secondStageParts.dropLast().joined() + "-" + lastPart
+        return [
+            firstStageParts[0],
+            secondStageParts[0],
+            secondStageParts[1],
+        ].joined(separator: Constants.mirrorSeparator)
     }
 
     /// Conversion from `0.0.3573746-1714011910-250372802` to `0.0.3573746@1714011910.250372802`
     func convertFromMirrorToConsensus(_ transactionId: String) throws -> String {
-        let firstStageParts = transactionId.split(separator: "-")
+        let firstStageParts = transactionId.components(separatedBy: Constants.mirrorSeparator)
 
-        guard firstStageParts.count >= 2, let lastPart = firstStageParts.last else {
+        guard firstStageParts.count == 3 else {
             throw ConversionError.conversionFromMirrorToConsensusFailed(transactionId: transactionId)
         }
 
-        let intermediateResult = firstStageParts.dropLast().joined() + "." + lastPart
-        let secondStageParts = intermediateResult.split(separator: "-")
+        let intermediateResult = [
+            firstStageParts[1],
+            firstStageParts[2],
+        ].joined(separator: Constants.consensusNanosecondsSeparator)
 
-        guard secondStageParts.count == 2 else {
-            throw ConversionError.conversionFromMirrorToConsensusFailed(transactionId: transactionId)
-        }
-
-        return secondStageParts[0] + "@" + secondStageParts[1]
+        return [
+            String(firstStageParts[0]),
+            intermediateResult,
+        ].joined(separator: Constants.consensusTimestampSeparator)
     }
 }
 
@@ -52,5 +56,15 @@ extension HederaTransactionIdConverter {
     enum ConversionError: Error {
         case conversionFromConsensusToMirrorFailed(transactionId: String)
         case conversionFromMirrorToConsensusFailed(transactionId: String)
+    }
+}
+
+// MARK: - Constants
+
+private extension HederaTransactionIdConverter {
+    enum Constants {
+        static let consensusTimestampSeparator = "@"
+        static let consensusNanosecondsSeparator = "."
+        static let mirrorSeparator = "-"
     }
 }
