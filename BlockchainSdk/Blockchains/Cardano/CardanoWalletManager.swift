@@ -155,6 +155,15 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
     func validateCardanoTransfer(amount: Amount, fee: Amount) throws {
         switch amount.type {
         case .coin:
+            let hasTokensWithBalance = wallet.amounts.contains { amountType, amount in
+                amountType.isToken && amount.value > 0
+            }
+
+            guard hasTokensWithBalance else {
+                // Skip this checking. Dust checking will be after
+                return
+            }
+            
             try validateCardanoCoinWithdrawal(amount: amount, fee: fee)
         case .token:
             try validateCardanoTokenWithdrawal(amount: amount, fee: fee)
@@ -166,19 +175,11 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
     private func validateCardanoCoinWithdrawal(amount: Amount, fee: Amount) throws {
         assert(!amount.type.isToken, "Only coin validation")
 
-        let hasTokensWithBalance = wallet.amounts.contains { amountType, amount in
-            amountType.isToken && amount.value > 0
-        }
-
-        guard hasTokensWithBalance else {
-            return
-        }
-
         guard let adaBalance = wallet.amounts[.coin]?.value else {
             throw ValidationError.balanceNotFound
         }
 
-        let minChange = try minChange()
+        let minChange = try minChange(amount: amount)
         var change = adaBalance - amount.value
 
         if amount.type == fee.type {
@@ -203,7 +204,8 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
 
         // the fee will be spend in any case
         adaBalance -= fee.value
-
+        
+        // 1. Check if there is enough ADA to send the token
         let minAdaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
         let minAdaDecimal = Decimal(minAdaValue) / wallet.blockchain.decimalValue
 
@@ -212,37 +214,20 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
             throw ValidationError.cardanoInsufficientBalanceToSendToken
         }
 
-        let isTokenBalanceLeft = amount.value < tokenBalance
-        let hasAnotherTokenWithBalance = wallet.amounts
-            .filter { $0.key != amount.type }
-            .contains { amountType, amount in
-                amountType.isToken && amount.value > 0
-            }
-
-        // If there has to be a change for any token in the transaction
-        guard isTokenBalanceLeft || hasAnotherTokenWithBalance else {
-            return
-        }
-
-        let minChange = try minChange()
+        // 2. Check if there is enough ADA to get a change with after transaction
+        let minChange = try minChange(amount: amount)
         let change = adaBalance - minAdaDecimal
 
         // If there not enough ada balance to change
-        guard change < minChange.value else {
+        guard change > 0, change < minChange.value else {
             return
         }
 
-        if hasAnotherTokenWithBalance {
-            throw ValidationError.cardanoHasTokens(minimumAmount: minChange)
-        }
-
-        if isTokenBalanceLeft {
-            throw ValidationError.cardanoInsufficientBalanceToSendToken
-        }
+        throw ValidationError.cardanoInsufficientBalanceToSendToken
     }
 
-    private func minChange() throws -> Amount {
-        let minChangeValue = try transactionBuilder.minChange(exclude: nil)
+    private func minChange(amount: Amount) throws -> Amount {
+        let minChangeValue = try transactionBuilder.minChange(amount: amount)
         let minChangeDecimal = Decimal(minChangeValue) / wallet.blockchain.decimalValue
         return Amount(with: wallet.blockchain, value: minChangeDecimal)
     }

@@ -74,7 +74,11 @@ extension CardanoTransactionBuilder {
     }
 
     func getFee(amount: Amount, destination: String, source: String) throws -> Decimal {
-        let inputAmountType = try inputAmountType(amount: amount, fee: .zeroCoin(for: .cardano(extended: false)), feeCalculation: true)
+        let inputAmountType = try inputAmountType(
+            amount: amount,
+            fee: .zeroCoin(for: .cardano(extended: false)),
+            feeCalculation: true
+        )
 
         let input = try buildCardanoSigningInput(
             source: source,
@@ -92,27 +96,58 @@ extension CardanoTransactionBuilder {
     /// - If the amount is a `token` and not enough for the change then will return `balance - fee`
     /// - If the amount is a `token` and not enough for the minValue then will return `minAdaValue`
     func buildCardanoSpendingAdaValue(amount: Amount, fee: Amount) throws -> UInt64 {
-        let amountDecimalValue = pow(10, amount.decimals)
-        let uint64Amount = (amount.value * amountDecimalValue).roundedDecimalNumber.uint64Value
+        let uint64Amount = amount.value.moveRight(decimals: amount.decimals).roundedDecimalNumber.uint64Value
 
         switch amount.type {
         case .coin:
             return uint64Amount
         case .token(let token):
-            let feeDecimalValue = pow(10, fee.decimals)
-            let uint64Fee = (fee.value * feeDecimalValue).roundedDecimalNumber.uint64Value
-            let spendingAdaValue = try buildMinAdaValueUInt64Amount(token: token, amount: uint64Amount, fee: uint64Fee)
+            let uint64Fee = fee.value.moveRight(decimals: fee.decimals).roundedDecimalNumber.uint64Value
+            let minChange = try minChange(amount: amount)
+            let spendingAdaValue = try buildMinAdaValueUInt64Amount(token: token, amount: uint64Amount, fee: uint64Fee, minChange: minChange)
             return spendingAdaValue
         case .reserve:
             throw BlockchainSdkError.notImplemented
         }
     }
+    
+    func minChange(amount: Amount) throws -> UInt64 {
+        switch amount.type {
+        case .coin:
+            let hasTokens = outputs.contains { $0.assets.contains { $0.amount > 0 } }
+            assert(hasTokens, "Use this only if wallet has tokens")
 
+            return try minChange(exclude: nil)
+            
+        case .token(let token):
+            let asset = try self.asset(for: token)
+            let uint64Amount = amount.value.moveRight(decimals: amount.decimals).roundedDecimalNumber.uint64Value
+
+            let tokenBalance: UInt64 = outputs.reduce(0) { partialResult, output in
+                let amountInOutput = output.assets
+                    .filter { $0.policyID == asset.policyID }
+                    .reduce(0) { $0 + $1.amount }
+                
+                return partialResult + amountInOutput
+            }
+            
+            let isSpendFullTokenAmount = tokenBalance == uint64Amount
+            return try minChange(exclude: isSpendFullTokenAmount ? token : nil)
+            
+        case .reserve:
+            throw BlockchainSdkError.notImplemented
+        }
+    }
+}
+
+// MARK: - Private
+
+extension CardanoTransactionBuilder {
     /// Use this method for calculate min value for the change output
     func minChange(exclude: Token?) throws -> UInt64 {
         let excludeAsset = try exclude.map { try asset(for: $0) }
         let assetsBalances = outputs
-            .flatMap { 
+            .flatMap {
                 $0.assets.filter { $0 != excludeAsset }
             }
             .reduce(into: [:]) { result, asset in
@@ -128,37 +163,25 @@ extension CardanoTransactionBuilder {
         let minChange = try CardanoMinAdaAmount(tokenBundle: tokenBundle.serializedData())
         return minChange
     }
-}
-
-// MARK: - Private
-
-extension CardanoTransactionBuilder {
-    func buildMinAdaValueUInt64Amount(token: Token, amount: UInt64, fee: UInt64) throws -> UInt64 {
+    
+    func buildMinAdaValueUInt64Amount(token: Token, amount: UInt64, fee: UInt64, minChange: UInt64) throws -> UInt64 {
         let asset = try self.asset(for: token)
         let tokenBundle = CardanoTokenBundle.with {
             $0.token = [buildCardanoTokenAmount(asset: asset, amount: BigUInt(amount))]
         }
         let minAmount = try CardanoMinAdaAmount(tokenBundle: tokenBundle.serializedData())
-        let (balance, tokenBalance) = outputs.reduce(into: (UInt64(0), UInt64(0))) { partialResult, output in
-            partialResult.0 += output.amount
-            partialResult.1 += output.assets
-                .filter { $0.policyID == asset.policyID }
-                .reduce(0) { $0 + $1.amount }
-        }
-
-        let isSpendFullTokenAmount = tokenBalance == amount
-        let minChange = try minChange(exclude: isSpendFullTokenAmount ? token : nil)
+        let adaBalance = outputs.reduce(0) { $0 + $1.amount }
 
         // The wallet doesn't have enough balance
-        if minAmount > balance {
+        if minAmount > adaBalance {
             return minAmount
         }
 
-        let change = balance - minAmount
+        let change = adaBalance - minAmount
         // If the wallet doesn't have enough balance for minimum change
         // Then spend all ADA
         if change > 0, change < minChange {
-            let spendingAdaValue = balance - fee
+            let spendingAdaValue = adaBalance - fee
             return spendingAdaValue
         }
 
@@ -198,8 +221,8 @@ extension CardanoTransactionBuilder {
         case .coin:
             return .ada(uint64AdaAmount)
         case .token(let token):
-            let decimalValue = pow(10, amount.decimals)
-            let uint64TokenAmount = (amount.value * decimalValue).roundedDecimalNumber.uint64Value
+            let uint64TokenAmount = amount.value.moveRight(decimals: amount.decimals).roundedDecimalNumber.uint64Value
+
             if feeCalculation {
                 let balance = outputs.reduce(0, { $0 + $1.amount })
                 // If we'll try to build the transaction with adaValue more then balance
