@@ -35,8 +35,8 @@ struct RavencoinWalletAssembly: WalletManagerAssembly {
                 ]
             } else {
                 hosts = [
+                    "https://explorer.rvn.zelcore.io/api/",
                     "https://api.ravencoin.org/api/",
-                    "https://explorer.rvn.zelcore.io/api/"
                 ]
             }
 
