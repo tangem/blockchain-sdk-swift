@@ -38,6 +38,10 @@ struct HederaRESTNetworkProvider {
         return requestPublisher(for: .getExchangeRate)
     }
 
+    func getTransactionInfo(transactionHash: String) -> some Publisher<HederaNetworkResult.TransactionsInfo, Error> {
+        return requestPublisher(for: .getTransactionInfo(transactionHash: transactionHash))
+    }
+
     private func requestPublisher<T: Decodable>(
         for target: HederaTarget.Target
     ) -> some Publisher<T, Swift.Error> {
