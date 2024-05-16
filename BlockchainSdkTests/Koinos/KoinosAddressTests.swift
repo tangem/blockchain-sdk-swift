@@ -12,7 +12,6 @@ import XCTest
 
 final class KoinosAddressTests: XCTestCase {
     private let addressService = KoinosAddressService(networkParams: BitcoinNetwork.mainnet.networkParams)
-    private let edKey = Data(hex: "9FE5BB2CC7D83C1DA10845AFD8A34B141FD8FD72500B95B1547E12B9BB8AAC3D")
 
     func testMakeAddress() throws {
         let publicKey = Data(hex: "03B2D98CF41E82D9B99842A1D05860A1B06532015138F9067239706E06EE38E621")
@@ -34,6 +33,8 @@ final class KoinosAddressTests: XCTestCase {
     }
     
     func testEdError() {
+        let edKey = Data(hex: "9FE5BB2CC7D83C1DA10845AFD8A34B141FD8FD72500B95B1547E12B9BB8AAC3D")
+        
         XCTAssertThrowsError(try addressService.makeAddress(from: edKey))
     }
 }
