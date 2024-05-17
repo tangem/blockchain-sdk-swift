@@ -9,6 +9,11 @@
 import Foundation
 
 public struct PendingTransactionRecord {
+    public enum TransactionType {
+        case transfer
+        case operation
+    }
+
     public let hash: String
     public let source: String
     public let destination: String
@@ -16,8 +21,9 @@ public struct PendingTransactionRecord {
     public let fee: Fee
     public let date: Date
     public let isIncoming: Bool
+    public let transactionType: TransactionType
     public let transactionParams: TransactionParams?
-    
+
     public var isDummy: Bool {
         hash == .unknown || source == .unknown || destination == .unknown
     }
@@ -30,6 +36,7 @@ public struct PendingTransactionRecord {
         fee: Fee,
         date: Date,
         isIncoming: Bool,
+        transactionType: TransactionType,
         transactionParams: TransactionParams? = nil
     ) {
         self.hash = hash
@@ -39,6 +46,7 @@ public struct PendingTransactionRecord {
         self.fee = fee
         self.date = date
         self.isIncoming = isIncoming
+        self.transactionType = transactionType
         self.transactionParams = transactionParams
     }
 }

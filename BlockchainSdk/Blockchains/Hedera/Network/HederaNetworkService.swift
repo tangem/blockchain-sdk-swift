@@ -45,9 +45,28 @@ final class HederaNetworkService {
         }
     }
 
-    func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
-        return consensusProvider
+    func getBalance(accountId: String) -> some Publisher<HederaAccountBalance, Error> {
+        let hbarBalancePublisher = consensusProvider
             .getBalance(accountId: accountId)
+
+        let tokenBalancesPublisher = providerPublisher { provider in
+            return provider
+                .getTokens(accountId: accountId)
+                .eraseToAnyPublisher()
+        }
+
+        return hbarBalancePublisher
+            .zip(tokenBalancesPublisher)
+            .map { hbarBalance, tokenBalances in
+                let tokenBalances = tokenBalances.tokens.map { tokenBalance in
+                    let balance = Decimal(tokenBalance.balance) / pow(10, tokenBalance.decimals)
+
+                    return HederaAccountBalance.TokenBalance(contractAddress: tokenBalance.tokenId, balance: balance)
+                }
+
+                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: tokenBalances)
+            }
+            .eraseToAnyPublisher()
     }
 
     func getExchangeRate() -> some Publisher<HederaExchangeRate, Error> {
