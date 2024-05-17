@@ -438,9 +438,13 @@ final class HederaWalletManager: BaseManager {
         }
         .withWeakCaptureOf(self)
         .flatMap { walletManager, compiledTransaction in
+            let transactionRawData = try? compiledTransaction.toBytes()
+            
             return walletManager
                 .networkService
                 .send(transaction: compiledTransaction)
+                .mapSendError(tx: transactionRawData?.hexString)
+                .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
