@@ -10,7 +10,7 @@ import Foundation
 import WalletCore
 
 class KaspaTransactionBuilder {
-    let maxInputCount = 84
+    let maxInputCount = 3
     
     private let blockchain: Blockchain
     private var unspentOutputs: [BitcoinUnspentOutput] = []
