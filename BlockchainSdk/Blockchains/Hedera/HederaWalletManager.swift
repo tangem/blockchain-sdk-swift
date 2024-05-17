@@ -232,14 +232,47 @@ final class HederaWalletManager: BaseManager {
             .eraseToAnyPublisher()
     }
 
+    /// Performs a reset of an already cached account id only if the 'reset version' is absent or lower
+    /// than the current 'reset version' saved on disk (`Constants.accountIdResetVersion).
+    private func resetCachedAccountIdIfNeeded() -> some Publisher<Void, Error> {
+        let maskedPublicKey = maskedPublicKey
+        let accountIdStorageKey = Constants.accountIdStorageKeyPrefix + storageKeySuffix
+        let resetVersionStorageKey = Constants.accountIdResetVersionStorageKeyPrefix + storageKeySuffix
+
+        return Just(resetVersionStorageKey)
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .asyncMap { walletManager, storageKey -> Int? in
+                return await walletManager.dataStorage.get(key: storageKey)
+            }
+            .filter { cachedResetVersion in
+                guard let cachedResetVersion else {
+                    // Always perform a reset if no 'reset version' is currently saved on disk
+                    return true
+                }
+                // Perform a reset if saved on disk 'reset version' is lower than actual
+                return cachedResetVersion < Constants.accountIdResetVersion
+            }
+            .withWeakCaptureOf(self)
+            .asyncMap { walletManager, _ in
+                // Empty string is perfectly fine for using as an overriding value because account id
+                // is always fetched using `nilIfEmpty` helper
+                await walletManager.dataStorage.store(key: accountIdStorageKey, value: "")
+                await walletManager.dataStorage.store(key: resetVersionStorageKey, value: Constants.accountIdResetVersion)
+                Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) was reset")
+            }
+            .mapToVoid()
+            .append(()) // Continue the reactive chain normally even if the `.filter` statement above returns false
+    }
+
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
     private func getCachedAccountId() -> AnyPublisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
         let storageKey = Constants.accountIdStorageKeyPrefix + storageKeySuffix
 
-        return .justWithError(output: storageKey)
+        return resetCachedAccountIdIfNeeded()
             .withWeakCaptureOf(self)
-            .asyncMap { walletManager, storageKey -> String? in
+            .asyncMap { walletManager, _ -> String? in
                 await walletManager.dataStorage.get(key: storageKey)
             }
             .withWeakCaptureOf(self)
@@ -555,6 +588,7 @@ extension HederaWalletManager: AssetRequirementsManager {
 private extension HederaWalletManager {
     private enum Constants {
         static let accountIdStorageKeyPrefix = "hedera_wallet_"
+        static let accountIdResetVersionStorageKeyPrefix = "hedera_wallet_reset_version_"
         static let associatedTokensStorageKeyPrefix = "hedera_associated_tokens_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
         static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")!
@@ -563,6 +597,8 @@ private extension HederaWalletManager {
         static let tokenAssociateServiceCostInUSD = Decimal(stringValue: "0.05")!
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
         static let maxFeeMultiplier = Decimal(stringValue: "1.1")!
+        /// Increase if you need to reset `dataStorage` in the next version of the app.
+        static let accountIdResetVersion = 1
     }
 }
 
