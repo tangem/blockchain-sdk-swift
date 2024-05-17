@@ -263,7 +263,8 @@ final class HederaWalletManager: BaseManager {
             .eraseToAnyPublisher()
     }
 
-    /// - Note: Has a side-effect: creates a new account on the Hedera network if needed.
+    /// - Note: Fetches a single existing account using the `createOrFetchAccount` method if multiple accounts exist on the Hedera network.
+    /// - Note: Has a side-effect: creates a new account on the Hedera network using the `createOrFetchAccount` method if needed.
     private func getRemoteAccountId() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
 
@@ -289,15 +290,15 @@ final class HederaWalletManager: BaseManager {
                 }
 
                 switch error {
-                case HederaError.accountDoesNotExist:
-                    return createAccount()
+                case HederaError.accountDoesNotExist, HederaError.multipleAccountsFound:
+                    return createOrFetchAccount()
                 default:
                     throw error
                 }
             }
     }
 
-    private func createAccount() -> some Publisher<String, Error> {
+    private func createOrFetchAccount() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
 
         return accountCreator
