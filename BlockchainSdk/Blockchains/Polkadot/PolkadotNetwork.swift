@@ -92,7 +92,7 @@ extension PolkadotNetwork {
         case .kusama(let curve):
             // This value was ALSO found experimentally, just like the one on the Westend.
             // It is different from what official documentation is telling us.
-            return Amount(with: .kusama(curve: curve), value: 0.000333)
+            return Amount(with: .kusama(curve: curve), value: 0.000333333333)
         case .westend(let curve):
             // This value was found experimentally by sending transactions with different values to inactive accounts.
             // This is the lowest amount that activates an account on the Westend network.
