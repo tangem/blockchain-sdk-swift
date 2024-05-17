@@ -120,7 +120,8 @@ public struct AddressServiceFactory {
         case .radiant:
             return RadiantAddressService()
         case .koinos:
-            return KoinosAddressService(isTestnet: isTestnet)
+            let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
+            return KoinosAddressService(networkParams: network.networkParams)
         }
     }
 }

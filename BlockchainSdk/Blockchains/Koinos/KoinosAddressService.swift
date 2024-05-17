@@ -7,14 +7,13 @@
 //
 
 import Foundation
+import BitcoinCore
 
-// TODO: [KOINOS] Implement KoinosAddressService
-// https://tangem.atlassian.net/browse/IOS-6759
 struct KoinosAddressService {
-    private let isTestnet: Bool
+    private let bitcoinLegacyAddressService: BitcoinLegacyAddressService
     
-    init(isTestnet: Bool) {
-        self.isTestnet = isTestnet
+    init(networkParams: INetwork) {
+        bitcoinLegacyAddressService = BitcoinLegacyAddressService(networkParams: networkParams)
     }
 }
 
@@ -22,7 +21,7 @@ struct KoinosAddressService {
 
 extension KoinosAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
-        throw BlockchainSdkError.notImplemented
+        try bitcoinLegacyAddressService.makeAddress(for: publicKey, with: addressType)
     }
 }
 
@@ -30,6 +29,6 @@ extension KoinosAddressService: AddressProvider {
 
 extension KoinosAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        fatalError("Not implemented")
+        bitcoinLegacyAddressService.validate(address)
     }
 }
