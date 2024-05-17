@@ -17,6 +17,7 @@
 		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
 		0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */; };
 		0A6272652BD96736003B2F4D /* SS58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6272642BD96736003B2F4D /* SS58.swift */; };
+		0A7084B82BF797E900FD519D /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7084B72BF797E900FD519D /* TONAddressService.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
 		0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */; };
@@ -841,6 +842,7 @@
 		0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinCashNowNodesNetworkProvider.swift; sourceTree = "<group>"; };
 		0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TangemNetworkLoggerPlugin.swift; sourceTree = "<group>"; };
 		0A6272642BD96736003B2F4D /* SS58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SS58.swift; sourceTree = "<group>"; };
+		0A7084B72BF797E900FD519D /* TONAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreonExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1811,6 +1813,7 @@
 		2D9A918C29BB8BFF00476EA6 /* TON */ = {
 			isa = PBXGroup;
 			children = (
+				0A7084B72BF797E900FD519D /* TONAddressService.swift */,
 				B00B58C52BCEB93A007475F7 /* TONAPIResolver.swift */,
 				2D9A919029BB8BFF00476EA6 /* TONError.swift */,
 				2D9A919729BB8C1700476EA6 /* TONNetworkService.swift */,
@@ -4604,6 +4607,7 @@
 				EFF466EF2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift in Sources */,
 				B633EA1E2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift in Sources */,
 				B6931AD32B32495C00B31319 /* VeChainAccountInfo.swift in Sources */,
+				0A7084B82BF797E900FD519D /* TONAddressService.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				2DA4A4452BB5431700E55526 /* RadiantAmountUnspentTransaction.swift in Sources */,
 				2DDE2C322BCD592A002A8D3C /* AptosAddressService.swift in Sources */,
@@ -5366,8 +5370,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/wallet-core-binaries-ios.git";
 			requirement = {
-				kind = exactVersion;
-				version = "4.0.21-tangem3";
+				kind = revision;
+				revision = 9b86c5e08312543d33bd24e92674402717f9fff8;
 			};
 		};
 		B66B57642B6C504000320FF9 /* XCRemoteSwiftPackageReference "hedera-sdk-swift" */ = {
