@@ -248,7 +248,7 @@ extension BitcoinWalletManager: TransactionPusher {
         txBuilder.unspentOutputs = outputs
         
         return send(newTransaction, signer: signer, sequence: sequence + 1, isPushingTx: true)
-            .map { _ in Void() }
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 }

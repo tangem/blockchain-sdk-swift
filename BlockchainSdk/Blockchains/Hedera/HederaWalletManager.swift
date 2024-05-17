@@ -12,10 +12,24 @@ import TangemSdk
 import struct Hedera.AccountId
 
 final class HederaWalletManager: BaseManager {
+    fileprivate typealias AssociatedTokens = Set<String>
+
     private let networkService: HederaNetworkService
     private let transactionBuilder: HederaTransactionBuilder
     private let dataStorage: BlockchainDataStorage
     private let accountCreator: AccountCreator
+
+    /// HBARs per 1 USD
+    private var tokenAssociationFeeExchangeRate: Decimal?
+    private var associatedTokens: AssociatedTokens?
+
+    private var storageKeySuffix: String {
+        return wallet
+            .publicKey
+            .blockchainKey
+            .getSha256()
+            .hexString
+    }
 
     // Public key as a masked string (only the last four characters are revealed), suitable for use in logs
     private lazy var maskedPublicKey: String = {
@@ -28,6 +42,8 @@ final class HederaWalletManager: BaseManager {
             .joined()
         + publicKey.suffix(length)
     }()
+
+    // MARK: - Initialization/Deinitialization
 
     init(
         wallet: Wallet,
@@ -51,46 +67,79 @@ final class HederaWalletManager: BaseManager {
     // MARK: - Wallet update
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = getAccountId()
+        cancellable = loadCachedAssociatedTokensIfNeeded()
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, _ in
+                return walletManager.getAccountId()
+            }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, accountId in
                 return Publishers.CombineLatest(
-                    walletManager.makeBalancePublisher(accountId: accountId),
+                    walletManager.networkService.getBalance(accountId: accountId),
                     walletManager.makePendingTransactionsInfoPublisher()
                 )
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, input in
+                let (accountBalance, transactionsInfo) = input
+                let alreadyAssociatedTokens = accountBalance.associatedTokensContractAddresses
+
+                return walletManager
+                    .makeTokenAssociationFeeExchangeRatePublisher(alreadyAssociatedTokens: alreadyAssociatedTokens)
+                    .map { exchangeRate in
+                        return (accountBalance, transactionsInfo, exchangeRate)
+                    }
             }
             .sink(
                 receiveCompletion: { [weak self] result in
                     switch result {
                     case .failure(let error):
+                        // We intentionally don't want to clear current token associations on failure
                         self?.wallet.clearAmounts()
                         completion(.failure(error))
                     case .finished:
                         completion(.success(()))
                     }
                 },
-                receiveValue: { [weak self] input in
-                    let (accountBalance, transactionsInfo) = input
+                receiveValue: { [weak self] accountBalance, transactionsInfo, exchangeRate in
                     self?.updateWallet(accountBalance: accountBalance, transactionsInfo: transactionsInfo)
+                    self?.updateWalletTokens(accountBalance: accountBalance, exchangeRate: exchangeRate)
                 }
             )
     }
 
-    private func updateWallet(
-        accountBalance: Amount,
-        transactionsInfo: [HederaTransactionInfo]
-    ) {
+    private func updateWallet(accountBalance: HederaAccountBalance, transactionsInfo: [HederaTransactionInfo]) {
         let completedTransactionHashes = transactionsInfo
             .filter { !$0.isPending }
             .map { $0.transactionHash }
 
         wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
-        wallet.add(amount: accountBalance)
+        wallet.add(coinValue: accountBalance.hbarBalance)
     }
 
-    private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
-        let mapper = PendingTransactionRecordMapper()
-        let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
+    private func updateWalletTokens(accountBalance: HederaAccountBalance, exchangeRate: HederaExchangeRate?) {
+        saveAssociatedTokensIfNeeded(newValue: accountBalance.associatedTokensContractAddresses)
+        tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
+
+        let allTokenBalances = accountBalance.tokenBalances.reduce(into: [:]) { result, element in
+            result[element.contractAddress] = element.balance
+        }
+
+        // Using HTS tokens balances from a remote list of tokens for tokens in a local list
+        cardTokens
+            .map { Amount(with: $0, value: allTokenBalances[$0.contractAddress] ?? .zero) }
+            .forEach { wallet.add(amount: $0) }
+    }
+
+    private func updateWalletWithPendingTransferTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
+        let mapper = HederaPendingTransactionRecordMapper(blockchain: wallet.blockchain)
+        let pendingTransaction = mapper.mapToTransferRecord(transaction: transaction, hash: sendResult.hash)
+        wallet.addPendingTransaction(pendingTransaction)
+    }
+
+    private func updateWalletWithPendingTokenAssociationTransaction(_ token: Token, sendResult: TransactionSendResult) {
+        let mapper = HederaPendingTransactionRecordMapper(blockchain: wallet.blockchain)
+        let pendingTransaction = mapper.mapToTokenAssociationRecord(token: token, hash: sendResult.hash, accountId: wallet.address)
         wallet.addPendingTransaction(pendingTransaction)
     }
 
@@ -99,13 +148,21 @@ final class HederaWalletManager: BaseManager {
         wallet.set(address: address)
     }
 
-    private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
+    private func makeTokenAssociationFeeExchangeRatePublisher(
+        alreadyAssociatedTokens: AssociatedTokens
+    ) -> some Publisher<HederaExchangeRate?, Error> {
+        if cardTokens.allSatisfy({ alreadyAssociatedTokens.contains($0.contractAddress) }) {
+            // All added tokens (from `cardTokens`) are already associated with the current account;
+            // therefore there is no point in requesting an exchange rate to calculate the token association fee
+            //
+            // Performing an early exit
+            return Just.justWithError(output: nil)
+        }
+
         return networkService
-            .getBalance(accountId: accountId)
-            .withWeakCaptureOf(self)
-            .map { walletManager, balance in
-                return Amount(with: walletManager.wallet.blockchain, value: balance)
-            }
+            .getExchangeRate()
+            .map { $0 as HederaExchangeRate? }  // Combine can't implicitly bridge `Publisher<T, Error>` to `Publisher<T?, Error`
+            .eraseToAnyPublisher()
     }
 
     private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
@@ -119,42 +176,6 @@ final class HederaWalletManager: BaseManager {
             }
             .collect()
     }
-
-    private func makeTransactionValidStartDate() -> UnixTimestamp? {
-        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
-        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
-        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
-        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
-
-        return validStartDate.flatMap(UnixTimestamp.init(date:))
-    }
-
-    private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
-        return Publishers.CombineLatest(
-            networkService.getExchangeRate(),
-            doesAccountExistPublisher
-        )
-        .withWeakCaptureOf(self)
-        .tryMap { walletManager, input in
-            guard
-                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
-                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
-                let maxFeeMultiplier = Constants.maxFeeMultiplier
-            else {
-                throw WalletError.failedToGetFee
-            }
-
-            let (exchangeRate, doesAccountExist) = input
-            let feeBase = doesAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
-            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
-            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
-            let fee = Fee(feeAmount)
-
-            return [fee]
-        }
-        .eraseToAnyPublisher()
-    }
-
 
     // MARK: - Account ID fetching, caching and creation
 
@@ -203,12 +224,10 @@ final class HederaWalletManager: BaseManager {
 
         return getCachedAccountId()
             .withWeakCaptureOf(self)
-            .handleEvents(
-                receiveOutput: { walletManager, accountId in
-                    walletManager.updateWalletAddress(accountId: accountId)
-                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
-                }
-            )
+            .handleEvents(receiveOutput: { walletManager, accountId in
+                walletManager.updateWalletAddress(accountId: accountId)
+                Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
+            })
             .map(\.1)
             .eraseToAnyPublisher()
     }
@@ -216,11 +235,7 @@ final class HederaWalletManager: BaseManager {
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
     private func getCachedAccountId() -> AnyPublisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
-        let storageKey = Constants.storageKeyPrefix + wallet
-            .publicKey
-            .blockchainKey
-            .getSha256()
-            .hexString
+        let storageKey = Constants.accountIdStorageKeyPrefix + storageKeySuffix
 
         return .justWithError(output: storageKey)
             .withWeakCaptureOf(self)
@@ -311,46 +326,95 @@ final class HederaWalletManager: BaseManager {
             )
             .mapError(WalletError.blockchainUnavailable(underlyingError:))
     }
-}
 
-// MARK: - WalletManager protocol conformance
+    // MARK: - Token associations management
 
-extension HederaWalletManager: WalletManager {
-    var currentHost: String { networkService.host }
+    private func loadCachedAssociatedTokensIfNeeded() -> some Publisher<Void, Error> {
+        guard associatedTokens == nil else {
+            // Token associations are already loaded from the cache
+            return Just.justWithError(output: ())
+        }
 
-    var allowsFeeSelection: Bool { false }
+        let storageKey = Constants.associatedTokensStorageKeyPrefix + storageKeySuffix
 
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let doesAccountExistPublisher = doesAccountExist(destination: destination)
-
-        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+        return Just
+            .justWithError(output: storageKey)
+            .withWeakCaptureOf(self)
+            .asyncMap { walletManager, storageKey in
+                return await walletManager.dataStorage.get(key: storageKey) ?? []
+            }
+            .receive(on: DispatchQueue.main)
+            .withWeakCaptureOf(self)
+            .handleEvents(receiveOutput: { walletManager, cachedAssociatedTokens in
+                walletManager.associatedTokens = cachedAssociatedTokens
+            })
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
 
-    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        // For a rough fee estimation (calculated in this method), all destinations are considered non-existent just in case
-        let doesAccountExistPublisher = Just(false).setFailureType(to: Error.self)
+    private func saveAssociatedTokensIfNeeded(newValue: AssociatedTokens) {
+        guard associatedTokens != newValue else {
+            return
+        }
 
-        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+        associatedTokens = newValue
+
+        Task.detached { [storageKeySuffix, dataStorage] in
+            let storageKey = Constants.associatedTokensStorageKeyPrefix + storageKeySuffix
+            await dataStorage.store(key: storageKey, value: newValue)
+        }
     }
 
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        return Deferred { [weak self] in
+    // MARK: - Transaction dependencies and building
+
+    private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
+        let transferFeeBase: Decimal
+        switch amount.type {
+        case .coin:
+            transferFeeBase = Constants.cryptoTransferServiceCostInUSD
+        case .token:
+            transferFeeBase = Constants.tokenTransferServiceCostInUSD
+        case .reserve:
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+
+        return Publishers.CombineLatest(
+            networkService.getExchangeRate(),
+            doesAccountExistPublisher
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, input in
+            let (exchangeRate, doesAccountExist) = input
+            let feeBase = doesAccountExist ? transferFeeBase : Constants.cryptoCreateServiceCostInUSD
+            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * Constants.maxFeeMultiplier
+            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+            let fee = Fee(feeAmount)
+
+            return [fee]
+        }
+        .eraseToAnyPublisher()
+    }
+
+    private static func makeTransactionValidStartDate() -> UnixTimestamp? {
+        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
+        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
+        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
+        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
+
+        return validStartDate.flatMap(UnixTimestamp.init(date:))
+    }
+
+    private func sendCompiledTransaction(
+        signedUsing signer: TransactionSigner,
+        transactionFactory: @escaping (_ validStartDate: UnixTimestamp) throws -> HederaTransactionBuilder.CompiledTransaction
+    ) -> AnyPublisher<TransactionSendResult, Error> {
+        return Deferred {
             return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
-                guard let self else {
-                    return promise(.failure(WalletError.empty))
-                }
-
-                guard let validStartDate = self.makeTransactionValidStartDate() else {
+                guard let validStartDate = Self.makeTransactionValidStartDate() else {
                     return promise(.failure(WalletError.failedToBuildTx))
                 }
 
-                let compiledTransaction = Result {
-                    try self.transactionBuilder.buildForSign(
-                        transaction: transaction,
-                        validStartDate: validStartDate,
-                        nodeAccountIds: nil
-                    )
-                }
+                let compiledTransaction = Result { try transactionFactory(validStartDate) }
                 promise(compiledTransaction)
             }
         }
@@ -374,22 +438,116 @@ extension HederaWalletManager: WalletManager {
         }
         .withWeakCaptureOf(self)
         .flatMap { walletManager, compiledTransaction in
-            let transactionRawData = try? compiledTransaction.toBytes()
-            
             return walletManager
                 .networkService
                 .send(transaction: compiledTransaction)
-                .mapSendError(tx: transactionRawData?.hexString)
         }
-        .eraseSendError()
-        .withWeakCaptureOf(self)
-        .handleEvents(
-            receiveOutput: { walletManager, sendResult in
-                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+        .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - WalletManager protocol conformance
+
+extension HederaWalletManager: WalletManager {
+    var currentHost: String { networkService.host }
+
+    var allowsFeeSelection: Bool { false }
+
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
+        let doesAccountExistPublisher = doesAccountExist(destination: destination)
+
+        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+    }
+
+    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
+        // For a rough fee estimation (calculated in this method), all destinations are considered non-existent just in case
+        let doesAccountExistPublisher = Just.justWithError(output: false)
+
+        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+    }
+
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in
+            guard let self else {
+                throw WalletError.empty
             }
-        )
+
+            return try self.transactionBuilder
+                .buildTransferTransactionForSign(
+                    transaction: transaction,
+                    validStartDate: validStartDate,
+                    nodeAccountIds: nil
+                )
+        }
+        .withWeakCaptureOf(self)
+        .handleEvents(receiveOutput: { walletManager, sendResult in
+            walletManager.updateWalletWithPendingTransferTransaction(transaction, sendResult: sendResult)
+        })
+        .eraseSendError()
         .map(\.1)
         .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - AssetRequirementsManager protocol conformance
+
+extension HederaWalletManager: AssetRequirementsManager {
+    func hasRequirements(for asset: Asset) -> Bool {
+        switch asset {
+        case .coin, .reserve:
+            return false
+        case .token(let token):
+            return !(associatedTokens ?? []).contains(token.contractAddress)
+        }
+    }
+
+    func requirementsCondition(for asset: Asset) -> AssetRequirementsCondition? {
+        guard hasRequirements(for: asset) else {
+            return nil
+        }
+
+        switch asset {
+        case .coin, .reserve:
+            return nil
+        case .token:
+            guard let tokenAssociationFeeExchangeRate else {
+                return .paidTransaction
+            }
+
+            let feeValue = tokenAssociationFeeExchangeRate * Constants.tokenAssociateServiceCostInUSD
+            let feeAmount = Amount.init(with: wallet.blockchain, value: feeValue)
+
+            return .paidTransactionWithFee(feeAmount: feeAmount)
+        }
+    }
+
+    func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> {
+        guard hasRequirements(for: asset) else {
+            return .justWithError(output: ())
+        }
+
+        switch asset {
+        case .coin, .reserve:
+            return .justWithError(output: ())
+        case .token(let token):
+            return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in
+                guard let self else {
+                    throw WalletError.empty
+                }
+
+                return try self.transactionBuilder.buildTokenAssociationForSign(
+                    tokenAssociation: .init(accountId: self.wallet.address, contractAddress: token.contractAddress),
+                    validStartDate: validStartDate,
+                    nodeAccountIds: nil
+                )
+            }
+            .withWeakCaptureOf(self)
+            .handleEvents(receiveOutput: { walletManager, sendResult in
+                walletManager.updateWalletWithPendingTokenAssociationTransaction(token, sendResult: sendResult)
+            })
+            .mapToVoid()
+            .eraseToAnyPublisher()
+        }
     }
 }
 
@@ -397,11 +555,24 @@ extension HederaWalletManager: WalletManager {
 
 private extension HederaWalletManager {
     private enum Constants {
-        static let storageKeyPrefix = "hedera_wallet_"
+        static let accountIdStorageKeyPrefix = "hedera_wallet_"
+        static let associatedTokensStorageKeyPrefix = "hedera_associated_tokens_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
-        static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")
-        static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")
+        static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")!
+        static let tokenTransferServiceCostInUSD = Decimal(stringValue: "0.001")!
+        static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")!
+        static let tokenAssociateServiceCostInUSD = Decimal(stringValue: "0.05")!
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
-        static let maxFeeMultiplier = Decimal(stringValue: "1.1")
+        static let maxFeeMultiplier = Decimal(stringValue: "1.1")!
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension HederaAccountBalance {
+    var associatedTokensContractAddresses: HederaWalletManager.AssociatedTokens {
+        return tokenBalances
+            .map(\.contractAddress)
+            .toSet()
     }
 }

@@ -8,7 +8,6 @@
 
 import Foundation
 
-// TODO: Andrey Fedorov - /// use snake case
 extension SubscanAPIResult {
     /// - Note: There are many more fields in this response, but we map only the required ones.
     struct AccountInfo: Decodable {
