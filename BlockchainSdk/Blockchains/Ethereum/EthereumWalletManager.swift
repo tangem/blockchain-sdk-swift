@@ -143,7 +143,7 @@ extension EthereumWalletManager: EthereumNetworkProvider {
 private extension EthereumWalletManager {
     func proceedFee(response: EthereumFeeResponse) -> [Fee] {
         let fees = response.gasPrices.map { gasPrice in
-            let gasLimit = response.gasLimit
+            let gasLimit = response.gasLimit - 2000
             let feeValue = gasLimit * gasPrice
 
             // TODO: Fix integer overflow. Think about BigInt
