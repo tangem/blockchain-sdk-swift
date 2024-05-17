@@ -219,11 +219,9 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
         let change = adaBalance - minAdaToSendDecimal
 
         // If there not enough ada balance to change
-        guard change > 0, change < minChange.value else {
-            return
+        if change > 0, change < minChange.value {
+            throw ValidationError.cardanoInsufficientBalanceToSendToken
         }
-
-        throw ValidationError.cardanoInsufficientBalanceToSendToken
     }
 
     private func minChange(amount: Amount) throws -> Amount {
