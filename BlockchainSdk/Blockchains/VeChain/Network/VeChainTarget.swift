@@ -77,12 +77,7 @@ extension VeChainTarget: TargetType {
                 "pending": request.includePending,
                 "raw": request.rawOutput,
             ]
-            let encoding = URLEncoding(
-                destination: URLEncoding.queryString.destination,
-                arrayEncoding: URLEncoding.queryString.arrayEncoding,
-                boolEncoding: .literal
-            )
-            return .requestParameters(parameters: parameters, encoding: encoding)
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
         case .callContract(let contractCall):
             return .requestJSONEncodable(contractCall)
         case .sendTransaction(let rawTransaction):
