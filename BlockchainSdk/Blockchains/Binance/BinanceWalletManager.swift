@@ -101,7 +101,7 @@ extension BinanceWalletManager: TransactionFeeProvider {
             .tryMap { [weak self] feeString throws -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
                 
-                guard let feeValue = Decimal(string: feeString) else {
+                guard let feeValue = Decimal(feeString) else {
                     throw WalletError.failedToGetFee
                 }
                 
