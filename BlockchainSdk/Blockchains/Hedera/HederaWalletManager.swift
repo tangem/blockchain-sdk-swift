@@ -262,7 +262,7 @@ final class HederaWalletManager: BaseManager {
                 Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) was reset")
             }
             .mapToVoid()
-            .append(()) // Continue the reactive chain normally even if the `.filter` statement above returns false
+            .replaceEmpty(with: ()) // Continue the reactive chain normally even if the `.filter` statement above returns false
     }
 
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
