@@ -214,12 +214,12 @@ final class HederaWalletManager: BaseManager {
     }
 
     /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
-    private func getAccountId() -> AnyPublisher<String, Error> {
+    private func getAccountId() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
 
         if let accountId = wallet.address.nilIfEmpty {
             Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the Wallet")
-            return .justWithError(output: accountId)
+            return Just.justWithError(output: accountId)
         }
 
         return getCachedAccountId()
@@ -266,7 +266,7 @@ final class HederaWalletManager: BaseManager {
     }
 
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
-    private func getCachedAccountId() -> AnyPublisher<String, Error> {
+    private func getCachedAccountId() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
         let storageKey = Constants.accountIdStorageKeyPrefix + storageKeySuffix
 
@@ -276,10 +276,10 @@ final class HederaWalletManager: BaseManager {
                 await walletManager.dataStorage.get(key: storageKey)
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, accountId -> AnyPublisher<String, Error> in
+            .flatMap { walletManager, accountId in
                 if let accountId = accountId?.nilIfEmpty {
                     Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the data storage")
-                    return .justWithError(output: accountId)
+                    return Just.justWithError(output: accountId)
                 }
 
                 return walletManager
@@ -293,7 +293,6 @@ final class HederaWalletManager: BaseManager {
                     .eraseToAnyPublisher()
             }
             .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
     }
 
     /// - Note: Fetches a single existing account using the `createOrFetchAccount` method if multiple accounts exist on the Hedera network.
@@ -441,7 +440,7 @@ final class HederaWalletManager: BaseManager {
     private func sendCompiledTransaction(
         signedUsing signer: TransactionSigner,
         transactionFactory: @escaping (_ validStartDate: UnixTimestamp) throws -> HederaTransactionBuilder.CompiledTransaction
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    ) -> some Publisher<TransactionSendResult, Error> {
         return Deferred {
             return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
                 guard let validStartDate = Self.makeTransactionValidStartDate() else {
@@ -476,7 +475,6 @@ final class HederaWalletManager: BaseManager {
                 .networkService
                 .send(transaction: compiledTransaction)
         }
-        .eraseToAnyPublisher()
     }
 }
 
