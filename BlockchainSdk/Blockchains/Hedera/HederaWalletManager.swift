@@ -262,7 +262,7 @@ final class HederaWalletManager: BaseManager {
                 Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) was reset")
             }
             .mapToVoid()
-            .replaceEmpty(with: ()) // Continue the reactive chain normally even if the `.filter` statement above returns false
+            .replaceEmpty(with: ()) // Continue the reactive stream normally even if the `.filter` statement above returns false
     }
 
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
@@ -595,7 +595,7 @@ private extension HederaWalletManager {
         static let tokenAssociateServiceCostInUSD = Decimal(stringValue: "0.05")!
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
         static let maxFeeMultiplier = Decimal(stringValue: "1.1")!
-        /// Increase if you need to reset `dataStorage` in the next version of the app.
+        /// Increment if you need to reset `dataStorage` in the next version of the app.
         static let accountIdResetVersion = 1
     }
 }
