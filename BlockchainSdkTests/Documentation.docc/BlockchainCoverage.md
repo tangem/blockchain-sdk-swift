@@ -121,6 +121,7 @@ This document describes the contents of the tests and the addition of new ones.
 | Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
+| Use TransactionSizeTesterUtility for testing size transaction UTXO | ✅ | | |
 
 
 
@@ -162,9 +163,11 @@ This document describes the contents of the tests and the addition of new ones.
 | Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | Done for compressed / decompressed keys | |
-| Verify assert for not supported key | ⭕️ | For Cardano, it is necessary to add assert for not supported keys | |
+| Verify assert for not supported key | ✅ | | |
 | Any type address validation | ✅ | Legacy / Default addresses | |
 | Common address validation positive & negative | ⭕️ | For Cardano, it is necessary to add address validation tests | |
+| Any type address validation | ✅ | Legacy / Default | |
+| Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ⭕️ | | |
 
 ### Vector Tests [Only WalletCore blockchain]
 
@@ -201,6 +204,7 @@ This document describes the contents of the tests and the addition of new ones.
 | Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
+| Use TransactionSizeTesterUtility for testing size transaction UTXO | ✅ | | |
 
 
 
@@ -231,6 +235,35 @@ This document describes the contents of the tests and the addition of new ones.
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 | Generate transaction for tokens currency ``buildForSend`` method | ✅ | | |
+
+
+
+## Dogecoin
+
+- ``UTXO, secp256k1``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | | |
+| Verify assert for not supported key | ✅ | | |
+| Any type address validation | ✅ | | |
+| Common address validation positive & negative | ⭕️ | | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ⭕️ | | |
 
 
 
@@ -532,6 +565,8 @@ This document describes the contents of the tests and the addition of new ones.
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ⭕️ | | |
 | Generate transaction for token currency ``buildForSend`` method | ⭕️ | | |
+| Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ✅ | | |
+| Use TransactionSizeTesterUtility for testing size transaction UTXO | ✅ | | |
 
 
 
@@ -596,7 +631,7 @@ This document describes the contents of the tests and the addition of new ones.
 | Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ✅ | | |
-| Generate transaction for network currency ``buildForSend`` method | ⭕️ | For BitcoinCash, it is necessary to add transaction compiled | |
+| Generate transaction for network currency ``buildForSend`` method | ⭕️ | For Tezos, it is necessary to add transaction compiled | |
 
 
 
