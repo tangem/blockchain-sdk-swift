@@ -438,9 +438,13 @@ final class HederaWalletManager: BaseManager {
         }
         .withWeakCaptureOf(self)
         .flatMap { walletManager, compiledTransaction in
+            let transactionRawData = try? compiledTransaction.toBytes()
+            
             return walletManager
                 .networkService
                 .send(transaction: compiledTransaction)
+                .mapSendError(tx: transactionRawData?.hexString)
+                .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
@@ -466,22 +470,24 @@ extension HederaWalletManager: WalletManager {
         return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
     }
 
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in
             guard let self else {
                 throw WalletError.empty
             }
 
-            return try self.transactionBuilder.buildTransferTransactionForSign(
-                transaction: transaction,
-                validStartDate: validStartDate,
-                nodeAccountIds: nil
-            )
+            return try self.transactionBuilder
+                .buildTransferTransactionForSign(
+                    transaction: transaction,
+                    validStartDate: validStartDate,
+                    nodeAccountIds: nil
+                )
         }
         .withWeakCaptureOf(self)
         .handleEvents(receiveOutput: { walletManager, sendResult in
             walletManager.updateWalletWithPendingTransferTransaction(transaction, sendResult: sendResult)
         })
+        .eraseSendError()
         .map(\.1)
         .eraseToAnyPublisher()
     }

@@ -57,7 +57,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
 extension SolanaWalletManager: TransactionSender {
     public var allowsFeeSelection: Bool { false }
     
-    public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let sendPublisher: AnyPublisher<TransactionID, Error>
         switch transaction.amount.type {
         case .coin:
@@ -65,12 +65,12 @@ extension SolanaWalletManager: TransactionSender {
         case .token(let token):
             sendPublisher = sendSplToken(transaction, token: token, signer: signer)
         case .reserve:
-            return .emptyFail
+            return .sendTxFail(error: WalletError.empty)
         }
         
         return sendPublisher
             .tryMap { [weak self] hash in
-                guard let self = self else {
+                guard let self else {
                     throw WalletError.empty
                 }
 
@@ -79,6 +79,7 @@ extension SolanaWalletManager: TransactionSender {
                 self.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

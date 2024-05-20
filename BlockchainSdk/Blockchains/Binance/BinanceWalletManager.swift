@@ -53,9 +53,9 @@ class BinanceWalletManager: BaseManager, WalletManager {
 // MARK: - TransactionSender
 
 extension BinanceWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+            return .sendTxFail(error: WalletError.failedToBuildTx)
         }
         
         let hash = msg.encodeForSignature()
@@ -78,8 +78,11 @@ extension BinanceWalletManager: TransactionSender {
                     self.latestTxDate = Date()
                     return TransactionSendResult(hash: hash)
 
-                }.eraseToAnyPublisher() ?? .emptyFail
+                    }
+                    .mapSendError(tx: tx.encodeForSignature().hexString.lowercased())
+                    .eraseToAnyPublisher() ?? .emptyFail
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }
