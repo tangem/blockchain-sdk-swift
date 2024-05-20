@@ -10,11 +10,13 @@ import Foundation
 
 public struct TransactionHistoryProviderFactory {
     private let config: BlockchainSdkConfig
-    
+    private let apiList: APIList
+
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig) {
+    public init(config: BlockchainSdkConfig, apiList: APIList) {
         self.config = config
+        self.apiList = apiList
     }
     
     public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
@@ -24,8 +26,12 @@ public struct TransactionHistoryProviderFactory {
         }
 
         let networkAssembly = NetworkProviderAssembly()
-        let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
-        
+        let input = NetworkProviderAssembly.Input(
+            blockchainSdkConfig: config,
+            blockchain: blockchain,
+            apiInfo: apiList[blockchain.networkId] ?? []
+        )
+
         switch blockchain {
         case .bitcoin,
                 .litecoin,
@@ -67,11 +73,15 @@ public struct TransactionHistoryProviderFactory {
                 targetConfiguration: .polygonScan(isTestnet: blockchain.isTestnet, apiKey: config.polygonScanApiKey)
             )
         case .algorand(_, let isTestnet):
-            let node: AlgorandProviderNode
+            let node: NodeInfo
             if isTestnet {
-                node = .init(type: .idxFullNode(isTestnet: isTestnet))
+                node = .init(url: AlgorandIndexProviderTarget.Provider.fullNode(isTestnet: isTestnet).url)
             } else {
-                node = .init(type: .idxNownodes, apiKeyValue: config.nowNodesApiKey)
+                let keyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
+                node = .init(
+                    url: AlgorandIndexProviderTarget.Provider.nowNodes.url,
+                    keyInfo: keyInfoProvider.apiKeys(for: .nowNodes)
+                )
             }
 
             return AlgorandTransactionHistoryProvider(

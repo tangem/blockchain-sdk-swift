@@ -12,18 +12,18 @@ import Moya
 struct ChiaProviderTarget: TargetType {
     // MARK: - Properties
     
-    private let node: ChiaNetworkNode
+    private let node: NodeInfo
     private let targetType: TargetType
     
     // MARK: - Init
     
-    init(node: ChiaNetworkNode, targetType: TargetType) {
+    init(node: NodeInfo, targetType: TargetType) {
         self.node = node
         self.targetType = targetType
     }
     
     var baseURL: URL {
-        return node.endpoint.url
+        node.url
     }
 
     var path: String {
@@ -65,7 +65,9 @@ struct ChiaProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        headers["X-API-Key"] = node.endpoint.apiKeyValue
+        if let headersKeyInfo = node.headers {
+            headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
+        }
         
         return headers
     }

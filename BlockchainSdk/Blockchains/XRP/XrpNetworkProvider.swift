@@ -12,19 +12,19 @@ import Combine
 
 class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
     var host: String {
-        baseUrl.url.hostOrUnknown
+        node.url.absoluteString
     }
     
-    private let baseUrl: XrpUrl
-    private let provider: NetworkProvider<XrpTarget>
+    private let node: NodeInfo
+    private let provider: NetworkProvider<XRPTarget>
     
-    init(baseUrl: XrpUrl, configuration: NetworkProviderConfiguration) {
-        self.baseUrl = baseUrl
-        provider = NetworkProvider<XrpTarget>(configuration: configuration)
+    init(node: NodeInfo, configuration: NetworkProviderConfiguration) {
+        self.node = node
+        provider = NetworkProvider<XRPTarget>(configuration: configuration)
     }
     
     func getFee() -> AnyPublisher<XRPFeeResponse, Error> {
-        return request(.fee(url: baseUrl))
+        return request(.fee)
             .tryMap { xrpResponse -> XRPFeeResponse in
                 guard let minFee = xrpResponse.result?.drops?.minimum_fee,
                       let normalFee = xrpResponse.result?.drops?.open_ledger_fee,
@@ -40,9 +40,9 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
             .eraseToAnyPublisher()
     }
     
-    func send(blob: String) -> AnyPublisher<Bool, Error> {
-        return request(.submit(tx: blob, url: baseUrl))
-            .tryMap { xrpResponse -> Bool in
+    func send(blob: String) -> AnyPublisher<String, Error> {
+        return request(.submit(tx: blob))
+            .tryMap { xrpResponse -> String in
                 guard let code = xrpResponse.result?.engine_result_code else {
                     throw WalletError.failedToSendTx
                 }
@@ -54,13 +54,17 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
                     }
                 }
                 
-                return true
+                guard let hash = xrpResponse.result?.tx_json?.hash else {
+                    throw WalletError.failedToSendTx
+                }
+
+                return hash
             }
             .eraseToAnyPublisher()
     }
     
     func getUnconfirmed(account: String) -> AnyPublisher<Decimal, Error> {
-        return request(.unconfirmed(account: account, url: baseUrl))
+        return request(.unconfirmed(account: account))
             .tryMap { xrpResponse -> Decimal in
                 try xrpResponse.assertAccountCreated()
                 
@@ -75,7 +79,7 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
     }
     
     func getReserve() -> AnyPublisher<Decimal, Error> {
-        return request(.reserve(url: baseUrl))
+        return request(.reserve)
             .tryMap{ xrpResponse -> Decimal in
                 try xrpResponse.assertAccountCreated()
                 
@@ -89,7 +93,7 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
     }
     
     func getAccountInfo(account: String) -> AnyPublisher<(balance: Decimal, sequence: Int), Error> {
-        return request(.accountInfo(account: account, url: baseUrl))
+        return request(.accountInfo(account: account))
             .tryMap{ xrpResponse in
                 try xrpResponse.assertAccountCreated()
                 
@@ -120,7 +124,7 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
     }
     
     func checkAccountCreated(account: String) -> AnyPublisher<Bool, Error> {
-        return request(.accountInfo(account: account, url: baseUrl))
+        return request(.accountInfo(account: account))
             .map {xrpResponse -> Bool in
                 do {
                     try xrpResponse.assertAccountCreated()
@@ -133,9 +137,9 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
             .eraseError()
     }
     
-    private func request(_ target: XrpTarget) -> AnyPublisher<XrpResponse, MoyaError> {
+    private func request(_ target: XRPTarget.XRPTargetType) -> AnyPublisher<XrpResponse, MoyaError> {
         provider
-            .requestPublisher(target)
+            .requestPublisher(XRPTarget(node: node, target: target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
     }

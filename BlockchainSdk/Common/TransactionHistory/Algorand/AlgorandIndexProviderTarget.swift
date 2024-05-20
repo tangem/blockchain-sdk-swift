@@ -9,19 +9,40 @@
 import Foundation
 import Moya
 
-struct AlgorandIndexProviderTarget: TargetType {
+struct AlgorandIndexProviderTarget {
     // MARK: - Properties
-    
-    private let node: AlgorandProviderNode
+    private let node: NodeInfo
     private let targetType: TargetType
-    
+
     // MARK: - Init
-    
-    init(node: AlgorandProviderNode, targetType: TargetType) {
+    init(node: NodeInfo, targetType: TargetType) {
         self.node = node
         self.targetType = targetType
     }
-    
+
+}
+
+extension AlgorandIndexProviderTarget {
+    enum Provider {
+        case fullNode(isTestnet: Bool)
+        case nowNodes
+
+        var url: URL {
+            switch self {
+            case .fullNode(let isTestnet):
+                if isTestnet {
+                    return URL(string: "https://testnet-idx.algonode.cloud/")!
+                } else {
+                    return URL(string: "https://mainnet-idx.algonode.cloud/")!
+                }
+            case .nowNodes:
+                return URL(string: "https://algo-index.nownodes.io/")!
+            }
+        }
+    }
+}
+
+extension AlgorandIndexProviderTarget: TargetType {
     var baseURL: URL {
         return node.url
     }
@@ -61,8 +82,8 @@ struct AlgorandIndexProviderTarget: TargetType {
             "Accept": "application/json"
         ]
         
-        if case .idxNownodes = node.type, let headerName = node.apiKeyHeaderName {
-            headers[headerName] = node.apiKeyValue
+        if let headersKeyInfo = node.headers {
+            headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
         }
         
         return headers

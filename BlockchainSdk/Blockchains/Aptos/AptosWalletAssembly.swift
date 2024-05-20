@@ -12,29 +12,15 @@ struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet        
 
-        var providers: [AptosNetworkProvider] = []
-        
-        providers.append(
-            makeNetworkProvider(
-                for: .aptoslabs(isTestnet: input.blockchain.isTestnet),
-                networkConfig: input.networkConfig
-            )
-        )
-        
-        if !input.blockchain.isTestnet {
-            providers.append(contentsOf: [
-                makeNetworkProvider(
-                    for: .getblock,
-                    with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
-                    networkConfig: input.networkConfig
-                ),
-                makeNetworkProvider(
-                    for: .nownodes,
-                    with: input.blockchainSdkConfig.nowNodesApiKey,
-                    networkConfig: input.networkConfig
-                ),
-            ])
-        }
+        let blockchain = input.blockchain
+        let config = input.blockchainSdkConfig
+        let networkConfig = input.networkConfig
+        let apiResolver = APIResolver(blockchain: blockchain, config: config)
+        let providers: [AptosNetworkProvider] = apiResolver.resolveProviders(
+            apiInfos: input.apiInfo,
+            factory: { nodeInfo, _ in
+                AptosNetworkProvider(node: nodeInfo, networkConfig: networkConfig)
+            })
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,
@@ -46,18 +32,5 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         let networkService = AptosNetworkService(providers: providers)
         
         return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder, networkService: networkService)
-    }
-    
-    // MARK: - Private Implementation
-    
-    private func makeNetworkProvider(
-        for node: AptosProviderType,
-        with apiKeyValue: String? = nil,
-        networkConfig: NetworkProviderConfiguration
-    ) -> AptosNetworkProvider {
-        AptosNetworkProvider(
-            node: .init(type: node, apiKeyValue: apiKeyValue),
-            networkConfig: networkConfig
-        )
     }
 }

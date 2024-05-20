@@ -15,8 +15,8 @@ final class AlgorandTransactionHistoryProvider<Mapper> where
 {
 
     /// Configuration connection node for provider
-    private let node: AlgorandProviderNode
-    
+    private let node: NodeInfo
+
     // MARK: - Properties
     
     /// Network provider of blockchain
@@ -28,7 +28,7 @@ final class AlgorandTransactionHistoryProvider<Mapper> where
     // MARK: - Init
     
     init(
-        node: AlgorandProviderNode,
+        node: NodeInfo,
         networkConfig: NetworkProviderConfiguration,
         mapper: Mapper
     ) {
