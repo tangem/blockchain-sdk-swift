@@ -20,7 +20,7 @@ class TONTests: XCTestCase {
     
     private func makeWalletManager(blockchain: BlockchainSdk.Blockchain) -> TONWalletManager {
         let walletPubKey = privateKey.publicKey.rawRepresentation
-        let address = try! WalletCoreAddressService(coin: .ton).makeAddress(
+        let address = try! TonAddressService().makeAddress(
             for: .init(seedKey: walletPubKey, derivationType: .none),
             with: .default
         )
@@ -115,6 +115,18 @@ class TONTests: XCTestCase {
             XCTAssertEqual(output, "te6ccgICABoAAQAAA94AAAJFiAAkFwRyHvf/dUy7kDH1X6DgWJwTOQ0gSoVCd0RKy2RgfB4ABAABAZwMiPYFcfrlrjQbGvWRDgwHvVZ2cmzXd1yFFZtVQs7LDF4/KR1fafTy2gElJCEcBk7C/F9/DGKx6iNtYWXR/CwJKamjF/////8AAAAAAAMAAgFoQgAUBmQW35XMNKR/RDx1t/5MxLtAILJTcUjbFd1rJgx+vCHc1lAAAAAAAAAAAAAAAAAAAQADACAAAAAASGVsbG8gd29ybGQhAgE0AAYABQBRAAAAACmpoxfgs/zM/gKDzA+MEFxotWkKq4xcFpKoaOVerKg2yHeQhUABFP8A9KQT9LzyyAsABwIBIAANAAgE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8ADAALAAoACQAK9ADJ7VQAbIEBCNcY+gDTPzBSJIEBCPRZ8qeCEGRzdHJwdIAYyMsFywJQBc8WUAP6AhPLassfEss/yXP7AABwgQEI1xj6ANM/yFQgR4EBCPRR8qeCEG5vdGVwdIAYyMsFywJQBs8WUAT6AhTLahLLH8s/yXP7AAIAbtIH+gDU1CL5AAXIygcVy//J0Hd0gBjIywXLAiLPFlAF+gIUy2sSzMzJc/sAyEAUgQEI9FHypwICAUgAFwAOAgEgABAADwBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgEgABIAEQARuMl+1E0NcLH4AgFYABYAEwIBIAAVABQAGa8d9qJoQBBrkOuFj8AAGa3OdqJoQCBrkOuF/8AAPbKd+1E0IEBQNch9AQwAsjKB8v/ydABgQEI9ApvoTGAC5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0AGQAYAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+IAeAH6APQEMPgnbyIwUAqhIb7y4FCCEHBsdWeDHrFwgBhQBMsFJs8WWPoCGfQAy2kXyx9SYMs/IMmAQPsABg==")
         } catch {
             XCTFail("Transaction build for sign is nil")
+        }
+    }
+    
+    func testAddressServiceFactoryCreateCorrectTonAddressService() {
+        EllipticCurve.allCases.forEach { curve in
+            let addressService = AddressServiceFactory(
+                blockchain: .ton(curve: curve, testnet: false)
+            ).makeAddressService()
+            
+            XCTAssertTrue(
+                addressService is TonAddressService
+            )
         }
     }
 }
