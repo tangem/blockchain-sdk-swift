@@ -50,7 +50,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             )
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         Just(())
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] _ -> String in
@@ -72,7 +72,10 @@ final class TONWalletManager: BaseManager, WalletManager {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
-                return self.networkService.send(message: message)
+                return self.networkService
+                    .send(message: message)
+                    .mapSendError(tx: message)
+                    .eraseToAnyPublisher()
             }
             .map { [weak self] hash in
                 let mapper = PendingTransactionRecordMapper()
@@ -80,6 +83,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 

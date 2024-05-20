@@ -236,7 +236,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                         destinationAddress: self.destination
                     )
                     let signer = CommonSigner(sdk: self.sdk)
-                    return walletManager.send(transaction, signer: signer).eraseToAnyPublisher()
+                    return walletManager
+                        .send(transaction, signer: signer)
+                        .mapError {
+                            Log.error("sendTxError = \($0.localizedDescription)")
+                            return $0.error
+                        }
+                        .eraseToAnyPublisher()
                 } catch {
                     return Fail(error: error)
                         .eraseToAnyPublisher()
