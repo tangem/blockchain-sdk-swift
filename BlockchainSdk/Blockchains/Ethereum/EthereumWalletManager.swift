@@ -230,12 +230,12 @@ extension EthereumWalletManager: TransactionFeeProvider {
 // MARK: - TransactionSender
 
 extension EthereumWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         sign(transaction, signer: signer)
             .withWeakCaptureOf(self)
             .flatMap { walletManager, rawTransaction in
                 walletManager.networkService.send(transaction: rawTransaction)
-                    .mapSendError(tx: tx)
+                    .mapSendError(tx: rawTransaction)
             }
             .withWeakCaptureOf(self)
             .tryMap { walletManager, hash in
