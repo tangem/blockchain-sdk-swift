@@ -724,7 +724,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testTONValidateCorrectAddress() {
-        let addressService = WalletCoreAddressService(coin: .ton)
+        let addressService = TonAddressService()
         
         XCTAssertTrue(addressService.validate("UQBqoh0pqy6zIksGZFMLdqV5Q2R7rzlTO0Durz6OnUgKrdpr"))
         XCTAssertTrue(addressService.validate("UQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eL1z"))
