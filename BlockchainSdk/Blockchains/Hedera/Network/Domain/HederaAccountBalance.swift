@@ -11,9 +11,12 @@ import Foundation
 struct HederaAccountBalance {
     struct TokenBalance {
         let contractAddress: String
-        let balance: Decimal
+        /// In atomic units.
+        let balance: Int
+        let decimalCount: Int
     }
 
-    let hbarBalance: Decimal
+    /// In atomic units (i.e. Tinybars).
+    let hbarBalance: Int
     let tokenBalances: [TokenBalance]
 }
