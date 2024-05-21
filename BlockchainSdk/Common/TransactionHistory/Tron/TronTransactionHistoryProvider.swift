@@ -118,6 +118,7 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
     func reset() {
         page = nil
         totalPageCount = 0
+        mapper.reset()
     }
 }
 

@@ -20,6 +20,10 @@ extension Publisher {
             return (object, output)
         }
     }
+
+    func mapToVoid() -> Publishers.Map<Self, Void> {
+        map { _ in () }
+    }
 }
 
 extension Publisher where Failure == Swift.Error {
@@ -67,6 +71,11 @@ extension Publisher {
         return Fail(error: error)
             .eraseToAnyPublisher()
     }
+    
+    static func sendTxFail(error: Error) -> AnyPublisher<Output, SendTxError> {
+        return Fail(error: SendTxError(error: error))
+            .eraseToAnyPublisher()
+    }
 
     static func justWithError(output: Output) -> AnyPublisher<Output, Error> {
         return Just(output)
@@ -82,6 +91,27 @@ extension Publisher {
             .MergeMany(addresses.map { requestFactory($0) })
             .collect()
             .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher where Failure == Error {
+    /*
+     This method is used to override a network error when sending a transaction.
+     Use only pair with send method for {{Blockchain}}NetworkService.
+     */
+    public func mapSendError(tx: String? = nil) -> Publishers.MapError<Self, Error> {
+        mapError { error in
+            SendTxErrorFactory().make(error: error, with: tx)
+        }
+    }
+    
+    /*
+     This method is used to override a network error when sending a transaction after all chains publishers.
+     */
+    public func eraseSendError() -> Publishers.MapError<Self, SendTxError> {
+        mapError { error in
+            SendTxErrorFactory().make(error: error)
+        }
     }
 }
 

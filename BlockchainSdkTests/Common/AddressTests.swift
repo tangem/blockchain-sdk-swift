@@ -594,6 +594,20 @@ class AddressesTests: XCTestCase {
         )
     }
     
+    func testJoystream() {
+        testSubstrateNetwork(
+            .joystream(curve: .ed25519),
+            publicKey: edKey,
+            expectedAddress: "j4UwGHUYcR4HH6qiZ4WJJPBKsYboMJWe6WPj8V6uKfo4Gnhbt"
+        )
+        
+        testSubstrateNetwork(
+            .joystream(curve: .ed25519_slip0010),
+            publicKey: edKey,
+            expectedAddress: "j4UwGHUYcR4HH6qiZ4WJJPBKsYboMJWe6WPj8V6uKfo4Gnhbt"
+        )
+    }
+    
     func testSubstrateNetwork(_ blockchain: Blockchain, publicKey: Data, expectedAddress: String) {
         let network = PolkadotNetwork(blockchain: blockchain)!
         let service = PolkadotAddressService(network: network)

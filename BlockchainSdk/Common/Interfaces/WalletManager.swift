@@ -70,16 +70,7 @@ extension BlockchainDataProvider {
 
 @available(iOS 13.0, *)
 public protocol TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error>
-}
-
-public struct SendTxError: Error, LocalizedError {
-    public let error: Error
-    public let tx: String
-    
-    public var errorDescription: String? {
-        error.localizedDescription
-    }
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
 }
 
 
@@ -102,7 +93,7 @@ extension TransactionSigner {
 public protocol TransactionPusher {
     func isPushAvailable(for transactionHash: String) -> Bool
     func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error>
-    func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
+    func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, SendTxError>
 }
 
 @available(iOS 13.0, *)
@@ -113,4 +104,14 @@ public protocol SignatureCountValidator {
 @available(iOS 13.0, *)
 public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String
+}
+
+/// Responsible for the token association creation (Hedera) and trust line setup (XRP, Stellar, Aptos, Algorand and other).
+@available(iOS 13.0, *)
+public protocol AssetRequirementsManager {
+    typealias Asset = Amount.AmountType
+
+    func hasRequirements(for asset: Asset) -> Bool
+    func requirementsCondition(for asset: Asset) -> AssetRequirementsCondition?
+    func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error>
 }

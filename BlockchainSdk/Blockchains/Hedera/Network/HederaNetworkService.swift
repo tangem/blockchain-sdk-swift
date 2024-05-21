@@ -45,9 +45,29 @@ final class HederaNetworkService {
         }
     }
 
-    func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
-        return consensusProvider
-            .getBalance(accountId: accountId)
+    func getBalance(accountId: String) -> some Publisher<HederaAccountBalance, Error> {
+        let hbarBalancePublisher = makeHbarBalancePublisher(accountId: accountId)
+
+        let tokenBalancesPublisher = providerPublisher { provider in
+            return provider
+                .getTokens(accountId: accountId)
+                .eraseToAnyPublisher()
+        }
+
+        return hbarBalancePublisher
+            .zip(tokenBalancesPublisher)
+            .map { hbarBalance, tokenBalances in
+                let tokenBalances = tokenBalances.tokens.map { tokenBalance in
+                    return HederaAccountBalance.TokenBalance(
+                        contractAddress: tokenBalance.tokenId,
+                        balance: tokenBalance.balance,
+                        decimalCount: tokenBalance.decimals
+                    )
+                }
+
+                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: tokenBalances)
+            }
+            .eraseToAnyPublisher()
     }
 
     func getExchangeRate() -> some Publisher<HederaExchangeRate, Error> {
@@ -75,7 +95,62 @@ final class HederaNetworkService {
             .map(TransactionSendResult.init(hash:))
     }
 
+    /// Expects `transactionHash` in a format suitable for Hedera Consensus node (like `0.0.3573746@1714034073.123382080`).
+    /// - Note: Hedera Mirror node uses a slightly different format of TX ids, so the conversion between
+    /// Consensus and Mirror formats is performed using `HederaTransactionIdConverter`.
     func getTransactionInfo(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
+        let fallbackHbarBalancePublisher = makeFallbackTransactionInfoPublisher(transactionHash: transactionHash)
+        let converter = HederaTransactionIdConverter()
+
+        return Deferred {
+            return Future { promise in
+                let result = Result { try converter.convertFromConsensusToMirror(transactionHash) }
+                promise(result)
+            }
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { networkService, mirrorNodeTransactionHash in
+            return networkService.providerPublisher { provider in
+                return provider
+                    .getTransactionInfo(transactionHash: mirrorNodeTransactionHash)
+                    .eraseToAnyPublisher()
+            }
+            .map { ($0, mirrorNodeTransactionHash) }
+        }
+        .tryMap { transactionInfos, mirrorNodeTransactionHash in
+            guard let transactionInfo = transactionInfos
+                .transactions
+                .first(where: { $0.transactionId == mirrorNodeTransactionHash })
+            else {
+                throw HederaError.transactionNotFound
+            }
+
+            return transactionInfo
+        }
+        .tryMap { transactionInfo in
+            let consensusNodeTransactionHash = try converter.convertFromMirrorToConsensus(transactionInfo.transactionId)
+            let isPending: Bool
+
+            // API schema doesn't list all possible values for the `transactionInfo.result` field,
+            // so raw string matching is used instead
+            switch transactionInfo.result {
+            case "OK":
+                // Precheck validations (`Status.ok`) performed locally
+                isPending = true
+            default:
+                // All other transaction statuses mean either success of failure
+                isPending = false
+            }
+
+            return HederaTransactionInfo(isPending: isPending, transactionHash: consensusNodeTransactionHash)
+        }
+        .catch { _ in
+            return fallbackHbarBalancePublisher
+        }
+    }
+
+    /// - Note: For Hbar tx status fetching, the Mirror Node acts as a primary node, and the Consensus Node is a backup one.
+    private func makeFallbackTransactionInfoPublisher(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
         return consensusProvider
             .getTransactionInfo(transactionHash: transactionHash)
             .map { transactionInfo in
@@ -91,6 +166,30 @@ final class HederaNetworkService {
                 }
 
                 return HederaTransactionInfo(isPending: isPending, transactionHash: transactionInfo.hash)
+            }
+    }
+
+    /// - Note: For Hbar balance fetching, the Mirror Node acts as a primary node, and the Consensus Node is a backup one.
+    private func makeHbarBalancePublisher(accountId: String) -> some Publisher<Int, Error> {
+        let primaryHbarBalancePublisher = providerPublisher { provider in
+            return provider
+                .getBalance(accountId: accountId)
+                .eraseToAnyPublisher()
+        }
+        .tryMap { accountBalance in
+            guard let balance = accountBalance.balances.first(where: { $0.account == accountId }) else {
+                throw HederaError.accountBalanceNotFound
+            }
+
+            return balance.balance
+        }
+
+        let fallbackHbarBalancePublisher = consensusProvider
+            .getBalance(accountId: accountId)
+
+        return primaryHbarBalancePublisher
+            .catch { _ in
+                return fallbackHbarBalancePublisher
             }
     }
 }
