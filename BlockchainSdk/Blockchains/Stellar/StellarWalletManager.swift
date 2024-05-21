@@ -107,7 +107,7 @@ class StellarWalletManager: BaseManager, WalletManager {
 extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return networkService.checkTargetAccount(address: transaction.destinationAddress, token: transaction.amount.type.token)
             .flatMap { [weak self] response -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> in
                 guard let self else { return .emptyFail }
@@ -130,18 +130,19 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] transactionData -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: transactionData).tryMap {[weak self] hash in
+            .flatMap {[weak self] rawTransactionHash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(transaction: rawTransactionHash).tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
                     let mapper = PendingTransactionRecordMapper()
-                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: rawTransactionHash)
                     self.wallet.addPendingTransaction(record)
-                    return TransactionSendResult(hash: hash)
+                    return TransactionSendResult(hash: rawTransactionHash)
                 }
-                .mapError { SendTxError(error: $0, tx: transactionData) }
+                .mapSendError(tx: rawTransactionHash)
                 .eraseToAnyPublisher() ?? .emptyFail
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
