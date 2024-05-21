@@ -73,7 +73,7 @@ class XRPWalletManager: BaseManager, WalletManager {
 extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let addressDecoded = decodeAddress(address: transaction.destinationAddress)
 
         return networkService
@@ -105,19 +105,20 @@ extension XRPWalletManager: TransactionSender {
 
                 return try self.txBuilder.buildForSend(transaction: response.0, signature: response.1)
             }
-            .flatMap{[weak self] transactionData -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(blob: transactionData)
+            .flatMap{[weak self] rawTransactionHash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(blob: rawTransactionHash)
                     .tryMap{[weak self] hash in
                         guard let self = self else { throw WalletError.empty }
                         
                         let mapper = PendingTransactionRecordMapper()
-                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: rawTransactionHash)
                         self.wallet.addPendingTransaction(record)
-                        return TransactionSendResult(hash: hash)
+                        return TransactionSendResult(hash: rawTransactionHash)
                     }
-                    .mapError { SendTxError(error: $0, tx: transactionData) }
+                    .mapSendError(tx: rawTransactionHash)
                     .eraseToAnyPublisher() ?? .emptyFail
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     

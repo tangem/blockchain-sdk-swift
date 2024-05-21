@@ -89,7 +89,7 @@ extension EthereumWalletManager: EthereumNetworkProvider {
         let serializedTransaction = tx.hexString.lowercased().addHexPrefix()
         return networkService
             .send(transaction: serializedTransaction)
-            .mapError { SendTxError(error: $0, tx: serializedTransaction) }
+            .mapSendError(tx: serializedTransaction)
             .eraseToAnyPublisher()
     }
 
@@ -211,20 +211,29 @@ extension EthereumWalletManager: TransactionFeeProvider {
 // MARK: - TransactionSender
 
 extension EthereumWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        sign(transaction, signer: signer)
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        return sign(transaction, signer: signer)
             .flatMap { [weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] hash in
-                    guard let self = self else { throw WalletError.empty }
-
-                    let mapper = PendingTransactionRecordMapper()
-                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-                    self.wallet.addPendingTransaction(record)
-                    return TransactionSendResult(hash: hash)
+                guard let self else {
+                    return .emptyFail
                 }
-                .mapError { SendTxError(error: $0, tx: tx) }
-                .eraseToAnyPublisher() ?? .emptyFail
+                
+                return self.networkService
+                    .send(transaction: tx)
+                    .tryMap {[weak self] hash in
+                        guard let self = self else { 
+                            throw WalletError.empty
+                        }
+
+                        let mapper = PendingTransactionRecordMapper()
+                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                        self.wallet.addPendingTransaction(record)
+                        return TransactionSendResult(hash: hash)
+                    }
+                    .mapSendError(tx: tx)
+                    .eraseToAnyPublisher()
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }
