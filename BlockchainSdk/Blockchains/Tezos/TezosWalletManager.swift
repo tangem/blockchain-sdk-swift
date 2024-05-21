@@ -168,7 +168,7 @@ extension TezosWalletManager: WithdrawalNotificationProvider {
         return nil
     }
     
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalNotification? {
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         guard
             let walletAmount = wallet.amounts[.coin],
             amount + fee == walletAmount 

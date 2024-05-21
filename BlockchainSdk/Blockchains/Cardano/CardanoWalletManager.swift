@@ -136,7 +136,7 @@ extension CardanoWalletManager: WithdrawalNotificationProvider {
         return nil
     }
 
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalNotification? {
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         do {
             let adaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
             let minAmountDecimal = Decimal(adaValue) / wallet.blockchain.decimalValue
