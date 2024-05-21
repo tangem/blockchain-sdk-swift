@@ -44,7 +44,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
             }
     }
 
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return Just(())
             .receive(on: DispatchQueue.global())
             .setFailureType(to: Error.self)
@@ -84,7 +84,10 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     return .anyFail(error: WalletError.empty)
                 }
                 
-                return self.networkService.send(transaction: transaction)
+                return self.networkService
+                    .send(transaction: transaction)
+                    .mapSendError(tx: transaction.hexString.lowercased())
+                    .eraseToAnyPublisher()
             }
             .handleEvents(receiveOutput: { [weak self] hash in
                 let mapper = PendingTransactionRecordMapper()
@@ -94,6 +97,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .map {
                 TransactionSendResult(hash: $0)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
