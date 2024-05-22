@@ -105,7 +105,7 @@ extension KaspaWalletManager: DustRestrictable {
     }
 }
 
-extension KaspaWalletManager: WithdrawalSuggestionProvider {
+extension KaspaWalletManager: WithdrawalNotificationProvider {
     // Chia, kaspa have the same logic
     @available(*, deprecated, message: "Use MaximumAmountRestrictable")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
@@ -125,7 +125,7 @@ extension KaspaWalletManager: WithdrawalSuggestionProvider {
         )
     }
     
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         // The 'Mandatory amount change' withdrawal suggestion has been superseded by a validation performed in
         // the 'MaximumAmountRestrictable.validateMaximumAmount(amount:fee:)' method below
         return nil
