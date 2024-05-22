@@ -17,6 +17,8 @@ enum HederaError: LocalizedError {
             return "Account balance for a given account is not found in the response received from the Mirror Node"
         case .transactionNotFound:
             return "Transaction info for a given transaction is not found in the response received from the Mirror Node"
+        case .multipleAccountsFound:
+            return "There are multiple Hedera accounts on the Hedera network for the given public key"
         case .failedToCreateAccount:
             return "Failed to create a Hedera network account with the given public key"
         case .unsupportedCurve(let curveName):
@@ -27,6 +29,7 @@ enum HederaError: LocalizedError {
     case accountDoesNotExist
     case accountBalanceNotFound
     case transactionNotFound
+    case multipleAccountsFound
     case failedToCreateAccount
     case unsupportedCurve(curveName: String)
 }
