@@ -478,7 +478,8 @@ public indirect enum Blockchain: Equatable, Hashable {
              .tron,
              .terraV1,
              .veChain,
-             .hedera:
+             .hedera,
+             .cardano:
             return true
         case _ where isEvm:
             return true

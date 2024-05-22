@@ -121,15 +121,9 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         }
 
         let outputs: [CardanoUnspentOutput] = coins.compactMap { coin -> CardanoUnspentOutput? in
-            // We should ignore the output with metadata
-            // Because we don't support a cardano tokens yet
-            guard coin.metadata == nil else {
-                return nil
-            }
-            
             guard let (index, hash) = parseIdentifier(coin.coinIdentifier?.identifier),
                   let amountValue = coin.amount?.value,
-                  let amount = Decimal(amountValue) else {
+                  let amount = UInt64(amountValue) else {
                 return nil
             }
 
@@ -150,12 +144,12 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     /// `482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f:0`
     /// When the first part is transactionHash
     /// And the second path is outputIndex
-    private func parseIdentifier(_ identifier: String?) -> (index: Int, hash: String)? {
+    private func parseIdentifier(_ identifier: String?) -> (index: UInt64, hash: String)? {
         guard let splittedIdentifier = identifier?.split(separator: ":"), splittedIdentifier.count == 2 else {
             return nil
         }
         
-        guard let index = Int(splittedIdentifier[1])else {
+        guard let index = UInt64(splittedIdentifier[1])else {
             return nil
         }
         
@@ -175,7 +169,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
 
                     return result + tokens.compactMap { tokenValue -> CardanoUnspentOutput.Asset? in
                         guard let value = tokenValue.value,
-                              let amount = Int(value),
+                              let amount = UInt64(value),
                               // symbol in ASCII HEX, e.g. 41474958 = AGIX
                               let assetNameHex = tokenValue.currency?.symbol,
                               let policyId = tokenValue.currency?.metadata?.policyId else {
