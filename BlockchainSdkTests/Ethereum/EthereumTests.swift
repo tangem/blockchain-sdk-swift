@@ -46,7 +46,7 @@ class EthereumTests: XCTestCase {
         let sendValue = Amount(with: blockchain, type: .token(value: token), value: 1)
         let feeParameters = EthereumEIP1559FeeParameters(
             gasLimit: BigUInt(47525),
-            baseFee: BigUInt(138077377799),
+            maxFeePerGas: BigUInt(138077377799),
             priorityFee: BigUInt(30000000000)
         )
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
@@ -88,7 +88,7 @@ class EthereumTests: XCTestCase {
         let sendValue = Amount(with: blockchain, type: .coin, value: 1)
         let feeParameters = EthereumEIP1559FeeParameters(
             gasLimit: BigUInt(21000),
-            baseFee: BigUInt(4478253867089),
+            maxFeePerGas: BigUInt(4478253867089),
             priorityFee: BigUInt(31900000000)
         )
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
@@ -125,7 +125,7 @@ class EthereumTests: XCTestCase {
         let sendValue = EthereumUtils.mapToBigUInt(1 * blockchain.decimalValue).serialize()
         let feeParameters = EthereumEIP1559FeeParameters(
             gasLimit: BigUInt(21000),
-            baseFee: BigUInt(4478253867089),
+            maxFeePerGas: BigUInt(4478253867089),
             priorityFee: BigUInt(31900000000)
         )
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
