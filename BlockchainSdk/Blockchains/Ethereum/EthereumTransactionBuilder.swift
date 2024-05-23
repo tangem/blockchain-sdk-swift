@@ -54,7 +54,7 @@ class EthereumTransactionBuilder {
         let transaction = EthereumTransaction(
             nonce: nonceValue,
             gasPrice: feeParameters.gasPrice,
-            gasLimit: feeParameters.gasLimit,
+            gasLimit: feeParameters.gasLimit - 2000,
             to: targetAddress,
             value: transaction.amount.type == .coin ? amountValue : .zero,
             data: data,
