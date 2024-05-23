@@ -19,8 +19,10 @@ struct HederaTarget {
 extension HederaTarget {
     enum Target {
         case getAccounts(publicKey: String)
+        case getAccountBalance(accountId: String)
         case getTokens(accountId: String)
         case getExchangeRate
+        case getTransactionInfo(transactionHash: String)
     }
 }
 
@@ -30,8 +32,10 @@ extension HederaTarget: TargetType {
     var baseURL: URL {
         switch target {
         case .getAccounts,
+             .getAccountBalance,
              .getTokens,
-             .getExchangeRate:
+             .getExchangeRate,
+             .getTransactionInfo:
             return configuration.url
         }
     }
@@ -40,10 +44,14 @@ extension HederaTarget: TargetType {
         switch target {
         case .getAccounts:
             return "accounts"
+        case .getAccountBalance:
+            return "balances"
         case .getTokens(let accountId):
             return "accounts/\(accountId)/tokens"
         case .getExchangeRate:
             return "network/exchangerate"
+        case .getTransactionInfo(let transactionHash):
+            return "transactions/\(transactionHash)"
         }
     }
 
@@ -51,7 +59,9 @@ extension HederaTarget: TargetType {
         switch target {
         case .getAccounts,
              .getTokens,
-             .getExchangeRate:
+             .getExchangeRate,
+             .getAccountBalance,
+             .getTransactionInfo:
             return .get
         }
     }
@@ -64,12 +74,18 @@ extension HederaTarget: TargetType {
                 "account.publickey": publicKey,
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
+        case .getAccountBalance(let accountId):
+            let parameters: [String: Any] = [
+                "account.id": accountId,
+            ]
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
         case .getTokens:
             let parameters: [String: Any] = [
                 "limit": UInt8.max,     // 255 unique tokens per account should be enough
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
-        case .getExchangeRate:
+        case .getExchangeRate,
+             .getTransactionInfo:
             return .requestPlain
         }
     }
@@ -82,8 +98,10 @@ extension HederaTarget: TargetType {
 
         switch target {
         case .getAccounts,
+             .getAccountBalance,
              .getTokens,
-             .getExchangeRate:
+             .getExchangeRate,
+             .getTransactionInfo:
             if let headersKeyInfo = configuration.headers {
                 headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
             }

@@ -521,6 +521,32 @@ final class HederaTests: XCTestCase {
         XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
     }
 
+    func testTransactionIdConversionFromConsensusToMirrorPositiveCase() throws {
+        let converter = HederaTransactionIdConverter()
+        let converted = try converter.convertFromConsensusToMirror("0.0.3573746@1714034073.123382080")
+
+        XCTAssertEqual(converted, "0.0.3573746-1714034073-123382080")
+    }
+
+    func testTransactionIdConversionFromMirrorToConsensusPositiveCase() throws {
+        let converter = HederaTransactionIdConverter()
+        let converted = try converter.convertFromMirrorToConsensus("0.0.3573746-1714034073-123382080")
+
+        XCTAssertEqual(converted, "0.0.3573746@1714034073.123382080")
+    }
+
+    func testTransactionIdConversionFromConsensusToMirrorNegativeCase() throws {
+        let converter = HederaTransactionIdConverter()
+
+        XCTAssertThrowsError(try converter.convertFromConsensusToMirror("0.0.3573746-1714034073.123382080"))
+    }
+
+    func testTransactionIdConversionFromMirrorToConsensusNegativeCase() throws {
+        let converter = HederaTransactionIdConverter()
+
+        XCTAssertThrowsError(try converter.convertFromMirrorToConsensus("0.0.3573746-1714034073.123382080"))
+    }
+
     private func setUp(curve: EllipticCurve) {
         blockchain = .hedera(curve: curve, testnet: true)
         sizeTester = TransactionSizeTesterUtility()

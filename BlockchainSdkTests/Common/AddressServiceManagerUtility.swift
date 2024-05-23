@@ -19,7 +19,9 @@ final class AddressServiceManagerUtility {
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
-        if let coin = CoinType(blockchain) {
+        if case .ton = blockchain {
+            return try TonAddressService().makeAddress(from: publicKey).value
+        } else if let coin = CoinType(blockchain) {
             return try WalletCoreAddressService(coin: coin).makeAddress(from: publicKey).value
         } else {
             throw NSError(domain: "__ AddressServiceManagerUtility __ error make address from TrustWallet address service", code: -1)

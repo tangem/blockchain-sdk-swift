@@ -68,7 +68,7 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
     public var description: String {
         return string()
     }
-    
+
     public init(
         type: AmountType,
         currencySymbol: String,
