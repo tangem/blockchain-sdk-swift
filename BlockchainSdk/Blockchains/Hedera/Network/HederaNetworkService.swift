@@ -31,17 +31,24 @@ final class HederaNetworkService {
                 .eraseToAnyPublisher()
         }
         .tryMap { accounts in
-            let account = accounts.accounts.first
             // `MultiNetworkProvider` must not switch on `HederaError.accountDoesNotExist`,
             // therefore we are performing DTO->Domain mapping outside the `providerPublisher`
-            //
-            // Account ID is the only essential piece of information for a particular account,
-            // account alias and account EVM address may not exist at all
-            guard let accountId = account?.account else {
+            switch accounts.accounts.count {
+            case 0:
                 throw HederaError.accountDoesNotExist
-            }
+            case 1:
+                let account = accounts.accounts[0]
 
-            return HederaAccountInfo(accountId: accountId, alias: account?.alias, evmAddress: account?.evmAddress)
+                // Account ID is the only essential piece of information for a particular account,
+                // account alias and account EVM address may not exist at all
+                guard let accountId = account.account else {
+                    throw HederaError.accountDoesNotExist
+                }
+
+                return HederaAccountInfo(accountId: accountId, alias: account.alias, evmAddress: account.evmAddress)
+            default:
+                throw HederaError.multipleAccountsFound
+            }
         }
     }
 
@@ -99,7 +106,7 @@ final class HederaNetworkService {
     /// - Note: Hedera Mirror node uses a slightly different format of TX ids, so the conversion between
     /// Consensus and Mirror formats is performed using `HederaTransactionIdConverter`.
     func getTransactionInfo(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
-        let fallbackHbarBalancePublisher = makeFallbackTransactionInfoPublisher(transactionHash: transactionHash)
+        let fallbackTransactionInfoPublisher = makeFallbackTransactionInfoPublisher(transactionHash: transactionHash)
         let converter = HederaTransactionIdConverter()
 
         return Deferred {
@@ -145,7 +152,7 @@ final class HederaNetworkService {
             return HederaTransactionInfo(isPending: isPending, transactionHash: consensusNodeTransactionHash)
         }
         .catch { _ in
-            return fallbackHbarBalancePublisher
+            return fallbackTransactionInfoPublisher
         }
     }
 
