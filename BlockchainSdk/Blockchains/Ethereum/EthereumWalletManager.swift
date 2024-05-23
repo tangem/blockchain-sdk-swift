@@ -144,32 +144,24 @@ private extension EthereumWalletManager {
         var feeParameters = [
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
-                baseFee: response.fees.low.base,
+                maxFeePerGas: response.fees.low.max,
                 priorityFee: response.fees.low.priority
             ),
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
-                baseFee: response.fees.market.base,
+                maxFeePerGas: response.fees.market.max,
                 priorityFee: response.fees.market.priority
             ),
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
-                baseFee: response.fees.fast.base,
+                maxFeePerGas: response.fees.fast.max,
                 priorityFee: response.fees.fast.priority
             ),
         ]
 
         let fees = feeParameters.map { parameters in
-            let gasLimit = parameters.gasLimit
-            let feeWEI = gasLimit * (parameters.baseFee + parameters.priorityFee)
-
-            // TODO: Fix integer overflow. Think about BigInt
-            // https://tangem.atlassian.net/browse/IOS-4268
-            // https://tangem.atlassian.net/browse/IOS-5119
-            let feeValue = feeWEI.decimal ?? Decimal(UInt64(feeWEI))
-
-            let fee = feeValue / wallet.blockchain.decimalValue
-            let amount = Amount(with: wallet.blockchain, value: fee)
+            let feeValue = parameters.caclulateFee(decimalValue: wallet.blockchain.decimalValue)
+            let amount = Amount(with: wallet.blockchain, value: feeValue)
 
             return Fee(amount, parameters: parameters)
         }

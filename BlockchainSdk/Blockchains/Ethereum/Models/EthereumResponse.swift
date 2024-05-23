@@ -39,7 +39,7 @@ struct EthereumFeeResponse {
     let fees: (low: ETHFee, market: ETHFee, fast: ETHFee)
 
     struct ETHFee {
-        let base: BigUInt
+        let max: BigUInt
         let priority: BigUInt
     }
 }

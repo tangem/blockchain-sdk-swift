@@ -139,7 +139,7 @@ private extension EthereumTransactionBuilder {
             if let feeParameters = fee.parameters as? EthereumEIP1559FeeParameters {
                 input.txMode = .enveloped
                 input.gasLimit = feeParameters.gasLimit.serialize()
-                input.maxFeePerGas = feeParameters.baseFee.serialize()
+                input.maxFeePerGas = feeParameters.maxFeePerGas.serialize()
                 input.maxInclusionFeePerGas = feeParameters.priorityFee.serialize()
             } else {
                 throw EthereumTransactionBuilderError.feeParametersNotFound
