@@ -144,18 +144,18 @@ private extension EthereumWalletManager {
         var feeParameters = [
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
-                baseFee: response.baseFees.low,
-                priorityFee: response.priorityFees.low
+                baseFee: response.fees.low.base,
+                priorityFee: response.fees.low.priority
             ),
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
-                baseFee: response.baseFees.market,
-                priorityFee: response.priorityFees.market
+                baseFee: response.fees.market.base,
+                priorityFee: response.fees.market.priority
             ),
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
-                baseFee: response.baseFees.fast,
-                priorityFee: response.priorityFees.fast
+                baseFee: response.fees.fast.base,
+                priorityFee: response.fees.fast.priority
             ),
         ]
 

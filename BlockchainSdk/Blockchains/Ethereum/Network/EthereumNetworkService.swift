@@ -264,8 +264,11 @@ class EthereumNetworkService: MultiNetworkProvider {
 
         return EthereumFeeResponse(
             gasLimit: gasLimit,
-            baseFees: (low: lowBaseFee, market: marketBaseFee, fast: fastBaseFee),
-            priorityFees: (low: lowPriorityFee, market: marketPriorityFee, fast: fastPriorityFee)
+            fees: (
+                low: .init(base: lowBaseFee, priority: lowPriorityFee),
+                market: .init(base: marketBaseFee, priority: marketPriorityFee),
+                fast: .init(base: fastBaseFee, priority: fastPriorityFee)
+            )
         )
     }
 }

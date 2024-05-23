@@ -35,11 +35,13 @@ struct EthereumInfoResponse {
 }
 
 struct EthereumFeeResponse {
-    typealias Fees = (low: BigUInt, market: BigUInt, fast: BigUInt)
     let gasLimit: BigUInt
+    let fees: (low: ETHFee, market: ETHFee, fast: ETHFee)
 
-    let baseFees: Fees
-    let priorityFees: Fees
+    struct ETHFee {
+        let base: BigUInt
+        let priority: BigUInt
+    }
 }
 
 struct EthereumFeeHistoryResponse: Decodable {
