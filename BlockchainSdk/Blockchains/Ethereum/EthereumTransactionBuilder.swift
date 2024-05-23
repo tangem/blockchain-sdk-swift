@@ -135,14 +135,8 @@ private extension EthereumTransactionBuilder {
             input.chainID = BigUInt(chainId).serialize()
             input.nonce = nonceValue.serialize()
 
-            // Legacy
-            if let feeParameters = fee.parameters as? EthereumFeeParameters {
-                input.txMode = .legacy
-                input.gasLimit = feeParameters.gasLimit.serialize()
-                input.gasPrice = feeParameters.gasPrice.serialize()
-            }
             // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
-            else if let feeParameters = fee.parameters as? EthereumEIP1559FeeParameters {
+            if let feeParameters = fee.parameters as? EthereumEIP1559FeeParameters {
                 input.txMode = .enveloped
                 input.gasLimit = feeParameters.gasLimit.serialize()
                 input.maxFeePerGas = feeParameters.baseFee.serialize()

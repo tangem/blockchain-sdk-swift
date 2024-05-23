@@ -8,25 +8,6 @@
 
 import BigInt
 
-public struct EthereumFeeParameters: FeeParameters {
-    public let gasLimit: BigUInt
-    public let gasPrice: BigUInt
-
-    public init(gasLimit: BigUInt, gasPrice: BigUInt) {
-        self.gasLimit = gasLimit
-        self.gasPrice = gasPrice
-    }
-
-    public func caclulateFee(decimalValue: Decimal) -> Decimal {
-        let feeWEI = gasLimit * gasPrice
-        // TODO: Fix integer overflow. Think about BigInt
-        // https://tangem.atlassian.net/browse/IOS-4268
-        // https://tangem.atlassian.net/browse/IOS-5119
-        let feeValue = feeWEI.decimal ?? Decimal(UInt64(feeWEI))
-        return feeValue / decimalValue
-    }
-}
-
 public struct EthereumEIP1559FeeParameters: FeeParameters {
     public let gasLimit: BigUInt
     public let baseFee: BigUInt
