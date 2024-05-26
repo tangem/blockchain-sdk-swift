@@ -52,7 +52,8 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                 }
             }
             
-            let networkRouter = NetworkingRouter(endpoints: endpoints)
+            let apiLogger = SolanaApiLoggerUtil()
+            let networkRouter = NetworkingRouter(endpoints: endpoints, apiLogger: apiLogger)
             let accountStorage = SolanaDummyAccountStorage()
             
             $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
