@@ -103,4 +103,10 @@ enum TONModels {
         let num: String
     }
     
+    struct RunGetMethodRequest: Encodable {
+        let address: String
+        let method: String
+        
+        let stack: [[String]]
+    }
 }

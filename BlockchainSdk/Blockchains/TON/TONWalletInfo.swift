@@ -20,4 +20,6 @@ public struct TONWalletInfo {
     /// Wallet availability
     let isAvailable: Bool
     
+    let tokenBalances: [Token: Decimal]
+    
 }
