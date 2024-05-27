@@ -56,6 +56,7 @@
 		2D78F40C2A5C3CCF00962CCA /* ChiaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */; };
 		2D78F40F2A5CA55100962CCA /* ChiaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F40E2A5CA55100962CCA /* ChiaTests.swift */; };
 		2D78F4142A5D955700962CCA /* ClvmProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F4132A5D955700962CCA /* ClvmProgram.swift */; };
+		2D79B15E2C00CE9000E71EBB /* SolanaApiLoggerUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D79B15D2C00CE9000E71EBB /* SolanaApiLoggerUtil.swift */; };
 		2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
@@ -847,6 +848,7 @@
 		2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaWalletManager.swift; sourceTree = "<group>"; };
 		2D78F40E2A5CA55100962CCA /* ChiaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaTests.swift; sourceTree = "<group>"; };
 		2D78F4132A5D955700962CCA /* ClvmProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClvmProgram.swift; sourceTree = "<group>"; };
+		2D79B15D2C00CE9000E71EBB /* SolanaApiLoggerUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaApiLoggerUtil.swift; sourceTree = "<group>"; };
 		2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTransactionParams.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -3129,17 +3131,18 @@
 		DAE30DF7279164500056C5A3 /* Solana */ = {
 			isa = PBXGroup;
 			children = (
-				2DDE5B9829C4F8D200A5B708 /* SolanaWalletAssembly.swift */,
-				EF3B193B2AA85D230084AA1C /* SolanaExternalLinkProvider.swift */,
-				DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */,
-				DACFA7D02BA2DB1600ABEF02 /* SolanaFeeParameters.swift */,
 				DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */,
+				2D79B15D2C00CE9000E71EBB /* SolanaApiLoggerUtil.swift */,
+				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
+				DA570CEE27A802BE007F34EB /* SolanaError+.swift */,
+				EF3B193B2AA85D230084AA1C /* SolanaExternalLinkProvider.swift */,
+				DACFA7D02BA2DB1600ABEF02 /* SolanaFeeParameters.swift */,
 				DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */,
 				DAB6548927967D860002A5E8 /* SolanaResponse.swift */,
-				DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */,
-				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
 				DA346450279A802E00E77B1D /* SolanaSdk+.swift */,
-				DA570CEE27A802BE007F34EB /* SolanaError+.swift */,
+				DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */,
+				2DDE5B9829C4F8D200A5B708 /* SolanaWalletAssembly.swift */,
+				DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */,
 			);
 			path = Solana;
 			sourceTree = "<group>";
@@ -4294,6 +4297,7 @@
 				EF193BF82A715C5C0048C0C3 /* BlockBookUtxoProvider+BitcoinNetworkProvider.swift in Sources */,
 				DC5E652F2B1650F400E81AA5 /* OP_NOP.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
+				2D79B15E2C00CE9000E71EBB /* SolanaApiLoggerUtil.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				EF74D63E2BA35099000550F3 /* URLSessionWebSocketDelegateWrapper.swift in Sources */,
 				B6B083572AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift in Sources */,
