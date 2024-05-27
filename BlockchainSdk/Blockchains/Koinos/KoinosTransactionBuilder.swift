@@ -92,8 +92,8 @@ class KoinosTransactionBuilder {
             header: KoinosProtocol.TransactionHeader(
                 chainId: chainId,
                 rcLimit: manaLimitSatoshi,
-                nonce: encodedNextNonce.base64UrlEncodedString(),
-                operationMerkleRoot: operationMerkleRoot.base64UrlEncodedString(),
+                nonce: encodedNextNonce.base64URLEncodedString(),
+                operationMerkleRoot: operationMerkleRoot.base64URLEncodedString(),
                 payer: from,
                 payee: nil
             ),
@@ -103,7 +103,7 @@ class KoinosTransactionBuilder {
                     callContract: KoinosProtocol.CallContractOperation(
                         contractIdBase58: contractId,
                         entryPoint: Int(transferEntryPoint),
-                        argsBase64: operation.callContract.args.base64UrlEncodedString()
+                        argsBase64: operation.callContract.args.base64URLEncodedString()
                     )
                 )
             ],
@@ -119,7 +119,7 @@ class KoinosTransactionBuilder {
             id: transaction.id,
             operations: transaction.operations,
             signatures: [
-                Data([0x20] + normalizedSignature.bytes).base64UrlEncodedString()
+                Data([0x20] + normalizedSignature.bytes).base64URLEncodedString()
             ]
         )
     }
@@ -127,7 +127,7 @@ class KoinosTransactionBuilder {
 
 // MARK: Fileprivate extensions
 private extension Data {
-    func base64UrlEncodedString() -> String {
+    func base64URLEncodedString() -> String {
         base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
