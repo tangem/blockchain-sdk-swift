@@ -7,10 +7,7 @@
 //
 
 import Foundation
-import BigInt
 import Combine
-import TangemSdk
-import Moya
 
 // Used by Optimism, Base, and other Ethereum L2s with optimistic rollups.
 final class EthereumOptimisticRollupWalletManager: EthereumWalletManager {
@@ -24,24 +21,20 @@ final class EthereumOptimisticRollupWalletManager: EthereumWalletManager {
     /// This L1 fee will be added to the transaction fee automatically after it is sent to the network.
     /// This L1 fee calculated the Optimism smart-contract oracle.
     /// This L1 fee have to used ONLY for showing to a user.
-    /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
+    /// When we're building transaction we have to used `gasLimit`, `gasPrice` or `baseFee` ONLY from `L2`
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         super.getFee(destination: destination, value: value, data: data)
             .withWeakCaptureOf(self)
             .flatMap { walletManager, layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
                 // We use EthereumFeeParameters without increase
-                guard let parameters = layer2Fees.first?.parameters as? EthereumFeeParameters else {
+                guard let fee = layer2Fees.first else {
                     return .anyFail(error: BlockchainSdkError.failedToLoadFee)
                 }
 
-                return walletManager.getLayer1Fee(
-                    destination: destination,
-                    value: value,
-                    data: data,
-                    l2FeeParameters: parameters
-                )
-                .map { (layer2Fees, $0) }
-                .eraseToAnyPublisher()
+                return walletManager
+                    .getLayer1Fee(destination: destination, value: value, data: data, fee: fee)
+                    .map { (layer2Fees, $0) }
+                    .eraseToAnyPublisher()
             }
             .map { layer2Fees, layer1Fee -> [Fee] in
                 layer2Fees.map { fee in
@@ -61,38 +54,28 @@ private extension EthereumOptimisticRollupWalletManager {
         destination: String,
         value: String?,
         data: Data?,
-        l2FeeParameters: EthereumFeeParameters
+        fee: Fee
     ) -> AnyPublisher<Decimal, Error> {
-        let valueData = Data(hex: value ?? "0x0")
-        let transaction = EthereumTransaction(
-            nonce: BigUInt(0),
-            gasPrice: l2FeeParameters.gasPrice,
-            gasLimit: l2FeeParameters.gasLimit,
-            to: destination,
-            value: BigUInt(valueData),
-            data: data ?? Data()
-        )
+        do {
+            let hexTransactionData = try txBuilder.buildDummyTransactionForL1(destination: destination, value: value, data: data, fee: fee)
+            return networkService
+                .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: hexTransactionData))
+                .withWeakCaptureOf(self)
+                .tryMap { walletManager, response in
+                    guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: walletManager.wallet.blockchain.decimalCount) else {
+                        throw BlockchainSdkError.failedToLoadFee
+                    }
 
-        // Just collect data to get estimated fee from contact address
-        // https://github.com/ethereum/wiki/wiki/RLP
-        guard let rlpEncodedTransactionData = transaction.encode(forSignature: false) else {
-            return .anyFail(error: BlockchainSdkError.failedToLoadFee)
-        }
-
-        return networkService
-            .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: rlpEncodedTransactionData))
-            .tryMap { [wallet] response in
-                guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: wallet.blockchain.decimalCount) else {
-                    throw BlockchainSdkError.failedToLoadFee
+                    return value
                 }
-
-                return value
-            }
-            // We can ignore errors so as not to block users
-            // This L1Fee value is only needed to inform users. It will not used in the transaction
-            // Unfortunately L1 fee doesn't work well
-            .replaceError(with: 0)
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+                // We can ignore errors so as not to block users
+                // This L1Fee value is only needed to inform users. It will not used in the transaction
+                // Unfortunately L1 fee doesn't work well
+                .replaceError(with: 0)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        } catch {
+            return .anyFail(error: error)
+        }
     }
 }

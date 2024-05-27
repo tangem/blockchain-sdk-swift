@@ -78,7 +78,7 @@ private extension EthereumTarget {
         case .call(let params):
             return AnyEncodable([AnyEncodable(params), AnyEncodable("latest")])
         case .feeHistory:
-            return AnyEncodable([AnyEncodable(4), AnyEncodable("latest"), AnyEncodable([25, 75])])
+            return AnyEncodable([AnyEncodable(6), AnyEncodable("latest"), AnyEncodable([Int]())])
         }
     }
 }
