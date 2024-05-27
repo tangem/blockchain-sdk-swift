@@ -10,8 +10,8 @@ import Foundation
 
 class KoinosTransactionBuilder {
     private let isTestnet: Bool
-    
     private let transferEntryPoint: UInt32 = 0x27f576ca
+    private let transactionIdPrefix = "0x1220"
     
     private var contractId: String {
         if isTestnet {
@@ -28,8 +28,6 @@ class KoinosTransactionBuilder {
             "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA=="
         }
     }
-    
-    private let transactionIdPrefix = "0x1220"
     
     init(isTestnet: Bool) {
         self.isTestnet = isTestnet
@@ -48,10 +46,10 @@ class KoinosTransactionBuilder {
         }
         
         let satoshi = pow(10, Blockchain.koinos(testnet: false).decimalCount)
-        let amountSatoshi = (amount * satoshi).uint64Value
+        let amountSatoshi = (amount * satoshi).roundedDecimalNumber.uint64Value
         
         let manaLimit = params.manaLimit
-        let manaLimitSatoshi = (manaLimit * satoshi).uint64Value
+        let manaLimitSatoshi = (manaLimit * satoshi).roundedDecimalNumber.uint64Value
         
         let nextNonce = currentNonce.nonce + 1
 
@@ -75,8 +73,12 @@ class KoinosTransactionBuilder {
         }
         .serializedData()
         
+        guard let chainID = chainId.base64URLDecodedData() else {
+            throw WalletError.failedToBuildTx
+        }
+        
         let header = Koinos_Protocol_transaction_header.with {
-            $0.chainID = chainId.base64UrlDecodedData()!
+            $0.chainID = chainID
             $0.rcLimit = manaLimitSatoshi
             $0.nonce = encodedNextNonce
             $0.operationMerkleRoot = operationMerkleRoot
@@ -111,7 +113,7 @@ class KoinosTransactionBuilder {
         return (transactionToSign, hashToSign)
     }
     
-    func buildForSend(transaction: KoinosProtocol.Transaction, normalizedSignature: Data) throws -> KoinosProtocol.Transaction  {
+    func buildForSend(transaction: KoinosProtocol.Transaction, normalizedSignature: Data) -> KoinosProtocol.Transaction  {
         KoinosProtocol.Transaction(
             header: transaction.header,
             id: transaction.id,
@@ -133,7 +135,7 @@ private extension Data {
 }
 
 private extension String {
-    func base64UrlToBase64() -> String {
+    func base64URLToBase64() -> String {
         var base64 = self
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
@@ -144,8 +146,8 @@ private extension String {
     }
     
     /// Decodes a Base64 URL-safe encoded string to Data
-    func base64UrlDecodedData() -> Data? {
-        let base64 = self.base64UrlToBase64()
+    func base64URLDecodedData() -> Data? {
+        let base64 = self.base64URLToBase64()
         return Data(base64Encoded: base64)
     }
 }
