@@ -11,20 +11,16 @@ import Foundation
 class DecimalTransactionBuilder: EthereumTransactionBuilder {
     private let addressConverter = DecimalBlockchainAddressConverter()
     
-    override func buildForSign(transaction: Transaction, nonce: Int) -> CompiledEthereumTransaction? {
-        do {
-            let sourceConvertedAddress = try convertAddressIfNeeded(destinationAddress: transaction.sourceAddress)
-            let destinationConvertedAddress = try convertAddressIfNeeded(destinationAddress: transaction.destinationAddress)
-            
-            let copyTransaction = transaction.then { tx in
-                tx.sourceAddress = sourceConvertedAddress
-                tx.destinationAddress = destinationConvertedAddress
-            }
-            
-            return super.buildForSign(transaction: copyTransaction, nonce: nonce)
-        } catch {
-            return nil
+    override func buildForSign(transaction: Transaction) throws -> Data {
+        let sourceConvertedAddress = try convertAddressIfNeeded(destinationAddress: transaction.sourceAddress)
+        let destinationConvertedAddress = try convertAddressIfNeeded(destinationAddress: transaction.destinationAddress)
+
+        let copyTransaction = transaction.then { tx in
+            tx.sourceAddress = sourceConvertedAddress
+            tx.destinationAddress = destinationConvertedAddress
         }
+
+        return try super.buildForSign(transaction: copyTransaction)
     }
 
     override func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {

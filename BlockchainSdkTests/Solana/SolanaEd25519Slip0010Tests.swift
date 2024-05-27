@@ -68,7 +68,7 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo])
+        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo], apiLogger: nil)
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
         let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 

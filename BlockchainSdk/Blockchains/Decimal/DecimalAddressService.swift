@@ -13,7 +13,7 @@ struct DecimalAddressService {
     
     // MARK: - Private Properties
 
-    private let ethereumAddressService = EthereumAddressService()
+    private let ethereumAddressService = AddressServiceFactory(blockchain: .ethereum(testnet: false)).makeAddressService()
     private let converter = DecimalBlockchainAddressConverter()
 }
 
@@ -21,18 +21,16 @@ struct DecimalAddressService {
 
 extension DecimalAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
-        var address = try ethereumAddressService.makeAddress(for: publicKey, with: addressType)
-        
-        // If need to convert address to decimal native type
-        if case .default = addressType {
-            address = try DecimalPlainAddress(
-                value: converter.convertDscAddressToDecimalBlockchainAddress(addressHex: address.value),
-                publicKey: publicKey,
-                type: addressType
-            )
+        let ethAddress = try ethereumAddressService.makeAddress(for: publicKey, with: .default).value
+
+        switch addressType {
+        case .default:
+            // If need to convert address to decimal native type
+            let decimalAddress = try converter.convertDscAddressToDecimalBlockchainAddress(addressHex: ethAddress)
+            return DecimalPlainAddress(value: decimalAddress, publicKey: publicKey, type: addressType)
+        case .legacy:
+            return DecimalPlainAddress(value: ethAddress, publicKey: publicKey, type: addressType)
         }
-        
-        return DecimalPlainAddress(value: address.value, publicKey: publicKey, type: addressType)
     }
 }
 
