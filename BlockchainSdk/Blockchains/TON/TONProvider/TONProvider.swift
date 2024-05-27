@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import BigInt
 
 struct TONProvider: HostProvider {
     /// Blockchain API host
@@ -69,6 +70,33 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
+    func getWalletAddress(address: String, contractAddress: String) -> AnyPublisher<ResultStack, Error> {
+        guard let convertedAddress = try? address.bocEncoded() else {
+            return .emptyFail
+        }
+        let stack = [["tvm.Slice", convertedAddress]]
+        
+        return requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(method: "get_wallet_address", contractAddress: contractAddress, stack: stack)
+            )
+        )
+    }
+    
+    func getWalledData(walletAddress: String) -> AnyPublisher<ResultStack, Error> {
+        requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    method: "get_wallet_data",
+                    contractAddress: walletAddress,
+                    stack: []
+                )
+            )
+        )
+    }
+    
     private func requestPublisher<T: Codable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -81,4 +109,13 @@ struct TONProvider: HostProvider {
             .eraseToAnyPublisher()
     }
     
+}
+
+extension String {
+    func bocEncoded() throws -> String {
+        let addr = try TonAddress.parse(self)
+        let builder = Builder()
+        try addr.storeTo(builder: builder)
+        return try builder.endCell().toBoc().base64EncodedString()
+    }
 }
