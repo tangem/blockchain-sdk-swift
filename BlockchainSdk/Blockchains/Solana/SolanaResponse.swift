@@ -14,11 +14,13 @@ struct SolanaAccountInfoResponse {
     let accountExists: Bool
     let tokensByMint: [String: SolanaTokenAccountInfoResponse]
     let confirmedTransactionIDs: [String]
+    let mainAccountSpace: UInt64?
 }
 
 struct SolanaMainAccountInfoResponse {
     let balance: Lamports
     let accountExists: Bool
+    let space: UInt64?
 }
 
 struct SolanaTokenAccountInfoResponse {
