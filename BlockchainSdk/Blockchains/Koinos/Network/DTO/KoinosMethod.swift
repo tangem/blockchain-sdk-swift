@@ -8,6 +8,8 @@
 
 import Foundation
 
+// TODO: [KOINOS] Invent more suitable naming
+// https://tangem.atlassian.net/browse/IOS-6758
 enum KoinosMethod {}
 
 extension KoinosMethod {
