@@ -1,7 +1,7 @@
 PODS:
   - Alamofire (5.9.1)
   - AnyCodable-FlightSchool (0.6.7)
-  - BigInt (5.2.0)
+  - BigInt (5.3.0)
   - BinanceChain (1.0.1-beta):
     - BinanceChain/Core (= 1.0.1-beta)
   - BinanceChain/Core (1.0.1-beta):
@@ -31,11 +31,14 @@ PODS:
   - SwiftDate (7.0.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.8.0)
+  - TonSwift (1.0.3):
+    - BigInt
+    - TweetNacl
   - TweetNacl (1.0.2)
 
 DEPENDENCIES:
   - AnyCodable-FlightSchool (= 0.6.7)
-  - BigInt (= 5.2.0)
+  - BigInt (from `https://github.com/attaswift/BigInt.git`, tag `v5.3.0`)
   - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.11`)
   - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.20`)
   - Moya (= 15.0.0)
@@ -46,12 +49,12 @@ DEPENDENCIES:
   - SwiftCBOR (= 0.4.5)
   - SwiftyJSON (from `https://github.com/tangem/SwiftyJSON.git`, tag `5.0.1-tangem1`)
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
+  - TonSwift (from `https://github.com/tonkeeper/ton-swift.git`, tag `1.0.8`)
 
 SPEC REPOS:
   trunk:
     - Alamofire
     - AnyCodable-FlightSchool
-    - BigInt
     - Moya
     - ScaleCodec
     - Sodium
@@ -62,6 +65,9 @@ SPEC REPOS:
     - TweetNacl
 
 EXTERNAL SOURCES:
+  BigInt:
+    :git: https://github.com/attaswift/BigInt.git
+    :tag: v5.3.0
   BinanceChain:
     :git: https://github.com/tangem/swiftbinancechain.git
     :tag: 0.0.11
@@ -77,8 +83,14 @@ EXTERNAL SOURCES:
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
+  TonSwift:
+    :git: https://github.com/tonkeeper/ton-swift.git
+    :tag: 1.0.8
 
 CHECKOUT OPTIONS:
+  BigInt:
+    :git: https://github.com/attaswift/BigInt.git
+    :tag: v5.3.0
   BinanceChain:
     :git: https://github.com/tangem/swiftbinancechain.git
     :tag: 0.0.11
@@ -94,11 +106,14 @@ CHECKOUT OPTIONS:
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
+  TonSwift:
+    :git: https://github.com/tonkeeper/ton-swift.git
+    :tag: 1.0.8
 
 SPEC CHECKSUMS:
   Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
   AnyCodable-FlightSchool: 261cbe76757802b17d471b9059b21e6fa5edf57b
-  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  BigInt: 6de9bd5382015cc6aef4b0a2b27f6645045829f2
   BinanceChain: f727abc7a20ba71f4497e46b7400124027b25692
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
@@ -111,8 +126,9 @@ SPEC CHECKSUMS:
   SwiftDate: bbc26e26fc8c0c33fbee8c140c5e8a68293a148a
   SwiftyJSON: c0bd75b5969785b3d9ae41d5709fe75bc5de4002
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
+  TonSwift: 8263886e6a34c81a721cde1674cc70229a1d0d44
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: 173b2b443b03ba8e8d5053401f6587f7d5f9779b
+PODFILE CHECKSUM: f34e1c8e193baafc0f5ba5a9495e6b41ffc17852
 
 COCOAPODS: 1.15.2

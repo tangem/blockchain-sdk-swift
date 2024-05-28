@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import BigInt
+import TonSwift
 
 struct TONProvider: HostProvider {
     /// Blockchain API host
@@ -121,7 +122,7 @@ struct TONProvider: HostProvider {
 
 extension String {
     func bocEncoded() throws -> String {
-        let addr = try TonAddress.parse(self)
+        let addr = try TonSwift.Address.parse(self)
         let builder = Builder()
         try addr.storeTo(builder: builder)
         return try builder.endCell().toBoc().base64EncodedString()
