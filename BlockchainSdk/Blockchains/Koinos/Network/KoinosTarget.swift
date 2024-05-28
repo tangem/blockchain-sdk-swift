@@ -16,6 +16,21 @@ struct KoinosTarget: TargetType {
         case getNonce(address: String)
         case getResourceLimits
         case submitTransaction(transaction: KoinosProtocol.Transaction)
+        
+        var method: String {
+            switch self {
+            case .getKoinBalance:
+                "chain.read_contract"
+            case .getRc:
+                "chain.get_account_rc"
+            case .getNonce:
+                "chain.get_account_nonce"
+            case .getResourceLimits:
+                "chain.get_resource_limits"
+            case .submitTransaction:
+                "chain.submit_transaction"
+            }
+        }
     }
     
     let node: NodeInfo
@@ -45,7 +60,7 @@ struct KoinosTarget: TargetType {
         case let .getKoinBalance(args):
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
-                method: KoinosMethod.ReadContract.method,
+                method: type.method,
                 params: KoinosMethod.ReadContract.RequestParams(
                     contractId: koinContractAbi.contractID,
                     entryPoint: KoinContractAbi.BalanceOf.entryPoint,
@@ -57,28 +72,28 @@ struct KoinosTarget: TargetType {
         case let .getRc(address):
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
-                method: KoinosMethod.GetAccountRC.method,
+                method: type.method,
                 params: KoinosMethod.GetAccountRC.RequestParams(account: address)
             )
             
         case let .getNonce(address):
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
-                method: KoinosMethod.GetAccountNonce.method,
+                method: type.method,
                 params: KoinosMethod.GetAccountNonce.RequestParams(account: address)
             )
             
         case .getResourceLimits:
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
-                method: KoinosMethod.GetResourceLimits.method,
+                method: type.method,
                 params: nil
             )
             
         case let .submitTransaction(transaction):
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
-                method: KoinosMethod.SubmitTransaction.method,
+                method: type.method,
                 params: KoinosMethod.SubmitTransaction.RequestParams(transaction: transaction, broadcast: true)
             )
         }

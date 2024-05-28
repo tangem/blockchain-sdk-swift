@@ -12,8 +12,6 @@ enum KoinosMethod {}
 
 extension KoinosMethod {
     enum ReadContract {
-        static let method = "chain.read_contract"
-        
         struct RequestParams: Codable {
             let contractId: String
             let entryPoint: Int
@@ -28,8 +26,6 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum GetAccountRC {
-        static let method = "chain.get_account_rc"
-        
         struct RequestParams: Codable {
             let account: String
         }
@@ -42,8 +38,6 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum GetAccountNonce {
-        static let method = "chain.get_account_nonce"
-        
         struct RequestParams: Codable {
             let account: String
         }
@@ -67,8 +61,6 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum GetResourceLimits {
-        static let method = "chain.get_resource_limits"
-        
         struct Response: Codable {
             let resourceLimitData: KoinosChain.ResourceLimitData
         }
@@ -77,8 +69,6 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum SubmitTransaction {
-        static let method = "chain.submit_transaction"
-        
         struct RequestParams: Codable {
             let transaction: KoinosProtocol.Transaction
             let broadcast: Bool
