@@ -12,13 +12,13 @@ enum KoinosMethod {}
 
 extension KoinosMethod {
     enum ReadContract {
-        struct RequestParams: Codable {
+        struct RequestParams: Encodable {
             let contractId: String
             let entryPoint: Int
             let args: String
         }
         
-        struct Response: Codable {
+        struct Response: Decodable {
             let result: String?
         }
     }
@@ -26,11 +26,11 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum GetAccountRC {
-        struct RequestParams: Codable {
+        struct RequestParams: Encodable {
             let account: String
         }
         
-        struct Response: Codable {
+        struct Response: Decodable {
             let rc: UInt64
         }
     }
@@ -38,11 +38,11 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum GetAccountNonce {
-        struct RequestParams: Codable {
+        struct RequestParams: Encodable {
             let account: String
         }
         
-        struct Response: Codable {
+        struct Response: Decodable {
             let nonce: UInt64
             
             init(from decoder: any Decoder) throws {
@@ -55,13 +55,17 @@ extension KoinosMethod {
                 }
                 self.nonce = nonce
             }
+            
+            enum CodingKeys: String, CodingKey {
+                case nonce
+            }
         }
     }
 }
 
 extension KoinosMethod {
     enum GetResourceLimits {
-        struct Response: Codable {
+        struct Response: Decodable {
             let resourceLimitData: KoinosChain.ResourceLimitData
         }
     }
@@ -69,12 +73,12 @@ extension KoinosMethod {
 
 extension KoinosMethod {
     enum SubmitTransaction {
-        struct RequestParams: Codable {
+        struct RequestParams: Encodable {
             let transaction: KoinosProtocol.Transaction
             let broadcast: Bool
         }
         
-        struct Response: Codable {
+        struct Response: Decodable {
             let receipt: KoinosProtocol.TransactionReceipt
         }
     }

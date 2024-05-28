@@ -44,7 +44,7 @@ class KoinosNetworkProvider: HostProvider {
         .eraseToAnyPublisher()
     }
     
-    func getRc(address: String) -> AnyPublisher<UInt64, Error> {
+    func getRC(address: String) -> AnyPublisher<UInt64, Error> {
         requestPublisher(
             for: .getRc(address: address),
             withResponseType: KoinosMethod.GetAccountRC.Response.self
@@ -78,11 +78,11 @@ class KoinosNetworkProvider: HostProvider {
         )
         .map(\.receipt)
         .tryMap { receipt in
-            guard let encodedEvent = receipt.events.first?.eventData,
-                  let decodedEvent = try? Koinos_Contracts_Token_transfer_event(textFormatString: encodedEvent)
-            else {
+            guard let encodedEvent = receipt.events.first?.eventData else {
                 throw WalletError.failedToParseNetworkResponse
             }
+            
+            let decodedEvent = try Koinos_Contracts_Token_transfer_event(textFormatString: encodedEvent)
             
             return KoinosTransactionEntry(
                 id: receipt.id,
@@ -100,7 +100,7 @@ class KoinosNetworkProvider: HostProvider {
         .eraseToAnyPublisher()
     }
     
-    private func requestPublisher<T: Codable>(
+    private func requestPublisher<T: Decodable>(
         for target: KoinosTarget.KoinosTargetType,
         withResponseType: T.Type
     ) -> AnyPublisher<T, Error> {
