@@ -8,6 +8,7 @@
 
 import Foundation
 import BigInt
+import TonSwift
 
 /// TON provider content of Response
 enum TONModels {

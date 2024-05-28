@@ -232,7 +232,7 @@ class RadiantTransactionBuilder {
         utxo
             .enumerated()
             .compactMap { index, txRef  in
-                let hash = Data(hex: txRef.hash)
+                let hash = Data(hexString: txRef.hash)
                 let outputScript = outputScripts.count == 1 ? outputScripts.first! : outputScripts[index]
                 return RadiantUnspentOutput(
                     amount: txRef.value.uint64Value,

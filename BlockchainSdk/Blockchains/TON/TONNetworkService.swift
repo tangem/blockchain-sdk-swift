@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import BigInt
+import TonSwift
 
 /// Abstract layer for multi provide TON blockchain
 class TONNetworkService: MultiNetworkProvider {
