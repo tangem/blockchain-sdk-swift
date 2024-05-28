@@ -116,7 +116,7 @@ enum TONModels {
         let bytes: String
     }
 
-    struct ResultStack: Codable {
+    struct ResultStack: Decodable {
         let stack: [Tuple]
         let exitCode: Int
         
@@ -159,10 +159,6 @@ enum TONModels {
                 }
             }
             self.stack = stack
-        }
-        
-        func encode(to encoder: any Encoder) throws {
-            fatalError()
         }
     }
 
