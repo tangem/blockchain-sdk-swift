@@ -41,4 +41,10 @@ extension Data {
     func asDataVector() -> DataVector {
         return DataVector(data: self)
     }
+    
+    func base64URLEncodedString() -> String {
+        base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+    }
 }

@@ -120,7 +120,7 @@ extension KoinosTransactionBuilderTests {
         let signature = Data(Array(repeating: 0x00, count: 64))
         let normalizedSignature = try Secp256k1Signature(with: signature).normalize()
         
-        let signedTransaction = try transactionBuilder.buildForSend(
+        let signedTransaction = transactionBuilder.buildForSend(
             transaction: expectedTransaction,
             normalizedSignature: normalizedSignature
         )

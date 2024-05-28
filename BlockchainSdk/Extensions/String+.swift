@@ -95,6 +95,22 @@ extension String {
     public static var unknown: String {
         "Unknown"
     }
+    
+    func base64URLToBase64() -> String {
+        var base64 = self
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        if base64.count % 4 != 0 {
+            base64.append(String(repeating: "=", count: 4 - base64.count % 4))
+        }
+        return base64
+    }
+    
+    /// Decodes a Base64 URL-safe encoded string to Data
+    func base64URLDecodedData() -> Data? {
+        let base64 = self.base64URLToBase64()
+        return Data(base64Encoded: base64)
+    }
 }
 
 extension String: Error, LocalizedError {
