@@ -35,7 +35,12 @@ class KoinosNetworkProvider: HostProvider {
             for: .getKoinBalance(args: args),
             withResponseType: KoinosMethod.ReadContract.Response.self
         )
-        .map(\.result)
+        .tryMap { response in
+            guard let result = response.result, let decodedResult = Data(base64Encoded: result) else {
+                return 0
+            }
+            return try Koinos_Contracts_Token_balance_of_result(serializedData: decodedResult).value
+        }
         .eraseToAnyPublisher()
     }
     

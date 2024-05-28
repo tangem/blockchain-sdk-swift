@@ -21,16 +21,7 @@ extension KoinosMethod {
         }
         
         struct Response: Codable {
-            let result: UInt64
-            
-            init(from decoder: any Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                let stringResult: String = try container.decode(forKey: .result)
-                guard let result = UInt64(stringResult) else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                self.result = result
-            }
+            let result: String?
         }
     }
 }
@@ -62,9 +53,9 @@ extension KoinosMethod {
             
             init(from decoder: any Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                let stringNonce: String = try container.decode(forKey: .nonce)
-                guard let data = Data(base64Encoded: stringNonce),
-                      let nonce = UInt64(data: data)
+                let base64EncodedNonce: String = try container.decode(forKey: .nonce)
+                guard let stringNonce = base64EncodedNonce.base64Decoded(),
+                      let nonce = UInt64(stringNonce)
                 else {
                     throw WalletError.failedToParseNetworkResponse
                 }
