@@ -71,11 +71,12 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    func getWalletAddress(address: String, contractAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
-        guard let convertedAddress = try? address.bocEncoded() else {
+    func getWalletAddress(addressString: String, contractAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
+        guard let address = try? TonSwift.Address.parse(addressString),
+              let serializedAddress = try? address.serialize() else {
             return .emptyFail
         }
-        let stack = [["tvm.Slice", convertedAddress]]
+        let stack = [["tvm.Slice", serializedAddress]]
         
         return requestPublisher(
             for: TONProviderTarget(
@@ -120,11 +121,10 @@ struct TONProvider: HostProvider {
     
 }
 
-extension String {
-    func bocEncoded() throws -> String {
-        let addr = try TonSwift.Address.parse(self)
+fileprivate extension TonSwift.Address {
+    func serialize() throws -> String {
         let builder = Builder()
-        try addr.storeTo(builder: builder)
+        try self.storeTo(builder: builder)
         return try builder.endCell().toBoc().base64EncodedString()
     }
 }
