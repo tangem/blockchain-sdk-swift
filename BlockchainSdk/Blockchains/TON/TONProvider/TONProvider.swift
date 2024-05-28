@@ -71,9 +71,10 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    func getWalletAddress(addressString: String, contractAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
-        guard let address = try? TonSwift.Address.parse(addressString),
-              let serializedAddress = try? address.serialize() else {
+    func getWalletAddress(for ownerAddress: String, contractAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
+        let ownerAddress = "EQBMunNB4UlTyogGUjHTLR3vYUKuJbHUxh0-b5nQHmd6RP57"
+        guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
+              let serializedAddress = try? tonAddress.serialize() else {
             return .emptyFail
         }
         let stack = [["tvm.Slice", serializedAddress]]
@@ -107,7 +108,7 @@ struct TONProvider: HostProvider {
         )
     }
     
-    private func requestPublisher<T: Codable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
+    private func requestPublisher<T: Decodable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         

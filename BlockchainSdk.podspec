@@ -43,7 +43,7 @@ Use BlockchainSdk for Tangem wallet integration
   # 'TangemWalletCore' dependency must be added via SPM
 
   s.dependency 'TangemSdk'
-  s.dependency 'BigInt'
+  s.dependency 'BigInt', '5.2.0'
   s.dependency 'SwiftyJSON', '5.0.1'
   s.dependency 'Moya', '15.0.0'
   s.dependency 'Sodium', '0.9.1'

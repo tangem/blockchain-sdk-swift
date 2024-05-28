@@ -52,12 +52,6 @@ class TONNetworkService: MultiNetworkProvider {
             )
         }
         .eraseToAnyPublisher()
-//        getToken(address: "EQBMunNB4UlTyogGUjHTLR3vYUKuJbHUxh0-b5nQHmd6RP57", contractAddress: "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs")
-//            .tryMap { result in
-//                print(result)
-//                throw WalletError.empty
-//            }
-//            .eraseToAnyPublisher()
     }
     
     func getFee(address: String, message: String) -> AnyPublisher<[Fee], Error> {
@@ -113,7 +107,7 @@ class TONNetworkService: MultiNetworkProvider {
     private func getToken(address: String, token: Token) -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             provider.getWalletAddress(
-                address: address,
+                for: address,
                 contractAddress: token.contractAddress
             )
             .tryMap { response in
