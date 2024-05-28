@@ -18,7 +18,7 @@ target 'BlockchainSdk' do
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'secp256k1.swift' dependency must be added via SPM
 
-  pod 'BigInt', '5.2.0'
+  pod 'BigInt', '5.3.0'
   pod 'Moya', '15.0.0'
   pod 'Sodium', '0.9.1'
   pod 'SwiftCBOR', '0.4.5'

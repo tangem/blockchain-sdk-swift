@@ -71,16 +71,11 @@ struct TONProviderTarget: TargetType {
                 method: .sendBocReturnHash,
                 params: ["boc": message]
             )
-        case .runGetMethod(let method, let contractAddress, let stack):
-            let request = TONModels.RunGetMethodRequest(
-                address: contractAddress,
-                method: method,
-                stack: stack
-            )
+        case .runGetMethod(let parameters):
             jrpcRequest = TONProviderRequest(
                 id: UUID().uuidString,
                 method: .runGetMethod,
-                params: request
+                params: parameters
             )
         }
         
@@ -110,7 +105,7 @@ extension TONProviderTarget {
         case getBalance(address: String)
         case sendBoc(message: String)
         case sendBocReturnHash(message: String)
-        case runGetMethod(method: String, contractAddress: String, stack: [[String]])
+        case runGetMethod(parameters: TONModels.RunGetMethodParameters)
     }
     
 }
