@@ -410,6 +410,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .cronos:
+            return "Cronos EVM"
+        case .telos:
+            return "Telos EVM"
         case .octa:
             return "OctaSpace"
         case .chia:
