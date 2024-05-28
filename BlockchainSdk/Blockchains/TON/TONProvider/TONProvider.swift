@@ -70,7 +70,7 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    func getWalletAddress(address: String, contractAddress: String) -> AnyPublisher<ResultStack, Error> {
+    func getWalletAddress(address: String, contractAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
         guard let convertedAddress = try? address.bocEncoded() else {
             return .emptyFail
         }
@@ -79,19 +79,27 @@ struct TONProvider: HostProvider {
         return requestPublisher(
             for: TONProviderTarget(
                 node: node,
-                targetType: .runGetMethod(method: "get_wallet_address", contractAddress: contractAddress, stack: stack)
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: contractAddress,
+                        method: "get_wallet_address",
+                        stack: stack
+                    )
+                )
             )
         )
     }
     
-    func getWalledData(walletAddress: String) -> AnyPublisher<ResultStack, Error> {
+    func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
         requestPublisher(
             for: TONProviderTarget(
                 node: node,
                 targetType: .runGetMethod(
-                    method: "get_wallet_data",
-                    contractAddress: walletAddress,
-                    stack: []
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: walletAddress,
+                        method: "get_wallet_data",
+                        stack: []
+                    )
                 )
             )
         )

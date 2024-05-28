@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BigInt
 
 /// TON provider content of Response
 enum TONModels {
@@ -103,10 +104,65 @@ enum TONModels {
         let num: String
     }
     
-    struct RunGetMethodRequest: Encodable {
+    struct RunGetMethodParameters: Encodable {
         let address: String
         let method: String
         
         let stack: [[String]]
     }
+    
+    struct RawCell: Decodable {
+        let bytes: String
+    }
+
+    struct ResultStack: Codable {
+        let stack: [Tuple]
+        let exitCode: Int
+        
+        enum CodingKeys: CodingKey {
+            case stack, exitCode
+        }
+        
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            self.exitCode = try container.decode(Int.self, forKey: .exitCode)
+
+            guard exitCode == 0 else {
+                self.stack = []
+                return
+            }
+            
+            var nestedContainer = try container.nestedUnkeyedContainer(forKey: .stack)
+            var stack = [Tuple]()
+            while !nestedContainer.isAtEnd {
+                var itemContainer = try nestedContainer.nestedUnkeyedContainer()
+                let key = try itemContainer.decode(String.self)
+                switch key {
+                case "cell":
+                    let value = try itemContainer.decode(RawCell.self)
+                    guard let data = Data(base64Encoded: value.bytes),
+                          let cells = try? Cell.fromBoc(src: data),
+                          let cell = cells.first else {
+                        continue
+                    }
+                    stack.append(.cell(cell: cell))
+                case "num":
+                    let value = try itemContainer.decode(String.self).removeHexPrefix()
+                    guard let intValue = BigInt(value, radix: 16) else {
+                        continue
+                    }
+                    stack.append(.int(value: intValue))
+                default:
+                    continue
+                }
+            }
+            self.stack = stack
+        }
+        
+        func encode(to encoder: any Encoder) throws {
+            fatalError()
+        }
+    }
+
 }
