@@ -492,6 +492,8 @@
 		DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */; };
 		DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
+		DA7C9A182C07B1C600C8C423 /* KoinosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */; };
+		DA7C9A1A2C07B30500C8C423 /* KoinosAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
@@ -1353,6 +1355,8 @@
 		DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosWalletManager.swift; sourceTree = "<group>"; };
 		DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTransactionBuilder.swift; sourceTree = "<group>"; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
+		DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosNetworkService.swift; sourceTree = "<group>"; };
+		DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosAccountInfo.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
@@ -3230,6 +3234,7 @@
 				DA5339A32BFCBE7E00BA3D80 /* DTO */,
 				DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */,
 				DA0E98D12C04708E00C92985 /* KoinosNetworkProvider.swift */,
+				DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -3363,6 +3368,7 @@
 				DA5ACCBD2C05B73E005892AC /* KoinosTransactionEntry.swift */,
 				DA5ACCBF2C05B7D1005892AC /* KoinosTransferEvent.swift */,
 				DA55032E2BFDF47500817BDA /* KoinosTransactionParams.swift */,
+				DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4611,7 +4617,9 @@
 				DC5E65262B1650F400E81AA5 /* OP_1NEGATE.swift in Sources */,
 				DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */,
 				5D26CEF9243CBF2700994CC0 /* BitcoinNetworkProvider.swift in Sources */,
+				DA7C9A182C07B1C600C8C423 /* KoinosNetworkService.swift in Sources */,
 				EF193BF82A715C5C0048C0C3 /* BlockBookUtxoProvider+BitcoinNetworkProvider.swift in Sources */,
+				DA7C9A1A2C07B30500C8C423 /* KoinosAccountInfo.swift in Sources */,
 				DC5E652F2B1650F400E81AA5 /* OP_NOP.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
