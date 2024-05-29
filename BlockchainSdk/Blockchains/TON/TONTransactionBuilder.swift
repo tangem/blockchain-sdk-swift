@@ -63,15 +63,24 @@ final class TONTransactionBuilder {
     ///   - destination: Destination address transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     private func input(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkSigningInput {
-        let transfer = try self.transfer(amount: amount, destination: destination, params: params)
-        
-        // Sign input with dummy key of Curve25519 private key
-        let input = TheOpenNetworkSigningInput.with {
-            $0.transfer = transfer
-            $0.privateKey = inputPrivateKey.rawRepresentation
+        switch amount.type {
+        case .coin, .reserve:
+            let transfer = try transfer(amount: amount, destination: destination, params: params)
+            
+            // Sign input with dummy key of Curve25519 private key
+            return TheOpenNetworkSigningInput.with {
+                $0.transfer = transfer
+                $0.privateKey = inputPrivateKey.rawRepresentation
+            }
+        case .token(let value):
+            let transfer = try jettonTransfer(amount: amount, destination: destination, params: params)
+
+            // Sign input with dummy key of Curve25519 private key
+            return TheOpenNetworkSigningInput.with {
+                $0.jettonTransfer = transfer
+                $0.privateKey = inputPrivateKey.rawRepresentation
+            }
         }
-        
-        return input
     }
     
     /// Create transfer message transaction to blockchain
@@ -90,6 +99,18 @@ final class TONTransactionBuilder {
             $0.comment = params?.memo ?? ""
          }
     }
+    
+    private func jettonTransfer(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkJettonTransfer {
+        let transferData = try transfer(amount: amount, destination: amount.type.token!.contractAddress, params: params)
+        return TheOpenNetworkJettonTransfer.with {
+            $0.transfer = transferData
+            $0.jettonAmount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
+            $0.toOwner = destination
+            $0.responseAddress = wallet.address
+            $0.forwardAmount = 1
+        }
+    }
+    
     
 }
 
