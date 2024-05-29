@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import BigInt
 import TonSwift
 
 /// Abstract layer for multi provide TON blockchain
@@ -35,11 +34,7 @@ class TONNetworkService: MultiNetworkProvider {
             getWalletInfo(address: address),
             getTokensBalance(address: address, tokens: tokens)
         )
-        .tryMap { [weak self] walletInfo, tokenBalances in
-            guard let self else {
-                throw WalletError.empty
-            }
-            
+        .tryMap { walletInfo, tokenBalances in
             guard let decimalBalance = Decimal(string: walletInfo.balance) else {
                 throw WalletError.failedToParseNetworkResponse
             }

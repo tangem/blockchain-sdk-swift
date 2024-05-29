@@ -22,22 +22,4 @@ struct TONProviderResponse<R: Decodable>: Decodable {
     
     /// Response code (Not transport)
     let code: Int?
-    
-    enum CodingKeys: CodingKey {
-        case ok
-        case result
-        case error
-        case code
-    }
-    
-    init(from decoder: any Decoder) throws {
-        let container: KeyedDecodingContainer<TONProviderResponse<R>.CodingKeys> = try decoder.container(keyedBy: TONProviderResponse<R>.CodingKeys.self)
-        
-        self.ok = try container.decode(Bool.self, forKey: TONProviderResponse<R>.CodingKeys.ok)
-        self.result = try container.decode(R.self, forKey: TONProviderResponse<R>.CodingKeys.result)
-        self.error = try container.decodeIfPresent(String.self, forKey: TONProviderResponse<R>.CodingKeys.error)
-        self.code = try container.decodeIfPresent(Int.self, forKey: TONProviderResponse<R>.CodingKeys.code)
-        
-    }
-    
 }

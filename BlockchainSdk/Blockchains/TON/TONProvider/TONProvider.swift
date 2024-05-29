@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import BigInt
 import TonSwift
 
 struct TONProvider: HostProvider {
@@ -71,13 +70,15 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    func getWalletAddress(for ownerAddress: String, contractAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
-        let ownerAddress = "EQBMunNB4UlTyogGUjHTLR3vYUKuJbHUxh0-b5nQHmd6RP57"
+    func getWalletAddress(
+        for ownerAddress: String,
+        contractAddress: String
+    ) -> AnyPublisher<TONModels.ResultStack, Error> {
         guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
               let serializedAddress = try? tonAddress.serialize() else {
             return .emptyFail
         }
-        let stack = [["tvm.Slice", serializedAddress]]
+        let stack = [[TONModels.RunGetMethodParameters.StackKey.slice.rawValue, serializedAddress]]
         
         return requestPublisher(
             for: TONProviderTarget(
@@ -85,7 +86,7 @@ struct TONProvider: HostProvider {
                 targetType: .runGetMethod(
                     parameters: TONModels.RunGetMethodParameters(
                         address: contractAddress,
-                        method: "get_wallet_address",
+                        method: .getWalletAddress,
                         stack: stack
                     )
                 )
@@ -100,7 +101,7 @@ struct TONProvider: HostProvider {
                 targetType: .runGetMethod(
                     parameters: TONModels.RunGetMethodParameters(
                         address: walletAddress,
-                        method: "get_wallet_data",
+                        method: .getWalletData,
                         stack: []
                     )
                 )

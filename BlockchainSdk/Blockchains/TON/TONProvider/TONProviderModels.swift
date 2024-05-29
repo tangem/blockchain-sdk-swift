@@ -107,9 +107,22 @@ enum TONModels {
     
     struct RunGetMethodParameters: Encodable {
         let address: String
-        let method: String
+        let method: Method
         
         let stack: [[String]]
+        
+        enum Method: String, Encodable {
+            case getWalletAddress = "get_wallet_address"
+            case getWalletData = "get_wallet_data"
+        }
+        
+        enum StackKey: String {
+            case slice = "tvm.Slice"
+            case cell = "tvm.Cell"
+            case number = "tvm.Number"
+            case tuple = "tvm.Tuple"
+            case list = "tvm.List"
+        }
     }
     
     struct RawCell: Decodable {
@@ -122,6 +135,10 @@ enum TONModels {
         
         enum CodingKeys: CodingKey {
             case stack, exitCode
+        }
+        
+        enum ElementType: String, Decodable {
+            case cell, num
         }
         
         init(from decoder: any Decoder) throws {
@@ -138,28 +155,27 @@ enum TONModels {
             var stack = [Tuple]()
             while !nestedContainer.isAtEnd {
                 var itemContainer = try nestedContainer.nestedUnkeyedContainer()
-                let key = try itemContainer.decode(String.self)
+                let key = try itemContainer.decodeIfPresent(ElementType.self)
                 switch key {
-                case "cell":
-                    let value = try itemContainer.decode(RawCell.self)
-                    guard let data = Data(base64Encoded: value.bytes),
+                case .cell:
+                    guard let value = try? itemContainer.decode(RawCell.self),
+                          let data = Data(base64Encoded: value.bytes),
                           let cells = try? Cell.fromBoc(src: data),
                           let cell = cells.first else {
                         continue
                     }
                     stack.append(.cell(cell: cell))
-                case "num":
-                    let value = try itemContainer.decode(String.self).removeHexPrefix()
-                    guard let intValue = BigInt(value, radix: 16) else {
+                case .num:
+                    guard let value = try? itemContainer.decode(String.self).removeHexPrefix(),
+                          let intValue = BigInt(value, radix: 16) else {
                         continue
                     }
                     stack.append(.int(value: intValue))
-                default:
+                case .none:
                     continue
                 }
             }
             self.stack = stack
         }
     }
-
 }
