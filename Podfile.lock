@@ -49,7 +49,7 @@ DEPENDENCIES:
   - SwiftCBOR (= 0.4.5)
   - SwiftyJSON (from `https://github.com/tangem/SwiftyJSON.git`, tag `5.0.1-tangem1`)
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
-  - TonSwift (from `https://github.com/tonkeeper/ton-swift.git`, tag `1.0.8`)
+  - TonSwift (from `../ton-swift`)
 
 SPEC REPOS:
   trunk:
@@ -82,8 +82,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
   TonSwift:
-    :git: https://github.com/tonkeeper/ton-swift.git
-    :tag: 1.0.8
+    :path: "../ton-swift"
 
 CHECKOUT OPTIONS:
   BinanceChain:
@@ -101,9 +100,6 @@ CHECKOUT OPTIONS:
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
-  TonSwift:
-    :git: https://github.com/tonkeeper/ton-swift.git
-    :tag: 1.0.8
 
 SPEC CHECKSUMS:
   Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
@@ -124,6 +120,6 @@ SPEC CHECKSUMS:
   TonSwift: 8263886e6a34c81a721cde1674cc70229a1d0d44
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: 08404e8f81d55467d9f092f54de783d4837cc009
+PODFILE CHECKSUM: e95fb36b941c228a12cb5a38b688f38ab2109286
 
 COCOAPODS: 1.15.2

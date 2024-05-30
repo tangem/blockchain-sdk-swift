@@ -25,7 +25,7 @@ target 'BlockchainSdk' do
   pod 'AnyCodable-FlightSchool', '0.6.7'
   pod 'stellar-ios-mac-sdk', '2.5.4'
   pod 'ScaleCodec', '0.2.1'
-  pod 'TonSwift', :git => 'https://github.com/tonkeeper/ton-swift.git', :tag => '1.0.8'
+  pod 'TonSwift', :path => '../ton-swift'
 
   pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.11'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'

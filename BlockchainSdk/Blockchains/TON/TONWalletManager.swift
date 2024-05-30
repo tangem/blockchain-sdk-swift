@@ -10,6 +10,8 @@ import Foundation
 import Combine
 import TangemSdk
 import WalletCore
+import TonSwift
+import BigInt
 
 final class TONWalletManager: BaseManager, WalletManager {
     
@@ -58,6 +60,8 @@ final class TONWalletManager: BaseManager, WalletManager {
                     throw WalletError.failedToBuildTx
                 }
                 
+//                return try buildJettonTransaction(transaction)
+                
                 let params = transaction.params as? TONTransactionParams
                 
                 let input = try self.txBuilder.buildForSign(
@@ -86,8 +90,43 @@ final class TONWalletManager: BaseManager, WalletManager {
             .eraseSendError()
             .eraseToAnyPublisher()
     }
+    
+    func buildJettonTransaction(_ transaction: Transaction) throws -> String {
+        guard let decimal = transaction.amount.type.token?.decimalValue,
+              let contractAddress = transaction.contractAddress,
+              let jettonAddress = try? TonSwift.Address.parse("kQAg-9HHel0pd8DBTNofkXYFcfIS_FsVPHNaTYD6HqWAk56O"),
+              let toAddress = try? TonSwift.Address.parse("0QDNlCpcoNcMTfl3_Rybj-gPeFTgg-c8fauyDqVp4r6eS-UP"),
+              let fromAddress = try? TonSwift.Address.parse("0QATODhcR-gw4CAnk7vmjOXEGzpN2yek37BDp9O_biB51SoO"),
+              let jettonTransferMessage = try? JettonTransferMessage.internalMessage(
+                jettonAddress: jettonAddress,
+                amount: BigInt((transaction.amount.value * decimal).uint64Value),
+                bounce: false,
+                to: toAddress, from: fromAddress
+              ) else { return "" }
+        
+        var builder = Builder()
+//        
+//        let data = JettonTransferData(queryId: 0, amount: BigInt((transaction.amount.value * decimal).uint64Value).magnitude, toAddress: toAddress, responseAddress: fromAddress, forwardAmount: BigUInt(stringLiteral: "1").magnitude, forwardPayload: nil)
+//        
+        try builder.store(uint: OpCodes.JETTON_TRANSFER, bits: 32)
+        try builder.store(uint: 0, bits: 64)
+        try builder.store(coins: Coins((transaction.amount.value * decimal).uint64Value))
+        try builder.store(toAddress)
+        try builder.store(fromAddress)
+        try builder.store(bit: false)
+        try builder.store(coins: Coins(0))
+        try builder.store(coins: Coins(0))
+        try builder.store(uint: 64, bits: 0)
+        try builder.store(uint: 32, bits: 0)
+        try builder.storeMaybe(ref: Cell?.none)
+        
 
-     func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
+        try? jettonTransferMessage.storeTo(builder: builder)
+        return (try? builder.endCell().toBoc().base64EncodedString()) ?? ""
+    }
+        
+
+    func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
         let output: TheOpenNetworkSigningOutput
         
         if let signer = signer {

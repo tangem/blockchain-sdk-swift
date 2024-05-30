@@ -72,8 +72,13 @@ final class TONTransactionBuilder {
                 $0.transfer = transfer
                 $0.privateKey = inputPrivateKey.rawRepresentation
             }
-        case .token(let value):
-            let transfer = try jettonTransfer(amount: amount, destination: destination, params: params)
+        case .token(let token):
+            let transfer = try jettonTransfer(
+                amount: amount,
+                destination: destination,
+                token: token,
+                params: params
+            )
 
             // Sign input with dummy key of Curve25519 private key
             return TheOpenNetworkSigningInput.with {
@@ -91,8 +96,8 @@ final class TONTransactionBuilder {
     private func transfer(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkTransfer {
         TheOpenNetworkTransfer.with {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
-            $0.dest = destination
-            $0.amount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
+            $0.dest = "kQDYBu-mF0x8sOhtV08x5ahY_MOJ4dFrP6_CngW5_mk0qtA5"
+            $0.amount = ((5 * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
             $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = modeTransactionConstant
             $0.bounceable = false
@@ -100,13 +105,18 @@ final class TONTransactionBuilder {
          }
     }
     
-    private func jettonTransfer(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkJettonTransfer {
-        let transferData = try transfer(amount: amount, destination: amount.type.token!.contractAddress, params: params)
+    private func jettonTransfer(
+        amount: Amount,
+        destination: String,
+        token: Token,
+        params: TONTransactionParams?
+    ) throws -> TheOpenNetworkJettonTransfer {
+        let transferData = try transfer(amount: amount, destination: token.contractAddress, params: params)
         return TheOpenNetworkJettonTransfer.with {
             $0.transfer = transferData
-            $0.jettonAmount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
-            $0.toOwner = destination
-            $0.responseAddress = wallet.address
+            $0.jettonAmount = 5000000
+            $0.toOwner = "0QDNlCpcoNcMTfl3_Rybj-gPeFTgg-c8fauyDqVp4r6eS-UP"//destination
+            $0.responseAddress = "0QATODhcR-gw4CAnk7vmjOXEGzpN2yek37BDp9O_biB51SoO"// wallet.address
             $0.forwardAmount = 1
         }
     }

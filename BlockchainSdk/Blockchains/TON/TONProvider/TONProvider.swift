@@ -30,7 +30,7 @@ struct TONProvider: HostProvider {
         node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
-        self.node = node
+        self.node = NodeInfo(url: URL(string: "https://testnet.toncenter.com/api/v2")!)
         self.network = .init(configuration: networkConfig)
     }
     
@@ -74,6 +74,8 @@ struct TONProvider: HostProvider {
         for ownerAddress: String,
         contractAddress: String
     ) -> AnyPublisher<TONModels.ResultStack, Error> {
+        
+        
         guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
               let serializedAddress = try? tonAddress.serialize() else {
             return .emptyFail
@@ -95,7 +97,8 @@ struct TONProvider: HostProvider {
     }
     
     func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
-        requestPublisher(
+        Thread.sleep(until: Date(timeIntervalSinceNow: TimeInterval.random(in: 0...5)))
+        return requestPublisher(
             for: TONProviderTarget(
                 node: node,
                 targetType: .runGetMethod(
