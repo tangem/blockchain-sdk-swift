@@ -12,15 +12,15 @@ import Foundation
 class KoinosNetworkService: MultiNetworkProvider {
     let providers: [KoinosNetworkProvider]
     var currentProviderIndex = 0
-    private let decimalCount: Decimal
+    private let satoshiMultiplier: Decimal
     
-    init(providers: [KoinosNetworkProvider], decimalCount: Decimal) {
+    init(providers: [KoinosNetworkProvider], decimalCount: Int) {
         self.providers = providers
-        self.decimalCount = decimalCount
+        self.satoshiMultiplier = pow(10, decimalCount)
     }
     
     func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
-        providerPublisher { [decimalCount] provider in
+        providerPublisher { [satoshiMultiplier] provider in
             let balanceResult: AnyPublisher<UInt64, Error>
             let manaResult: AnyPublisher<UInt64, Error>
             
@@ -32,8 +32,8 @@ class KoinosNetworkService: MultiNetworkProvider {
             }
             
             return Publishers.Zip(
-                balanceResult.map { Decimal($0) / decimalCount },
-                manaResult.map { Decimal($0) / decimalCount }
+                balanceResult.map { Decimal($0) / satoshiMultiplier },
+                manaResult.map { Decimal($0) / satoshiMultiplier }
             )
             .map { balance, mana in
                 KoinosAccountInfo(
@@ -61,14 +61,14 @@ class KoinosNetworkService: MultiNetworkProvider {
     }
     
     func getRCLimit() -> AnyPublisher<Decimal, Error> {
-        providerPublisher { [decimalCount] provider in
+        providerPublisher { [satoshiMultiplier] provider in
             provider.getResourceLimits()
                 .map { limits in
                     let rcLimitSatoshi = Constants.MaxDiskStorageLimit * limits.diskStorageCost
                         + Constants.MaxNetworkLimit * limits.networkBandwidthCost
                         + Constants.MaxComputeLimit * limits.computeBandwidthCost
                     
-                    return Decimal(rcLimitSatoshi) / decimalCount
+                    return Decimal(rcLimitSatoshi) / satoshiMultiplier
                 }
                 .eraseToAnyPublisher()
         }
