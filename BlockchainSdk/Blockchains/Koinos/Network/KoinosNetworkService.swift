@@ -12,10 +12,11 @@ import Foundation
 class KoinosNetworkService: MultiNetworkProvider {
     let providers: [KoinosNetworkProvider]
     var currentProviderIndex = 0
-    private let decimalCount = Decimal(Blockchain.koinos(testnet: false).decimalCount)
+    private let decimalCount: Decimal
     
-    init(providers: [KoinosNetworkProvider]) {
+    init(providers: [KoinosNetworkProvider], decimalCount: Decimal) {
         self.providers = providers
+        self.decimalCount = decimalCount
     }
     
     func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
@@ -59,13 +60,13 @@ class KoinosNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getRCLimit() -> AnyPublisher<Decimal, Error> /* TODO: [KOINOS] BigDecimal? */ {
+    func getRCLimit() -> AnyPublisher<Decimal, Error> {
         providerPublisher { [decimalCount] provider in
             provider.getResourceLimits()
                 .map { limits in
-                    let rcLimitSatoshi = KoinosNetworkServiceConstants.MaxDiskStorageLimit * limits.diskStorageCost
-                        + KoinosNetworkServiceConstants.MaxNetworkLimit * limits.networkBandwidthCost
-                        + KoinosNetworkServiceConstants.MaxComputeLimit * limits.computeBandwidthCost
+                    let rcLimitSatoshi = Constants.MaxDiskStorageLimit * limits.diskStorageCost
+                        + Constants.MaxNetworkLimit * limits.networkBandwidthCost
+                        + Constants.MaxComputeLimit * limits.computeBandwidthCost
                     
                     return Decimal(rcLimitSatoshi) / decimalCount
                 }
@@ -74,8 +75,10 @@ class KoinosNetworkService: MultiNetworkProvider {
     }
 }
 
-private enum KoinosNetworkServiceConstants {
-    static let MaxDiskStorageLimit: UInt64 = 118
-    static let MaxNetworkLimit: UInt64 = 408
-    static let MaxComputeLimit: UInt64 = 1_000_000
+private extension KoinosNetworkService {
+    enum Constants {
+        static let MaxDiskStorageLimit: UInt64 = 118
+        static let MaxNetworkLimit: UInt64 = 408
+        static let MaxComputeLimit: UInt64 = 1_000_000
+    }
 }

@@ -9,7 +9,7 @@
 import Foundation
 
 struct KoinosAccountInfo {
-    let koinBalance: Decimal // TODO: [KOINOS] BigDecimal?
-    let mana: Decimal // TODO: [KOINOS] BigDecimal?
-    let maxMana: Decimal // TODO: [KOINOS] BigDecimal?
+    let koinBalance: Decimal
+    let mana: Decimal
+    let maxMana: Decimal
 }
