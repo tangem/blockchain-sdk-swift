@@ -435,6 +435,10 @@
 		B6FC9DC52B62A3AC00448D8A /* HederaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC9DC42B62A3AC00448D8A /* HederaWalletAssembly.swift */; };
 		B6FC9DC82B62A45600448D8A /* HederaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC9DC72B62A45600448D8A /* HederaAddressService.swift */; };
 		BFF1171432045E1915ABA71F /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF8BC4C03E68061ED530292C /* Pods_BlockchainSdk.framework */; };
+		DA0E98D22C04708E00C92985 /* KoinosNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D12C04708E00C92985 /* KoinosNetworkProvider.swift */; };
+		DA0E98D42C0472DB00C92985 /* KoinosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */; };
+		DA0E98D62C04755C00C92985 /* KoinosMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D52C04755C00C92985 /* KoinosMethod.swift */; };
+		DA0E98D82C0486D900C92985 /* KoinosChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D72C0486D900C92985 /* KoinosChain.swift */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
 		DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */; };
 		DA198B5629E3F6D300DB6EEA /* CosmosModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */; };
@@ -452,11 +456,11 @@
 		DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA346450279A802E00E77B1D /* SolanaSdk+.swift */; };
 		DA3738F129EFDF9600439F6B /* PrivateKeySigner+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3738EF29EFDF9600439F6B /* PrivateKeySigner+.swift */; };
 		DA3738F229EFDF9600439F6B /* XCTAssert+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3738F029EFDF9600439F6B /* XCTAssert+.swift */; };
+		DA46E6992C05DD1A002BCE7F /* KoinosMethodResponseDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA46E6982C05DD1A002BCE7F /* KoinosMethodResponseDecodingTests.swift */; };
 		DA4820FA2BA1A0250007E0E1 /* ErrorCodeProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4820F92BA1A0250007E0E1 /* ErrorCodeProviding.swift */; };
 		DA4B80252BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4B80242BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift */; };
 		DA5339A52BFCBE8600BA3D80 /* KoinosProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5339A42BFCBE8600BA3D80 /* KoinosProtocol.swift */; };
 		DA55032F2BFDF47500817BDA /* KoinosTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA55032E2BFDF47500817BDA /* KoinosTransactionParams.swift */; };
-		DA5503312BFDF4A300817BDA /* KoinosTransactionBuilderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5503302BFDF4A300817BDA /* KoinosTransactionBuilderError.swift */; };
 		DA570CEF27A802BE007F34EB /* SolanaError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CEE27A802BE007F34EB /* SolanaError+.swift */; };
 		DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
 		DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */; };
@@ -467,6 +471,10 @@
 		DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA59751D27D749A9009F0A1F /* MapKit.framework */; };
 		DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */; };
+		DA5ACCBE2C05B73E005892AC /* KoinosTransactionEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5ACCBD2C05B73E005892AC /* KoinosTransactionEntry.swift */; };
+		DA5ACCC02C05B7D1005892AC /* KoinosTransferEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5ACCBF2C05B7D1005892AC /* KoinosTransferEvent.swift */; };
+		DA5ACCC22C05BF4F005892AC /* KoinContractAbi.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5ACCC12C05BF4F005892AC /* KoinContractAbi.swift */; };
+		DA5ACCC42C05CDE5005892AC /* JSONEncoder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5ACCC32C05CDE5005892AC /* JSONEncoder+.swift */; };
 		DA60AF1229E8308E0013F5AC /* CosmosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA60AF1129E8308E0013F5AC /* CosmosWalletAssembly.swift */; };
 		DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B08C29CB3FAF00AC6E49 /* KaspaTests.swift */; };
 		DA63B09A29CB3FC700AC6E49 /* KaspaNetworkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09029CB3FC700AC6E49 /* KaspaNetworkModels.swift */; };
@@ -1286,6 +1294,10 @@
 		BF8BC4C03E68061ED530292C /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA07EFEA28191631008712F1 /* TronTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
+		DA0E98D12C04708E00C92985 /* KoinosNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosNetworkProvider.swift; sourceTree = "<group>"; };
+		DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTarget.swift; sourceTree = "<group>"; };
+		DA0E98D52C04755C00C92985 /* KoinosMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosMethod.swift; sourceTree = "<group>"; };
+		DA0E98D72C0486D900C92985 /* KoinosChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosChain.swift; sourceTree = "<group>"; };
 		DA11507627DB217200CDC879 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesBlockBookConfig.swift; sourceTree = "<group>"; };
 		DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosModels.swift; sourceTree = "<group>"; };
@@ -1306,11 +1318,11 @@
 		DA346450279A802E00E77B1D /* SolanaSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SolanaSdk+.swift"; sourceTree = "<group>"; };
 		DA3738EF29EFDF9600439F6B /* PrivateKeySigner+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PrivateKeySigner+.swift"; sourceTree = "<group>"; };
 		DA3738F029EFDF9600439F6B /* XCTAssert+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTAssert+.swift"; sourceTree = "<group>"; };
+		DA46E6982C05DD1A002BCE7F /* KoinosMethodResponseDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosMethodResponseDecodingTests.swift; sourceTree = "<group>"; };
 		DA4820F92BA1A0250007E0E1 /* ErrorCodeProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorCodeProviding.swift; sourceTree = "<group>"; };
 		DA4B80242BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinTransactionFeeCalculator.swift; sourceTree = "<group>"; };
 		DA5339A42BFCBE8600BA3D80 /* KoinosProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosProtocol.swift; sourceTree = "<group>"; };
 		DA55032E2BFDF47500817BDA /* KoinosTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransactionParams.swift; sourceTree = "<group>"; };
-		DA5503302BFDF4A300817BDA /* KoinosTransactionBuilderError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransactionBuilderError.swift; sourceTree = "<group>"; };
 		DA570CEE27A802BE007F34EB /* SolanaError+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SolanaError+.swift"; sourceTree = "<group>"; };
 		DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotBlockchainMeta.swift; sourceTree = "<group>"; };
 		DA59750827D744A7009F0A1F /* BlockchainSdkExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlockchainSdkExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1320,6 +1332,10 @@
 		DA59751127D744A9009F0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DA59751D27D749A9009F0A1F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleViewModel.swift; sourceTree = "<group>"; };
+		DA5ACCBD2C05B73E005892AC /* KoinosTransactionEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransactionEntry.swift; sourceTree = "<group>"; };
+		DA5ACCBF2C05B7D1005892AC /* KoinosTransferEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransferEvent.swift; sourceTree = "<group>"; };
+		DA5ACCC12C05BF4F005892AC /* KoinContractAbi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinContractAbi.swift; sourceTree = "<group>"; };
+		DA5ACCC32C05CDE5005892AC /* JSONEncoder+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONEncoder+.swift"; sourceTree = "<group>"; };
 		DA60AF1129E8308E0013F5AC /* CosmosWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosWalletAssembly.swift; sourceTree = "<group>"; };
 		DA63B08C29CB3FAF00AC6E49 /* KaspaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTests.swift; sourceTree = "<group>"; };
 		DA63B09029CB3FC700AC6E49 /* KaspaNetworkModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkModels.swift; sourceTree = "<group>"; };
@@ -2197,6 +2213,7 @@
 				B62EC6822B0E88A10018F51C /* Log+.swift */,
 				EF74D6412BA38124000550F3 /* Future+.swift */,
 				EF2D9DCE2BC40E280055C485 /* Result+.swift */,
+				DA5ACCC32C05CDE5005892AC /* JSONEncoder+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3211,6 +3228,8 @@
 			isa = PBXGroup;
 			children = (
 				DA5339A32BFCBE7E00BA3D80 /* DTO */,
+				DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */,
+				DA0E98D12C04708E00C92985 /* KoinosNetworkProvider.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -3219,6 +3238,8 @@
 			isa = PBXGroup;
 			children = (
 				DA5339A42BFCBE8600BA3D80 /* KoinosProtocol.swift */,
+				DA0E98D52C04755C00C92985 /* KoinosMethod.swift */,
+				DA0E98D72C0486D900C92985 /* KoinosChain.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -3330,8 +3351,7 @@
 				DACAAB522BE8BDED0039ED3D /* KoinosAddressService.swift */,
 				DACAAB542BE8C2F30039ED3D /* KoinosExternalLinkProvider.swift */,
 				DAD555282BFB4110000030E5 /* KoinosTransactionBuilder.swift */,
-				DA55032E2BFDF47500817BDA /* KoinosTransactionParams.swift */,
-				DA5503302BFDF4A300817BDA /* KoinosTransactionBuilderError.swift */,
+				DA5ACCC12C05BF4F005892AC /* KoinContractAbi.swift */,
 			);
 			path = Koinos;
 			sourceTree = "<group>";
@@ -3340,6 +3360,9 @@
 			isa = PBXGroup;
 			children = (
 				DAD555372BFB463C000030E5 /* KoinosAccountNonce.swift */,
+				DA5ACCBD2C05B73E005892AC /* KoinosTransactionEntry.swift */,
+				DA5ACCBF2C05B7D1005892AC /* KoinosTransferEvent.swift */,
+				DA55032E2BFDF47500817BDA /* KoinosTransactionParams.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3367,6 +3390,7 @@
 			children = (
 				DAE343C52BF36329001B3F38 /* KoinosAddressTests.swift */,
 				DAE657E82BFCA3E400D7D63A /* KoinosTransactionBuilderTests.swift */,
+				DA46E6982C05DD1A002BCE7F /* KoinosMethodResponseDecodingTests.swift */,
 			);
 			path = Koinos;
 			sourceTree = "<group>";
@@ -4279,6 +4303,7 @@
 				EFF466E82ACD851700ACC3EA /* PendingTransactionRecord.swift in Sources */,
 				DC5E64FF2B1650F400E81AA5 /* OP_1ADD.swift in Sources */,
 				2D24F5B02B6D2C6500D502A0 /* AptosAccountInfo.swift in Sources */,
+				DA0E98D42C0472DB00C92985 /* KoinosTarget.swift in Sources */,
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,
 				2DA13A022A8AD83B00E3C374 /* ChiaNetworkProvider.swift in Sources */,
@@ -4388,6 +4413,7 @@
 				DC5E65272B1650F400E81AA5 /* OP_0.swift in Sources */,
 				B6BA93732AEA0E9B00F84E36 /* NEARNetworkParams.Transaction.swift in Sources */,
 				EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */,
+				DA5ACCBE2C05B73E005892AC /* KoinosTransactionEntry.swift in Sources */,
 				B65D2E792AD9B208004DF330 /* NEARNetworkService.swift in Sources */,
 				2D9A91A429BB8C1700476EA6 /* TONProvider.swift in Sources */,
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
@@ -4477,6 +4503,7 @@
 				B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift in Sources */,
 				2D3FF8842B1754BC004416A2 /* DecimalNetworkService.swift in Sources */,
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
+				DA0E98D22C04708E00C92985 /* KoinosNetworkProvider.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
 				B6582CD92B3CA9BA00711283 /* VeChainFeeParams.swift in Sources */,
@@ -4503,6 +4530,7 @@
 				DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */,
 				DC5E65192B1650F400E81AA5 /* OP_2DUP.swift in Sources */,
 				B633EA142B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift in Sources */,
+				DA5ACCC22C05BF4F005892AC /* KoinContractAbi.swift in Sources */,
 				DC5E65112B1650F400E81AA5 /* OP_TUCK.swift in Sources */,
 				EF3B192E2AA85CA70084AA1C /* StellarExternalLinkProvider.swift in Sources */,
 				B6F89EB72BB21CB30009A453 /* PolkadotAccountHealthInfo.swift in Sources */,
@@ -4513,12 +4541,12 @@
 				EFF82D4C2B9F62A5004DF1A0 /* ElectrumDTO.swift in Sources */,
 				B6FC8F3B2B333A4B00CD55ED /* VeChainBlockInfo.swift in Sources */,
 				B6D345F62AD8B4A50009D1B2 /* NEARWalletManager.swift in Sources */,
+				DA5ACCC42C05CDE5005892AC /* JSONEncoder+.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
 				2D9A91A129BB8C1700476EA6 /* TONProviderModels.swift in Sources */,
 				EF3B19282AA85C740084AA1C /* DisChainExternalLinkProvider.swift in Sources */,
 				B6F89EA12BB20D5B0009A453 /* SubscanAPIParams.ExtrinsicInfo.swift in Sources */,
 				DA9EA73F29EE958500CAE6F2 /* CosmosTransactionParams.swift in Sources */,
-				DA5503312BFDF4A300817BDA /* KoinosTransactionBuilderError.swift in Sources */,
 				2DDEFBCC2B59B42E00885675 /* AlgorandTransactionBuildParams.swift in Sources */,
 				EF3FFFFF2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift in Sources */,
 				B6BA937D2AEA0F3900F84E36 /* NEARNetworkResult.TransactionSendAsync.swift in Sources */,
@@ -4653,6 +4681,7 @@
 				DC5E64F22B1650F400E81AA5 /* OP_RSHIFT.swift in Sources */,
 				DC5E65392B16566100E81AA5 /* OpCodeFactory.swift in Sources */,
 				B6BA936D2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift in Sources */,
+				DA0E98D82C0486D900C92985 /* KoinosChain.swift in Sources */,
 				EF3B19322AA85CDD0084AA1C /* TezosExternalLinkProvider.swift in Sources */,
 				B633EA232B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift in Sources */,
 				0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */,
@@ -4723,6 +4752,7 @@
 				EF193BFE2A77ED9E0048C0C3 /* TransactionHistoryPages.swift in Sources */,
 				EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */,
 				DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */,
+				DA5ACCC02C05B7D1005892AC /* KoinosTransferEvent.swift in Sources */,
 				DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */,
 				5D14E4972397B87000C15FC8 /* WalletManager.swift in Sources */,
 				B6F3AA6D2ADD92230059C99A /* Publisher+.swift in Sources */,
@@ -4912,6 +4942,7 @@
 				B6BA93792AEA0F0C00F84E36 /* NEARNetworkResult.GasPrice.swift in Sources */,
 				B6B2EB6D2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift in Sources */,
 				EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */,
+				DA0E98D62C04755C00C92985 /* KoinosMethod.swift in Sources */,
 				DA198B5B29E3FF4F00DB6EEA /* CosmosTarget.swift in Sources */,
 				EF2D9DA02BC3F6770055C485 /* EthereumNetworkService.swift in Sources */,
 				B6DC284A2B62BBFE0070F1D2 /* HederaTransactionBuilder.swift in Sources */,
@@ -5026,6 +5057,7 @@
 				2D78F40F2A5CA55100962CCA /* ChiaTests.swift in Sources */,
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
+				DA46E6992C05DD1A002BCE7F /* KoinosMethodResponseDecodingTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				B626D11F2AF02C40003A8929 /* TWPublicKeyType+.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,

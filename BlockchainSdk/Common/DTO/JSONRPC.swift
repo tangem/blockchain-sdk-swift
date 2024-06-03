@@ -13,9 +13,9 @@ enum JSONRPC {
         let jsonrpc: Version?
         let id: Int
         let method: String
-        let params: Parameter
+        let params: Parameter?
 
-        init(jsonrpc: Version? = .v2, id: Int, method: String, params: Parameter) {
+        init(jsonrpc: Version? = .v2, id: Int, method: String, params: Parameter?) {
             self.jsonrpc = jsonrpc
             self.id = id
             self.method = method
