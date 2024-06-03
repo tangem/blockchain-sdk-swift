@@ -68,6 +68,24 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
+    func getWalletAddress(for ownerAddress: String, token: Token) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            provider.getWalletAddress(
+                for: ownerAddress,
+                contractAddress: token.contractAddress
+            )
+            .tryMap { response in
+                let reader = TupleReader(
+                    items: response.stack
+                )
+                let address = try reader.readAddress()
+                
+                return address.toString(bounceable: false)
+            }
+            .eraseToAnyPublisher()
+        }
+    }
+    
     // MARK: - Private Implementation
 
     func send(message: String) -> AnyPublisher<String, Error> {
@@ -111,7 +129,7 @@ class TONNetworkService: MultiNetworkProvider {
                 )
                 let address = try reader.readAddress()
                 
-                return address.toString(bounceable: true)
+                return address.toString(bounceable: false)
             }
             .flatMap { walletAddress in
                 provider.getWalledData(walletAddress: walletAddress)

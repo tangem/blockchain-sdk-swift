@@ -168,8 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tangem/wallet-core-binaries-ios.git",
       "state" : {
-        "revision" : "83cb2df6d24c7341f1315c1e47f65892a5d95479",
-        "version" : "4.0.21-tangem5"
+        "branch" : "feature/IOS-6965_jetton_external_signer_support",
+        "revision" : "87e7ec38e52145d0e35c51966ca99bf7f4b365fd"
       }
     }
   ],

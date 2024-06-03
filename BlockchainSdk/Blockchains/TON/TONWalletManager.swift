@@ -10,8 +10,6 @@ import Foundation
 import Combine
 import TangemSdk
 import WalletCore
-import TonSwift
-import BigInt
 
 final class TONWalletManager: BaseManager, WalletManager {
     
@@ -53,26 +51,26 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Just(())
+        Just((transaction.sourceAddress, transaction.amount.type))
+            .flatMap(getWalletAddressIfNeeded(for:transactionType:))
             .receive(on: DispatchQueue.global())
-            .tryMap { [weak self] _ -> String in
+            .tryMap { [weak self] walletAddress -> String in
                 guard let self = self else {
                     throw WalletError.failedToBuildTx
                 }
-                
-//                return try buildJettonTransaction(transaction)
                 
                 let params = transaction.params as? TONTransactionParams
                 
                 let input = try self.txBuilder.buildForSign(
                     amount: transaction.amount,
                     destination: transaction.destinationAddress,
+                    walletAddress: walletAddress,
                     params: params
                 )
                 return try self.buildTransaction(input: input, with: signer)
             }
             .flatMap { [weak self] message -> AnyPublisher<String, Error> in
-                guard let self = self else {
+                guard let self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
@@ -90,41 +88,6 @@ final class TONWalletManager: BaseManager, WalletManager {
             .eraseSendError()
             .eraseToAnyPublisher()
     }
-    
-    func buildJettonTransaction(_ transaction: Transaction) throws -> String {
-        guard let decimal = transaction.amount.type.token?.decimalValue,
-              let contractAddress = transaction.contractAddress,
-              let jettonAddress = try? TonSwift.Address.parse("kQAg-9HHel0pd8DBTNofkXYFcfIS_FsVPHNaTYD6HqWAk56O"),
-              let toAddress = try? TonSwift.Address.parse("0QDNlCpcoNcMTfl3_Rybj-gPeFTgg-c8fauyDqVp4r6eS-UP"),
-              let fromAddress = try? TonSwift.Address.parse("0QATODhcR-gw4CAnk7vmjOXEGzpN2yek37BDp9O_biB51SoO"),
-              let jettonTransferMessage = try? JettonTransferMessage.internalMessage(
-                jettonAddress: jettonAddress,
-                amount: BigInt((transaction.amount.value * decimal).uint64Value),
-                bounce: false,
-                to: toAddress, from: fromAddress
-              ) else { return "" }
-        
-        var builder = Builder()
-//        
-//        let data = JettonTransferData(queryId: 0, amount: BigInt((transaction.amount.value * decimal).uint64Value).magnitude, toAddress: toAddress, responseAddress: fromAddress, forwardAmount: BigUInt(stringLiteral: "1").magnitude, forwardPayload: nil)
-//        
-        try builder.store(uint: OpCodes.JETTON_TRANSFER, bits: 32)
-        try builder.store(uint: 0, bits: 64)
-        try builder.store(coins: Coins((transaction.amount.value * decimal).uint64Value))
-        try builder.store(toAddress)
-        try builder.store(fromAddress)
-        try builder.store(bit: false)
-        try builder.store(coins: Coins(0))
-        try builder.store(coins: Coins(0))
-        try builder.store(uint: 64, bits: 0)
-        try builder.store(uint: 32, bits: 0)
-        try builder.storeMaybe(ref: Cell?.none)
-        
-
-        try? jettonTransferMessage.storeTo(builder: builder)
-        return (try? builder.endCell().toBoc().base64EncodedString()) ?? ""
-    }
-        
 
     func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
         let output: TheOpenNetworkSigningOutput
@@ -155,13 +118,18 @@ extension TONWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return Just(())
-            .tryMap { [weak self] _ -> String in
+        Just((defaultSourceAddress, amount.type))
+            .flatMap(getWalletAddressIfNeeded(for: transactionType:))
+            .tryMap { [weak self] walletAddress -> String in
                 guard let self = self else {
                     throw WalletError.failedToBuildTx
                 }
                 
-                let input = try self.txBuilder.buildForSign(amount: amount, destination: destination)
+                let input = try self.txBuilder.buildForSign(
+                    amount: amount,
+                    destination: destination,
+                    walletAddress: walletAddress
+                )
                 return try self.buildTransaction(input: input)
             }
             .flatMap { [weak self] message -> AnyPublisher<[Fee], Error> in
@@ -193,5 +161,19 @@ private extension TONWalletManager {
         txBuilder.sequenceNumber = info.sequenceNumber
         isAvailable = info.isAvailable
         completion(.success(()))
+    }
+    
+    private func getWalletAddressIfNeeded(
+        for ownerAddress: String,
+        transactionType: Amount.AmountType
+    ) -> AnyPublisher<String?, Error> {
+        switch transactionType {
+        case .coin, .reserve:
+            return .justWithError(output: nil)
+        case .token(let token):
+            return networkService.getWalletAddress(for: ownerAddress, token: token)
+                .map { .some($0) }
+                .eraseToAnyPublisher()
+        }
     }
 }

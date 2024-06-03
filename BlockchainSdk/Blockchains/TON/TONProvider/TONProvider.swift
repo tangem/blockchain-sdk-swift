@@ -30,7 +30,7 @@ struct TONProvider: HostProvider {
         node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
-        self.node = NodeInfo(url: URL(string: "https://testnet.toncenter.com/api/v2")!)
+        self.node = node// NodeInfo(url: URL(string: "https://testnet.toncenter.com/api/v2")!)
         self.network = .init(configuration: networkConfig)
     }
     
@@ -75,7 +75,6 @@ struct TONProvider: HostProvider {
         contractAddress: String
     ) -> AnyPublisher<TONModels.ResultStack, Error> {
         
-        
         guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
               let serializedAddress = try? tonAddress.serialize() else {
             return .emptyFail
@@ -97,7 +96,6 @@ struct TONProvider: HostProvider {
     }
     
     func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
-        Thread.sleep(until: Date(timeIntervalSinceNow: TimeInterval.random(in: 0...5)))
         return requestPublisher(
             for: TONProviderTarget(
                 node: node,
@@ -116,12 +114,17 @@ struct TONProvider: HostProvider {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        return network.requestPublisher(target)
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(TONProviderResponse<T>.self, using: decoder)
-            .map(\.result)
-            .mapError { _ in WalletError.empty }
-            .eraseToAnyPublisher()
+//        return Just(())
+//            .delay(for: .seconds(2), scheduler: DispatchQueue.main)
+//            .flatMap {
+                return network.requestPublisher(target)
+                    .filterSuccessfulStatusAndRedirectCodes()
+                    .map(TONProviderResponse<T>.self, using: decoder)
+                    .map(\.result)
+                    .mapError { _ in WalletError.empty }
+                    .eraseToAnyPublisher()
+//            }
+//            .eraseToAnyPublisher()
     }
     
 }
