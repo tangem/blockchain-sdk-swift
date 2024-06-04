@@ -22,4 +22,5 @@ struct TONProviderResponse<R: Decodable>: Decodable {
     
     /// Response code (Not transport)
     let code: Int?
+    
 }
