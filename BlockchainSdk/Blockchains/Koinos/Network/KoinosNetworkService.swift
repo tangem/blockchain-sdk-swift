@@ -64,9 +64,9 @@ class KoinosNetworkService: MultiNetworkProvider {
         providerPublisher { [satoshiMultiplier] provider in
             provider.getResourceLimits()
                 .map { limits in
-                    let rcLimitSatoshi = Constants.MaxDiskStorageLimit * limits.diskStorageCost
-                        + Constants.MaxNetworkLimit * limits.networkBandwidthCost
-                        + Constants.MaxComputeLimit * limits.computeBandwidthCost
+                    let rcLimitSatoshi = Constants.maxDiskStorageLimit * limits.diskStorageCost
+                        + Constants.maxNetworkLimit * limits.networkBandwidthCost
+                        + Constants.maxComputeLimit * limits.computeBandwidthCost
                     
                     return Decimal(rcLimitSatoshi) / satoshiMultiplier
                 }
@@ -77,8 +77,8 @@ class KoinosNetworkService: MultiNetworkProvider {
 
 private extension KoinosNetworkService {
     enum Constants {
-        static let MaxDiskStorageLimit: UInt64 = 118
-        static let MaxNetworkLimit: UInt64 = 408
-        static let MaxComputeLimit: UInt64 = 1_000_000
+        static let maxDiskStorageLimit: UInt64 = 118
+        static let maxNetworkLimit: UInt64 = 408
+        static let maxComputeLimit: UInt64 = 1_000_000
     }
 }
