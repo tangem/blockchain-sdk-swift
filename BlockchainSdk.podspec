@@ -51,7 +51,7 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'stellar-ios-mac-sdk', '2.5.4'
   s.dependency 'AnyCodable-FlightSchool', '0.6.7'
   s.dependency 'ScaleCodec', '0.2.1'
-  s.dependency 'TonSwift'
+  s.dependency 'TonSwift', '1.0.10'
 
   s.dependency 'BinanceChain' # Fork https://github.com/tangem/swiftbinancechain.git
   s.dependency 'BitcoinCore.swift' # Fork https://github.com/tangem/bitcoincore.git
