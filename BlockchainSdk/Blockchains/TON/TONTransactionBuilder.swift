@@ -140,14 +140,14 @@ final class TONTransactionBuilder {
         token: Token,
         params: TONTransactionParams?
     ) throws -> TheOpenNetworkJettonTransfer {
-        let tonTransferAmountValue: Decimal = 0.1
+        let tonTransferAmountValue: Decimal = 0.05
         let transferData = try transfer(amountValue: tonTransferAmountValue, destination: walletAddress, params: params)
         return TheOpenNetworkJettonTransfer.with {
             $0.transfer = transferData
             $0.jettonAmount = (amount.value * token.decimalValue).uint64Value
             $0.toOwner = destination
             $0.responseAddress = wallet.address
-            $0.forwardAmount = 1
+            $0.forwardAmount = 0
         }
     }
     
