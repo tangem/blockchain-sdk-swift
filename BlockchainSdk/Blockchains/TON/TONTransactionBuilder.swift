@@ -147,7 +147,7 @@ final class TONTransactionBuilder {
             $0.jettonAmount = (amount.value * token.decimalValue).uint64Value
             $0.toOwner = destination
             $0.responseAddress = wallet.address
-            $0.forwardAmount = 0
+            $0.forwardAmount = 1
         }
     }
     
