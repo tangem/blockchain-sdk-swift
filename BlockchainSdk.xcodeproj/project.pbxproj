@@ -5142,8 +5142,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/wallet-core-binaries-ios.git";
 			requirement = {
-				branch = "feature/IOS-6965_jetton_external_signer_support";
-				kind = branch;
+				kind = exactVersion;
+				version = "4.0.21-tangem6";
 			};
 		};
 		B66B57642B6C504000320FF9 /* XCRemoteSwiftPackageReference "hedera-sdk-swift" */ = {
