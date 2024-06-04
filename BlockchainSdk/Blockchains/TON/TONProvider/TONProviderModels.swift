@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import BigInt
+import TonSwift
 
 /// TON provider content of Response
 enum TONModels {
@@ -103,4 +105,77 @@ enum TONModels {
         let num: String
     }
     
+    struct RunGetMethodParameters: Encodable {
+        let address: String
+        let method: Method
+        
+        let stack: [[String]]
+        
+        enum Method: String, Encodable {
+            case getWalletAddress = "get_wallet_address"
+            case getWalletData = "get_wallet_data"
+        }
+        
+        enum StackKey: String {
+            case slice = "tvm.Slice"
+            case cell = "tvm.Cell"
+            case number = "tvm.Number"
+            case tuple = "tvm.Tuple"
+            case list = "tvm.List"
+        }
+    }
+    
+    struct RawCell: Decodable {
+        let bytes: String
+    }
+
+    struct ResultStack: Decodable {
+        let stack: [Tuple]
+        let exitCode: Int
+        
+        enum CodingKeys: CodingKey {
+            case stack, exitCode
+        }
+        
+        enum ElementType: String, Decodable {
+            case cell, num
+        }
+        
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            self.exitCode = try container.decode(Int.self, forKey: .exitCode)
+
+            guard exitCode == 0 else {
+                self.stack = []
+                return
+            }
+            
+            var nestedContainer = try container.nestedUnkeyedContainer(forKey: .stack)
+            var stack = [Tuple]()
+            while !nestedContainer.isAtEnd {
+                var itemContainer = try nestedContainer.nestedUnkeyedContainer()
+                let key = try itemContainer.decodeIfPresent(ElementType.self)
+                switch key {
+                case .cell:
+                    guard let value = try? itemContainer.decode(RawCell.self),
+                          let data = Data(base64Encoded: value.bytes),
+                          let cells = try? Cell.fromBoc(src: data),
+                          let cell = cells.first else {
+                        continue
+                    }
+                    stack.append(.cell(cell: cell))
+                case .num:
+                    guard let value = try? itemContainer.decode(String.self).removeHexPrefix(),
+                          let intValue = BigInt(value, radix: 16) else {
+                        continue
+                    }
+                    stack.append(.int(value: intValue))
+                case .none:
+                    continue
+                }
+            }
+            self.stack = stack
+        }
+    }
 }

@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TonSwift
 
 struct TONProvider: HostProvider {
     /// Blockchain API host
@@ -69,7 +70,46 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    private func requestPublisher<T: Codable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
+    func getWalletAddress(
+        for ownerAddress: String,
+        contractAddress: String
+    ) -> AnyPublisher<TONModels.ResultStack, Error> {
+        guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
+              let serializedAddress = try? tonAddress.serialize() else {
+            return .emptyFail
+        }
+        let stack = [[TONModels.RunGetMethodParameters.StackKey.slice.rawValue, serializedAddress]]
+        
+        return requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: contractAddress,
+                        method: .getWalletAddress,
+                        stack: stack
+                    )
+                )
+            )
+        )
+    }
+    
+    func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
+        requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: walletAddress,
+                        method: .getWalletData,
+                        stack: []
+                    )
+                )
+            )
+        )
+    }
+    
+    private func requestPublisher<T: Decodable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
@@ -81,4 +121,12 @@ struct TONProvider: HostProvider {
             .eraseToAnyPublisher()
     }
     
+}
+
+fileprivate extension TonSwift.Address {
+    func serialize() throws -> String {
+        let builder = Builder()
+        try self.storeTo(builder: builder)
+        return try builder.endCell().toBoc().base64EncodedString()
+    }
 }

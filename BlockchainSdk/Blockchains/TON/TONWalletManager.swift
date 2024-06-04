@@ -35,7 +35,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
-            .getInfo(address: wallet.address)
+            .getInfo(address: wallet.address, tokens: cardTokens)
             .sink(
                 receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
@@ -146,6 +146,11 @@ private extension TONWalletManager {
         }
         
         wallet.add(coinValue: info.balance)
+        
+        for (token, balance) in info.tokenBalances {
+            wallet.add(tokenValue: balance, for: token)
+        }
+        
         txBuilder.sequenceNumber = info.sequenceNumber
         isAvailable = info.isAvailable
         completion(.success(()))
