@@ -51,8 +51,14 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Just((transaction.sourceAddress, transaction.amount.type))
-            .flatMap(getWalletAddressIfNeeded(for:transactionType:))
+        Just(())
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, _ in
+                walletManager.getWalletAddressIfNeeded(
+                    for: transaction.sourceAddress,
+                    transactionType: transaction.amount.type
+                )
+            }
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] walletAddress -> String in
                 guard let self = self else {
@@ -114,8 +120,13 @@ extension TONWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        Just((defaultSourceAddress, amount.type))
-            .flatMap(getWalletAddressIfNeeded(for: transactionType:))
+        Just(())
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, _ in
+                walletManager.getWalletAddressIfNeeded(
+                    transactionType: amount.type
+                )
+            }
             .tryMap { [weak self] walletAddress -> String in
                 guard let self = self else {
                     throw WalletError.failedToBuildTx
@@ -160,14 +171,15 @@ private extension TONWalletManager {
     }
     
     private func getWalletAddressIfNeeded(
-        for ownerAddress: String,
+        for ownerAddress: String? = nil,
         transactionType: Amount.AmountType
     ) -> AnyPublisher<String?, Error> {
-        switch transactionType {
+        let ownerAddress = ownerAddress ?? defaultSourceAddress
+        return switch transactionType {
         case .coin, .reserve:
-            return .justWithError(output: nil)
+            .justWithError(output: nil)
         case .token(let token):
-            return networkService.getWalletAddress(for: ownerAddress, token: token)
+            networkService.getWalletAddress(for: ownerAddress, token: token)
                 .map { .some($0) }
                 .eraseToAnyPublisher()
         }

@@ -44,7 +44,7 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
-    ///   - walletAddress: Address of jetton wallet
+    ///   - walletAddress: Address of jetton wallet, required for jetton transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     public func buildForSign(
         amount: Amount,
@@ -69,7 +69,7 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
-    ///   - walletAddress: Address of jetton wallet
+    ///   - walletAddress: Address of jetton wallet, required for jetton transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     private func input(
         amount: Amount,
@@ -140,14 +140,14 @@ final class TONTransactionBuilder {
         token: Token,
         params: TONTransactionParams?
     ) throws -> TheOpenNetworkJettonTransfer {
-        let tonTransferAmountValue: Decimal = 0.05
+        let tonTransferAmountValue: Decimal = 0.05 // discussed and agreed with dbaturin
         let transferData = try transfer(amountValue: tonTransferAmountValue, destination: walletAddress, params: params)
         return TheOpenNetworkJettonTransfer.with {
             $0.transfer = transferData
             $0.jettonAmount = (amount.value * token.decimalValue).uint64Value
             $0.toOwner = destination
             $0.responseAddress = wallet.address
-            $0.forwardAmount = 1
+            $0.forwardAmount = 1 // set according to WalletCore docs
         }
     }
     

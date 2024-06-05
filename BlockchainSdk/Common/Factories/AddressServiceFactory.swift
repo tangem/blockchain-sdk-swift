@@ -103,7 +103,7 @@ public struct AddressServiceFactory {
                 .algorand:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ton:
-            return TonAddressService(testnet: isTestnet)
+            return TonAddressService()
         case .aptos:
             return AptosCoreAddressService()
         case .ducatus:

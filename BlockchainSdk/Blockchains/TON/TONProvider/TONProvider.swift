@@ -30,7 +30,7 @@ struct TONProvider: HostProvider {
         node: TONNetworkNode,
         networkConfig: NetworkProviderConfiguration
     ) {
-        self.node = node// NodeInfo(url: URL(string: "https://testnet.toncenter.com/api/v2")!)
+        self.node = node
         self.network = .init(configuration: networkConfig)
     }
     
@@ -41,6 +41,53 @@ struct TONProvider: HostProvider {
     /// - Returns: Model full information
     func getInfo(address: String) -> AnyPublisher<TONModels.Info, Error> {
         requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
+    }
+    
+    /// Fetch jetton wallet address
+    /// - Parameters:
+    ///   - ownerAddress: UserFriendly TON address
+    ///   - contractAddress: master address of jetton
+    /// - Returns: Model containing array of serialized objects, jetton wallet address is usually inside the first cell
+    func getWalletAddress(
+        for ownerAddress: String,
+        contractAddress: String
+    ) -> AnyPublisher<TONModels.ResultStack, Error> {
+        guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
+              let serializedAddress = try? tonAddress.serialize() else {
+            return .emptyFail
+        }
+        let stack = [[TONModels.RunGetMethodParameters.StackKey.slice.rawValue, serializedAddress]]
+        
+        return requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: contractAddress,
+                        method: .getWalletAddress,
+                        stack: stack
+                    )
+                )
+            )
+        )
+    }
+    
+    /// Fetch jetton walled data
+    /// - Parameter walletAddress: UserFriendly TON address of jetton wallet
+    /// - Returns: Model containing array of serialized objects
+    func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
+        requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: walletAddress,
+                        method: .getWalletData,
+                        stack: []
+                    )
+                )
+            )
+        )
     }
     
     /// Fetch balance wallet by address
@@ -70,63 +117,17 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    func getWalletAddress(
-        for ownerAddress: String,
-        contractAddress: String
-    ) -> AnyPublisher<TONModels.ResultStack, Error> {
-        
-        guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
-              let serializedAddress = try? tonAddress.serialize() else {
-            return .emptyFail
-        }
-        let stack = [[TONModels.RunGetMethodParameters.StackKey.slice.rawValue, serializedAddress]]
-        
-        return requestPublisher(
-            for: TONProviderTarget(
-                node: node,
-                targetType: .runGetMethod(
-                    parameters: TONModels.RunGetMethodParameters(
-                        address: contractAddress,
-                        method: .getWalletAddress,
-                        stack: stack
-                    )
-                )
-            )
-        )
-    }
-    
-    func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
-        return requestPublisher(
-            for: TONProviderTarget(
-                node: node,
-                targetType: .runGetMethod(
-                    parameters: TONModels.RunGetMethodParameters(
-                        address: walletAddress,
-                        method: .getWalletData,
-                        stack: []
-                    )
-                )
-            )
-        )
-    }
-    
     private func requestPublisher<T: Decodable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-//        return Just(())
-//            .delay(for: .seconds(2), scheduler: DispatchQueue.main)
-//            .flatMap {
-                return network.requestPublisher(target)
-                    .filterSuccessfulStatusAndRedirectCodes()
-                    .map(TONProviderResponse<T>.self, using: decoder)
-                    .map(\.result)
-                    .mapError { _ in WalletError.empty }
-                    .eraseToAnyPublisher()
-//            }
-//            .eraseToAnyPublisher()
+        return network.requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(TONProviderResponse<T>.self, using: decoder)
+            .map(\.result)
+            .mapError { _ in WalletError.empty }
+            .eraseToAnyPublisher()
     }
-    
 }
 
 fileprivate extension TonSwift.Address {
