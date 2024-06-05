@@ -450,6 +450,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .solana,
                 .tron,
                 .terraV1,
+                .ton,
                 .veChain:
             return true
         case _ where isEvm:
