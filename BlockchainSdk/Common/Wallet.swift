@@ -102,6 +102,11 @@ public struct Wallet {
         return tokenAmount
     }
     
+    public mutating func add(feeResource: Decimal, name: String) {
+        let feeResourceAmount = Amount(with: blockchain, type: .feeResource(name: name), value: feeResource)
+        add(amount: feeResourceAmount)
+    }
+    
     public mutating func add(amount: Amount) {
         amounts[amount.type] = amount
     }

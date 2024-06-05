@@ -161,7 +161,7 @@ extension CardanoTransactionBuilder {
             
             // For coin just set amount which will be sent
               input.transferMessage.amount = uint64Amount
-        case .reserve:
+        case .reserve, .feeResource:
             throw WalletError.empty
         }
         

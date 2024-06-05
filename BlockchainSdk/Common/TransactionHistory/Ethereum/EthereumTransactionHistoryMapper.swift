@@ -91,7 +91,7 @@ private extension EthereumTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> Bool {
         switch amountType {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return transaction.compat.vin.first?.addresses.first == walletAddress
         case .token(let token):
             if transaction.tokenTransfers == nil {
@@ -172,7 +172,7 @@ private extension EthereumTransactionHistoryMapper {
         }
         
         switch amountType {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             if let amount = Decimal(string: transaction.value) {
                 return TransactionRecord.Source(address: address, amount: amount / decimalValue)
             }
@@ -201,7 +201,7 @@ private extension EthereumTransactionHistoryMapper {
         }
 
         switch amountType {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             if let amount = Decimal(string: transaction.value) {
                 // We can receive a data only like "0x" and then we should delete this prefix
                 let isContainsData = transaction.ethereumSpecific?.data?.removeHexPrefix().isEmpty == false
