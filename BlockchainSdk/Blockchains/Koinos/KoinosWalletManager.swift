@@ -9,6 +9,12 @@
 import Combine
 import Foundation
 
+enum KoinosWalletManagerError: Error {
+    case insufficientBalance
+    case manaFeeExceedsBalance
+    case insufficientMana
+}
+
 class KoinosWalletManager: BaseManager, WalletManager {
     var currentHost: String {
         networkService.host
@@ -35,26 +41,21 @@ class KoinosWalletManager: BaseManager, WalletManager {
         let fee = fee.amount.value
         let amount = amount.value
         
-        // TODO: [KOINOS] wallet.amounts[AmountType.FeeResource()]?.maxValue
-        let currentMana = wallet.amounts[.reserve]?.value ?? .zero
+        let currentMana = wallet.amounts[.feeResource(name: "Mana")]?.value ?? .zero
         let availableBalanceForTransfer = currentMana - fee
         
         let balance = wallet.amounts[.coin]?.value ?? .zero
         
         if balance < fee {
-            throw WalletError.empty // TODO: [KOINOS] throw something like `InsufficientBalance`
+            throw KoinosWalletManagerError.insufficientBalance
         }
         
         if currentMana < fee {
-            // TODO: [KOINOS] wallet.amounts[AmountType.FeeResource()]?.maxValue
-            let maxMana = wallet.amounts[.reserve]?.value ?? .zero
-            // TODO: [KOINOS] throw something like `InsufficientMana`
-            throw WalletError.empty
+            throw KoinosWalletManagerError.insufficientMana
         }
         
         if amount > availableBalanceForTransfer {
-            // TODO: [KOINOS] throw something like `ManaFeeExceedsBalance`
-            throw WalletError.empty
+            throw KoinosWalletManagerError.manaFeeExceedsBalance
         }
     }
     
@@ -90,7 +91,13 @@ class KoinosWalletManager: BaseManager, WalletManager {
                 }
                 .flatMap(networkService.submitTransaction)
                 .map(\.id)
-                .map(TransactionSendResult.init)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, txId in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: txId)
             }
             .eraseToAnyPublisher()
     }
@@ -99,11 +106,14 @@ class KoinosWalletManager: BaseManager, WalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
         networkService.getRCLimit()
             .map { [wallet] rcLimit in
-                Fee(Amount(
-                    with: wallet.blockchain,
-                    type: .reserve, // TODO: [KOINOS] AmountType.FeeResource()
-                    value: rcLimit
-                ))
+                Fee(
+                    Amount(
+                        type: .feeResource(name: "Mana"),
+                        currencySymbol: "Mana",
+                        value: rcLimit,
+                        decimals: wallet.blockchain.decimalCount
+                    )
+                )
             }
             .map { [$0] }
             .eraseToAnyPublisher()

@@ -189,7 +189,7 @@ extension StellarWalletManager: ReserveAmountRestrictable {
         case .token:
             // From TxBuilder
             throw StellarError.assetNoAccountOnDestination
-        case .reserve:
+        case .reserve, .feeResource:
             break
         }
     }

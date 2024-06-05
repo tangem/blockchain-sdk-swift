@@ -109,7 +109,7 @@ class TronWalletManager: BaseManager, WalletManager {
     private func energyFee(amount: Amount, destination: String) -> AnyPublisher<Int, Error> {
         let token: Token
         switch amount.type {
-        case .reserve:
+        case .reserve, .feeResource:
             return .anyFail(error: WalletError.failedToGetFee)
         case .coin:
             return Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()

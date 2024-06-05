@@ -102,7 +102,7 @@ class TronTransactionBuilder {
                 $0.type = .triggerSmartContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
-        case .reserve:
+        case .reserve, .feeResource:
             fatalError()
         }
     }
@@ -114,7 +114,7 @@ class TronTransactionBuilder {
             decimalValue = blockchain.decimalValue
         case .token(let token):
             decimalValue = token.decimalValue
-        case .reserve:
+        case .reserve, .feeResource:
             fatalError()
         }
         
