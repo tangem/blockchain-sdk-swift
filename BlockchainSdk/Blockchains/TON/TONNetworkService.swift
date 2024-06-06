@@ -32,9 +32,9 @@ class TONNetworkService: MultiNetworkProvider {
     func getInfo(address: String, tokens: [Token]) -> AnyPublisher<TONWalletInfo, Error> {
         Publishers.Zip(
             getWalletInfo(address: address),
-            getTokensBalance(address: address, tokens: tokens)
+            getTokensInfo(address: address, tokens: tokens)
         )
-        .tryMap { walletInfo, tokenBalances in
+        .tryMap { walletInfo, tokensInfo in
             guard let decimalBalance = Decimal(string: walletInfo.balance) else {
                 throw WalletError.failedToParseNetworkResponse
             }
@@ -43,7 +43,7 @@ class TONNetworkService: MultiNetworkProvider {
                 balance: decimalBalance / self.blockchain.decimalValue,
                 sequenceNumber: walletInfo.seqno ?? 0,
                 isAvailable: walletInfo.accountState == .active,
-                tokenBalances: tokenBalances
+                tokensInfo: tokensInfo
             )
         }
         .eraseToAnyPublisher()
@@ -68,9 +68,9 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getWalletAddress(for ownerAddress: String, token: Token) -> AnyPublisher<String, Error> {
+    func getJettonWalletAddress(for ownerAddress: String, token: Token) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
-            provider.getWalletAddress(
+            provider.getJettonWalletAddress(
                 for: ownerAddress,
                 contractAddress: token.contractAddress
             )
@@ -104,22 +104,25 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
-    private func getTokensBalance(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+    private func getTokensInfo(
+        address: String,
+        tokens: [Token]
+    ) -> AnyPublisher<[Token: TONWalletInfo.TokenInfo], Error> {
         tokens
             .publisher
             .setFailureType(to: Error.self)
             .withWeakCaptureOf(self)
             .flatMap { networkService, token in
-                networkService.getToken(address: address, token: token).map { (token, $0) }
+                networkService.getTokenInfo(address: address, token: token).map { (token, $0) }
             }
             .collect()
-            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 }}
+            .map { $0.reduce(into: [Token: TONWalletInfo.TokenInfo]()) { $0[$1.0] = $1.1 }}
             .eraseToAnyPublisher()
     }
     
-    private func getToken(address: String, token: Token) -> AnyPublisher<Decimal, Error> {
+    private func getTokenInfo(address: String, token: Token) -> AnyPublisher<TONWalletInfo.TokenInfo, Error> {
         providerPublisher { provider in
-            provider.getWalletAddress(
+            provider.getJettonWalletAddress(
                 for: address,
                 contractAddress: token.contractAddress
             )
@@ -131,15 +134,18 @@ class TONNetworkService: MultiNetworkProvider {
                 
                 return address.toString(bounceable: false)
             }
-            .flatMap { walletAddress in
-                provider.getWalledData(walletAddress: walletAddress)
+            .flatMap { jettonWalletAddress in
+                provider.getJettonWalledData(jettonWalletAddress: jettonWalletAddress)
                     .tryMap { response in
                         let reader = TupleReader(
                             items: response.stack
                         )
                         
                         let amount = (try? reader.readNumber()) ?? 0
-                        return Decimal(amount) / token.decimalValue
+                        return TONWalletInfo.TokenInfo(
+                            jettonWalletAddress: jettonWalletAddress,
+                            balance: Decimal(amount) / token.decimalValue
+                        )
                     }
             }.eraseToAnyPublisher()
         }
