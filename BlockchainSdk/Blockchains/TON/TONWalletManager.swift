@@ -22,6 +22,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     private let networkService: TONNetworkService
     private let txBuilder: TONTransactionBuilder
     private var isAvailable: Bool = true
+    private var jettonWalletAddressCache = [Token: String]()
     
     // MARK: - Init
     
@@ -54,14 +55,14 @@ final class TONWalletManager: BaseManager, WalletManager {
         Just(())
             .withWeakCaptureOf(self)
             .flatMap { walletManager, _ in
-                walletManager.getWalletAddressIfNeeded(
+                walletManager.getJettonWalletAddressIfNeeded(
                     for: transaction.sourceAddress,
                     transactionType: transaction.amount.type
                 )
             }
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] walletAddress -> String in
-                guard let self = self else {
+                guard let self else {
                     throw WalletError.failedToBuildTx
                 }
                 
@@ -123,12 +124,12 @@ extension TONWalletManager: TransactionFeeProvider {
         Just(())
             .withWeakCaptureOf(self)
             .flatMap { walletManager, _ in
-                walletManager.getWalletAddressIfNeeded(
+                walletManager.getJettonWalletAddressIfNeeded(
                     transactionType: amount.type
                 )
             }
             .tryMap { [weak self] walletAddress -> String in
-                guard let self = self else {
+                guard let self else {
                     throw WalletError.failedToBuildTx
                 }
                 
@@ -140,11 +141,16 @@ extension TONWalletManager: TransactionFeeProvider {
                 return try self.buildTransaction(input: input)
             }
             .flatMap { [weak self] message -> AnyPublisher<[Fee], Error> in
-                guard let self = self else {
+                guard let self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
                 return self.networkService.getFee(address: self.wallet.address, message: message)
+                    .withWeakCaptureOf(self)
+                    .map { walletManager, fees in
+                        walletManager.appendJettonTransferProcessingFeeIfNeeded(fees, amountType: amount.type)
+                    }
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -161,8 +167,11 @@ private extension TONWalletManager {
         
         wallet.add(coinValue: info.balance)
         
-        for (token, balance) in info.tokenBalances {
-            wallet.add(tokenValue: balance, for: token)
+        for (token, tokenInfo) in info.tokensInfo {
+            wallet.add(tokenValue: tokenInfo.balance, for: token)
+            
+            // jetton wallet address is used to calculate fee and build transaction
+            jettonWalletAddressCache[token] = tokenInfo.jettonWalletAddress
         }
         
         txBuilder.sequenceNumber = info.sequenceNumber
@@ -170,18 +179,32 @@ private extension TONWalletManager {
         completion(.success(()))
     }
     
-    private func getWalletAddressIfNeeded(
+    private func getJettonWalletAddressIfNeeded(
         for ownerAddress: String? = nil,
         transactionType: Amount.AmountType
     ) -> AnyPublisher<String?, Error> {
         let ownerAddress = ownerAddress ?? defaultSourceAddress
-        return switch transactionType {
+        switch transactionType {
         case .coin, .reserve:
-            .justWithError(output: nil)
+            return .justWithError(output: nil)
         case .token(let token):
-            networkService.getWalletAddress(for: ownerAddress, token: token)
-                .map { .some($0) }
-                .eraseToAnyPublisher()
+            guard let cachedJettonWalletAddress = jettonWalletAddressCache[token] else {
+                return networkService.getJettonWalletAddress(for: ownerAddress, token: token)
+                    .map { .some($0) }
+                    .eraseToAnyPublisher()
+            }
+            return .justWithError(output: cachedJettonWalletAddress)
+        }
+    }
+    
+    private func appendJettonTransferProcessingFeeIfNeeded(_ fees: [Fee], amountType: Amount.AmountType) -> [Fee] {
+        guard case .token = amountType else {
+            return fees
+        }
+        return fees.map { fee in
+            var amount = fee.amount
+            amount.value += TONTransactionBuilder.Constants.jettonTransferProcessingFee
+            return Fee(amount, parameters: fee.parameters)
         }
     }
 }

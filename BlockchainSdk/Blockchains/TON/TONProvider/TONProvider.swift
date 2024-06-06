@@ -48,7 +48,7 @@ struct TONProvider: HostProvider {
     ///   - ownerAddress: UserFriendly TON address
     ///   - contractAddress: master address of jetton
     /// - Returns: Model containing array of serialized objects, jetton wallet address is usually inside the first cell
-    func getWalletAddress(
+    func getJettonWalletAddress(
         for ownerAddress: String,
         contractAddress: String
     ) -> AnyPublisher<TONModels.ResultStack, Error> {
@@ -73,15 +73,15 @@ struct TONProvider: HostProvider {
     }
     
     /// Fetch jetton walled data
-    /// - Parameter walletAddress: UserFriendly TON address of jetton wallet
+    /// - Parameter jettonWalletAddress: UserFriendly TON address of jetton wallet
     /// - Returns: Model containing array of serialized objects
-    func getWalledData(walletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
+    func getJettonWalledData(jettonWalletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
         requestPublisher(
             for: TONProviderTarget(
                 node: node,
                 targetType: .runGetMethod(
                     parameters: TONModels.RunGetMethodParameters(
-                        address: walletAddress,
+                        address: jettonWalletAddress,
                         method: .getWalletData,
                         stack: []
                     )

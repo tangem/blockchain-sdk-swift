@@ -140,14 +140,17 @@ final class TONTransactionBuilder {
         token: Token,
         params: TONTransactionParams?
     ) throws -> TheOpenNetworkJettonTransfer {
-        let tonTransferAmountValue: Decimal = 0.05 // discussed and agreed with dbaturin
-        let transferData = try transfer(amountValue: tonTransferAmountValue, destination: walletAddress, params: params)
+        let transferData = try transfer(
+            amountValue: Constants.jettonTransferProcessingFee,
+            destination: walletAddress,
+            params: params
+        )
         return TheOpenNetworkJettonTransfer.with {
             $0.transfer = transferData
             $0.jettonAmount = (amount.value * token.decimalValue).uint64Value
             $0.toOwner = destination
             $0.responseAddress = wallet.address
-            $0.forwardAmount = 1 // set according to WalletCore docs
+            $0.forwardAmount = 1 // needs some amount to send "jetton transfer notification", use minimum
         }
     }
     
@@ -171,4 +174,10 @@ extension TONTransactionBuilder {
         return txBuilder
     }
     
+}
+
+extension TONTransactionBuilder {
+    enum Constants {
+        static let jettonTransferProcessingFee: Decimal = 0.05 // used to cover token transfer fees, commonly used value after TON fee reduction, actual costs now are ~10 times less, excess is returned
+    }
 }
