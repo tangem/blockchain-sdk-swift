@@ -22,7 +22,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     private let networkService: TONNetworkService
     private let txBuilder: TONTransactionBuilder
     private var isAvailable: Bool = true
-    private var jettonWalletAddressCache = [Token: String]()
+    private var jettonWalletAddressCache: [Token: String] = [:]
     
     // MARK: - Init
     
@@ -51,17 +51,13 @@ final class TONWalletManager: BaseManager, WalletManager {
             )
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Just(())
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, _ in
-                walletManager.getJettonWalletAddressIfNeeded(
-                    for: transaction.sourceAddress,
-                    transactionType: transaction.amount.type
-                )
-            }
+    func send(
+        _ transaction: Transaction,
+        signer: TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        getJettonWalletAddressIfNeeded(for: transaction.sourceAddress,transactionType: transaction.amount.type)
             .receive(on: DispatchQueue.global())
-            .tryMap { [weak self] walletAddress -> String in
+            .tryMap { [weak self] jettonWalletAddress -> String in
                 guard let self else {
                     throw WalletError.failedToBuildTx
                 }
@@ -71,7 +67,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 let input = try self.txBuilder.buildForSign(
                     amount: transaction.amount,
                     destination: transaction.destinationAddress,
-                    walletAddress: walletAddress,
+                    jettonWalletAddress: jettonWalletAddress,
                     params: params
                 )
                 return try self.buildTransaction(input: input, with: signer)
@@ -125,14 +121,8 @@ extension TONWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        Just(())
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, _ in
-                walletManager.getJettonWalletAddressIfNeeded(
-                    transactionType: amount.type
-                )
-            }
-            .tryMap { [weak self] walletAddress -> String in
+        getJettonWalletAddressIfNeeded(transactionType: amount.type)
+            .tryMap { [weak self] jettonWalletAddress -> String in
                 guard let self else {
                     throw WalletError.failedToBuildTx
                 }
@@ -140,7 +130,7 @@ extension TONWalletManager: TransactionFeeProvider {
                 let input = try self.txBuilder.buildForSign(
                     amount: amount,
                     destination: destination,
-                    walletAddress: walletAddress
+                    jettonWalletAddress: jettonWalletAddress
                 )
                 return try self.buildTransaction(input: input)
             }
