@@ -161,4 +161,47 @@ class EthereumTests: XCTestCase {
         let tooBig = "0x01234567890abcdef01234567890abcdef01234501234567890abcdef01234567890abcdef01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef01234567890abcdef012345"
         XCTAssertNil(EthereumUtils.parseEthereumDecimal(tooBig, decimalsCount: 18))
     }
+
+    func testBuildingApproveTransactionPayload() throws {
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 10)
+        let amount = try XCTUnwrap(Decimal(stringValue: "1146241"))
+
+        let payload = transactionBuilder.buildForApprove(
+            spender: "0x111111125421cA6dc452d289314280a0f8842A65",
+            amount: amount
+        )
+
+        // https://optimistic.etherscan.io/tx/0x97141f7a1b450739bcf097fe41ca76c83897c0cc618e43b08fa0267865451c2b
+        XCTAssertEqual(
+            payload.hexString.addHexPrefix().lowercased(),
+            "0x095ea7b3000000000000000000000000111111125421ca6dc452d289314280a0f8842a650000000000000000000000000000000000000000000000000000000000117d81"
+        )
+    }
+
+    func testBuildingTokenTransferTransactionPayload() throws {
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 10)
+        let amount = try XCTUnwrap(Decimal(stringValue: "0.001"))
+
+        let payload = try transactionBuilder.buildForTokenTransfer(
+            destination: "0x75739A5bd4B781cF38c59B9492ef9639e46688Bf",
+            amount: .init(
+                with: .optimism(testnet: false),
+                type: .token(
+                    value: .init(
+                        name: "USD Coin",
+                        symbol: "USDC",
+                        contractAddress: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+                        decimalCount: 6
+                    )
+                ),
+                value: amount
+            )
+        )
+
+        // https://optimistic.etherscan.io/tx/0x89a6b62628d326902df50f543996e9403df9a5d2ae5be415f7cdaa1a98464fd4
+        XCTAssertEqual(
+            payload.hexString.addHexPrefix().lowercased(),
+            "0xa9059cbb00000000000000000000000075739a5bd4b781cf38c59b9492ef9639e46688bf00000000000000000000000000000000000000000000000000000000000003e8"
+        )
+    }
 }
