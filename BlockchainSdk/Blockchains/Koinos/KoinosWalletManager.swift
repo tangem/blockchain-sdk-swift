@@ -9,12 +9,6 @@
 import Combine
 import Foundation
 
-enum KoinosWalletManagerError: Error {
-    case insufficientBalance
-    case manaFeeExceedsBalance
-    case insufficientMana
-}
-
 class KoinosWalletManager: BaseManager, WalletManager {
     var currentHost: String {
         networkService.host
@@ -35,28 +29,6 @@ class KoinosWalletManager: BaseManager, WalletManager {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
         super.init(wallet: wallet)
-    }
-    
-    func validate(amount: Amount, fee: Fee) throws {
-        let fee = fee.amount.value
-        let amount = amount.value
-        
-        let currentMana = wallet.amounts[.feeResource(name: "Mana")]?.value ?? .zero
-        let availableBalanceForTransfer = currentMana - fee
-        
-        let balance = wallet.amounts[.coin]?.value ?? .zero
-        
-        if balance < fee {
-            throw KoinosWalletManagerError.insufficientBalance
-        }
-        
-        if currentMana < fee {
-            throw KoinosWalletManagerError.insufficientMana
-        }
-        
-        if amount > availableBalanceForTransfer {
-            throw KoinosWalletManagerError.manaFeeExceedsBalance
-        }
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, any Error> {
@@ -108,8 +80,8 @@ class KoinosWalletManager: BaseManager, WalletManager {
             .map { [wallet] rcLimit in
                 Fee(
                     Amount(
-                        type: .feeResource(name: "Mana"),
-                        currencySymbol: "Mana",
+                        type: .feeResource(.mana),
+                        currencySymbol: Amount.FeeResourceType.mana.rawValue,
                         value: rcLimit,
                         decimals: wallet.blockchain.decimalCount
                     )

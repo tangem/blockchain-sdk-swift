@@ -169,3 +169,32 @@ extension TransactionValidator where Self: ReserveAmountRestrictable {
         }
     }
 }
+
+extension TransactionValidator where Self: KoinosWalletManager {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validate(amount: amount, fee: fee)
+    }
+    
+    func validate(amount: Amount, fee: Fee) throws {
+        let fee = fee.amount.value
+        let amount = amount.value
+        
+        let currentMana = wallet.amounts[.feeResource(.mana)]?.value ?? .zero
+        let availableBalanceForTransfer = currentMana - fee
+        
+        let balance = wallet.amounts[.coin]?.value ?? .zero
+        
+        if balance < fee {
+            throw ValidationError.invalidAmount
+        }
+        
+        if currentMana < fee {
+            throw ValidationError.invalidFee
+        }
+        
+        if amount > availableBalanceForTransfer {
+            throw ValidationError.feeExceedsBalance
+        }
+    }
+}

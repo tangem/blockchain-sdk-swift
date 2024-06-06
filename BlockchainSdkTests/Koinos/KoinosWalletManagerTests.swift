@@ -54,9 +54,9 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 10),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected KoinosWalletManagerError.insufficientMana but no error was thrown")
-        } catch let e as KoinosWalletManagerError {
-            XCTAssertEqual(e, KoinosWalletManagerError.insufficientMana)
+            XCTFail("Expected ValidationError.invalidFee but no error was thrown")
+        } catch let e as ValidationError {
+            XCTAssertEqual(e, ValidationError.invalidFee)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
@@ -71,9 +71,9 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 51),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected KoinosWalletManagerError.manaFeeExceedsBalance but no error was thrown")
-        } catch let e as KoinosWalletManagerError {
-            XCTAssertEqual(e, KoinosWalletManagerError.manaFeeExceedsBalance)
+            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
+        } catch let e as ValidationError {
+            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
@@ -88,9 +88,9 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 0.2),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected KoinosWalletManagerError.insufficientBalance but no error was thrown")
-        } catch let e as KoinosWalletManagerError {
-            XCTAssertEqual(e, KoinosWalletManagerError.insufficientBalance)
+            XCTFail("Expected ValidationError.invalidAmount but no error was thrown")
+        } catch let e as ValidationError {
+            XCTAssertEqual(e, ValidationError.invalidAmount)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
@@ -110,8 +110,8 @@ private extension Amount {
     
     static func manaAmount(value: Decimal) -> Amount {
         Amount(
-            type: .feeResource(name: "Mana"),
-            currencySymbol: "Mana",
+            type: .feeResource(.mana),
+            currencySymbol: Amount.FeeResourceType.mana.rawValue,
             value: value * pow(10, blockchain.decimalCount),
             decimals: blockchain.decimalCount
         )
@@ -132,11 +132,10 @@ private extension Wallet {
     mutating func addMana(mana: Decimal) {
         add(
             amount: Amount(
-                type: .feeResource(name: "Mana"),
-                currencySymbol: "Mana",
+                type: .feeResource(.mana),
+                currencySymbol: Amount.FeeResourceType.mana.rawValue,
                 value: mana * pow(10, blockchain.decimalCount),
-                decimals: blockchain.decimalCount,
-                maxValue: amounts[.coin]?.value
+                decimals: blockchain.decimalCount
             )
         )
     }

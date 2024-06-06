@@ -10,11 +10,15 @@ import Foundation
 import BigInt
 
 public struct Amount: CustomStringConvertible, Hashable, Comparable {
+    public enum FeeResourceType: String {
+        case mana = "Mana"
+    }
+    
     public enum AmountType {
         case coin
         case token(value: Token)
         case reserve
-        case feeResource(name: String? = nil)
+        case feeResource(FeeResourceType)
         
         public var token: Token? {
             if case let .token(token) = self {
@@ -31,7 +35,6 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
     public let type: AmountType
     public let currencySymbol: String
     public var value: Decimal
-    public var maxValue: Decimal?
     public let decimals: Int
 
     public var bigUIntValue: BigUInt? {
@@ -75,51 +78,43 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
         type: AmountType,
         currencySymbol: String,
         value: Decimal,
-        decimals: Int,
-        maxValue: Decimal? = nil
+        decimals: Int
     ) {
         self.type = type
         self.currencySymbol = currencySymbol
         self.value = value
         self.decimals = decimals
-        self.maxValue = maxValue
     }
     
     public init(
         with blockchain: Blockchain,
         type: AmountType = .coin,
-        value: Decimal,
-        maxValue: Decimal? = nil
+        value: Decimal
     ) {
         self.type = type
         currencySymbol = type.token?.symbol ?? blockchain.currencySymbol
         decimals = type.token?.decimalCount ?? blockchain.decimalCount
         self.value = value
-        self.maxValue = maxValue
     }
     
     public init(
         with token: Token,
-        value: Decimal,
-        maxValue: Decimal? = nil
+        value: Decimal
     ) {
         type = .token(value: token)
         currencySymbol = token.symbol
         decimals = token.decimalCount
         self.value = value
-        self.maxValue = maxValue
     }
     
     public init(
         with amount: Amount,
-        value: Decimal,
-        maxValue: Decimal? = nil
+        value: Decimal
     ) {
         type = amount.type
         currencySymbol = amount.currencySymbol
         decimals = amount.decimals
         self.value = value
-        self.maxValue = maxValue
     }
     
     public func string(with decimals: Int? = nil, roundingMode: NSDecimalNumber.RoundingMode = .down) -> String {
@@ -177,8 +172,8 @@ extension Amount.AmountType: Hashable {
             hasher.combine("reserve")
         case .token(let value):
             hasher.combine(value)
-        case .feeResource(let name):
-            hasher.combine(name)
+        case let .feeResource(type):
+            hasher.combine(type)
         }
     }
     
