@@ -10,7 +10,7 @@ import BigInt
 
 public struct EthereumEIP1559FeeParameters: FeeParameters {
     public let gasLimit: BigUInt
-    /// Maxumum fee whick will be spend. Should inclued `priorityFee` in itself
+    /// Maximum fee which will be spend. Should include `priorityFee` in itself
     public let maxFeePerGas: BigUInt
     /// The part of `maxFeePerGas` which will be sent a mainer like a tips
     public let priorityFee: BigUInt
@@ -27,7 +27,7 @@ public struct EthereumEIP1559FeeParameters: FeeParameters {
         self.priorityFee = priorityFee
     }
 
-    public func caclulateFee(decimalValue: Decimal) -> Decimal {
+    public func calculateFee(decimalValue: Decimal) -> Decimal {
         let feeWEI = gasLimit * maxFeePerGas
         // TODO: Fix integer overflow. Think about BigInt
         // https://tangem.atlassian.net/browse/IOS-4268
