@@ -75,9 +75,7 @@ class TONNetworkService: MultiNetworkProvider {
                 contractAddress: token.contractAddress
             )
             .tryMap { response in
-                let reader = TupleReader(
-                    items: response.stack
-                )
+                let reader = TupleReader(items: response.stack)
                 let address = try reader.readAddress()
                 
                 return address.toString(bounceable: false)

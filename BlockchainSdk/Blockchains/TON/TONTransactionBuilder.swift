@@ -44,15 +44,20 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
-    ///   - walletAddress: Address of jetton wallet, required for jetton transaction
+    ///   - jettonWalletAddress: Address of jetton wallet, required for jetton transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     public func buildForSign(
         amount: Amount,
         destination: String,
-        walletAddress: String? = nil,
+        jettonWalletAddress: String? = nil,
         params: TONTransactionParams? = nil
     ) throws -> TheOpenNetworkSigningInput {
-        return try self.input(amount: amount, destination: destination, walletAddress: walletAddress, params: params)
+        return try self.input(
+            amount: amount,
+            destination: destination,
+            jettonWalletAddress: jettonWalletAddress,
+            params: params
+        )
     }
     
     /// Build for send transaction obtain external message output
@@ -69,12 +74,12 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
-    ///   - walletAddress: Address of jetton wallet, required for jetton transaction
+    ///   - jettonWalletAddress: Address of jetton wallet, required for jetton transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     private func input(
         amount: Amount,
         destination: String,
-        walletAddress: String? = nil,
+        jettonWalletAddress: String? = nil,
         params: TONTransactionParams?
     ) throws -> TheOpenNetworkSigningInput {
         switch amount.type {
@@ -87,13 +92,13 @@ final class TONTransactionBuilder {
                 $0.privateKey = inputPrivateKey.rawRepresentation
             }
         case .token(let token):
-            guard let walletAddress else {
+            guard let jettonWalletAddress else {
                 fatalError("Wallet address must be set for jetton trasaction")
             }
             let transfer = try jettonTransfer(
                 amount: amount,
                 destination: destination,
-                walletAddress: walletAddress,
+                jettonWalletAddress: jettonWalletAddress,
                 token: token,
                 params: params
             )
@@ -119,7 +124,7 @@ final class TONTransactionBuilder {
         TheOpenNetworkTransfer.with {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = destination
-            $0.amount = ((amountValue * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
+            $0.amount = (amountValue * wallet.blockchain.decimalValue).uint64Value
             $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = modeTransactionConstant
             $0.bounceable = false
@@ -131,18 +136,18 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
-    ///   - walletAddress: Address of sender's jetton wallet
+    ///   - jettonWalletAddress: Address of sender's jetton wallet
     /// - Returns: TheOpenNetworkTransfer message for Input transaction of TON blockchain
     private func jettonTransfer(
         amount: Amount,
         destination: String,
-        walletAddress: String,
+        jettonWalletAddress: String,
         token: Token,
         params: TONTransactionParams?
     ) throws -> TheOpenNetworkJettonTransfer {
         let transferData = try transfer(
             amountValue: Constants.jettonTransferProcessingFee,
-            destination: walletAddress,
+            destination: jettonWalletAddress, // we need to put SENDER's jetton wallet address here, see comment for TheOpenNetworkJettonTransfer -> transfer
             params: params
         )
         return TheOpenNetworkJettonTransfer.with {
