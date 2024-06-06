@@ -50,6 +50,9 @@ struct APINodeInfoResolver {
         case .kaspa:
             return KaspaAPIResolver(config: config)
                 .resolve(blockchain: blockchain)
+        case .koinos:
+            return KoinosAPIResolver(config: config)
+                .resolve(blockchain: blockchain)
         case .blockchair, .blockcypher, .solana:
             return nil
         }
