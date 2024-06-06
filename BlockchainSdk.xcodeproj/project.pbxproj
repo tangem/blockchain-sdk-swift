@@ -450,6 +450,7 @@
 		DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6429E44D2600DB6EEA /* CosmosChain.swift */; };
 		DA19F5E129DFE32600FD57A3 /* StellarNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */; };
 		DA1D3B7B2B57B8FB00247393 /* BigUInt+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */; };
+		DA2309D52C123510002A930C /* FeeResourceRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
 		DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */; };
@@ -1314,6 +1315,7 @@
 		DA198B6429E44D2600DB6EEA /* CosmosChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosChain.swift; sourceTree = "<group>"; };
 		DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarNetworkProvider.swift; sourceTree = "<group>"; };
 		DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BigUInt+.swift"; sourceTree = "<group>"; };
+		DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeResourceRestrictable.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
 		DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
@@ -3905,6 +3907,7 @@
 				EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */,
 				EF9E384E2B7A740D004B694C /* ReserveAmountRestrictable.swift */,
 				EF937BE02B90EF0C009B8374 /* MaximumAmountRestrictable.swift */,
+				DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */,
 			);
 			path = TransactionValidator;
 			sourceTree = "<group>";
@@ -5027,6 +5030,7 @@
 				5D0EEE6B253EFBF600758FDC /* TezosWalletManager.swift in Sources */,
 				B6BE2BA12B361F1C0019D9E0 /* VeChainFeeCalculator.swift in Sources */,
 				2DA139F72A8AD82E00E3C374 /* ChiaModels.swift in Sources */,
+				DA2309D52C123510002A930C /* FeeResourceRestrictable.swift in Sources */,
 				B611B1832B7A9A500072B874 /* BlockchainSdkDependencies.swift in Sources */,
 				B6DC3F3A2AF2CA8700377BB3 /* Sequence+.swift in Sources */,
 				DC5E64F32B1650F400E81AA5 /* OP_LSHIFT.swift in Sources */,

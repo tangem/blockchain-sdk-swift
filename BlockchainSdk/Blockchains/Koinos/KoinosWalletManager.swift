@@ -9,13 +9,17 @@
 import Combine
 import Foundation
 
-class KoinosWalletManager: BaseManager, WalletManager {
+class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     var currentHost: String {
         networkService.host
     }
     
     var allowsFeeSelection: Bool {
         false
+    }
+    
+    var feeResourceType: Amount.FeeResourceType {
+        .mana
     }
     
     private let networkService: KoinosNetworkService
