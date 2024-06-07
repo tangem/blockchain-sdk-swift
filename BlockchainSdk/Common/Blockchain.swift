@@ -483,6 +483,7 @@ public indirect enum Blockchain: Equatable, Hashable {
              .terraV1,
              .veChain,
              .hedera,
+             .ton,
              .cardano:
             return true
         case _ where isEvm:
