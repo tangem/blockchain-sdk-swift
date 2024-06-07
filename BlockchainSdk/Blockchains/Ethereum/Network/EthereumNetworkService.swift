@@ -153,12 +153,8 @@ class EthereumNetworkService: MultiNetworkProvider {
                     return provider
                         .call(contractAddress: token.contractAddress, encodedData: method.encodedData)
                         .withWeakCaptureOf(networkService)
-                        .tryMap { networkService, result in
-                            guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount) else {
-                                throw ETHError.failedToParseBalance(value: result, address: token.contractAddress, decimals: token.decimalCount)
-                            }
-                            
-                            return value
+                        .compactMap { networkService, result in
+                            EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount)
                         }
                         .map { (token, $0) }
                         .eraseToAnyPublisher()
