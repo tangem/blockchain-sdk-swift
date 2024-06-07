@@ -54,7 +54,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     func send(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+    ) -> AnyPublisher<TransactionSendResult, Error> {
         getJettonWalletAddressIfNeeded(for: transaction.sourceAddress,transactionType: transaction.amount.type)
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] jettonWalletAddress -> String in
