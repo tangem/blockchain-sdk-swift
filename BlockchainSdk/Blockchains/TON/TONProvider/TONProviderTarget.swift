@@ -38,7 +38,7 @@ struct TONProviderTarget: TargetType {
     }
     
     var task: Moya.Task {
-        let jrpcRequest: TONProviderRequest<Dictionary<String, String?>>
+        let jrpcRequest: any Encodable
         
         switch targetType {
         case .getInfo(let address):
@@ -71,6 +71,12 @@ struct TONProviderTarget: TargetType {
                 method: .sendBocReturnHash,
                 params: ["boc": message]
             )
+        case .runGetMethod(let parameters):
+            jrpcRequest = TONProviderRequest(
+                id: UUID().uuidString,
+                method: .runGetMethod,
+                params: parameters
+            )
         }
         
         return .requestParameters(parameters: (try? jrpcRequest.asDictionary()) ?? [:], encoding: JSONEncoding.default)
@@ -99,6 +105,7 @@ extension TONProviderTarget {
         case getBalance(address: String)
         case sendBoc(message: String)
         case sendBocReturnHash(message: String)
+        case runGetMethod(parameters: TONModels.RunGetMethodParameters)
     }
     
 }
