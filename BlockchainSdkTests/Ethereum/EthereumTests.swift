@@ -117,6 +117,111 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
+    // https://basescan.org/tx/0xb0df52cacd4a8d283e7f5ffe7b3f6d867fc5cb496f679b69b0b09a59651eb0e5
+    func testEIP1559TokenApprove() throws {
+        // given
+        let walletPublicKey = Data(hex: "0x04c0b0bebaf7cec052a1fb2919c83a3d192713a65c3675a22ad9a2f76d5da1cfb0d4fec9da0bc71b5a405758a2e0349e2d151bfff6ec3d50441f0adb947a8a44a1")
+        let signature = Data(hex: "0xcc6163663ccdadf4489e9753b0307c0fb1eed7fe92a7b0a6b3cb0f6d24f9109e7dd41e4e30c6777b27688527af3c4ec69ed053246ca05d1b3b8c3da127c30eb0")
+
+        let walletAddress = "0xF686Cc42C39e942D5B4a237286C5A55B451bD6F0"
+        let spenderAddress = "0x111111125421cA6dc452d289314280a0f8842A65"
+        let contractAddress = "0x940181a94a35a4569e4529a3cdfb74e38fd98631"
+        let destinationAddress = contractAddress
+
+        let feeParameters = EthereumEIP1559FeeParameters(
+            gasLimit: BigUInt(47000),
+            maxFeePerGas: BigUInt(7250107),
+            priorityFee: BigUInt(2000000)
+        )
+        let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
+
+        let amountToSpend = BigUInt("115792089237316195423570985008687907853269984665640564039457584007913129639935")   // 10^256 - 1
+        let tokenMethod = ApproveERC20TokenMethod(spender: spenderAddress, amount: amountToSpend)
+
+        let nonce = 10
+
+        let param = EthereumTransactionParams(
+            data: tokenMethod.data,
+            nonce: nonce
+        )
+
+        // when
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 8453)
+        transactionBuilder.update(nonce: nonce)
+        let transaction = Transaction(
+            amount: .zeroCoin(for: blockchain),
+            fee: fee,
+            sourceAddress: walletAddress,
+            destinationAddress: destinationAddress,
+            changeAddress: walletAddress,
+            params: param
+        )
+
+        // then
+        let expectedHashToSign = Data(hex: "0xbbada4215ac1d69b8c30449afd4dae224d32177c5a80877d4220756ad14b9852")
+        let expectedSignedTransaction = Data(hex: "0x02f8af8221050a831e8480836ea0bb82b79894940181a94a35a4569e4529a3cdfb74e38fd9863180b844095ea7b3000000000000000000000000111111125421ca6dc452d289314280a0f8842a65ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc001a0cc6163663ccdadf4489e9753b0307c0fb1eed7fe92a7b0a6b3cb0f6d24f9109ea07dd41e4e30c6777b27688527af3c4ec69ed053246ca05d1b3b8c3da127c30eb0")
+
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        sizeTester.testTxSize(hashToSign)
+        XCTAssertEqual(hashToSign.hexString, expectedHashToSign.hexString)
+
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
+    }
+
+    // https://basescan.org/tx/0x4648aee1b8498245eb425c94efcc7e4df8c1524be977fc43862b6a67038dcefb
+    func testEIP1559TokenSwap() throws {
+        // given
+        let walletPublicKey = Data(hex: "0x04c0b0bebaf7cec052a1fb2919c83a3d192713a65c3675a22ad9a2f76d5da1cfb0d4fec9da0bc71b5a405758a2e0349e2d151bfff6ec3d50441f0adb947a8a44a1")
+        let signature = Data(hex: "0x0982b50e820042d00a51ac23029cd66bdd88c6300890120be54a05afedbe938943e0e8f475dba0d9cd9d4a38f02e29662ef106c3bede1938230a32a2f23e8106")
+
+        let walletAddress = "0xF686Cc42C39e942D5B4a237286C5A55B451bD6F0"
+        let contractAddress = "0x111111125421ca6dc452d289314280a0f8842a65"
+        let destinationAddress = contractAddress
+
+        let feeParameters = EthereumEIP1559FeeParameters(
+            gasLimit: BigUInt(156360),
+            maxFeePerGas: BigUInt(5672046),
+            priorityFee: BigUInt(1000000)
+        )
+        let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
+
+        // swap(address, (address,address,address,address,uint256,uint256,uint256), bytes)
+        let payload = Data(hexString: "0x07ed2379000000000000000000000000e37e799d5077682fa0a244d46e5649f71457bd09000000000000000000000000940181a94a35a4569e4529a3cdfb74e38fd98631000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee000000000000000000000000e37e799d5077682fa0a244d46e5649f71457bd09000000000000000000000000f686cc42c39e942d5b4a237286c5a55b451bd6f0000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000000002713e3fabbc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000001410000000000000000000000000001230001090000f30000b700006800004e802026678dcd940181a94a35a4569e4529a3cdfb74e38fd98631beec796a4a2a27b687e1d48efad3805d7880052200000000000000000000000000000000000000000000000000002d79883d20000020d6bdbf78940181a94a35a4569e4529a3cdfb74e38fd9863102a0000000000000000000000000000000000000000000000000000002713e3fabbcee63c1e5003d5d143381916280ff91407febeb52f2b60f33cf940181a94a35a4569e4529a3cdfb74e38fd986314101420000000000000000000000000000000000000600042e1a7d4d0000000000000000000000000000000000000000000000000000000000000000c061111111125421ca6dc452d289314280a0f8842a6500206b4be0b9111111125421ca6dc452d289314280a0f8842a65000000000000000000000000000000000000000000000000000000000000002df1ec3e")
+
+        let nonce = 11
+
+        let param = EthereumTransactionParams(
+            data: payload,
+            nonce: nonce
+        )
+
+        // when
+        let transactionBuilder = EthereumTransactionBuilder(chainId: 8453)
+        transactionBuilder.update(nonce: nonce)
+        let transaction = Transaction(
+            amount: .zeroCoin(for: blockchain),
+            fee: fee,
+            sourceAddress: walletAddress,
+            destinationAddress: destinationAddress,
+            changeAddress: walletAddress,
+            params: param
+        )
+
+        // then
+        let expectedHashToSign = Data(hex: "b59deacf74401648c860a4cfc9bee40d0da1502c05efa278d4afdb6dfe4bd8f3")
+        let expectedSignedTransaction = Data(hex: "02f903158221050b830f424083568c6e830262c894111111125421ca6dc452d289314280a0f8842a6580b902a807ed2379000000000000000000000000e37e799d5077682fa0a244d46e5649f71457bd09000000000000000000000000940181a94a35a4569e4529a3cdfb74e38fd98631000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee000000000000000000000000e37e799d5077682fa0a244d46e5649f71457bd09000000000000000000000000f686cc42c39e942d5b4a237286c5a55b451bd6f0000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000000002713e3fabbc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000001410000000000000000000000000001230001090000f30000b700006800004e802026678dcd940181a94a35a4569e4529a3cdfb74e38fd98631beec796a4a2a27b687e1d48efad3805d7880052200000000000000000000000000000000000000000000000000002d79883d20000020d6bdbf78940181a94a35a4569e4529a3cdfb74e38fd9863102a0000000000000000000000000000000000000000000000000000002713e3fabbcee63c1e5003d5d143381916280ff91407febeb52f2b60f33cf940181a94a35a4569e4529a3cdfb74e38fd986314101420000000000000000000000000000000000000600042e1a7d4d0000000000000000000000000000000000000000000000000000000000000000c061111111125421ca6dc452d289314280a0f8842a6500206b4be0b9111111125421ca6dc452d289314280a0f8842a65000000000000000000000000000000000000000000000000000000000000002df1ec3ec080a00982b50e820042d00a51ac23029cd66bdd88c6300890120be54a05afedbe9389a043e0e8f475dba0d9cd9d4a38f02e29662ef106c3bede1938230a32a2f23e8106")
+
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        sizeTester.testTxSize(hashToSign)
+        XCTAssertEqual(hashToSign.hexString, expectedHashToSign.hexString)
+
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
+    }
+
     func testBuildDummyTransactionForL1() throws {
         // given
         let destinationAddress = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
