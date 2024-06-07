@@ -138,6 +138,10 @@ extension CardanoTransactionBuilder {
             throw BlockchainSdkError.notImplemented
         }
     }
+
+    func hasTokensWithBalance(exclude: Token?) throws -> Bool {
+        try !assetsBalances(exclude: exclude).isEmpty
+    }
 }
 
 // MARK: - Private
@@ -145,14 +149,7 @@ extension CardanoTransactionBuilder {
 extension CardanoTransactionBuilder {
     /// Use this method for calculate min value for the change output
     func minChange(exclude: Token?) throws -> UInt64 {
-        let excludeAsset = try exclude.map { try asset(for: $0) }
-        let assetsBalances = outputs
-            .flatMap {
-                $0.assets.filter { $0 != excludeAsset }
-            }
-            .reduce(into: [:]) { result, asset in
-                result[asset, default: 0] += asset.amount
-            }
+        let assetsBalances = try assetsBalances(exclude: exclude)
 
         let tokenBundle = CardanoTokenBundle.with {
             $0.token = assetsBalances.map { asset, balance in
@@ -163,7 +160,18 @@ extension CardanoTransactionBuilder {
         let minChange = try CardanoMinAdaAmount(tokenBundle: tokenBundle.serializedData())
         return minChange
     }
-    
+
+    func assetsBalances(exclude: Token?) throws -> [CardanoUnspentOutput.Asset : UInt64] {
+        let excludeAsset = try exclude.map { try asset(for: $0) }
+        return outputs
+            .flatMap {
+                $0.assets.filter { $0 != excludeAsset }
+            }
+            .reduce(into: [:]) { result, asset in
+                result[asset, default: 0] += asset.amount
+            }
+    }
+
     func buildMinAdaValueUInt64Amount(token: Token, amount: UInt64, fee: UInt64, minChange: UInt64) throws -> UInt64 {
         let asset = try self.asset(for: token)
         let tokenBundle = CardanoTokenBundle.with {
@@ -248,8 +256,6 @@ extension CardanoTransactionBuilder {
     }
 
     func buildCardanoSigningInput(source: String, destination: String, amount: InputAmountType) throws -> CardanoSigningInput {
-        print("buildCardanoSigningInput uint64Amount ->>", amount)
-
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = destination
             $0.transferMessage.changeAddress = source
