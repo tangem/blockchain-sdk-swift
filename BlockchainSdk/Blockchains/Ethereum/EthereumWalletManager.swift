@@ -160,7 +160,7 @@ private extension EthereumWalletManager {
         ]
 
         let fees = feeParameters.map { parameters in
-            let feeValue = parameters.caclulateFee(decimalValue: wallet.blockchain.decimalValue)
+            let feeValue = parameters.calculateFee(decimalValue: wallet.blockchain.decimalValue)
             let amount = Amount(with: wallet.blockchain, value: feeValue)
 
             return Fee(amount, parameters: parameters)

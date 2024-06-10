@@ -157,9 +157,19 @@ private extension EthereumTransactionBuilder {
                     }
                 case .contract(let user, let contract, let value):
                     input.toAddress = contract
-                    $0.erc20Transfer = .with {
-                        $0.amount = value.serialize()
-                        $0.to = user
+                    let amount = value.serialize()
+
+                    if let data = parameters?.data {
+                        $0.contractGeneric = .with {
+                            $0.amount = amount
+                            $0.data = data
+                        }
+                    } else {
+                        // Fallback to plain transfer if there is no payload available
+                        $0.erc20Transfer = .with {
+                            $0.amount = amount
+                            $0.to = user
+                        }
                     }
                 }
             }
