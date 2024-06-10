@@ -18,22 +18,22 @@ struct RavencoinExternalLinkProvider {
 
 extension RavencoinExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        return URL(string: "https://faucet.kava.io")
+        return URL(string: "https://hyperbit.app/faucet")
     }
-    
+
+    private var explorerBaseURL: String {
+        return isTestnet 
+        ? "https://rvnt.cryptoscope.io/"
+        : "https://blockbook.ravencoin.org/"
+    }
+
     func url(transaction hash: String) -> URL? {
-        if isTestnet {
-            return URL(string: "https://testnet.ravencoin.network/tx/\(hash)")
-        }
-
-        return URL(string: "https://blockbook.ravencoin.org/tx/\(hash)")
+        let queryParam = isTestnet ? "?txid=" : ""
+        return URL(string: explorerBaseURL + "tx/\(queryParam)\(hash)")
     }
-    
-    func url(address: String, contractAddress: String?) -> URL? {
-        if isTestnet {
-            return URL(string: "https://testnet.ravencoin.network/address/\(address)")
-        }
 
-        return URL(string: "https://blockbook.ravencoin.org/address/\(address)")
+    func url(address: String, contractAddress: String?) -> URL? {
+        let queryParam = isTestnet ? "?address=" : ""
+        return URL(string: explorerBaseURL + "address/\(queryParam)\(address)")
     }
 }
