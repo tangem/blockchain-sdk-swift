@@ -11,5 +11,4 @@ import Foundation
 struct KoinosAccountInfo {
     let koinBalance: Decimal
     let mana: Decimal
-    let maxMana: Decimal
 }

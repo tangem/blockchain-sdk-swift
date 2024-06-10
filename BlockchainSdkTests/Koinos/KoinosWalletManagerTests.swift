@@ -33,7 +33,7 @@ final class KoinosWalletManagerTests: XCTestCase {
         walletManager.wallet.clearAmounts()
     }
 
-    func testTransactionValidationTest_smoke() {
+    func testTxValidationSmoke() {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 100)
         
@@ -45,7 +45,7 @@ final class KoinosWalletManagerTests: XCTestCase {
         )
     }
     
-    func testTransactionValidationTest_not_enough_mana() {
+    func testTxValidationNotEnoughMana() {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 0.2)
         
@@ -62,7 +62,7 @@ final class KoinosWalletManagerTests: XCTestCase {
         }
     }
     
-    func testTransactionValidationTest_amount_exceeds_mana_balance() {
+    func testTxValidationAmountExceedsManaBalance() {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 50)
 
@@ -79,7 +79,7 @@ final class KoinosWalletManagerTests: XCTestCase {
         }
     }
     
-    func testTransactionValidationTest_coin_balance_does_not_cover_fee() {
+    func testTxValidationCoinBalanceDoesNotCoverFee() {
         walletManager.wallet.addBalance(balance: 0.2)
         walletManager.wallet.addMana(mana: 0.2)
 
@@ -111,7 +111,7 @@ private extension Amount {
     static func manaAmount(value: Decimal) -> Amount {
         Amount(
             type: .feeResource(.mana),
-            currencySymbol: Amount.FeeResourceType.mana.rawValue,
+            currencySymbol: FeeResourceType.mana.rawValue,
             value: value * pow(10, blockchain.decimalCount),
             decimals: blockchain.decimalCount
         )
@@ -133,7 +133,7 @@ private extension Wallet {
         add(
             amount: Amount(
                 type: .feeResource(.mana),
-                currencySymbol: Amount.FeeResourceType.mana.rawValue,
+                currencySymbol: FeeResourceType.mana.rawValue,
                 value: mana * pow(10, blockchain.decimalCount),
                 decimals: blockchain.decimalCount
             )

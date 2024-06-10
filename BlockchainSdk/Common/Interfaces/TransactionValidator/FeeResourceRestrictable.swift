@@ -9,6 +9,6 @@
 import Foundation
 
 protocol FeeResourceRestrictable {
-    var feeResourceType: Amount.FeeResourceType { get }
+    var feeResourceType: FeeResourceType { get }
     func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws
 }
