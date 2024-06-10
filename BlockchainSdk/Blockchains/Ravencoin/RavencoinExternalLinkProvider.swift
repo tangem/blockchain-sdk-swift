@@ -26,7 +26,7 @@ extension RavencoinExternalLinkProvider: ExternalLinkProvider {
             return URL(string: "https://testnet.ravencoin.network/tx/\(hash)")
         }
 
-        return URL(string: "https://api.ravencoin.org/tx/\(hash)")
+        return URL(string: "https://blockbook.ravencoin.org/tx/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
@@ -34,6 +34,6 @@ extension RavencoinExternalLinkProvider: ExternalLinkProvider {
             return URL(string: "https://testnet.ravencoin.network/address/\(address)")
         }
 
-        return URL(string: "https://api.ravencoin.org/address/\(address)")
+        return URL(string: "https://blockbook.ravencoin.org/address/\(address)")
     }
 }
