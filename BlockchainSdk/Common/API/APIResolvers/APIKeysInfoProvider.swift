@@ -44,7 +44,7 @@ struct APIKeysInfoProvider {
             )
         case .onfinality:
             return .init(
-                headerName: Constants.bittensorOnfinalityApiKey,
+                headerName: Constants.onfinalityApiKeyHeaderName,
                 headerValue: config.bittensorOnfinalityKey
             )
         case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .solana, .kaspa, .dwellir, .none:

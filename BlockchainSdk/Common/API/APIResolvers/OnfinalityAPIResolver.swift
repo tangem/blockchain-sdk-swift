@@ -22,7 +22,7 @@ struct OnfinalityAPIResolver {
         return .init(
             url: url,
             keyInfo: APIHeaderKeyInfo(
-                headerName: Constants.bittensorOnfinalityApiKey,
+                headerName: Constants.onfinalityApiKeyHeaderName,
                 headerValue: config.bittensorOnfinalityKey
             )
         )
