@@ -20,6 +20,8 @@ enum PolkadotNetwork {
     case azero(curve: EllipticCurve, testnet: Bool)
     /// Joystream blockchain
     case joystream(curve: EllipticCurve)
+    /// Bittensor blockchain
+    case bittensor(curve: EllipticCurve)
     
     init?(blockchain: Blockchain) {
         switch blockchain {
@@ -31,6 +33,8 @@ enum PolkadotNetwork {
             self = .azero(curve: curve, testnet: isTestnet)
         case .joystream(let curve):
             self = .joystream(curve: curve)
+        case .bittensor(let curve):
+            self = .bittensor(curve: curve)
         default:
             return nil
         }
@@ -43,7 +47,7 @@ enum PolkadotNetwork {
             return 0
         case .kusama:
             return 2
-        case .westend, .azero:
+        case .westend, .azero, .bittensor:
             return 42
         case .joystream:
             return 126
@@ -72,6 +76,8 @@ extension PolkadotNetwork {
             // Existential deposit - 0.026666656
             // Look https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.joystream.org#/accounts -> send
             return Amount(with: .joystream(curve: curve), value: 0.026666656)
+        case .bittensor(let curve):
+            return Amount(with: .bittensor(curve: curve), value: 0.0000005)
         }
     }
 }

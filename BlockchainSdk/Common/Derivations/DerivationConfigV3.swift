@@ -117,6 +117,8 @@ public struct DerivationConfigV3: DerivationConfig {
             return "m/44'/3030'/0'/0'/0'"
         case .radiant:
             return "m/44'/512'/0'/0/0"
+        case .bittensor:
+            return "m/44'/1005'/0'/0'/0'"
         }
     }
 }
