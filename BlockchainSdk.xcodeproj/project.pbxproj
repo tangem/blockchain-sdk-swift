@@ -271,6 +271,7 @@
 		B00DF99C2BBEAB7B004397CB /* GetBlockAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99B2BBEAB7B004397CB /* GetBlockAPIResolver.swift */; };
 		B00DF99E2BBEAB91004397CB /* InfuraAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */; };
 		B00DF9A02BBEACA2004397CB /* QuickNodeAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99F2BBEACA2004397CB /* QuickNodeAPIResolver.swift */; };
+		B016CC542C13479E0025ADC3 /* PublicAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B016CC532C13479E0025ADC3 /* PublicAPIResolver.swift */; };
 		B0201F462BCE95C000AA0807 /* NowNodesAPIKeysInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0201F452BCE95C000AA0807 /* NowNodesAPIKeysInfoProvider.swift */; };
 		B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044B3A026047F5500D9864F /* RosettaResponse.swift */; };
 		B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */; };
@@ -1119,6 +1120,7 @@
 		B00DF99B2BBEAB7B004397CB /* GetBlockAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetBlockAPIResolver.swift; sourceTree = "<group>"; };
 		B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfuraAPIResolver.swift; sourceTree = "<group>"; };
 		B00DF99F2BBEACA2004397CB /* QuickNodeAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickNodeAPIResolver.swift; sourceTree = "<group>"; };
+		B016CC532C13479E0025ADC3 /* PublicAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicAPIResolver.swift; sourceTree = "<group>"; };
 		B0201F452BCE95C000AA0807 /* NowNodesAPIKeysInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesAPIKeysInfoProvider.swift; sourceTree = "<group>"; };
 		B022D30D2537292800D934D7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B022D3102537475B00D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2604,6 +2606,7 @@
 		B00DF9942BBEAABC004397CB /* APIResolvers */ = {
 			isa = PBXGroup;
 			children = (
+				B016CC522C1347930025ADC3 /* Public */,
 				B0201F472BCE95D500AA0807 /* GetBlock */,
 				B0201F442BCE95AD00AA0807 /* NowNodes */,
 				B00DF9902BBEA9DA004397CB /* APIModels.swift */,
@@ -2614,6 +2617,14 @@
 				B00B58C32BCEB917007475F7 /* APIKeysInfoProvider.swift */,
 			);
 			path = APIResolvers;
+			sourceTree = "<group>";
+		};
+		B016CC522C1347930025ADC3 /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				B016CC532C13479E0025ADC3 /* PublicAPIResolver.swift */,
+			);
+			path = Public;
 			sourceTree = "<group>";
 		};
 		B0201F442BCE95AD00AA0807 /* NowNodes */ = {
@@ -4225,6 +4236,7 @@
 				2DDE5BA329C4F8D200A5B708 /* TezosWalletAssembly.swift in Sources */,
 				DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */,
 				5D0EEE67253EF2E800758FDC /* TezosTransactionBuilder.swift in Sources */,
+				B016CC542C13479E0025ADC3 /* PublicAPIResolver.swift in Sources */,
 				5D4B33C023F6EA6C00C93A84 /* BlockchairNetworkProvider.swift in Sources */,
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
 				EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */,
