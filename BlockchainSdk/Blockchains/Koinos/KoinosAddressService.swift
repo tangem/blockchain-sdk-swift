@@ -8,6 +8,7 @@
 
 import Foundation
 import BitcoinCore
+import TangemSdk
 
 struct KoinosAddressService {
     private let bitcoinLegacyAddressService: BitcoinLegacyAddressService
@@ -21,7 +22,9 @@ struct KoinosAddressService {
 
 extension KoinosAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
-        try bitcoinLegacyAddressService.makeAddress(for: publicKey, with: addressType)
+        let compressedData = try Secp256k1Key(with: publicKey.blockchainKey).compress()
+        let compressedPublicKey = Wallet.PublicKey(seedKey: compressedData, derivationType: nil)
+        return try bitcoinLegacyAddressService.makeAddress(for: compressedPublicKey, with: addressType)
     }
 }
 

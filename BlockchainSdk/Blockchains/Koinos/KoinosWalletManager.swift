@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import TangemSdk
 
 class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     var currentHost: String {
@@ -36,8 +37,12 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, any Error> {
+        let compressedPublicKey: Wallet.PublicKey
+        
         do {
             try validate(amount: transaction.amount, fee: transaction.fee)
+            let compressedData = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+            compressedPublicKey = Wallet.PublicKey(seedKey: compressedData, derivationType: nil)
         } catch {
             return Fail(error: error).eraseToAnyPublisher()
         }
@@ -54,10 +59,10 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     currentNonce: nonce
                 )
             }
-            .flatMap { [wallet, transactionBuilder, networkService] transaction, hashToSign in
+            .flatMap { [transactionBuilder, networkService] transaction, hashToSign in
                 signer.sign(
                     hash: hashToSign,
-                    walletPublicKey: wallet.publicKey
+                    walletPublicKey: compressedPublicKey
                 )
                 .map { signature in
                     transactionBuilder.buildForSend(
