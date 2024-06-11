@@ -75,6 +75,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case flare(testnet: Bool)
     case taraxa(testnet: Bool)
     case base(testnet: Bool)
+    case radiant(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -110,7 +111,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .mantle(let testnet),
                 .flare(let testnet),
                 .taraxa(let testnet),
-                .base(let testnet):
+                .base(let testnet),
+                .radiant(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -179,7 +181,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .radiant:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -357,6 +360,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "C2FLR" : "FLR"
         case .taraxa:
             return "TARA"
+        case .radiant:
+            return "RXD"
         }
     }
 
@@ -1108,6 +1113,7 @@ extension Blockchain: Codable {
         case .flare: return "flare"
         case .taraxa: return "taraxa"
         case .base: return "base"
+        case .radiant: return "radiant"
         }
     }
 
@@ -1191,6 +1197,7 @@ extension Blockchain: Codable {
         case "flare": self = .flare(testnet: isTestnet)
         case "taraxa": self = .taraxa(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
+        case "radiant": self = .radiant(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1373,6 +1380,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }

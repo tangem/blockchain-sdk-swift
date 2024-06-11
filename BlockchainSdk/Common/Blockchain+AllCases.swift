@@ -73,6 +73,8 @@ public extension Blockchain {
         case .flare: break
         case .taraxa: break
         case .base: break
+        case .radiant: break
+
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -139,6 +141,7 @@ public extension Blockchain {
             .flare(testnet: false),
             .taraxa(testnet: false),
             .base(testnet: false),
+            .radiant(testnet: false),
         ]
     }
 }

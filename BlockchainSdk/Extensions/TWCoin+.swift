@@ -106,7 +106,8 @@ extension CoinType {
              .mantle,
              .flare,
              .taraxa,
-             .base:
+             .base,
+             .radiant:
             // Blockchains that are not in WalletCore yet
             return nil
         }

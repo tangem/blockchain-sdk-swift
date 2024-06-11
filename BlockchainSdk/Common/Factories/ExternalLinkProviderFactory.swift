@@ -135,6 +135,8 @@ public struct ExternalLinkProviderFactory {
             return TaraxaExternalLinkProvider(isTestnet: isTestnet)
         case .base:
             return BaseExternalLinkProvider(isTestnet: isTestnet)
+        case .radiant:
+            return RadiantExternalLinkProvider()
         }
     }
 }

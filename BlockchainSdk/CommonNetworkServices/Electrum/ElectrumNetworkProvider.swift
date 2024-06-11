@@ -16,11 +16,11 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         self.providers = providers
     }
 
-    public func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
+    func getAddressInfo(identifier: ElectrumWebSocketProvider.Identifier) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
-                async let balance = provider.getBalance(identifier: .address(address))
-                async let unspents = provider.getUnspents(identifier: .address(address))
+                async let balance = provider.getBalance(identifier: identifier)
+                async let unspents = provider.getUnspents(identifier: identifier)
                 
                 return try await ElectrumAddressInfo(
                     balance: Decimal(balance.confirmed),
@@ -38,11 +38,19 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
-    public func estimateFee() -> AnyPublisher<Decimal, Error> {
+    func estimateFee() -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             Future.async {
-                let fee = try await provider.estimateFee(block: 10)
-                return Decimal(fee)
+                try await provider.estimateFee(block: 10)
+            }
+            .eraseToAnyPublisher()
+        }
+    }
+    
+    func send(transactionHex: String) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            Future.async {
+                try await provider.send(transactionHex: transactionHex)
             }
             .eraseToAnyPublisher()
         }

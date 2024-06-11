@@ -64,8 +64,8 @@ extension Decimal {
         return result
     }
     
-    public func rounded(blockchain: Blockchain) -> Decimal {
-        return rounded(scale: Int(blockchain.decimalCount))
+    public func rounded(blockchain: Blockchain, roundingMode: RoundingMode = .down) -> Decimal {
+        return rounded(scale: Int(blockchain.decimalCount), roundingMode: roundingMode)
     }
 
     var int64Value: Int64 {

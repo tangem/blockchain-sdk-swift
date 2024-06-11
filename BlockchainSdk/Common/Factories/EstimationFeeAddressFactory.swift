@@ -43,6 +43,7 @@ struct EstimationFeeAddressFactory {
                 .dogecoin,
                 .dash,
                 .ravencoin,
+                .radiant,
                 // EVM-like
                 .ethereum,
                 .ethereumPoW,
