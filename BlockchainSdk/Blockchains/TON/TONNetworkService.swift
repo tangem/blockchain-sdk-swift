@@ -112,29 +112,31 @@ class TONNetworkService: MultiNetworkProvider {
             .withWeakCaptureOf(self)
             .flatMap { networkService, token in
                 networkService.getTokenInfo(address: address, token: token).map { (token, $0) }
+                    .replaceError(with: (token, nil))
+                    .setFailureType(to: Error.self)
             }
             .collect()
             .map { $0.reduce(into: [Token: TONWalletInfo.TokenInfo]()) { $0[$1.0] = $1.1 }}
             .eraseToAnyPublisher()
     }
     
-    private func getTokenInfo(address: String, token: Token) -> AnyPublisher<TONWalletInfo.TokenInfo, Error> {
+    private func getTokenInfo(address: String, token: Token) -> AnyPublisher<TONWalletInfo.TokenInfo?, Error> {
         providerPublisher { provider in
             provider.getJettonWalletAddress(
                 for: address,
                 contractAddress: token.contractAddress
             )
-            .tryMap { response in
+            .compactMap { response in
                 let reader = TupleReader(
                     items: response.stack
                 )
-                let address = try reader.readAddress()
+                let address = try? reader.readAddress()
                 
-                return address.toString(bounceable: false)
+                return address?.toString(bounceable: false)
             }
             .flatMap { jettonWalletAddress in
                 provider.getJettonWalledData(jettonWalletAddress: jettonWalletAddress)
-                    .tryMap { response in
+                    .map { response in
                         let reader = TupleReader(
                             items: response.stack
                         )
