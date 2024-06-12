@@ -61,7 +61,7 @@ extension SolanaWalletManager: TransactionSender {
             sendPublisher = sendSol(transaction, signer: signer)
         case .token(let token):
             sendPublisher = sendSplToken(transaction, token: token, signer: signer)
-        case .reserve:
+        case .reserve, .feeResource:
             return .emptyFail
         }
         
@@ -208,7 +208,7 @@ private extension SolanaWalletManager {
                 case .token(let token):
                     let existingTokenAccount = info.tokensByMint[token.contractAddress]
                     return existingTokenAccount != nil
-                case .reserve:
+                case .reserve, .feeResource:
                     return false
                 }
             }
@@ -230,7 +230,7 @@ private extension SolanaWalletManager {
                 .eraseToAnyPublisher()
         case .token:
             return .justWithError(output: 0)
-        case .reserve:
+        case .reserve, .feeResource:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
     }

@@ -14,6 +14,7 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
         case coin
         case token(value: Token)
         case reserve
+        case feeResource(FeeResourceType)
         
         public var token: Token? {
             if case let .token(token) = self {
@@ -81,21 +82,31 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
         self.decimals = decimals
     }
     
-    public init(with blockchain: Blockchain, type: AmountType = .coin, value: Decimal) {
+    public init(
+        with blockchain: Blockchain,
+        type: AmountType = .coin,
+        value: Decimal
+    ) {
         self.type = type
         currencySymbol = type.token?.symbol ?? blockchain.currencySymbol
         decimals = type.token?.decimalCount ?? blockchain.decimalCount
         self.value = value
     }
     
-    public init(with token: Token, value: Decimal) {
+    public init(
+        with token: Token,
+        value: Decimal
+    ) {
         type = .token(value: token)
         currencySymbol = token.symbol
         decimals = token.decimalCount
         self.value = value
     }
     
-    public init(with amount: Amount, value: Decimal) {
+    public init(
+        with amount: Amount,
+        value: Decimal
+    ) {
         type = amount.type
         currencySymbol = amount.currencySymbol
         decimals = amount.decimals
@@ -157,6 +168,8 @@ extension Amount.AmountType: Hashable {
             hasher.combine("reserve")
         case .token(let value):
             hasher.combine(value)
+        case let .feeResource(type):
+            hasher.combine(type)
         }
     }
     
@@ -166,6 +179,8 @@ extension Amount.AmountType: Hashable {
             return true
         case (.token(let lv), .token(let rv)):
             return lv == rv
+        case let (.feeResource(ln), .feeResource(rn)):
+            return ln == rn
         default:
             return false
         }

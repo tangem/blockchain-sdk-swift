@@ -200,7 +200,7 @@ extension EthereumWalletManager: TransactionFeeProvider {
                 return getFee(destination: token.contractAddress, value: nil, data: transferData)
             }
 
-        case .reserve:
+        case .reserve, .feeResource:
             break
         }
 
