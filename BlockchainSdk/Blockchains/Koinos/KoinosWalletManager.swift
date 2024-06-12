@@ -37,12 +37,8 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, any Error> {
-        let compressedPublicKey: Wallet.PublicKey
-        
         do {
             try validate(amount: transaction.amount, fee: transaction.fee)
-            let compressedData = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
-            compressedPublicKey = Wallet.PublicKey(seedKey: compressedData, derivationType: nil)
         } catch {
             return Fail(error: error).eraseToAnyPublisher()
         }
@@ -59,10 +55,10 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     currentNonce: nonce
                 )
             }
-            .flatMap { [transactionBuilder, networkService] transaction, hashToSign in
+            .flatMap { [wallet, transactionBuilder, networkService] transaction, hashToSign in
                 signer.sign(
                     hash: hashToSign,
-                    walletPublicKey: compressedPublicKey
+                    walletPublicKey: wallet.publicKey
                 )
                 .map { signature in
                     transactionBuilder.buildForSend(

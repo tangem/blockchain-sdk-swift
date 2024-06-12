@@ -22,9 +22,8 @@ struct KoinosAddressService {
 
 extension KoinosAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
-        let compressedData = try Secp256k1Key(with: publicKey.blockchainKey).compress()
-        let compressedPublicKey = Wallet.PublicKey(seedKey: compressedData, derivationType: nil)
-        return try bitcoinLegacyAddressService.makeAddress(for: compressedPublicKey, with: addressType)
+        let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
+        return try bitcoinLegacyAddressService.makeAddress(from: compressedKey)
     }
 }
 
