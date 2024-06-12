@@ -585,11 +585,11 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://etc.etcdesktop.com")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,
+                    makeGetBlockJsonRpcProvider(),
                 ]
             }
         case .ethereumPoW:
