@@ -77,6 +77,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case radiant(testnet: Bool)
     case base(testnet: Bool)
     case joystream(curve: EllipticCurve)
+    case icp(curve: EllipticCurve)
 
     public var isTestnet: Bool {
         switch self {
@@ -132,6 +133,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .disChain,
                 .playa3ullGames,
                 .kaspa,
+                .icp,
                 .joystream:
             return false
         case .stellar(_, let testnet),
@@ -164,6 +166,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .near(let curve, _),
                 .algorand(let curve, _),
                 .aptos(let curve, _),
+                .icp(let curve),
                 .hedera(let curve, _):
             return curve
         case .chia:
@@ -185,6 +188,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .kaspa,
                 .ravencoin,
                 .hedera,
+                .icp,
                 .radiant:
             return 8
         case .ethereum,
@@ -369,6 +373,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "RXD"
         case .joystream:
             return "JOY"
+        case .icp:
+            return "ICP"
         }
     }
 
@@ -708,6 +714,7 @@ extension Blockchain: Codable {
         case .radiant: return "radiant"
         case .base: return "base"
         case .joystream: return "joystream"
+        case .icp: return "icp"
         }
     }
 
@@ -793,6 +800,7 @@ extension Blockchain: Codable {
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
+        case "icp": self = .icp(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -993,6 +1001,8 @@ private extension Blockchain {
             }
         case .joystream:
             return "joystream"
+        case .icp:
+            return "icp"
         }
     }
 
@@ -1095,6 +1105,8 @@ extension Blockchain {
             return HederaWalletAssembly()
         case .radiant:
             return RadiantWalletAssembly()
+        case .icp:
+            return ICPWalletAssembly()
         }
     }
 }
