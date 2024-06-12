@@ -608,6 +608,20 @@ class AddressesTests: XCTestCase {
         )
     }
     
+    func testBittensor() {
+        testSubstrateNetwork(
+            .bittensor(curve: .ed25519),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+        
+        testSubstrateNetwork(
+            .bittensor(curve: .ed25519_slip0010),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+    }
+    
     func testSubstrateNetwork(_ blockchain: Blockchain, publicKey: Data, expectedAddress: String) {
         let network = PolkadotNetwork(blockchain: blockchain)!
         let service = PolkadotAddressService(network: network)
