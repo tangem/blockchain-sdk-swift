@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import TangemSdk
 
 class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     var currentHost: String {
