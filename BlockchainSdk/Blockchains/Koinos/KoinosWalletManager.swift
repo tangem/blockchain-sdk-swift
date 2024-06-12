@@ -65,11 +65,11 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
             }
     }
     
-    func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, any Error> {
+    func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         do {
             try validate(amount: transaction.amount, fee: transaction.fee)
         } catch {
-            return Fail(error: error).eraseToAnyPublisher()
+            return Fail(error: SendTxError(error: error)).eraseToAnyPublisher()
         }
         
         let manaLimit = transaction.fee.amount.value
@@ -105,6 +105,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: txId)
             }
+            .mapError { SendTxError(error: $0) }
             .eraseToAnyPublisher()
     }
     

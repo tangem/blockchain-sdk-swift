@@ -159,7 +159,7 @@ class AddressesTests: XCTestCase {
     
     func testEth() throws {
         let blockchain = Blockchain.ethereum(testnet: false)
-        let service = EthereumAddressService()
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -176,7 +176,8 @@ class AddressesTests: XCTestCase {
     }
     
     func testEthTestnet() throws {
-        let service = EthereumAddressService()
+        let blockchain = Blockchain.ethereum(testnet: false)
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -424,7 +425,7 @@ class AddressesTests: XCTestCase {
     
     func testBsc() throws {
         let blockchain = Blockchain.bsc(testnet: false)
-        let service = EthereumAddressService()
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -441,7 +442,8 @@ class AddressesTests: XCTestCase {
     }
     
     func testBscTestnet() throws {
-        let service = EthereumAddressService()
+        let blockchain = Blockchain.ethereum(testnet: false)
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -457,7 +459,7 @@ class AddressesTests: XCTestCase {
     
     func testPolygon() throws {
         let blockchain = Blockchain.polygon(testnet: false)
-        let service = EthereumAddressService()
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -592,6 +594,20 @@ class AddressesTests: XCTestCase {
         )
     }
     
+    func testJoystream() {
+        testSubstrateNetwork(
+            .joystream(curve: .ed25519),
+            publicKey: edKey,
+            expectedAddress: "j4UwGHUYcR4HH6qiZ4WJJPBKsYboMJWe6WPj8V6uKfo4Gnhbt"
+        )
+        
+        testSubstrateNetwork(
+            .joystream(curve: .ed25519_slip0010),
+            publicKey: edKey,
+            expectedAddress: "j4UwGHUYcR4HH6qiZ4WJJPBKsYboMJWe6WPj8V6uKfo4Gnhbt"
+        )
+    }
+    
     func testSubstrateNetwork(_ blockchain: Blockchain, publicKey: Data, expectedAddress: String) {
         let network = PolkadotNetwork(blockchain: blockchain)!
         let service = PolkadotAddressService(network: network)
@@ -682,18 +698,18 @@ class AddressesTests: XCTestCase {
     
     func testTON(curve: EllipticCurve) {
         let blockchain = Blockchain.ton(curve: curve, testnet: false)
-        let addressService = WalletCoreAddressService(coin: .ton)
+        let addressService = TonAddressService()
         
         let walletPubkey1 = Data(hex: "e7287a82bdcd3a5c2d0ee2150ccbc80d6a00991411fb44cd4d13cef46618aadb")
-        let expectedAddress1 = "EQBqoh0pqy6zIksGZFMLdqV5Q2R7rzlTO0Durz6OnUgKrYeu"
+        let expectedAddress1 = "UQBqoh0pqy6zIksGZFMLdqV5Q2R7rzlTO0Durz6OnUgKrdpr"
         XCTAssertEqual(try addressService.makeAddress(from: walletPubkey1).value, expectedAddress1)
         
         let walletPubkey2 = Data(hex: "258A89B60CCE7EB3339BF4DB8A8DA8153AA2B6489D22CC594E50FDF626DA7AF5")
-        let expectedAddress2 = "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"
+        let expectedAddress2 = "UQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eL1z"
         XCTAssertEqual(try addressService.makeAddress(from: walletPubkey2).value, expectedAddress2)
         
         let walletPubkey3 = Data(hex: "f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41")
-        let expectedAddress3 = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
+        let expectedAddress3 = "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV"
         XCTAssertEqual(try addressService.makeAddress(from: walletPubkey3).value, expectedAddress3)
         
         let walletPubkey4 = Data(hexString: "0404B604296010A55D40000B798EE8454ECCC1F8900E70B1ADF47C9887625D8BAE3866351A6FA0B5370623268410D33D345F63344121455849C9C28F9389ED9731")
@@ -703,17 +719,18 @@ class AddressesTests: XCTestCase {
         XCTAssertNil(try? addressService.makeAddress(from: walletPubkey5))
         
         XCTAssertNil(try? addressService.makeAddress(from: secpCompressedKey))
+        
         XCTAssertNil(try? addressService.makeAddress(from: secpDecompressedKey))
         
         try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: walletPubkey1, for: blockchain), expectedAddress1)
     }
     
     func testTONValidateCorrectAddress() {
-        let addressService = WalletCoreAddressService(coin: .ton)
+        let addressService = TonAddressService()
         
-        XCTAssertTrue(addressService.validate("EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"))
-        XCTAssertTrue(addressService.validate("EQAGDzFFIxJswaBU5Rqaz5H5dKUBGYEMhL44fpLtIdWbjkBo"))
-        XCTAssertTrue(addressService.validate("EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG"))
+        XCTAssertTrue(addressService.validate("UQBqoh0pqy6zIksGZFMLdqV5Q2R7rzlTO0Durz6OnUgKrdpr"))
+        XCTAssertTrue(addressService.validate("UQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eL1z"))
+        XCTAssertTrue(addressService.validate("UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV"))
         XCTAssertTrue(addressService.validate("0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"))
         XCTAssertTrue(addressService.validate("0:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"))
         XCTAssertFalse(addressService.validate("8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"))

@@ -77,7 +77,8 @@ struct AddressTypesConfig {
              .taraxa,
              .radiant,
              .base,
-             .koinos:
+             .koinos,
+             .joystream:
             return [.default]
         }
     }

@@ -14,29 +14,36 @@ import BitcoinCore
 struct EthereumWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        return try EthereumWalletManager(wallet: input.wallet).then {
-            let chainId = input.blockchain.chainId!
-            
-            let blockcypherProvider: BlockcypherNetworkProvider?
-            
-            if case .ethereum = input.blockchain {
-                blockcypherProvider = BlockcypherNetworkProvider(
+        guard let chainId = input.blockchain.chainId else {
+            throw EthereumWalletAssemblyError.chainIdNotFound
+        }
+
+        let blockcypherProvider: BlockcypherNetworkProvider? = {
+            switch input.blockchain {
+            case .ethereum:
+                return BlockcypherNetworkProvider(
                     endpoint: .ethereum,
                     tokens: input.blockchainSdkConfig.blockcypherTokens,
                     configuration: input.networkConfig
                 )
-            } else {
-                blockcypherProvider = nil
+            default:
+                return nil
             }
-            
-            $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
-            $0.networkService = EthereumNetworkService(
-                decimals: input.blockchain.decimalCount,
-                providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
-                blockcypherProvider: blockcypherProvider,
-                abiEncoder: WalletCoreABIEncoder()
-            )
-        }
+        }()
+
+        let txBuilder = EthereumTransactionBuilder(chainId: chainId)
+        let networkService = EthereumNetworkService(
+            decimals: input.blockchain.decimalCount,
+            providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
+            blockcypherProvider: blockcypherProvider,
+            abiEncoder: WalletCoreABIEncoder()
+        )
+
+        return EthereumWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService)
     }
     
+}
+
+enum EthereumWalletAssemblyError: Error {
+    case chainIdNotFound
 }

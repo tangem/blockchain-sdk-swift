@@ -39,7 +39,12 @@ class SolanaNetworkService {
                 }
                 
                 let tokenAccounts = splTokenAccounts + token2022Accounts
-                return self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: tokenAccounts, tokens: tokens, confirmedTransactionIDs: confirmedTransactionIDs)
+                return self.mapInfo(
+                    mainAccountInfo: mainAccount,
+                    tokenAccountsInfo: tokenAccounts,
+                    tokens: tokens,
+                    confirmedTransactionIDs: confirmedTransactionIDs
+                )
             }
             .eraseToAnyPublisher()
     }
@@ -127,6 +132,10 @@ class SolanaNetworkService {
         minimalBalanceForRentExemption(dataLength: 0)
     }
     
+    func mainAccountCreationFee(dataLength: UInt64) -> AnyPublisher<Decimal, Error> {
+        minimalBalanceForRentExemption(dataLength: dataLength)
+    }
+    
     func accountRentFeePerEpoch() -> AnyPublisher<Decimal, Error> {
         // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
         let minimumAccountSizeInBytes = Decimal(128)
@@ -184,14 +193,14 @@ class SolanaNetworkService {
             .retry(1)
             .tryMap { info in
                 let lamports = info.lamports
-                let accountInfo = SolanaMainAccountInfoResponse(balance: lamports, accountExists: true)
+                let accountInfo = SolanaMainAccountInfoResponse(balance: lamports, accountExists: true, space: info.space)
                 return accountInfo
             }
             .tryCatch { (error: Error) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> in
                 if let solanaError = error as? SolanaError {
                     switch solanaError {
                     case .nullValue:
-                        let info = SolanaMainAccountInfoResponse(balance: 0, accountExists: false)
+                        let info = SolanaMainAccountInfoResponse(balance: 0, accountExists: false, space: nil)
                         return Just(info)
                             .setFailureType(to: Error.self)
                             .eraseToAnyPublisher()
@@ -262,6 +271,12 @@ class SolanaNetworkService {
             return token1
         }
         
-        return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint, confirmedTransactionIDs: confirmedTransactionIDs)
+        return SolanaAccountInfoResponse(
+            balance: balance,
+            accountExists: accountExists,
+            tokensByMint: tokensByMint,
+            confirmedTransactionIDs: confirmedTransactionIDs,
+            mainAccountSpace: mainAccountInfo.space
+        )
     }
 }

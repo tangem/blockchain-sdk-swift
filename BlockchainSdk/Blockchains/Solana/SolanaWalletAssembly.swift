@@ -40,7 +40,15 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                     }
 
                     switch $0 {
-                    case .nowNodes, .quickNode:
+                    case .nowNodes:
+                        return RPCEndpoint(
+                            url: nodeInfo.url,
+                            urlWebSocket: urlWebSocket,
+                            network: .mainnetBeta,
+                            apiKeyHeaderName: nodeInfo.headers?.headerName,
+                            apiKeyHeaderValue: nodeInfo.headers?.headerValue
+                        )
+                    case .quickNode:
                         return RPCEndpoint(
                             url: nodeInfo.url,
                             urlWebSocket: urlWebSocket,
@@ -52,7 +60,8 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                 }
             }
             
-            let networkRouter = NetworkingRouter(endpoints: endpoints)
+            let apiLogger = SolanaApiLoggerUtil()
+            let networkRouter = NetworkingRouter(endpoints: endpoints, apiLogger: apiLogger)
             let accountStorage = SolanaDummyAccountStorage()
             
             $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)

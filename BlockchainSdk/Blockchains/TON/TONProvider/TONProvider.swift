@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TonSwift
 
 struct TONProvider: HostProvider {
     /// Blockchain API host
@@ -42,6 +43,53 @@ struct TONProvider: HostProvider {
         requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
     }
     
+    /// Fetch jetton wallet address
+    /// - Parameters:
+    ///   - ownerAddress: UserFriendly TON address
+    ///   - contractAddress: master address of jetton
+    /// - Returns: Model containing array of serialized objects, jetton wallet address is usually inside the first cell
+    func getJettonWalletAddress(
+        for ownerAddress: String,
+        contractAddress: String
+    ) -> AnyPublisher<TONModels.ResultStack, Error> {
+        guard let tonAddress = try? TonSwift.Address.parse(ownerAddress),
+              let serializedAddress = try? tonAddress.serialize() else {
+            return .emptyFail
+        }
+        let stack = [[TONModels.RunGetMethodParameters.StackKey.slice.rawValue, serializedAddress]]
+        
+        return requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: contractAddress,
+                        method: .getWalletAddress,
+                        stack: stack
+                    )
+                )
+            )
+        )
+    }
+    
+    /// Fetch jetton walled data
+    /// - Parameter jettonWalletAddress: UserFriendly TON address of jetton wallet
+    /// - Returns: Model containing array of serialized objects
+    func getJettonWalledData(jettonWalletAddress: String) -> AnyPublisher<TONModels.ResultStack, Error> {
+        requestPublisher(
+            for: TONProviderTarget(
+                node: node,
+                targetType: .runGetMethod(
+                    parameters: TONModels.RunGetMethodParameters(
+                        address: jettonWalletAddress,
+                        method: .getWalletData,
+                        stack: []
+                    )
+                )
+            )
+        )
+    }
+    
     /// Fetch balance wallet by address
     /// - Parameter address: UserFriendly TON address wallet
     /// - Returns: String balance wallet adress or Error
@@ -69,7 +117,7 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    private func requestPublisher<T: Codable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
+    private func requestPublisher<T: Decodable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
@@ -80,5 +128,12 @@ struct TONProvider: HostProvider {
             .mapError { _ in WalletError.empty }
             .eraseToAnyPublisher()
     }
-    
+}
+
+fileprivate extension TonSwift.Address {
+    func serialize() throws -> String {
+        let builder = Builder()
+        try self.storeTo(builder: builder)
+        return try builder.endCell().toBoc().base64EncodedString()
+    }
 }

@@ -104,4 +104,15 @@ class TronTests: XCTestCase {
         
         XCTAssertEqual(transactionDataList, expectedTransactionDataList)
     }
+    
+    func testBalanceResponse() throws {
+        let longConstantResult = "0000000000000000000000000000000000000000000000001e755ae3061df48700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        
+        let shortConstantResult = "0000000000000000000000000000000000000000000000000000000001e835f8"
+        
+        let utils = TronUtils()
+        
+        try XCTAssertEqual(utils.combineBigUIntValueAtBalance(response: [longConstantResult]), "2194760324519687303")
+        try XCTAssertEqual(utils.combineBigUIntValueAtBalance(response: [shortConstantResult]), "31995384")
+    }
 }

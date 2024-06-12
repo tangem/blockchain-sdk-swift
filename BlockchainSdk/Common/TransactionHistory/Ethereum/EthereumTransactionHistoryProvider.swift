@@ -44,6 +44,7 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
         page = nil
         totalPages = 0
         totalRecordsCount = 0
+        mapper.reset()
     }
     
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {

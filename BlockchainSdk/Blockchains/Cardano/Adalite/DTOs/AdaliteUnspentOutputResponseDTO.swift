@@ -13,7 +13,7 @@ struct AdaliteUnspentOutputResponseDTO: Decodable {
     let tag: String
     let cuCoins: CuCoins
     let cuAddress: String
-    let cuOutIndex: Int
+    let cuOutIndex: UInt64
 }
 
 extension AdaliteUnspentOutputResponseDTO {

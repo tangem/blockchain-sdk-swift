@@ -77,6 +77,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case radiant(testnet: Bool)
     case base(testnet: Bool)
     case koinos(testnet: Bool)
+    case joystream(curve: EllipticCurve)
 
     public var isTestnet: Bool {
         switch self {
@@ -132,7 +133,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa:
+                .kaspa,
+                .joystream:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -157,6 +159,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polkadot(let curve, _),
                 .kusama(let curve),
                 .azero(let curve, _),
+                .joystream(let curve),
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
@@ -239,6 +242,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .azero,
                 .chia:
             return 12
+        case .joystream:
+            return 10
         case .near:
             return 24
         case .algorand:
@@ -367,6 +372,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "RXD"
         case .koinos:
             return isTestnet ? "tKOIN" : "KOIN"
+        case .joystream:
+            return "JOY"
         }
     }
 
@@ -408,6 +415,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .cronos:
+            return "Cronos EVM"
+        case .telos:
+            return "Telos EVM"
         case .octa:
             return "OctaSpace"
         case .chia:
@@ -429,6 +440,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Polygon zkEVM" + testnetSuffix
         case .zkSync:
             return "zkSync Era" + testnetSuffix
+        case .manta:
+            return "Manta Pacific" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -459,6 +472,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .ton: return "TON"
         case .veChain: return "VIP180"
         case .xdc: return "XRC20"
+        case .hedera: return "HTS"
         default:
             return nil
         }
@@ -469,10 +483,13 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .taraxa:
             return false
         case .binance,
-                .solana,
-                .tron,
-                .terraV1,
-                .veChain:
+             .solana,
+             .tron,
+             .terraV1,
+             .veChain,
+             .hedera,
+             .ton,
+             .cardano:
             return true
         case _ where isEvm:
             return true
@@ -699,6 +716,7 @@ extension Blockchain: Codable {
         case .radiant: return "radiant"
         case .base: return "base"
         case .koinos: return "koinos"
+        case .joystream: return "joystream"
         }
     }
 
@@ -784,6 +802,7 @@ extension Blockchain: Codable {
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         case "koinos": self = .koinos(testnet: isTestnet)
+        case "joystream": self = .joystream(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -984,6 +1003,8 @@ private extension Blockchain {
             }
         case .koinos:
             return "koinos"
+        case .joystream:
+            return "joystream"
         }
     }
 
@@ -1052,7 +1073,7 @@ extension Blockchain {
             return TezosWalletAssembly()
         case .solana:
             return SolanaWalletAssembly()
-        case .polkadot, .kusama, .azero:
+        case .polkadot, .kusama, .azero, .joystream:
             return SubstrateWalletAssembly()
         case .tron:
             return TronWalletAssembly()

@@ -85,6 +85,19 @@ extension Decimal {
     }
 }
 
+// MARK: - Point moving
+
+extension Decimal {
+    func moveRight(decimals: Int) -> Decimal {
+        self * pow(10, decimals)
+    }
+    
+    func moveLeft(decimals: Int) -> Decimal {
+        self / pow(10, decimals)
+    }
+}
+
+
 // MARK: - Private implementation
 
 private extension Locale {

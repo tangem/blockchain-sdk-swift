@@ -18,6 +18,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     
     var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
+    private var currentAccountSpace: UInt64?
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
@@ -37,6 +38,8 @@ class SolanaWalletManager: BaseManager, WalletManager {
     }
     
     private func updateWallet(info: SolanaAccountInfoResponse) {
+        // Need stored for use calculation fee creation account for destination account the prototype
+        self.currentAccountSpace = info.mainAccountSpace
         self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
@@ -54,7 +57,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
 extension SolanaWalletManager: TransactionSender {
     public var allowsFeeSelection: Bool { false }
     
-    public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let sendPublisher: AnyPublisher<TransactionID, Error>
         switch transaction.amount.type {
         case .coin:
@@ -62,12 +65,12 @@ extension SolanaWalletManager: TransactionSender {
         case .token(let token):
             sendPublisher = sendSplToken(transaction, token: token, signer: signer)
         case .reserve, .feeResource:
-            return .emptyFail
+            return .sendTxFail(error: WalletError.empty)
         }
         
         return sendPublisher
             .tryMap { [weak self] hash in
-                guard let self = self else {
+                guard let self else {
                     throw WalletError.empty
                 }
 
@@ -76,6 +79,7 @@ extension SolanaWalletManager: TransactionSender {
                 self.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
@@ -180,6 +184,13 @@ private extension SolanaWalletManager {
         let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
         let rentExemptionBalancePublisher = networkService.minimalBalanceForRentExemption()
 
+        
+        /*
+         1. we get our account (if not, we return the error if yes, we go further)
+         2. we get the account of the recipient of the token, if it is fee = 0,
+         3. if it is not, then we take the space of our account and receive a fee for creation
+        */
+        
         return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
             .map { accountCreationFee, accountExists, rentExemption in
                 let creationFee: Decimal
@@ -229,7 +240,7 @@ private extension SolanaWalletManager {
                 }
                 .eraseToAnyPublisher()
         case .token:
-            return .justWithError(output: 0)
+            return networkService.mainAccountCreationFee(dataLength: currentAccountSpace ?? 0)
         case .reserve, .feeResource:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
