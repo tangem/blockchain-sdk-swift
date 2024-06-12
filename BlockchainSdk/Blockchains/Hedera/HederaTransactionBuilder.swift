@@ -32,7 +32,7 @@ final class HederaTransactionBuilder {
         nodeAccountIds: [Int]?
     ) throws -> CompiledTransaction {
         let accountId = try AccountId(parsing: tokenAssociation.accountId)
-        let tokenId = try TokenId(parsing: tokenAssociation.contractAddress)
+        let tokenId = try TokenId.fromSolidityAddressOrString(tokenAssociation.contractAddress)
         let transactionId = try makeTransactionId(accountId: accountId, validStartDate: validStartDate)
 
         let nodeAccountIds = nodeAccountIds?
@@ -142,7 +142,7 @@ final class HederaTransactionBuilder {
                 .hbarTransfer(sourceAccountId, transactionAmount.negated())
                 .hbarTransfer(destinationAccountId, transactionAmount)
         case .token(let token):
-            let tokenId = try TokenId.fromString(token.contractAddress)
+            let tokenId = try TokenId.fromSolidityAddressOrString(token.contractAddress)
             let transactionAmount = transactionRoundedValue.int64Value
             return TransferTransaction()
                 .tokenTransfer(tokenId, sourceAccountId, -transactionAmount)
