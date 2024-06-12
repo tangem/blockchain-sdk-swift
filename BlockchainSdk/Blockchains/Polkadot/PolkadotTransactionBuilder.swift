@@ -113,7 +113,7 @@ class PolkadotTransactionBuilder {
             return specVersion < 28
         case .kusama:
             return specVersion < 2028
-        case .westend, .azero, .bittensor: // FIXME: check bittensor
+        case .westend, .azero, .bittensor:
             return false
         case .joystream:
             // specVersion at the moment of initial implementation is '2003'
