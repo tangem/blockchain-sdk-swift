@@ -75,6 +75,7 @@ public extension Blockchain {
         case .radiant: break
         case .base: break
         case .joystream: break
+        case .icp: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -142,6 +143,7 @@ public extension Blockchain {
             .taraxa(testnet: false),
             .radiant(testnet: false),
             .base(testnet: false),
+            .icp(curve: .ed25519),
             .joystream(curve: .ed25519_slip0010)
         ]
     }

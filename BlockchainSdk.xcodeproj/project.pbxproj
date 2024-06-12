@@ -20,6 +20,9 @@
 		0A7084B82BF797E900FD519D /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7084B72BF797E900FD519D /* TONAddressService.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
+		0AF503312C199A6200193358 /* ICPWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF503302C199A6200193358 /* ICPWalletAssembly.swift */; };
+		0AF503332C199BC800193358 /* ICPAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF503322C199BC800193358 /* ICPAddressService.swift */; };
+		0AF503352C199C2A00193358 /* ICPExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF503342C199C2A00193358 /* ICPExternalLinkProvider.swift */; };
 		0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */; };
 		0AF90CD92B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */; };
 		0AF90CDB2B87657F00772F04 /* PulsechainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */; };
@@ -850,6 +853,9 @@
 		0A7084B72BF797E900FD519D /* TONAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
+		0AF503302C199A6200193358 /* ICPWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPWalletAssembly.swift; sourceTree = "<group>"; };
+		0AF503322C199BC800193358 /* ICPAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPAddressService.swift; sourceTree = "<group>"; };
+		0AF503342C199C2A00193358 /* ICPExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreonExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playa3ullGamesExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsechainExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1696,6 +1702,16 @@
 			path = DTO;
 			sourceTree = "<group>";
 		};
+		0AF5032F2C199A4200193358 /* ICP */ = {
+			isa = PBXGroup;
+			children = (
+				0AF503302C199A6200193358 /* ICPWalletAssembly.swift */,
+				0AF503322C199BC800193358 /* ICPAddressService.swift */,
+				0AF503342C199C2A00193358 /* ICPExternalLinkProvider.swift */,
+			);
+			path = ICP;
+			sourceTree = "<group>";
+		};
 		2D01EBFB2B04FC2F00DEF1CC /* Decimal */ = {
 			isa = PBXGroup;
 			children = (
@@ -2066,6 +2082,7 @@
 				5D94E55F23A37EF7009C7482 /* Ethereum */,
 				B64A68092BCE9E62009ED960 /* EthereumOptimisticRollup */,
 				B6FC9DC62B62A44000448D8A /* Hedera */,
+				0AF5032F2C199A4200193358 /* ICP */,
 				DA63B08E29CB3FC700AC6E49 /* Kaspa */,
 				5D54FE1623E41CAE009FAC2F /* Litecoin */,
 				B63B79302AD854010055BD06 /* NEAR */,
@@ -4407,6 +4424,7 @@
 				EF3B193A2AA85D170084AA1C /* AvalancheExternalLinkProvider.swift in Sources */,
 				DC5E65132B1650F400E81AA5 /* OP_SWAP.swift in Sources */,
 				DC5E65022B1650F400E81AA5 /* OP_NUMEQUALVERIFY.swift in Sources */,
+				0AF503312C199A6200193358 /* ICPWalletAssembly.swift in Sources */,
 				DC5E65252B1650F400E81AA5 /* OP_RESERVED.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
 				EF9E382D2B7A47C7004B694C /* AnyPublisher+Async.swift in Sources */,
@@ -4538,6 +4556,7 @@
 				DC5E652F2B1650F400E81AA5 /* OP_NOP.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
 				2D79B15E2C00CE9000E71EBB /* SolanaApiLoggerUtil.swift in Sources */,
+				0AF503352C199C2A00193358 /* ICPExternalLinkProvider.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				EF74D63E2BA35099000550F3 /* URLSessionWebSocketDelegateWrapper.swift in Sources */,
 				B6B083572AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift in Sources */,
@@ -4675,6 +4694,7 @@
 				EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */,
 				DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */,
 				DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */,
+				0AF503332C199BC800193358 /* ICPAddressService.swift in Sources */,
 				5D14E4972397B87000C15FC8 /* WalletManager.swift in Sources */,
 				B6F3AA6D2ADD92230059C99A /* Publisher+.swift in Sources */,
 				DC5E64E12B1650F400E81AA5 /* OP_CHECKSIG.swift in Sources */,
