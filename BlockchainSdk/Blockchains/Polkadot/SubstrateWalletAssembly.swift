@@ -27,13 +27,13 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
             if case .bittensor = network {
                 let dwellirResolver = DwellirAPIResolver(config: input.blockchainSdkConfig)
                 
-                if let dwellirNodeInfo = dwellirResolver.resolve(blockchain: input.blockchain) {
+                if let dwellirNodeInfo = dwellirResolver.resolve() {
                     providers.append(PolkadotJsonRpcProvider(node: dwellirNodeInfo, configuration: networkConfig))
                 }
                 
                 let onfinalityResolver = OnfinalityAPIResolver(config: input.blockchainSdkConfig)
                 
-                if let onfinalityNodeInfo = onfinalityResolver.resolve(blockchain: input.blockchain) {
+                if let onfinalityNodeInfo = onfinalityResolver.resolve() {
                     providers.append(PolkadotJsonRpcProvider(node: onfinalityNodeInfo, configuration: networkConfig))
                 }
             }

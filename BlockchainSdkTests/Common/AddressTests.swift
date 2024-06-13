@@ -608,7 +608,7 @@ class AddressesTests: XCTestCase {
         )
     }
     
-    func testBittensor() {
+    func testBittensor() throws {
         testSubstrateNetwork(
             .bittensor(curve: .ed25519),
             publicKey: edKey,
@@ -632,10 +632,13 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
         XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
 
-        XCTAssertNotNil(addressFromString)
-        XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
+        guard let addressFromString else {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(addressFromString.bytes(raw: true), publicKey)
         XCTAssertEqual(address.value, expectedAddress)
-        XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
+        XCTAssertNotEqual(addressFromString.bytes(raw: false), publicKey)
     }
     
     func testTron() throws {

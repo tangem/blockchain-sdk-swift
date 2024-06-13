@@ -11,11 +11,8 @@ import Foundation
 struct OnfinalityAPIResolver {
     let config: BlockchainSdkConfig
     
-    func resolve(blockchain: Blockchain) -> NodeInfo? {
-        guard
-            case .bittensor = blockchain,
-            let url = URL(string: "https://bittensor-finney.api.onfinality.io/rpc/")
-        else {
+    func resolve() -> NodeInfo? {
+        guard let url = URL(string: "https://bittensor-finney.api.onfinality.io/rpc/") else {
             return nil
         }
         

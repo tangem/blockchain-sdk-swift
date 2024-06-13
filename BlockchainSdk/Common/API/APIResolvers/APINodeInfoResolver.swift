@@ -49,10 +49,10 @@ struct APINodeInfoResolver {
                 .resolve(blockchain: blockchain)
         case .onfinality:
             return OnfinalityAPIResolver(config: config)
-                .resolve(blockchain: blockchain)
+                .resolve()
         case .dwellir:
             return DwellirAPIResolver(config: config)
-                .resolve(blockchain: blockchain)
+                .resolve()
         case .blockchair, .blockcypher, .solana:
             return nil
         }

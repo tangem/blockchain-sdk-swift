@@ -68,16 +68,16 @@ extension PolkadotNetwork {
         case .westend(let curve):
             // This value was found experimentally by sending transactions with different values to inactive accounts.
             // This is the lowest amount that activates an account on the Westend network.
-            return Amount(with: .polkadot(curve: curve, testnet: true), value: 0.01)
+            return Amount(with: .polkadot(curve: curve, testnet: true), value: Decimal(stringValue: "0.01")!)
         case .azero(let curve, let isTestnet):
             // Existential deposit - 0.0000000005 Look https://test.azero.dev wallet for example
-            return Amount(with: .azero(curve: curve, testnet: isTestnet), value: 0.0000000005)
+            return Amount(with: .azero(curve: curve, testnet: isTestnet), value: Decimal(stringValue: "0.0000000005")!)
         case .joystream(let curve):
             // Existential deposit - 0.026666656
             // Look https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.joystream.org#/accounts -> send
-            return Amount(with: .joystream(curve: curve), value: 0.026666656)
+            return Amount(with: .joystream(curve: curve), value: Decimal(stringValue: "0.026666656")!)
         case .bittensor(let curve):
-            return Amount(with: .bittensor(curve: curve), value: 0.0000005)
+            return Amount(with: .bittensor(curve: curve), value: Decimal(stringValue: "0.0000005")!)
         }
     }
 }

@@ -1072,7 +1072,7 @@ extension Blockchain {
             return TezosWalletAssembly()
         case .solana:
             return SolanaWalletAssembly()
-        case .polkadot, .kusama, .azero, .joystream, .bittensor:
+        case .polkadot, .kusama, .azero, .joystream:
             return SubstrateWalletAssembly()
         case .tron:
             return TronWalletAssembly()
@@ -1106,6 +1106,8 @@ extension Blockchain {
             return HederaWalletAssembly()
         case .radiant:
             return RadiantWalletAssembly()
+        case .bittensor:
+            return BittensorWalletAssembly()
         }
     }
 }
