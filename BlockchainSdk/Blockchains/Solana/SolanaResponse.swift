@@ -15,6 +15,7 @@ struct SolanaAccountInfoResponse {
     let tokensByMint: [String: SolanaTokenAccountInfoResponse]
     let confirmedTransactionIDs: [String]
     let mainAccountSpace: UInt64?
+    let tokenAccountSpace: UInt64?
 }
 
 struct SolanaMainAccountInfoResponse {

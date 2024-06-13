@@ -276,7 +276,8 @@ class SolanaNetworkService {
             accountExists: accountExists,
             tokensByMint: tokensByMint,
             confirmedTransactionIDs: confirmedTransactionIDs,
-            mainAccountSpace: mainAccountInfo.space
+            mainAccountSpace: mainAccountInfo.space,
+            tokenAccountSpace: tokenAccountsInfo.first?.account.space
         )
     }
 }

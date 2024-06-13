@@ -18,7 +18,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     
     var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
-    private var currentAccountSpace: UInt64?
+    private var currentTokenAccountSpace: UInt64?
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
@@ -39,7 +39,8 @@ class SolanaWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(info: SolanaAccountInfoResponse) {
         // Need stored for use calculation fee creation account for destination account the prototype
-        self.currentAccountSpace = info.mainAccountSpace
+        self.currentTokenAccountSpace = info.tokenAccountSpace
+        
         self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
@@ -180,29 +181,30 @@ extension SolanaWalletManager: TransactionSender {
 private extension SolanaWalletManager {
     /// Combine `accountCreationFeePublisher`, `accountExistsPublisher` and `minimalBalanceForRentExemption`
     func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
-        let accountCreationFeePublisher = accountCreationFeePublisher(amount: amount)
         let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
         let rentExemptionBalancePublisher = networkService.minimalBalanceForRentExemption()
-
         
-        /*
-         1. we get our account (if not, we return the error if yes, we go further)
-         2. we get the account of the recipient of the token, if it is fee = 0,
-         3. if it is not, then we take the space of our account and receive a fee for creation
-        */
-        
-        return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
-            .map { accountCreationFee, accountExists, rentExemption in
-                let creationFee: Decimal
-                if accountExists {
-                    creationFee = 0
-                } else if amount.type == .coin && amount.value >= rentExemption {
-                    creationFee = 0
+        return Publishers.Zip(accountExistsPublisher, rentExemptionBalancePublisher)
+            .withWeakCaptureOf(self)
+            .flatMap { (manager, values) in
+                let accountExists = values.0
+                let rentExemption = values.1
+                
+                if accountExists || amount.type == .coin && amount.value >= rentExemption {
+                    return Just(DestinationAccountInfo(accountExists: accountExists, accountCreationFee: 0))
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
                 } else {
-                    creationFee = accountCreationFee
+                    return manager
+                        .accountCreationFeePublisher(amount: amount, with: manager.currentTokenAccountSpace ?? 0)
+                        .map {
+                            DestinationAccountInfo(
+                                accountExists: accountExists,
+                                accountCreationFee: $0
+                            )
+                        }
+                        .eraseToAnyPublisher()
                 }
-
-                return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: creationFee)
             }
             .eraseToAnyPublisher()
     }
@@ -226,7 +228,7 @@ private extension SolanaWalletManager {
             .eraseToAnyPublisher()
     }
 
-    func accountCreationFeePublisher(amount: Amount) -> AnyPublisher<Decimal, Error> {
+    func accountCreationFeePublisher(amount: Amount, with space: UInt64?) -> AnyPublisher<Decimal, Error> {
         switch amount.type {
         case .coin:
             // Include the fee if the amount is less than it
@@ -240,7 +242,7 @@ private extension SolanaWalletManager {
                 }
                 .eraseToAnyPublisher()
         case .token:
-            return networkService.mainAccountCreationFee(dataLength: currentAccountSpace ?? 0)
+            return networkService.mainAccountCreationFee(dataLength: space ?? 0)
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
