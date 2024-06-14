@@ -171,30 +171,13 @@ extension TransactionValidator where Self: ReserveAmountRestrictable {
 }
 
 extension TransactionValidator where Self: FeeResourceRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
     }
     
     func validate(amount: Amount, fee: Fee) throws {
-        let fee = fee.amount.value
-        let amount = amount.value
-        
-        let currentFeeResource = wallet.amounts[.feeResource(feeResourceType)]?.value ?? .zero
-        let availableBalanceForTransfer = currentFeeResource - fee
-        
-        let balance = wallet.amounts[.coin]?.value ?? .zero
-        
-        if balance < fee {
-            throw ValidationError.invalidAmount
-        }
-        
-        if currentFeeResource < fee {
-            throw ValidationError.invalidFee
-        }
-        
-        if amount > availableBalanceForTransfer {
-            throw ValidationError.feeExceedsBalance
-        }
+        try validateAmounts(amount: amount, fee: fee.amount)
+        try validateFeeResource(amount: amount, fee: fee.amount)
     }
 }

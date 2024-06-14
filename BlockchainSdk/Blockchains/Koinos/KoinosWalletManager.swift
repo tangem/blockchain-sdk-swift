@@ -65,12 +65,6 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, any Error> {
-        do {
-            try validate(amount: transaction.amount, fee: transaction.fee)
-        } catch {
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-        
         let manaLimit = transaction.fee.amount.value
         let transactionDataWithMana = transaction.then {
             $0.params = KoinosTransactionParams(manaLimit: manaLimit)
