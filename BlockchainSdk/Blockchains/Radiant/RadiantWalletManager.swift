@@ -79,11 +79,7 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                guard signatures.count == hashesForSign.count else {
-                    throw WalletError.failedToBuildTx
-                }
-                
-                return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
+                try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, rawTransactionData -> AnyPublisher<String, Error> in
