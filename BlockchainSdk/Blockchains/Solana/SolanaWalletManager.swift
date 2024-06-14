@@ -18,7 +18,6 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     
     var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
-    private var currentTokenAccountSpace: UInt64?
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
@@ -38,9 +37,6 @@ class SolanaWalletManager: BaseManager, WalletManager {
     }
     
     private func updateWallet(info: SolanaAccountInfoResponse) {
-        // Need stored for use calculation fee creation account for destination account the prototype
-        self.currentTokenAccountSpace = info.tokenAccountSpace
-        
         self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
@@ -187,19 +183,19 @@ private extension SolanaWalletManager {
         return Publishers.Zip(accountExistsPublisher, rentExemptionBalancePublisher)
             .withWeakCaptureOf(self)
             .flatMap { (manager, values) in
-                let accountExists = values.0
+                let accountExistsInfo = values.0
                 let rentExemption = values.1
                 
-                if accountExists || amount.type == .coin && amount.value >= rentExemption {
-                    return Just(DestinationAccountInfo(accountExists: accountExists, accountCreationFee: 0))
+                if accountExistsInfo.isExist || amount.type == .coin && amount.value >= rentExemption {
+                    return Just(DestinationAccountInfo(accountExists: accountExistsInfo.isExist, accountCreationFee: 0))
                         .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 } else {
                     return manager
-                        .accountCreationFeePublisher(amount: amount, with: manager.currentTokenAccountSpace ?? 0)
+                        .accountCreationFeePublisher(amount: amount, with: accountExistsInfo.space)
                         .map {
                             DestinationAccountInfo(
-                                accountExists: accountExists,
+                                accountExists: accountExistsInfo.isExist,
                                 accountCreationFee: $0
                             )
                         }
@@ -209,7 +205,7 @@ private extension SolanaWalletManager {
             .eraseToAnyPublisher()
     }
 
-    func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<Bool, Error> {
+    func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<AccountExistsInfo, Error> {
         let tokens: [Token] = amountType.token.map { [$0] } ?? []
 
         return networkService
@@ -217,12 +213,12 @@ private extension SolanaWalletManager {
             .map { info in
                 switch amountType {
                 case .coin:
-                    return info.accountExists
+                    return AccountExistsInfo(isExist: info.accountExists, space: nil)
                 case .token(let token):
                     let existingTokenAccount = info.tokensByMint[token.contractAddress]
-                    return existingTokenAccount != nil
+                    return AccountExistsInfo(isExist: existingTokenAccount != nil, space: existingTokenAccount?.space)
                 case .reserve:
-                    return false
+                    return AccountExistsInfo(isExist: false, space: nil)
                 }
             }
             .eraseToAnyPublisher()
@@ -303,5 +299,10 @@ private extension SolanaWalletManager {
     struct DestinationAccountInfo {
         let accountExists: Bool
         let accountCreationFee: Decimal
+    }
+    
+    struct AccountExistsInfo {
+        let isExist: Bool
+        let space: UInt64?
     }
 }

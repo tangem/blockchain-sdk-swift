@@ -263,7 +263,7 @@ class SolanaNetworkService {
             let mint = info.mint
             let amount = (integerAmount / token.decimalValue).rounded(scale: token.decimalCount)
             
-            return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
+            return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount, space: $0.account.space)
         }
         
         let tokenPairs = tokenInfoResponses.map { ($0.mint, $0) }
@@ -275,9 +275,7 @@ class SolanaNetworkService {
             balance: balance,
             accountExists: accountExists,
             tokensByMint: tokensByMint,
-            confirmedTransactionIDs: confirmedTransactionIDs,
-            mainAccountSpace: mainAccountInfo.space,
-            tokenAccountSpace: tokenAccountsInfo.first?.account.space
+            confirmedTransactionIDs: confirmedTransactionIDs
         )
     }
 }
