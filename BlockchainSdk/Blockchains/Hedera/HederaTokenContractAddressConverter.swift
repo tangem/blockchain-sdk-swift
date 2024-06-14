@@ -22,4 +22,6 @@ public struct HederaTokenContractAddressConverter {
             .toSolidityAddress()
             .addHexPrefix()
     }
+
+    public init() {}
 }
