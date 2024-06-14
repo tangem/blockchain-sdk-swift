@@ -334,6 +334,7 @@
 		B633EA252B8FC79000F11BFF /* TronTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */; };
 		B633EA272B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */; };
 		B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */; };
+		B636CAC82C1C80C3006E7290 /* HederaTokenContractAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636CAC72C1C80C3006E7290 /* HederaTokenContractAddressConverter.swift */; };
 		B63B32AD2B8374B40089DF4B /* HederaCreatedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */; };
 		B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */; };
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
@@ -1186,6 +1187,7 @@
 		B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockBookTarget.AddressRequestParameters.FilterType+.swift"; sourceTree = "<group>"; };
 		B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTransactionHistoryTotalPageCountExtractor.swift; sourceTree = "<group>"; };
+		B636CAC72C1C80C3006E7290 /* HederaTokenContractAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaTokenContractAddressConverter.swift; sourceTree = "<group>"; };
 		B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaCreatedAccount.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -3150,6 +3152,7 @@
 				B6DC28432B62BA000070F1D2 /* HederaWalletManager.swift */,
 				B65D9A062BD8830C00EB85EC /* HederaPendingTransactionRecordMapper.swift */,
 				B6DC284B2B6319B30070F1D2 /* Network */,
+				B636CAC72C1C80C3006E7290 /* HederaTokenContractAddressConverter.swift */,
 			);
 			path = Hedera;
 			sourceTree = "<group>";
@@ -4459,6 +4462,7 @@
 				DC5E65192B1650F400E81AA5 /* OP_2DUP.swift in Sources */,
 				B633EA142B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift in Sources */,
 				DC5E65112B1650F400E81AA5 /* OP_TUCK.swift in Sources */,
+				B636CAC82C1C80C3006E7290 /* HederaTokenContractAddressConverter.swift in Sources */,
 				EF3B192E2AA85CA70084AA1C /* StellarExternalLinkProvider.swift in Sources */,
 				B6F89EB72BB21CB30009A453 /* PolkadotAccountHealthInfo.swift in Sources */,
 				B6F89EAB2BB20DB50009A453 /* SubscanAPIResult.swift in Sources */,
