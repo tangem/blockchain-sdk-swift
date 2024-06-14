@@ -547,6 +547,40 @@ final class HederaTests: XCTestCase {
         XCTAssertThrowsError(try converter.convertFromMirrorToConsensus("0.0.3573746-1714034073.123382080"))
     }
 
+    /// Values for https://www.coingecko.com/en/coins/hbarbarian
+    func testContractAddressConversionFromEVMToHederaPositiveCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+        let converted = try converter.convertFromEVMToHedera("0x0000000000000000000000000000000000497fbc")
+        let expected = "0.0.4816828"
+
+        XCTAssertEqual(converted, expected)
+    }
+
+    /// Values for https://www.coingecko.com/en/coins/hbarsuite
+    func testContractAddressConversionFromHederaToEVMPositiveCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+        let converted = try converter.convertFromHederaToEVM("0.0.786931")
+        let expected = "0x00000000000000000000000000000000000c01f3"
+
+        XCTAssertEqual(converted, expected)
+    }
+
+    func testContractAddressConversionFromEVMToHederaNegativeCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("0.0.786931"))
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("0.786931"))
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("7677bbb545a"))
+    }
+
+    func testContractAddressConversionFromHederaToEVMNegativeCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("00000000000000000000000000000000000c01f3"))
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("0.786931"))
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("7677bbb545a"))
+    }
+
     private func setUp(curve: EllipticCurve) {
         blockchain = .hedera(curve: curve, testnet: true)
         sizeTester = TransactionSizeTesterUtility()
