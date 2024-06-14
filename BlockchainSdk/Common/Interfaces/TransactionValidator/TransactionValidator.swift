@@ -170,14 +170,11 @@ extension TransactionValidator where Self: ReserveAmountRestrictable {
     }
 }
 
+// MARK: - FeeResourceRestrictable
+
 extension TransactionValidator where Self: FeeResourceRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType) throws {
-        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
-        try validate(amount: amount, fee: fee)
-    }
-    
-    func validate(amount: Amount, fee: Fee) throws {
+    func validate(amount: Amount, fee: Fee) async throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateFeeResource(amount: amount, fee: fee.amount)
+        try await validateFeeResource(amount: amount, fee: fee.amount)
     }
 }

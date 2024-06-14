@@ -9,8 +9,7 @@
 import Foundation
 
 protocol FeeResourceRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType) throws
-    func validateFeeResource(amount: Amount, fee: Amount) throws
+    func validateFeeResource(amount: Amount, fee: Amount) async throws
 }
 
 extension FeeResourceRestrictable where Self: WalletProvider {

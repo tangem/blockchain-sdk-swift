@@ -62,12 +62,12 @@ final class KoinosWalletManagerTests: XCTestCase {
         }
     }
     
-    func testTxValidationAmountExceedsManaBalance() {
+    func testTxValidationAmountExceedsManaBalance() async {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 50)
 
         do {
-            try walletManager.validate(
+            try await walletManager.validate(
                 amount: .coinAmount(value: 51),
                 fee: .manaFee(value: 0.3)
             )
