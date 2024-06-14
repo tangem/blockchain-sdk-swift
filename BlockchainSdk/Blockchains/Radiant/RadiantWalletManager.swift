@@ -79,17 +79,7 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                guard
-                    let walletCorePublicKey = PublicKey(data: walletManager.wallet.publicKey.blockchainKey, type: .secp256k1)?.compressed,
-                    signatures.count == hashesForSign.count
-                else {
-                    throw WalletError.failedToBuildTx
-                }
-                
-                // Verify signature by public key
-                if signatures.enumerated().contains(where: { index, sig in
-                    !walletCorePublicKey.verify(signature: sig, message: Data(hashesForSign[index]))
-                }) {
+                guard signatures.count == hashesForSign.count else {
                     throw WalletError.failedToBuildTx
                 }
                 
