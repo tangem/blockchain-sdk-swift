@@ -21,11 +21,11 @@ extension TONExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         let prefix = isTestnet ? "testnet." : ""
-        return URL(string: "https://\(prefix)tonscan.org/tx/\(hash)")
+        return URL(string: "https://\(prefix)tonviewer.com/transaction/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
         let prefix = isTestnet ? "testnet." : ""
-        return URL(string: "https://\(prefix)tonscan.org/address/\(address)")
+        return URL(string: "https://\(prefix)tonviewer.com/\(address)")
     }
 }
