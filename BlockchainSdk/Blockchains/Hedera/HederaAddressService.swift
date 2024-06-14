@@ -30,13 +30,16 @@ final class HederaAddressService: AddressService {
         )
         return PlainAddress(value: "", publicKey: publicKey, type: addressType)
     }
-    
+
     func validate(_ address: String) -> Bool {
         do {
-            try AccountId
-                .fromString(address)
-                .validateChecksum(client)
-            return true
+            // We consider an address valid only if it has the `<shard>.<realm>.<last>` (Hedera native) form
+            // (i.e. both its `evmAddress` and `alias` properties are nil)
+            let accountId = try AccountId.fromString(address)
+            let hasEVMAddress = accountId.evmAddress?.toBytes().nilIfEmpty != nil
+            let hasAlias = accountId.alias?.toBytes().nilIfEmpty != nil
+
+            return !(hasEVMAddress || hasAlias)
         } catch {
             return false
         }
