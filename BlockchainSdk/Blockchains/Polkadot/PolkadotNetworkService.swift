@@ -98,14 +98,27 @@ class PolkadotNetworkService: MultiNetworkProvider {
         }
     }
     
-    func fee(for extrinsic: Data) -> AnyPublisher<UInt64, Error> {
+    func fee(for extrinsic: Data) -> AnyPublisher<BigUInt, Error> {
         providerPublisher { provider in
-            provider.queryInfo(extrinsic.hexString.addHexPrefix())
-                .tryMap {
-                    guard let fee = UInt64($0.partialFee) else {
+            // Payload length param is redundant, but required
+            // https://forum.polkadot.network/t/new-json-rpc-api-mega-q-a/3048/2#how-do-i-get-the-metadata-the-account-nonce-or-the-payment-fees-with-the-new-api-6
+            let extrinsicLength = extrinsic.count
+            var payload = extrinsic
+            payload.append(extrinsicLength.bytes4LE)
+            let serializedPayload = payload.hexadecimal.addHexPrefix()
+
+            return provider.queryInfo(serializedPayload)
+                .tryMap { output in
+                    // TODO: Andrey Fedorov - Test only, map full output data type (`RuntimeDispatchInfo`) using SCALE encoding instead
+                    let output = Data(hexString: output)
+                    let dataLength = 16 // u128
+                    let data = Data(output.suffix(dataLength).reversed())   // Reversing bytes for LE -> BE conversion
+
+                    guard data.count == dataLength else {
                         throw WalletError.failedToGetFee
                     }
-                    return fee
+
+                    return BigUInt(data)
                 }
                 .eraseToAnyPublisher()
         }

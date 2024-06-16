@@ -40,10 +40,6 @@ struct PolkadotRuntimeVersion: Codable {
     let transactionVersion: UInt32
 }
 
-struct PolkadotQueriedInfo: Codable {
-    let partialFee: String
-}
-
 struct PolkadotAccountInfo: ScaleDecodable {
     init(from decoder: ScaleDecoder) throws {
         self.nonce = try decoder.decode()
