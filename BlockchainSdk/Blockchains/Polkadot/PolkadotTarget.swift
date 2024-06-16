@@ -38,7 +38,7 @@ struct PolkadotTarget: TargetType {
     
     var task: Task {
         var parameters: [String: Any] = [
-            "id": 1,
+            "id": UInt64.random(in: UInt64.max / 2 ..< UInt64.max),
             "jsonrpc": "2.0",
             "method": rpcMethod,
         ]
