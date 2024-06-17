@@ -57,7 +57,7 @@ class PolkadotTransactionBuilder {
 
         var message = Data()
         message.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
-        message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
+        message.append(try encodeEraNonceTipExtensions(era: meta.era, nonce: meta.nonce, tip: 0))
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
@@ -78,7 +78,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(addressBytes)
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
-        transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
+        transactionData.append(try encodeEraNonceTipExtensions(era: meta.era, nonce: meta.nonce, tip: 0))
         transactionData.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
 
         let messageLength = try messageLength(transactionData)
@@ -123,7 +123,7 @@ class PolkadotTransactionBuilder {
         }
     }
 
-    private func encodeEraNonceTip(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
+    private func encodeEraNonceTipExtensions(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
         var data = Data()
         
         if let era = era {
@@ -141,6 +141,11 @@ class PolkadotTransactionBuilder {
         let tipData = try codec.encode(BigUInt(tip), .compact)
         data.append(tipData)
         
+        // Encoding `CheckMetadataHash::Mode`
+        // `CheckMetadataHash::Mode` is actually an enum (`Mode.Disabled`/`Mode.Enabled`), but encoded as uint8
+        let checkMetadataHashMode = try codec.encode(UInt8(0), .compact)
+        data.append(checkMetadataHashMode)
+
         return data
     }
            
