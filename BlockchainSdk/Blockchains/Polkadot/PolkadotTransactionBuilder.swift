@@ -14,6 +14,7 @@ class PolkadotTransactionBuilder {
     private let walletPublicKey: Data
     private let blockchain: Blockchain
     private let network: PolkadotNetwork
+    private let runtimeVersion: SubstrateRuntimeVersion
     private let codec = SCALE.default
     
     private var balanceTransferCallIndex: Data {
@@ -46,10 +47,16 @@ class PolkadotTransactionBuilder {
     private let signedBit: UInt8 = 0x80
     private let sigTypeEd25519: UInt8 = 0x00
     
-    init(blockchain: Blockchain, walletPublicKey: Data, network: PolkadotNetwork) {
+    init(
+        blockchain: Blockchain,
+        walletPublicKey: Data,
+        network: PolkadotNetwork,
+        runtimeVersion: SubstrateRuntimeVersion
+    ) {
         self.walletPublicKey = walletPublicKey
         self.blockchain = blockchain
         self.network = network
+        self.runtimeVersion = runtimeVersion
     }
     
     func buildForSign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta) throws -> Data {
@@ -58,14 +65,12 @@ class PolkadotTransactionBuilder {
         var message = Data()
         message.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
         message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
-        message.append(try encodeCheckMetadataHashExtensionMode())
+        message.append(try encodeCheckMetadataHashExtensionModeIfNeeded())
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
         message.append(Data(hexString: meta.blockHash))
-        // Not actually used (since we disabled `CheckMetadataHash` runtime extension), but required by Substrate Runtime v15:
-        // https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.ibp.network%2Fkusama#/extrinsics/decode/0x0403008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480700e40b5402
-        message.append(try encodeCheckMetadataHashExtensionPayload())
+        message.append(try encodeCheckMetadataHashExtensionPayloadIfNeeded())
 
         return message
     }
@@ -84,7 +89,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
-        transactionData.append(try encodeCheckMetadataHashExtensionMode())
+        transactionData.append(try encodeCheckMetadataHashExtensionModeIfNeeded())
         transactionData.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
 
         let messageLength = try messageLength(transactionData)
@@ -170,22 +175,37 @@ class PolkadotTransactionBuilder {
         return encoded
     }
 
-    private func encodeCheckMetadataHashExtensionMode() throws -> Data {
+    private func encodeCheckMetadataHashExtensionModeIfNeeded() throws -> Data {
         var data = Data()
-        // Encoding `CheckMetadataHash::Mode` for runtime extension `CheckMetadataHash`
-        // `CheckMetadataHash::Mode` is actually an enum (`Mode.Disabled`/`Mode.Enabled`), but encoded as uint8
-        let checkMetadataHashMode = try codec.encode(UInt8(0), .compact)
-        data.append(checkMetadataHashMode)
+
+        switch runtimeVersion {
+        case .v14:
+            break
+        case .v15:
+            // Encoding `CheckMetadataHash::Mode` for runtime extension `CheckMetadataHash`
+            // `CheckMetadataHash::Mode` is actually an enum (`Mode.Disabled`/`Mode.Enabled`), but encoded as uint8
+            let checkMetadataHashMode = try codec.encode(UInt8(0), .compact)
+            data.append(checkMetadataHashMode)
+        }
 
         return data
     }
 
-    private func encodeCheckMetadataHashExtensionPayload() throws -> Data {
+    /// The payload isn't actually used (since we've disabled the `CheckMetadataHash` runtime extension anyway),
+    /// but is required by Substrate Runtime v15:
+    /// https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.ibp.network%2Fkusama#/extrinsics/decode/0x0403008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480700e40b5402
+    private func encodeCheckMetadataHashExtensionPayloadIfNeeded() throws -> Data {
         var data = Data()
-        // Since we explicitly disabled `CheckMetadataHash` runtime extension (`Mode.Disabled`) on the client side -
-        // no actual payload is constructed and null is encoded instead
-        let checkMetadataHashPayload = try codec.encode(UInt8(0), .compact)
-        data.append(checkMetadataHashPayload)
+
+        switch runtimeVersion {
+        case .v14:
+            break
+        case .v15:
+            // Since we explicitly disabled `CheckMetadataHash` runtime extension (`Mode.Disabled`) on the client side -
+            // no actual payload is constructed and null is encoded instead
+            let checkMetadataHashPayload = try codec.encode(UInt8(0), .compact)
+            data.append(checkMetadataHashPayload)
+        }
 
         return data
     }
