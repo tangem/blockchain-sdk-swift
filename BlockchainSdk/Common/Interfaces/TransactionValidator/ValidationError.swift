@@ -24,7 +24,9 @@ public enum ValidationError: Hashable, LocalizedError {
 
     case cardanoHasTokens(minimumAmount: Amount)
     case cardanoInsufficientBalanceToSendToken
-
+    
+    case insufficientFeeResource(type: FeeResourceType, current: Decimal, max: Decimal)
+    
     public var errorDescription: String? {
         switch self {
         case .balanceNotFound, .cardanoInsufficientBalanceToSendToken, .cardanoHasTokens:
@@ -51,6 +53,8 @@ public enum ValidationError: Hashable, LocalizedError {
             )
         case .reserve(let amount):
             return String(format: "send_error_no_target_account".localized, amount.description)
+        case let .insufficientFeeResource(.mana, current, max):
+            return String(format: "send_validation_insufficient_mana", "\(current)", "\(max)")
         }
     }
 }

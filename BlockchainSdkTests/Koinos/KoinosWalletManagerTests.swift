@@ -54,26 +54,33 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 10),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected ValidationError.invalidFee but no error was thrown")
+            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
         } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.invalidFee)
+            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
     }
     
-    func testTxValidationAmountExceedsManaBalance() {
+    func testTxValidationAmountExceedsManaBalance() async {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 50)
 
         do {
-            try walletManager.validate(
+            try await walletManager.validate(
                 amount: .coinAmount(value: 51),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
+            XCTFail("Expected ValidationError.insufficientFeeResource but no error was thrown")
         } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
+            XCTAssertEqual(
+                e,
+                ValidationError.insufficientFeeResource(
+                    type: .mana,
+                    current: 50 * pow(10, 8),
+                    max: 100 * pow(10, 8)
+                )
+            )
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
@@ -88,9 +95,9 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 0.2),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected ValidationError.invalidAmount but no error was thrown")
+            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
         } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.invalidAmount)
+            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
