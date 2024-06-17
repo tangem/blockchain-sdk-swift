@@ -58,10 +58,14 @@ class PolkadotTransactionBuilder {
         var message = Data()
         message.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
         message.append(try encodeEraNonceTipExtensions(era: meta.era, nonce: meta.nonce, tip: 0))
+        message.append(try encodeCheckMetadataHashExtensionMode())
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
         message.append(Data(hexString: meta.blockHash))
+        // Not actually used, but required by Substrate Runtime v15:
+        // https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.ibp.network%2Fkusama#/extrinsics/decode/0x0403008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480700e40b5402
+        message.append(try encodeCheckMetadataHashExtensionPayload())
 
         return message
     }
@@ -80,6 +84,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTipExtensions(era: meta.era, nonce: meta.nonce, tip: 0))
+        transactionData.append(try encodeCheckMetadataHashExtensionMode())
         transactionData.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
 
         let messageLength = try messageLength(transactionData)
@@ -141,11 +146,6 @@ class PolkadotTransactionBuilder {
 
         let tipData = try codec.encode(BigUInt(tip), .compact)
         data.append(tipData)
-        
-        // Encoding `CheckMetadataHash::Mode`
-        // `CheckMetadataHash::Mode` is actually an enum (`Mode.Disabled`/`Mode.Enabled`), but encoded as uint8
-        let checkMetadataHashMode = try codec.encode(UInt8(0), .compact)
-        data.append(checkMetadataHashMode)
 
         return data
     }
@@ -168,5 +168,25 @@ class PolkadotTransactionBuilder {
         let length = UInt64(message.count)
         let encoded = try codec.encode(length, .compact)
         return encoded
+    }
+
+    private func encodeCheckMetadataHashExtensionMode() throws -> Data {
+        var data = Data()
+        // Encoding `CheckMetadataHash::Mode` for runtime extension
+        // `CheckMetadataHash::Mode` is actually an enum (`Mode.Disabled`/`Mode.Enabled`), but encoded as uint8
+        let checkMetadataHashMode = try codec.encode(UInt8(0), .compact)
+        data.append(checkMetadataHashMode)
+
+        return data
+    }
+
+    private func encodeCheckMetadataHashExtensionPayload() throws -> Data {
+        var data = Data()
+        // Since we explicitly disabled this runtime extension (`Mode.Disabled`) on the client side -
+        // no actual payload is constructed and null is encoded instead
+        let checkMetadataHashPayload = try codec.encode(UInt8(0), .compact)
+        data.append(checkMetadataHashPayload)
+
+        return data
     }
 }
