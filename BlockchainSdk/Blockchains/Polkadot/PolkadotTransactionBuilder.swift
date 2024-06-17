@@ -62,6 +62,7 @@ class PolkadotTransactionBuilder {
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
         message.append(Data(hexString: meta.blockHash))
+
         return message
     }
     
@@ -102,7 +103,7 @@ class PolkadotTransactionBuilder {
                         
         let decimalValue = amount.value * blockchain.decimalValue
         let intValue = BigUInt((decimalValue.rounded() as NSDecimalNumber).uint64Value)
-        call.append(try SCALE.default.encode(intValue, .compact))
+        call.append(try codec.encode(intValue, .compact))
         
         return call
     }
@@ -160,7 +161,7 @@ class PolkadotTransactionBuilder {
         let trailingZeros = UInt64(calPeriod.trailingZeroBitCount)
 
         let encoded = min(15, max(1, trailingZeros - 1)) + (((quantizedPhase / quantizeFactor) << 4))
-        return Data.init(UInt8(encoded & 0xff)) + Data.init(UInt8(encoded >> 8))
+        return Data(UInt8(encoded & 0xff)) + Data(UInt8(encoded >> 8))
     }
     
     private func messageLength(_ message: Data) throws -> Data {

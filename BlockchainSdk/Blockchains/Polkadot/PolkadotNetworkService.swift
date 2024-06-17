@@ -81,7 +81,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
             
             
             return Publishers.Zip4(
-                provider.blockhash(.genesis), latestBlockPublisher,
+                provider.blockhash(.genesis), 
+                latestBlockPublisher,
                 provider.accountNextIndex(address),
                 provider.runtimeVersion()
             ).map { genesisHash, latestBlockInfo, nextIndex, runtimeVersion in
@@ -111,8 +112,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
                 .tryMap { output in
                     // TODO: Andrey Fedorov - Test only, map full output data type (`RuntimeDispatchInfo`) using SCALE encoding instead
                     let output = Data(hexString: output)
-                    let dataLength = 16 // u128
-                    let data = Data(output.suffix(dataLength).reversed())   // Reversing bytes for LE -> BE conversion
+                    let dataLength = 16 // uint128
+                    let data = Data(output.suffix(dataLength).reversed())   // Reversing bytes for LE -> BE conversion (`BigUInt` uses BE)
 
                     guard data.count == dataLength else {
                         throw WalletError.failedToGetFee
