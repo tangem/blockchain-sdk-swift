@@ -57,13 +57,13 @@ class PolkadotTransactionBuilder {
 
         var message = Data()
         message.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
-        message.append(try encodeEraNonceTipExtensions(era: meta.era, nonce: meta.nonce, tip: 0))
+        message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
         message.append(try encodeCheckMetadataHashExtensionMode())
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
         message.append(Data(hexString: meta.blockHash))
-        // Not actually used, but required by Substrate Runtime v15:
+        // Not actually used (since we disabled `CheckMetadataHash` runtime extension), but required by Substrate Runtime v15:
         // https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.ibp.network%2Fkusama#/extrinsics/decode/0x0403008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480700e40b5402
         message.append(try encodeCheckMetadataHashExtensionPayload())
 
@@ -83,7 +83,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(addressBytes)
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
-        transactionData.append(try encodeEraNonceTipExtensions(era: meta.era, nonce: meta.nonce, tip: 0))
+        transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
         transactionData.append(try encodeCheckMetadataHashExtensionMode())
         transactionData.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
 
@@ -129,7 +129,7 @@ class PolkadotTransactionBuilder {
         }
     }
 
-    private func encodeEraNonceTipExtensions(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
+    private func encodeEraNonceTip(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
         var data = Data()
         
         if let era = era {
@@ -146,7 +146,7 @@ class PolkadotTransactionBuilder {
 
         let tipData = try codec.encode(BigUInt(tip), .compact)
         data.append(tipData)
-
+        
         return data
     }
            
@@ -172,7 +172,7 @@ class PolkadotTransactionBuilder {
 
     private func encodeCheckMetadataHashExtensionMode() throws -> Data {
         var data = Data()
-        // Encoding `CheckMetadataHash::Mode` for runtime extension
+        // Encoding `CheckMetadataHash::Mode` for runtime extension `CheckMetadataHash`
         // `CheckMetadataHash::Mode` is actually an enum (`Mode.Disabled`/`Mode.Enabled`), but encoded as uint8
         let checkMetadataHashMode = try codec.encode(UInt8(0), .compact)
         data.append(checkMetadataHashMode)
@@ -182,7 +182,7 @@ class PolkadotTransactionBuilder {
 
     private func encodeCheckMetadataHashExtensionPayload() throws -> Data {
         var data = Data()
-        // Since we explicitly disabled this runtime extension (`Mode.Disabled`) on the client side -
+        // Since we explicitly disabled `CheckMetadataHash` runtime extension (`Mode.Disabled`) on the client side -
         // no actual payload is constructed and null is encoded instead
         let checkMetadataHashPayload = try codec.encode(UInt8(0), .compact)
         data.append(checkMetadataHashPayload)
