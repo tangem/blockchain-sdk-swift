@@ -61,7 +61,6 @@ struct PolkadotTarget: TargetType {
         case .runtimeVersion:
             break
         case .queryInfo(let extrinsic):
-            params.append("TransactionPaymentApi_query_info")
             params.append(extrinsic)
         case .submitExtrinsic(let extrinsic):
             params.append(extrinsic)
@@ -89,7 +88,7 @@ struct PolkadotTarget: TargetType {
         case .runtimeVersion:
             return "state_getRuntimeVersion"
         case .queryInfo:
-            return "state_call"
+            return "payment_queryInfo"
         case .submitExtrinsic:
             return "author_submitExtrinsic"
         }

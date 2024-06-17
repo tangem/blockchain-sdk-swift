@@ -105,18 +105,14 @@ extension PolkadotWalletManager: TransactionSender {
                 }
                 return self.sign(amount: amount, destination: destination, meta: meta, signer: Ed25519DummyTransactionSigner())
             }
-            .flatMap { [weak self] image -> AnyPublisher<BigUInt, Error> in
+            .flatMap { [weak self] image -> AnyPublisher<UInt64, Error> in
                 guard let self = self else {
                     return .emptyFail
                 }
                 return self.networkService.fee(for: image)
             }
-            .tryMap { bigUIntValue in
-                guard let feeDecimalValue = bigUIntValue.decimal else {
-                    throw WalletError.failedToGetFee
-                }
-
-                let feeAmount = Amount(with: blockchain, value: feeDecimalValue / blockchain.decimalValue)
+            .map { intValue in
+                let feeAmount = Amount(with: blockchain, value: Decimal(intValue) / blockchain.decimalValue)
                 return [Fee(feeAmount)]
             }
             .eraseToAnyPublisher()
