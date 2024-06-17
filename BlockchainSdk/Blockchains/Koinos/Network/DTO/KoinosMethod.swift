@@ -34,6 +34,19 @@ extension KoinosMethod {
         
         struct Response: Decodable {
             let rc: UInt64
+            
+            enum CodingKeys: CodingKey {
+                case rc
+            }
+            
+            init(from decoder: any Decoder) throws {
+                let container: KeyedDecodingContainer<KoinosMethod.GetAccountRC.Response.CodingKeys> = try decoder.container(keyedBy: KoinosMethod.GetAccountRC.Response.CodingKeys.self)
+                let stringRC = try container.decode(String.self, forKey: KoinosMethod.GetAccountRC.Response.CodingKeys.rc)
+                guard let rc = UInt64(stringRC) else {
+                    throw WalletError.failedToParseNetworkResponse
+                }
+                self.rc = rc
+            }
         }
     }
 }
