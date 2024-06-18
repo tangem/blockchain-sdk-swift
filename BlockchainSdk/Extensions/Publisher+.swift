@@ -24,6 +24,11 @@ extension Publisher {
     func mapToVoid() -> Publishers.Map<Self, Void> {
         map { _ in () }
     }
+
+    func mapToResult() -> some Publisher<Result<Self.Output, Self.Failure>, Never> {
+        return map(Result.success)
+            .catch { Just(Result.failure($0)) }
+    }
 }
 
 extension Publisher where Failure == Swift.Error {
