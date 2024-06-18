@@ -11,7 +11,7 @@ import ScaleCodec
 
 struct PolkadotJsonRpcResponse<T: Codable>: Codable {
     let jsonRpc: String
-    let id: UInt64?
+    let id: Int?
     let result: T?
     let error: PolkadotJsonRpcError?
     
