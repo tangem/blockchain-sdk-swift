@@ -487,6 +487,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return .sameCurrency
         case .veChain:
             return .token(value: VeChainWalletManager.Constants.energyToken)
+        case .koinos:
+            return .feeResource(type: .mana)
         default:
             return .coin
         }

@@ -38,8 +38,7 @@ class KoinosNetworkService: MultiNetworkProvider {
             .map { balance, mana in
                 KoinosAccountInfo(
                     koinBalance: balance,
-                    mana: mana,
-                    maxMana: balance
+                    mana: mana
                 )
             }
             .eraseToAnyPublisher()
