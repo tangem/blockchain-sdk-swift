@@ -78,7 +78,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
             
             
             return Publishers.Zip4(
-                provider.blockhash(.genesis), latestBlockPublisher,
+                provider.blockhash(.genesis), 
+                latestBlockPublisher,
                 provider.accountNextIndex(address),
                 provider.runtimeVersion()
             ).map { genesisHash, latestBlockInfo, nextIndex, runtimeVersion in
