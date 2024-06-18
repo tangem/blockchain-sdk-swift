@@ -30,9 +30,15 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let network: PolkadotNetwork = .polkadot(curve: curve)
         let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
-        
-        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
-        
+        let runtimeVersion: SubstrateRuntimeVersion = .v14
+
+        let txBuilder = PolkadotTransactionBuilder(
+            blockchain: blockchain,
+            walletPublicKey: publicKey,
+            network: network,
+            runtimeVersion: runtimeVersion
+        )
+
         let amount = Amount(with: blockchain, value: 0.2)
         let destination = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
         let meta = PolkadotBlockchainMeta(
@@ -75,9 +81,15 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
-        
-        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
-        
+        let runtimeVersion: SubstrateRuntimeVersion = .v14
+
+        let txBuilder = PolkadotTransactionBuilder(
+            blockchain: blockchain,
+            walletPublicKey: publicKey,
+            network: network,
+            runtimeVersion: runtimeVersion
+        )
+
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
         let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress).value
         let meta = PolkadotBlockchainMeta(
@@ -118,9 +130,15 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
-        
-        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
-        
+        let runtimeVersion: SubstrateRuntimeVersion = .v14
+
+        let txBuilder = PolkadotTransactionBuilder(
+            blockchain: blockchain,
+            walletPublicKey: publicKey,
+            network: network,
+            runtimeVersion: runtimeVersion
+        )
+
         let amount = Amount(with: blockchain, value: 1)
         let destination = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
         let meta = PolkadotBlockchainMeta(
@@ -163,9 +181,15 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let blockchain: Blockchain = .azero(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
-        
-        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
-        
+        let runtimeVersion: SubstrateRuntimeVersion = .v14
+
+        let txBuilder = PolkadotTransactionBuilder(
+            blockchain: blockchain,
+            walletPublicKey: publicKey,
+            network: network,
+            runtimeVersion: .v14
+        )
+
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
         let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress).value
         let meta = PolkadotBlockchainMeta(
