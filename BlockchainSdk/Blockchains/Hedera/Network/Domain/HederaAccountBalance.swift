@@ -22,6 +22,6 @@ struct HederaAccountBalance {
     /// balances (`api/v1/accounts/{account_id}/tokens?limit={token_limit}`) has no direct equivalent in the GRPC API.
     /// Therefore, there may be cases when the HBAR balance can be obtained while HTS token balances can't
     /// (for example, when all REST endpoints are unavailable). In such cases, the resulting error for HTS tokens balances
-    /// fetching is stored using the Result type (in the `tokenBalances` field) and must be handled appropriately.
+    /// fetching is stored using the Result type (in this filed, `tokenBalances`) and must be handled appropriately.
     let tokenBalances: Result<[TokenBalance], Swift.Error>
 }

@@ -137,8 +137,9 @@ final class HederaWalletManager: BaseManager {
                 .forEach { wallet.add(amount: $0) }
         case .failure:
             // We can't obtain HTS tokens balances due to an error from the network layer, 
-            // so we also can't determine the current list of associated tokens).
-            // In this case the list of associated tokens stays the same, without any modifications
+            // so we also can't determine the current list of associated tokens.
+            // In this case the local cached list of associated tokens stays the same, without any modifications.
+            // Only token balances are erased.
             cardTokens.forEach { wallet.remove(token: $0) }
         }
     }
