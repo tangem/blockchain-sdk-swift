@@ -66,18 +66,9 @@ final class HederaNetworkService {
         return hbarBalancePublisher
             .zip(tokenBalancesPublisher)
             .map { hbarBalance, tokenBalancesResult in
-                let mappedResult = tokenBalancesResult
-                    .map { tokenBalancesInfo in
-                        return tokenBalancesInfo.tokens.map { tokenBalance in
-                            return HederaAccountBalance.TokenBalance(
-                                contractAddress: tokenBalance.tokenId,
-                                balance: tokenBalance.balance,
-                                decimalCount: tokenBalance.decimals
-                            )
-                        }
-                    }
+                let tokenBalances = Self.mapTokenBalancesResult(tokenBalancesResult)
 
-                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: mappedResult)
+                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: tokenBalances)
             }
             .eraseToAnyPublisher()
     }
@@ -203,6 +194,21 @@ final class HederaNetworkService {
             .catch { _ in
                 return fallbackHbarBalancePublisher
             }
+    }
+
+    /// A dumb helper for mapping the `Result` from `DTO` to `Domain` layer.
+    private static func mapTokenBalancesResult(
+        _ tokenBalancesResult: Result<HederaNetworkResult.TokensInfo, Swift.Error>
+    ) -> Result<[HederaAccountBalance.TokenBalance], Swift.Error> {
+        return tokenBalancesResult.map { tokenBalancesInfo in
+            return tokenBalancesInfo.tokens.map { tokenBalance in
+                return HederaAccountBalance.TokenBalance(
+                    contractAddress: tokenBalance.tokenId,
+                    balance: tokenBalance.balance,
+                    decimalCount: tokenBalance.decimals
+                )
+            }
+        }
     }
 }
 
