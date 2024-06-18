@@ -18,7 +18,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
         false
     }
     
-    var feeResourceType: Amount.FeeResourceType {
+    var feeResourceType: FeeResourceType {
         .mana
     }
     
@@ -35,13 +35,36 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
         super.init(wallet: wallet)
     }
     
+    override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
+        cancellable = networkService.getInfo(address: wallet.address)
+            .sink { [weak self] in
+                switch $0 {
+                case .failure(let error):
+                    self?.wallet.clearAmounts()
+                    completion(.failure(error))
+                case .finished:
+                    completion(.success(()))
+                }
+            } receiveValue: { [weak self] accountInfo in
+                guard let self else { return }
+                self.wallet.add(
+                    amount: Amount(
+                        with: self.wallet.blockchain,
+                        type: .coin,
+                        value: accountInfo.koinBalance
+                    )
+                )
+                self.wallet.add(
+                    amount: Amount(
+                        with: self.wallet.blockchain,
+                        type: .feeResource(.mana),
+                        value: accountInfo.mana
+                    )
+                )
+            }
+    }
+    
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, any Error> {
-        do {
-            try validate(amount: transaction.amount, fee: transaction.fee)
-        } catch {
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-        
         let manaLimit = transaction.fee.amount.value
         let transactionDataWithMana = transaction.then {
             $0.params = KoinosTransactionParams(manaLimit: manaLimit)
@@ -85,7 +108,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                 Fee(
                     Amount(
                         type: .feeResource(.mana),
-                        currencySymbol: Amount.FeeResourceType.mana.rawValue,
+                        currencySymbol: FeeResourceType.mana.rawValue,
                         value: rcLimit,
                         decimals: wallet.blockchain.decimalCount
                     )

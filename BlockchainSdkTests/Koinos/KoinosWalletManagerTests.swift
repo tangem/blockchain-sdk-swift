@@ -33,7 +33,7 @@ final class KoinosWalletManagerTests: XCTestCase {
         walletManager.wallet.clearAmounts()
     }
 
-    func testTransactionValidationTest_smoke() {
+    func testTxValidationSmoke() {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 100)
         
@@ -45,30 +45,13 @@ final class KoinosWalletManagerTests: XCTestCase {
         )
     }
     
-    func testTransactionValidationTest_not_enough_mana() {
+    func testTxValidationNotEnoughMana() {
         walletManager.wallet.addBalance(balance: 100)
         walletManager.wallet.addMana(mana: 0.2)
         
         do {
             try walletManager.validate(
                 amount: .coinAmount(value: 10),
-                fee: .manaFee(value: 0.3)
-            )
-            XCTFail("Expected ValidationError.invalidFee but no error was thrown")
-        } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.invalidFee)
-        } catch {
-            XCTFail("Unexpected error thrown: \(error)")
-        }
-    }
-    
-    func testTransactionValidationTest_amount_exceeds_mana_balance() {
-        walletManager.wallet.addBalance(balance: 100)
-        walletManager.wallet.addMana(mana: 50)
-
-        do {
-            try walletManager.validate(
-                amount: .coinAmount(value: 51),
                 fee: .manaFee(value: 0.3)
             )
             XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
@@ -79,7 +62,31 @@ final class KoinosWalletManagerTests: XCTestCase {
         }
     }
     
-    func testTransactionValidationTest_coin_balance_does_not_cover_fee() {
+    func testTxValidationAmountExceedsManaBalance() {
+        walletManager.wallet.addBalance(balance: 100)
+        walletManager.wallet.addMana(mana: 50)
+
+        do {
+            try walletManager.validate(
+                amount: .coinAmount(value: 51),
+                fee: .manaFee(value: 0.3)
+            )
+            XCTFail("Expected ValidationError.insufficientFeeResource but no error was thrown")
+        } catch let e as ValidationError {
+            XCTAssertEqual(
+                e,
+                ValidationError.insufficientFeeResource(
+                    type: .mana,
+                    current: 50 * pow(10, 8),
+                    max: 100 * pow(10, 8)
+                )
+            )
+        } catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
+    }
+    
+    func testTxValidationCoinBalanceDoesNotCoverFee() {
         walletManager.wallet.addBalance(balance: 0.2)
         walletManager.wallet.addMana(mana: 0.2)
 
@@ -88,9 +95,9 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 0.2),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected ValidationError.invalidAmount but no error was thrown")
+            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
         } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.invalidAmount)
+            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
@@ -111,7 +118,7 @@ private extension Amount {
     static func manaAmount(value: Decimal) -> Amount {
         Amount(
             type: .feeResource(.mana),
-            currencySymbol: Amount.FeeResourceType.mana.rawValue,
+            currencySymbol: FeeResourceType.mana.rawValue,
             value: value * pow(10, blockchain.decimalCount),
             decimals: blockchain.decimalCount
         )
@@ -133,7 +140,7 @@ private extension Wallet {
         add(
             amount: Amount(
                 type: .feeResource(.mana),
-                currencySymbol: Amount.FeeResourceType.mana.rawValue,
+                currencySymbol: FeeResourceType.mana.rawValue,
                 value: mana * pow(10, blockchain.decimalCount),
                 decimals: blockchain.decimalCount
             )

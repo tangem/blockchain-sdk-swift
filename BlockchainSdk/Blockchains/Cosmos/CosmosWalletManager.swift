@@ -131,7 +131,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                             feeDecimalValue = token.decimalValue
                             feeAmountType = .token(value: token)
                         case .feeResource:
-                            throw WalletError.failedToGetFee
+                            throw BlockchainSdkError.notImplemented
                         }
                         
                         var feeValue = (Decimal(feeValueInSmallestDenomination) / feeDecimalValue)

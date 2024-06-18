@@ -10,10 +10,6 @@ import Foundation
 import BigInt
 
 public struct Amount: CustomStringConvertible, Hashable, Comparable {
-    public enum FeeResourceType: String {
-        case mana = "Mana"
-    }
-    
     public enum AmountType {
         case coin
         case token(value: Token)
