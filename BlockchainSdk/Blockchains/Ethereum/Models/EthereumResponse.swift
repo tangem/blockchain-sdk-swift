@@ -34,7 +34,7 @@ struct EthereumInfoResponse {
     var pendingTxs: [PendingTransaction]
 }
 
-struct EthereumFeeResponse {
+struct EthereumEIP1559FeeResponse {
     let gasLimit: BigUInt
     let fees: (low: ETHFee, market: ETHFee, fast: ETHFee)
 
@@ -44,6 +44,13 @@ struct EthereumFeeResponse {
     }
 }
 
+struct EthereumLegacyFeeResponse {
+    let gasLimit: BigUInt
+    let lowGasPrice: BigUInt
+    let marketGasPrice: BigUInt
+    let fastGasPrice: BigUInt
+}
+
 struct EthereumFeeHistoryResponse: Decodable {
-    let baseFeePerGas: [String]
+    let baseFeePerGas: [String?]
 }

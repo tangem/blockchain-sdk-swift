@@ -24,12 +24,22 @@ final class DecimalNetworkService: EthereumNetworkService {
             return .anyFail(error: WalletError.empty)
         }
     }
-    
-    override func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
+
+    override func getEIP1559Fee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumEIP1559FeeResponse, Error> {
         do {
             let fromConvertedAddress = try convertAddressIfNeeded(address: from)
             let toConvertedAddress = try convertAddressIfNeeded(address: to)
-            return super.getFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+            return super.getEIP1559Fee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+        } catch {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+    }
+
+    override func getLegacyFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumLegacyFeeResponse, Error> {
+        do {
+            let fromConvertedAddress = try convertAddressIfNeeded(address: from)
+            let toConvertedAddress = try convertAddressIfNeeded(address: to)
+            return super.getLegacyFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
         } catch {
             return .anyFail(error: WalletError.failedToGetFee)
         }

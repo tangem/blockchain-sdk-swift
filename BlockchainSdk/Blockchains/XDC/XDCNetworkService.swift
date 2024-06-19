@@ -20,10 +20,16 @@ final class XDCNetworkService: EthereumNetworkService {
         return super.getInfo(address: convertedAddress, tokens: tokens)
     }
 
-    override func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
+    override func getEIP1559Fee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumEIP1559FeeResponse, Error> {
         let fromConvertedAddress = addressConverter.convertToETHAddress(from)
         let toConvertedAddress = addressConverter.convertToETHAddress(to)
-        return super.getFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+        return super.getEIP1559Fee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+    }
+
+    override func getLegacyFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumLegacyFeeResponse, Error> {
+        let fromConvertedAddress = addressConverter.convertToETHAddress(from)
+        let toConvertedAddress = addressConverter.convertToETHAddress(to)
+        return super.getLegacyFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
     }
 
     override func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
@@ -56,5 +62,4 @@ final class XDCNetworkService: EthereumNetworkService {
         let convertedAddress = addressConverter.convertToETHAddress(address)
         return super.getPendingTxCount(convertedAddress)
     }
-
 }

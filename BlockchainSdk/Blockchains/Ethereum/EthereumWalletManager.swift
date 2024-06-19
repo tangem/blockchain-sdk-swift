@@ -44,17 +44,11 @@ class EthereumWalletManager: BaseManager, WalletManager {
 
     // It can't be into extension because it will be overridden in the `OptimismWalletManager`
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        networkService.getFee(
-            to: destination,
-            from: defaultSourceAddress,
-            value: value,
-            data: data?.hexString.addHexPrefix()
-        )
-        .withWeakCaptureOf(self)
-        .map { walletManager, ethereumFeeResponse in
-            walletManager.proceedFee(response: ethereumFeeResponse)
+        if wallet.blockchain.supportsEIP1559 {
+            return getEIP1559Fee(destination: destination, value: value, data: data)
+        } else {
+            return getLegacyFee(destination: destination, value: value, data: data)
         }
-        .eraseToAnyPublisher()
     }
 }
 
@@ -140,7 +134,21 @@ extension EthereumWalletManager: EthereumNetworkProvider {
 // MARK: - Private
 
 private extension EthereumWalletManager {
-    func proceedFee(response: EthereumFeeResponse) -> [Fee] {
+    func getEIP1559Fee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+        networkService.getEIP1559Fee(
+            to: destination,
+            from: defaultSourceAddress,
+            value: value,
+            data: data?.hexString.addHexPrefix()
+        )
+        .withWeakCaptureOf(self)
+        .map { walletManager, ethereumFeeResponse in
+            walletManager.proceedEIP1559Fee(response: ethereumFeeResponse)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func proceedEIP1559Fee(response: EthereumEIP1559FeeResponse) -> [Fee] {
         var feeParameters = [
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
@@ -156,6 +164,46 @@ private extension EthereumWalletManager {
                 gasLimit: response.gasLimit,
                 maxFeePerGas: response.fees.fast.max,
                 priorityFee: response.fees.fast.priority
+            ),
+        ]
+
+        let fees = feeParameters.map { parameters in
+            let feeValue = parameters.calculateFee(decimalValue: wallet.blockchain.decimalValue)
+            let amount = Amount(with: wallet.blockchain, value: feeValue)
+
+            return Fee(amount, parameters: parameters)
+        }
+
+        return fees
+    }
+
+    func getLegacyFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+        networkService.getLegacyFee(
+            to: destination,
+            from: defaultSourceAddress,
+            value: value,
+            data: data?.hexString.addHexPrefix()
+        )
+        .withWeakCaptureOf(self)
+        .map { walletManager, ethereumFeeResponse in
+            walletManager.proceedLegacyFee(response: ethereumFeeResponse)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func proceedLegacyFee(response: EthereumLegacyFeeResponse) -> [Fee] {
+        var feeParameters = [
+            EthereumLegacyFeeParameters(
+                gasLimit: response.gasLimit,
+                gasPrice: response.lowGasPrice
+            ),
+            EthereumLegacyFeeParameters(
+                gasLimit: response.gasLimit,
+                gasPrice: response.marketGasPrice
+            ),
+            EthereumLegacyFeeParameters(
+                gasLimit: response.gasLimit,
+                gasPrice: response.fastGasPrice
             ),
         ]
 

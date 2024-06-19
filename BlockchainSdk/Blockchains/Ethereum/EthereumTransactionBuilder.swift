@@ -135,20 +135,21 @@ private extension EthereumTransactionBuilder {
             input.chainID = BigUInt(chainId).serialize()
             input.nonce = nonceValue.serialize()
 
-            // Legacy
-            if let feeParameters = fee.parameters as? EthereumFeeParameters {
-                input.txMode = .legacy
-                input.gasLimit = feeParameters.gasLimit.serialize()
-                input.gasPrice = feeParameters.gasPrice.serialize()
-            }
-            // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
-            else if let feeParameters = fee.parameters as? EthereumEIP1559FeeParameters {
-                input.txMode = .enveloped
-                input.gasLimit = feeParameters.gasLimit.serialize()
-                input.maxFeePerGas = feeParameters.maxFeePerGas.serialize()
-                input.maxInclusionFeePerGas = feeParameters.priorityFee.serialize()
-            } else {
+            guard let feeParameters = fee.parameters as? EthereumFeeParameters else {
                 throw EthereumTransactionBuilderError.feeParametersNotFound
+            }
+
+            switch feeParameters.parametersType {
+            case .eip1559(let eip1559Parameters):
+                // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
+                input.txMode = .enveloped
+                input.gasLimit = eip1559Parameters.gasLimit.serialize()
+                input.maxFeePerGas = eip1559Parameters.maxFeePerGas.serialize()
+                input.maxInclusionFeePerGas = eip1559Parameters.priorityFee.serialize()
+            case .legacy(let legacyParameters):
+                input.txMode = .legacy
+                input.gasLimit = legacyParameters.gasLimit.serialize()
+                input.gasPrice = legacyParameters.gasPrice.serialize()
             }
 
             input.transaction = .with {

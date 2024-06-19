@@ -590,6 +590,45 @@ extension Blockchain {
         default: return nil
         }
     }
+
+    // Only for Ethereum compatible blockchains
+    public var supportsEIP1559: Bool {
+        switch self {
+        case .ethereum: return true
+        case .ethereumClassic: return true
+        case .ethereumPoW: return true
+        case .disChain: return true
+        case .rsk: return false
+        case .bsc: return true
+        case .polygon: return true
+        case .avalanche: return true
+        case .fantom: return true
+        case .arbitrum: return true
+        case .gnosis: return true
+        case .optimism: return true
+        case .kava: return true
+        case .cronos: return true
+        case .telos: return false
+        case .octa: return true
+        case .decimal: return true
+        case .xdc: return false
+        case .shibarium: return true
+        case .areon: return true
+        case .playa3ullGames: return true
+        case .pulsechain: return true
+        case .aurora: return false
+        case .manta: return true
+        case .zkSync: return false
+        case .moonbeam: return false
+        case .polygonZkEVM: return false
+        case .moonriver: return false
+        case .mantle: return true
+        case .flare: return true
+        case .taraxa: return false
+        case .base: return true
+        default: return false
+        }
+    }
 }
 
 // MARK: - Address creation
