@@ -8,10 +8,26 @@
 
 import TangemSdk
 
-// TODO: [KOINOS] Implement KoinosWalletAssembly
-// https://tangem.atlassian.net/browse/IOS-6758
 struct KoinosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        throw BlockchainSdkError.notImplemented
+        let blockchain = input.blockchain
+        let isTestnet = blockchain.isTestnet
+        let koinContractAbi = KoinContractAbi(isTestnet: isTestnet)
+        
+        return KoinosWalletManager(
+            wallet: input.wallet,
+            networkService: KoinosNetworkService(
+                providers: APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
+                    .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                        KoinosNetworkProvider(
+                            node: nodeInfo,
+                            koinContractAbi: koinContractAbi,
+                            configuration: input.networkConfig
+                        )
+                    },
+                decimalCount: blockchain.decimalCount
+            ),
+            transactionBuilder: KoinosTransactionBuilder(isTestnet: isTestnet)
+        )
     }
 }
