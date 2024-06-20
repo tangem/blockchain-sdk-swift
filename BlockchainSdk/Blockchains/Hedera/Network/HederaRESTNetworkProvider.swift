@@ -26,11 +26,11 @@ struct HederaRESTNetworkProvider {
         return requestPublisher(for: .getAccounts(publicKey: publicKey))
     }
 
-    func getBalance(accountId: String) -> some Publisher<HederaNetworkResult.AccountBalance, Error> {
+    func getBalance(accountId: String) -> some Publisher<HederaNetworkResult.AccountHbarBalance, Error> {
         return requestPublisher(for: .getAccountBalance(accountId: accountId))
     }
 
-    func getTokens(accountId: String, entitiesLimit: Int) -> some Publisher<HederaNetworkResult.TokensInfo, Error> {
+    func getTokens(accountId: String, entitiesLimit: Int) -> some Publisher<HederaNetworkResult.AccountTokensBalance, Error> {
         return requestPublisher(for: .getTokens(accountId: accountId, entitiesLimit: entitiesLimit))
     }
 

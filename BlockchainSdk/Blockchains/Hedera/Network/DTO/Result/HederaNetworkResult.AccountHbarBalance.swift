@@ -1,5 +1,5 @@
 //
-//  HederaNetworkResult.AccountBalance.swift
+//  HederaNetworkResult.AccountHbarBalance.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Fedorov on 15.05.2024.
@@ -9,7 +9,8 @@
 import Foundation
 
 extension HederaNetworkResult {
-    struct AccountBalance: Decodable {
+    /// Contains HBAR balances for the account; used by the REST network layer.
+    struct AccountHbarBalance: Decodable {
         /// `/api/v1/balances` endpoint is not recommended for obtaining token balance info,
         /// so we don't map `tokens` fields in this response whatsoever.
         /// See https://testnet.mirrornode.hedera.com/api/v1/docs/#/balances/listAccountBalances for details.
