@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TonSwift
 
 /// Abstract layer for multi provide TON blockchain
 class TONNetworkService: MultiNetworkProvider {
@@ -28,27 +29,24 @@ class TONNetworkService: MultiNetworkProvider {
     
     // MARK: - Implementation
     
-    func getInfo(address: String) -> AnyPublisher<TONWalletInfo, Error> {
-        providerPublisher { provider in
-            provider
-                .getInfo(address: address)
-                .tryMap { [weak self] walletInfo in
-                    guard let self = self else {
-                        throw WalletError.empty
-                    }
-                    
-                    guard let decimalBalance = Decimal(walletInfo.balance) else {
-                        throw WalletError.failedToParseNetworkResponse
-                    }
-                    
-                    return TONWalletInfo(
-                        balance: decimalBalance / self.blockchain.decimalValue,
-                        sequenceNumber: walletInfo.seqno ?? 0,
-                        isAvailable: walletInfo.accountState == .active
-                    )
-                }
-                .eraseToAnyPublisher()
+    func getInfo(address: String, tokens: [Token]) -> AnyPublisher<TONWalletInfo, Error> {
+        Publishers.Zip(
+            getWalletInfo(address: address),
+            getTokensInfo(address: address, tokens: tokens)
+        )
+        .tryMap { walletInfo, tokensInfo in
+            guard let decimalBalance = Decimal(string: walletInfo.balance) else {
+                throw WalletError.failedToParseNetworkResponse
+            }
+            
+            return TONWalletInfo(
+                balance: decimalBalance / self.blockchain.decimalValue,
+                sequenceNumber: walletInfo.seqno ?? 0,
+                isAvailable: walletInfo.accountState == .active,
+                tokensInfo: tokensInfo
+            )
         }
+        .eraseToAnyPublisher()
     }
     
     func getFee(address: String, message: String) -> AnyPublisher<[Fee], Error> {
@@ -70,6 +68,24 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
+    func getJettonWalletAddress(for ownerAddress: String, token: Token) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            provider.getJettonWalletAddress(
+                for: ownerAddress,
+                contractAddress: token.contractAddress
+            )
+            .tryMap { response in
+                let reader = TupleReader(items: response.stack)
+                let address = try reader.readAddress()
+                
+                return address.toString(bounceable: false)
+            }
+            .eraseToAnyPublisher()
+        }
+    }
+    
+    // MARK: - Private Implementation
+
     func send(message: String) -> AnyPublisher<String, Error> {
         return providerPublisher { provider in
             provider
@@ -79,4 +95,57 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
+    private func getWalletInfo(address: String) -> AnyPublisher<TONModels.Info, Error> {
+        providerPublisher { provider in
+            provider
+                .getInfo(address: address)
+        }
+    }
+    
+    private func getTokensInfo(
+        address: String,
+        tokens: [Token]
+    ) -> AnyPublisher<[Token: TONWalletInfo.TokenInfo], Error> {
+        tokens
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { networkService, token in
+                networkService.getTokenInfo(address: address, token: token).map { (token, $0) }
+            }
+            .collect()
+            .map { $0.reduce(into: [Token: TONWalletInfo.TokenInfo]()) { $0[$1.0] = $1.1 }}
+            .eraseToAnyPublisher()
+    }
+    
+    private func getTokenInfo(address: String, token: Token) -> AnyPublisher<TONWalletInfo.TokenInfo, Error> {
+        providerPublisher { provider in
+            provider.getJettonWalletAddress(
+                for: address,
+                contractAddress: token.contractAddress
+            )
+            .tryMap { response in
+                let reader = TupleReader(
+                    items: response.stack
+                )
+                let address = try reader.readAddress()
+                
+                return address.toString(bounceable: false)
+            }
+            .flatMap { jettonWalletAddress in
+                provider.getJettonWalledData(jettonWalletAddress: jettonWalletAddress)
+                    .tryMap { response in
+                        let reader = TupleReader(
+                            items: response.stack
+                        )
+                        
+                        let amount = (try? reader.readNumber()) ?? 0
+                        return TONWalletInfo.TokenInfo(
+                            jettonWalletAddress: jettonWalletAddress,
+                            balance: Decimal(amount) / token.decimalValue
+                        )
+                    }
+            }.eraseToAnyPublisher()
+        }
+    }
 }

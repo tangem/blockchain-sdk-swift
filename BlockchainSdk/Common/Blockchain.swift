@@ -483,6 +483,7 @@ public indirect enum Blockchain: Equatable, Hashable {
              .terraV1,
              .veChain,
              .hedera,
+             .ton,
              .cardano:
             return true
         case _ where isEvm:
@@ -696,7 +697,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
-        case .manta: return "manta-network"
+        case .manta: return "manta-pacific"
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
@@ -781,7 +782,7 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
-        case "manta-network": self = .manta(testnet: isTestnet)
+        case "manta-pacific": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
@@ -956,10 +957,7 @@ private extension Blockchain {
             case .coin: return "aurora-ethereum"
             }
         case .manta:
-            switch type {
-            case .network: return "manta-network"
-            case .coin: return "manta-network-ethereum"
-            }
+            return "manta-pacific"
         case .zkSync:
             switch type {
             case .network: return "zksync"

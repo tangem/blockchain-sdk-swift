@@ -137,6 +137,11 @@ extension CardanoWalletManager: WithdrawalNotificationProvider {
     }
 
     func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
+        // We have to show the notification only when send the token
+        guard amount.type.isToken else {
+            return nil
+        }
+
         do {
             let adaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
             let minAmountDecimal = Decimal(adaValue) / wallet.blockchain.decimalValue
@@ -157,9 +162,7 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
     func validateCardanoTransfer(amount: Amount, fee: Amount) throws {
         switch amount.type {
         case .coin:
-            let hasTokensWithBalance = wallet.amounts.contains { amountType, amount in
-                amountType.isToken && amount.value > 0
-            }
+            let hasTokensWithBalance = try transactionBuilder.hasTokensWithBalance(exclude: nil)
 
             guard hasTokensWithBalance else {
                 // Skip this checking. Dust checking will be after
@@ -220,8 +223,13 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
         let minChange = try minChange(amount: amount)
         let change = adaBalance - minAdaToSendDecimal
 
+        let isSendFullTokenAmount = amount.value == tokenBalance
+        let willReceiveChange = try transactionBuilder.hasTokensWithBalance(
+            exclude: isSendFullTokenAmount ? amount.type.token : nil
+        )
+
         // If there not enough ada balance to change
-        if change > 0, change < minChange.value {
+        if willReceiveChange, change < minChange.value {
             throw ValidationError.cardanoInsufficientBalanceToSendToken
         }
     }
