@@ -52,29 +52,23 @@ final class HederaNetworkService {
         }
     }
 
+    /// - Note: For balances fetching, the Mirror Node acts as a primary node, and the Consensus Node is a backup one.
     func getBalance(accountId: String) -> some Publisher<HederaAccountBalance, Error> {
+        let fallbackPublisher = makeFallbackBalancePublisher(accountId: accountId)
         let hbarBalancePublisher = makeHbarBalancePublisher(accountId: accountId)
-
-        let tokenBalancesPublisher = providerPublisher { provider in
-            return provider
-                .getTokens(accountId: accountId, entitiesLimit: Constants.tokenEntitiesLimit)
-                .eraseToAnyPublisher()
-        }
+        let tokenBalancesPublisher = makeTokenBalancesPublisher(accountId: accountId)
 
         return hbarBalancePublisher
             .zip(tokenBalancesPublisher)
             .map { hbarBalance, tokenBalances in
-                let tokenBalances = tokenBalances.tokens.map { tokenBalance in
-                    return HederaAccountBalance.TokenBalance(
-                        contractAddress: tokenBalance.tokenId,
-                        balance: tokenBalance.balance,
-                        decimalCount: tokenBalance.decimals
-                    )
-                }
-
-                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: tokenBalances)
+                return HederaAccountBalance(
+                    hbarBalance: hbarBalance,
+                    tokenBalances: Self.mapTokenBalances(tokenBalances.tokens)
+                )
             }
-            .eraseToAnyPublisher()
+            .catch { _ in
+                return fallbackPublisher
+            }
     }
 
     func getExchangeRate() -> some Publisher<HederaExchangeRate, Error> {
@@ -176,9 +170,8 @@ final class HederaNetworkService {
             }
     }
 
-    /// - Note: For Hbar balance fetching, the Mirror Node acts as a primary node, and the Consensus Node is a backup one.
     private func makeHbarBalancePublisher(accountId: String) -> some Publisher<Int, Error> {
-        let primaryHbarBalancePublisher = providerPublisher { provider in
+        return providerPublisher { provider in
             return provider
                 .getBalance(accountId: accountId)
                 .eraseToAnyPublisher()
@@ -190,14 +183,41 @@ final class HederaNetworkService {
 
             return balance.balance
         }
+    }
 
-        let fallbackHbarBalancePublisher = consensusProvider
+    private func makeTokenBalancesPublisher(accountId: String) -> some Publisher<HederaNetworkResult.AccountTokensBalance, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getTokens(accountId: accountId, entitiesLimit: Constants.tokenEntitiesLimit)
+                .eraseToAnyPublisher()
+        }
+    }
+
+    private func makeFallbackBalancePublisher(accountId: String) -> some Publisher<HederaAccountBalance, Error> {
+        return consensusProvider
             .getBalance(accountId: accountId)
+            .tryMap { balanceInfo in
+                guard let hbarBalance = balanceInfo.hbarBalance.balances.first(where: { $0.account == accountId }) else {
+                    throw HederaError.accountBalanceNotFound
+                }
 
-        return primaryHbarBalancePublisher
-            .catch { _ in
-                return fallbackHbarBalancePublisher
+                return HederaAccountBalance(
+                    hbarBalance: hbarBalance.balance,
+                    tokenBalances: Self.mapTokenBalances(balanceInfo.tokensBalance.tokens)
+                )
             }
+    }
+
+    private static func mapTokenBalances(
+        _ tokenBalances: [HederaNetworkResult.AccountTokensBalance.Token]
+    ) -> [HederaAccountBalance.TokenBalance] {
+        return tokenBalances.map { tokenBalance in
+            return HederaAccountBalance.TokenBalance(
+                contractAddress: tokenBalance.tokenId,
+                balance: tokenBalance.balance,
+                decimalCount: tokenBalance.decimals
+            )
+        }
     }
 }
 
