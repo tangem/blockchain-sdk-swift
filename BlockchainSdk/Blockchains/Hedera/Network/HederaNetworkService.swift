@@ -60,7 +60,8 @@ final class HederaNetworkService {
                 .getTokens(accountId: accountId, entitiesLimit: Constants.tokenEntitiesLimit)
                 .eraseToAnyPublisher()
         }
-        .mapToResult()
+        .map(Result.success)
+        .catch { Just(Result.failure($0)) }
         .setFailureType(to: Error.self)
 
         return hbarBalancePublisher
