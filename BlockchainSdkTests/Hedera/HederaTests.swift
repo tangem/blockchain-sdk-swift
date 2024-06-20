@@ -568,17 +568,17 @@ final class HederaTests: XCTestCase {
     func testContractAddressConversionFromEVMToHederaNegativeCase() throws {
         let converter = HederaTokenContractAddressConverter()
 
-        XCTAssertThrowsError(try converter.convertFromEVMToHedera("0.0.786931"))
-        XCTAssertThrowsError(try converter.convertFromHederaToEVM("0.786931"))
-        XCTAssertThrowsError(try converter.convertFromEVMToHedera("7677bbb545a"))
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("0.0.786931"))    // Valid Hedera address
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("0.786931"))  // Invalid Hedera address
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("7677bbb545a"))   // Invalid EVM address
     }
 
     func testContractAddressConversionFromHederaToEVMNegativeCase() throws {
         let converter = HederaTokenContractAddressConverter()
 
-        XCTAssertThrowsError(try converter.convertFromHederaToEVM("00000000000000000000000000000000000c01f3"))
-        XCTAssertThrowsError(try converter.convertFromHederaToEVM("0.786931"))
-        XCTAssertThrowsError(try converter.convertFromEVMToHedera("7677bbb545a"))
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("00000000000000000000000000000000000c01f3"))  // Valid EVM address
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("0.786931"))  // Invalid Hedera address
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("7677bbb545a"))   // Invalid EVM address
     }
 
     private func setUp(curve: EllipticCurve) {
