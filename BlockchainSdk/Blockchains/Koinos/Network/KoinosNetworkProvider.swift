@@ -36,7 +36,7 @@ class KoinosNetworkProvider: HostProvider {
             withResponseType: KoinosMethod.ReadContract.Response.self
         )
         .tryMap { response in
-            guard let result = response.result, let decodedResult = Data(base64Encoded: result) else {
+            guard let result = response.result, let decodedResult = result.base64URLDecodedData() else {
                 return 0
             }
             return try Koinos_Contracts_Token_balance_of_result(serializedData: decodedResult).value
@@ -74,15 +74,16 @@ class KoinosNetworkProvider: HostProvider {
     func submitTransaction(transaction: KoinosProtocol.Transaction) -> AnyPublisher<KoinosTransactionEntry, Error> {
         requestPublisher(
             for: .submitTransaction(transaction: transaction),
-            withResponseType: KoinosMethod.SubmitTransaction.Response.self
+            withResponseType: KoinosMethod.SubmitTransaction.Response.self,
+            decoder: .init()
         )
         .map(\.receipt)
         .tryMap { receipt in
-            guard let encodedEvent = receipt.events.first?.eventData else {
+            guard let encodedEvent = receipt.events.first?.eventData, let data = encodedEvent.base64URLDecodedData() else {
                 throw WalletError.failedToParseNetworkResponse
             }
             
-            let decodedEvent = try Koinos_Contracts_Token_transfer_event(textFormatString: encodedEvent)
+            let decodedEvent = try Koinos_Contracts_Token_transfer_event(serializedData: data)
             
             return KoinosTransactionEntry(
                 id: receipt.id,
@@ -102,12 +103,13 @@ class KoinosNetworkProvider: HostProvider {
     
     private func requestPublisher<T: Decodable>(
         for target: KoinosTarget.KoinosTargetType,
-        withResponseType: T.Type
+        withResponseType: T.Type,
+        decoder: JSONDecoder = .withSnakeCaseStrategy
     ) -> AnyPublisher<T, Error> {
         provider.requestPublisher(KoinosTarget(node: node, koinContractAbi: koinContractAbi, target))
             .filterSuccessfulStatusAndRedirectCodes()
             // TODO: [KOINOS] Chnage NEARNetworkResult.APIError to something KOINOS related
-            .map(JSONRPC.Response<T, NEARNetworkResult.APIError>.self, using: JSONDecoder.withSnakeCaseStrategy)
+            .map(JSONRPC.Response<T, NEARNetworkResult.APIError>.self, using: decoder)
             .mapError { moyaError in
                 if case .objectMapping = moyaError {
                     return WalletError.failedToParseNetworkResponse as Error

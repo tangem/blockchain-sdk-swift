@@ -24,10 +24,7 @@ public struct Wallet {
     public var defaultAddress: Address { walletAddresses[.default]! }
     
     /// `publicKey` from default address
-    public var publicKey: Wallet.PublicKey {
-        print("PUBLIC KEY", defaultAddress.publicKey.derivationPath?.rawPath)
-        return defaultAddress.publicKey
-    }
+    public var publicKey: Wallet.PublicKey { defaultAddress.publicKey }
     
     /// Default address
     public var address: String { defaultAddress.value }

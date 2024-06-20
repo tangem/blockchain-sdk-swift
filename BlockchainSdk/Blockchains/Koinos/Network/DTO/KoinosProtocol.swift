@@ -78,6 +78,38 @@ enum KoinosProtocol {
             case reverted
             case events
         }
+        
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: KoinosProtocol.TransactionReceipt.CodingKeys.self)
+            self.id = try container.decode(String.self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.id)
+            self.payer = try container.decode(String.self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.payer)
+            self.diskStorageUsed = try container.decodeIfPresent(String.self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.diskStorageUsed)
+            self.networkBandwidthUsed = try container.decodeIfPresent(String.self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.networkBandwidthUsed)
+            self.computeBandwidthUsed = try container.decodeIfPresent(String.self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.computeBandwidthUsed)
+            self.reverted = try container.decodeIfPresent(Bool.self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.reverted)
+            self.events = try container.decode([KoinosProtocol.EventData].self, forKey: KoinosProtocol.TransactionReceipt.CodingKeys.events)
+            
+            if let maxPayerRcString = try container.decodeIfPresent(String.self, forKey: .maxPayerRc),
+               let maxPayerRc = UInt64(maxPayerRcString) {
+                self.maxPayerRc = maxPayerRc
+            } else {
+                throw DecodingError.dataCorruptedError(forKey: .maxPayerRc, in: container, debugDescription: "Expected a valid UInt64 string for maxPayerRc")
+            }
+            
+            if let rcLimitString = try container.decodeIfPresent(String.self, forKey: .rcLimit),
+               let rcLimit = UInt64(rcLimitString) {
+                self.rcLimit = rcLimit
+            } else {
+                throw DecodingError.dataCorruptedError(forKey: .rcLimit, in: container, debugDescription: "Expected a valid UInt64 string for rcLimit")
+            }
+            
+            if let rcUsedString = try container.decodeIfPresent(String.self, forKey: .rcUsed),
+               let rcUsed = UInt64(rcUsedString) {
+                self.rcUsed = rcUsed
+            } else {
+                throw DecodingError.dataCorruptedError(forKey: .rcUsed, in: container, debugDescription: "Expected a valid UInt64 string for rcUsed")
+            }
+        }
     }
 
     struct BlockHeader: Equatable, Codable {

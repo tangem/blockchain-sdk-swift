@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import TangemSdk
 
 class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     var currentHost: String {
@@ -91,13 +92,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                 .flatMap(networkService.submitTransaction)
                 .map(\.id)
             }
-            .withWeakCaptureOf(self)
-            .map { walletManager, txId in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
-                walletManager.wallet.addPendingTransaction(record)
-                return TransactionSendResult(hash: txId)
-            }
+            .map { TransactionSendResult(hash: $0) }
             .mapError { SendTxError(error: $0) }
             .eraseToAnyPublisher()
     }

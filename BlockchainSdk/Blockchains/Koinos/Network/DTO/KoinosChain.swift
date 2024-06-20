@@ -16,5 +16,25 @@ enum KoinosChain {
         let networkBandwidthCost: UInt64
         let computeBandwidthLimit: UInt64
         let computeBandwidthCost: UInt64
+        
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: KoinosChain.ResourceLimitData.CodingKeys.self)
+            guard let diskStorageLimit = UInt64(try container.decode(String.self, forKey: KoinosChain.ResourceLimitData.CodingKeys.diskStorageLimit)),
+                  let diskStorageCost = UInt64(try container.decode(String.self, forKey: KoinosChain.ResourceLimitData.CodingKeys.diskStorageCost)),
+                  let networkBandwidthLimit = UInt64(try container.decode(String.self, forKey: KoinosChain.ResourceLimitData.CodingKeys.networkBandwidthLimit)),
+                  let networkBandwidthCost = UInt64(try container.decode(String.self, forKey: KoinosChain.ResourceLimitData.CodingKeys.networkBandwidthCost)),
+                  let computeBandwidthLimit = UInt64(try container.decode(String.self, forKey: KoinosChain.ResourceLimitData.CodingKeys.computeBandwidthLimit)),
+                  let computeBandwidthCost = UInt64(try container.decode(String.self, forKey: KoinosChain.ResourceLimitData.CodingKeys.computeBandwidthCost)) 
+            else {
+                throw WalletError.failedToParseNetworkResponse
+            }
+            
+            self.diskStorageLimit = diskStorageLimit
+            self.diskStorageCost = diskStorageCost
+            self.networkBandwidthLimit = networkBandwidthLimit
+            self.networkBandwidthCost = networkBandwidthCost
+            self.computeBandwidthLimit = computeBandwidthLimit
+            self.computeBandwidthCost = computeBandwidthCost
+        }
     }
 }

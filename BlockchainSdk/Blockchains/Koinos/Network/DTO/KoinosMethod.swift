@@ -40,7 +40,7 @@ extension KoinosMethod {
             }
             
             init(from decoder: any Decoder) throws {
-                let container: KeyedDecodingContainer<KoinosMethod.GetAccountRC.Response.CodingKeys> = try decoder.container(keyedBy: KoinosMethod.GetAccountRC.Response.CodingKeys.self)
+                let container = try decoder.container(keyedBy: KoinosMethod.GetAccountRC.Response.CodingKeys.self)
                 let stringRC = try container.decode(String.self, forKey: KoinosMethod.GetAccountRC.Response.CodingKeys.rc)
                 guard let rc = UInt64(stringRC) else {
                     throw WalletError.failedToParseNetworkResponse
@@ -63,12 +63,13 @@ extension KoinosMethod {
             init(from decoder: any Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 let base64EncodedNonce: String = try container.decode(forKey: .nonce)
-                guard let stringNonce = base64EncodedNonce.base64Decoded(),
-                      let nonce = UInt64(stringNonce)
+                
+                guard let data = base64EncodedNonce.base64URLDecodedData(),
+                      let type = try? Koinos_Chain_value_type(serializedData: data)
                 else {
                     throw WalletError.failedToParseNetworkResponse
                 }
-                self.nonce = nonce
+                self.nonce = type.uint64Value
             }
             
             enum CodingKeys: String, CodingKey {
