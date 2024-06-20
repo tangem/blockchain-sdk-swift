@@ -554,6 +554,10 @@ extension Blockchain {
     // Only for Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
+        guard isEvm else {
+            return nil
+        }
+
         switch self {
         case .ethereum: return isTestnet ? 5 : 1
         case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
@@ -587,12 +591,18 @@ extension Blockchain {
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
-        default: return nil
+        default:
+            assertionFailure("Don't forget about evm here")
+            return nil
         }
     }
 
     // Only for Ethereum compatible blockchains
     public var supportsEIP1559: Bool {
+        guard isEvm else {
+            return false
+        }
+
         switch self {
         case .ethereum: return true
         case .ethereumClassic: return false // eth_feeHistory all zeroes
@@ -626,7 +636,9 @@ extension Blockchain {
         case .flare: return true
         case .taraxa: return false
         case .base: return true
-        default: return false
+        default:
+            assertionFailure("Don't forget about evm here")
+            return false
         }
     }
 }
