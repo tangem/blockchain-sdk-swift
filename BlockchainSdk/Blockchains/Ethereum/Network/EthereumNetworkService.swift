@@ -152,8 +152,9 @@ class EthereumNetworkService: MultiNetworkProvider {
 
                     return provider
                         .call(contractAddress: token.contractAddress, encodedData: method.encodedData)
-                        .withWeakCaptureOf(networkService)
-                        .compactMap { networkService, result in
+                        .replaceError(with: "-") // empty string is parsed as '0' in parseEthereumDecimal below
+                        .setFailureType(to: Error.self)
+                        .compactMap { result in
                             EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount)
                         }
                         .map { (token, $0) }

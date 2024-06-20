@@ -170,6 +170,7 @@ private extension EthereumWalletManager {
     }
 
     func updateWallet(with response: EthereumInfoResponse) {
+        wallet.clearAmounts()
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
