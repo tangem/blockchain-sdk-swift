@@ -548,10 +548,19 @@ final class HederaTests: XCTestCase {
     }
 
     /// Values for https://www.coingecko.com/en/coins/hbarbarian
-    func testContractAddressConversionFromEVMToHederaPositiveCase() throws {
+    func testContractAddressConversionFromEVMWithPrefixToHederaPositiveCase() throws {
         let converter = HederaTokenContractAddressConverter()
-        let converted = try converter.convertFromEVMToHedera("0x0000000000000000000000000000000000497fbc")
+        let converted = try converter.convertFromEVMToHedera("0x0000000000000000000000000000000000497fbc")  // Valid EVM address with 0x prefix
         let expected = "0.0.4816828"
+
+        XCTAssertEqual(converted, expected)
+    }
+
+    /// Values for https://www.coingecko.com/en/coins/usdc
+    func testContractAddressConversionFromEVMWithoutPrefixToHederaPositiveCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+        let converted = try converter.convertFromEVMToHedera("000000000000000000000000000000000006f89a")  // Valid EVM address w/o 0x prefix
+        let expected = "0.0.456858"
 
         XCTAssertEqual(converted, expected)
     }
@@ -559,7 +568,7 @@ final class HederaTests: XCTestCase {
     /// Values for https://www.coingecko.com/en/coins/hbarsuite
     func testContractAddressConversionFromHederaToEVMPositiveCase() throws {
         let converter = HederaTokenContractAddressConverter()
-        let converted = try converter.convertFromHederaToEVM("0.0.786931")
+        let converted = try converter.convertFromHederaToEVM("0.0.786931")  // Valid Hedera address
         let expected = "0x00000000000000000000000000000000000c01f3"
 
         XCTAssertEqual(converted, expected)
