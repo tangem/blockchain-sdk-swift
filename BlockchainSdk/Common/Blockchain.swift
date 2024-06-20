@@ -595,7 +595,7 @@ extension Blockchain {
     public var supportsEIP1559: Bool {
         switch self {
         case .ethereum: return true
-        case .ethereumClassic: return true
+        case .ethereumClassic: return false // eth_feeHistory all zeroes
         case .ethereumPoW: return true
         case .disChain: return true
         case .rsk: return false
@@ -606,10 +606,10 @@ extension Blockchain {
         case .arbitrum: return true
         case .gnosis: return true
         case .optimism: return true
-        case .kava: return true
+        case .kava: return false // eth_feeHistory zero or null
         case .cronos: return true
         case .telos: return false
-        case .octa: return true
+        case .octa: return false // eth_feeHistory all zeroes
         case .decimal: return true
         case .xdc: return false
         case .shibarium: return true

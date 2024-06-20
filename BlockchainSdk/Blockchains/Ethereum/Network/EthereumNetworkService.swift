@@ -258,6 +258,11 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
 
         let average = baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)
+
+        guard average > 0 else {
+            throw ETHError.failedToParseBaseFees
+        }
+
         let bigUInt = EthereumUtils.mapToBigUInt(average)
         return bigUInt
     }
