@@ -60,25 +60,19 @@ final class HederaNetworkService {
                 .getTokens(accountId: accountId, entitiesLimit: Constants.tokenEntitiesLimit)
                 .eraseToAnyPublisher()
         }
-        .map(Result.success)
-        .catch { Just(Result.failure($0)) }
-        .setFailureType(to: Error.self)
 
         return hbarBalancePublisher
             .zip(tokenBalancesPublisher)
-            .map { hbarBalance, tokenBalancesResult in
-                let mappedResult = tokenBalancesResult
-                    .map { tokenBalancesInfo in
-                        return tokenBalancesInfo.tokens.map { tokenBalance in
-                            return HederaAccountBalance.TokenBalance(
-                                contractAddress: tokenBalance.tokenId,
-                                balance: tokenBalance.balance,
-                                decimalCount: tokenBalance.decimals
-                            )
-                        }
-                    }
+            .map { hbarBalance, tokenBalances in
+                let tokenBalances = tokenBalances.tokens.map { tokenBalance in
+                    return HederaAccountBalance.TokenBalance(
+                        contractAddress: tokenBalance.tokenId,
+                        balance: tokenBalance.balance,
+                        decimalCount: tokenBalance.decimals
+                    )
+                }
 
-                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: mappedResult)
+                return HederaAccountBalance(hbarBalance: hbarBalance, tokenBalances: tokenBalances)
             }
             .eraseToAnyPublisher()
     }

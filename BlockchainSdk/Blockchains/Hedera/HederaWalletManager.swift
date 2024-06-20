@@ -82,10 +82,7 @@ final class HederaWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .flatMap { walletManager, input in
                 let (accountBalance, transactionsInfo) = input
-                let alreadyAssociatedTokens = accountBalance
-                    .tokenBalances
-                    .value
-                    .map(walletManager.extractAssociatedTokensContractAddresses(from:))
+                let alreadyAssociatedTokens = accountBalance.associatedTokensContractAddresses
 
                 return walletManager
                     .makeTokenAssociationFeeExchangeRatePublisher(alreadyAssociatedTokens: alreadyAssociatedTokens)
@@ -121,26 +118,17 @@ final class HederaWalletManager: BaseManager {
     }
 
     private func updateWalletTokens(accountBalance: HederaAccountBalance, exchangeRate: HederaExchangeRate?) {
-        switch accountBalance.tokenBalances {
-        case .success(let tokenBalances):
-            let associatedTokensContractAddresses = extractAssociatedTokensContractAddresses(from: tokenBalances)
-            saveAssociatedTokensIfNeeded(newValue: associatedTokensContractAddresses)
-            tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
+        saveAssociatedTokensIfNeeded(newValue: accountBalance.associatedTokensContractAddresses)
+        tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
 
-            let allTokenBalances = tokenBalances.reduce(into: [:]) { result, element in
-                result[element.contractAddress] = Decimal(element.balance) / pow(10, element.decimalCount)
-            }
-
-            // Using HTS tokens balances from a remote list of tokens for tokens in a local list
-            cardTokens
-                .map { Amount(with: $0, value: allTokenBalances[$0.contractAddress] ?? .zero) }
-                .forEach { wallet.add(amount: $0) }
-        case .failure:
-            // We can't obtain HTS tokens balances due to an error from the network layer, 
-            // so we also can't determine the current list of associated tokens).
-            // In this case the list of associated tokens stays the same, without any modifications
-            cardTokens.forEach { wallet.remove(token: $0) }
+        let allTokenBalances = accountBalance.tokenBalances.reduce(into: [:]) { result, element in
+            result[element.contractAddress] = Decimal(element.balance) / pow(10, element.decimalCount)
         }
+
+        // Using HTS tokens balances from a remote list of tokens for tokens in a local list
+        cardTokens
+            .map { Amount(with: $0, value: allTokenBalances[$0.contractAddress] ?? .zero) }
+            .forEach { wallet.add(amount: $0) }
     }
 
     private func updateWalletWithPendingTransferTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
@@ -161,17 +149,8 @@ final class HederaWalletManager: BaseManager {
     }
 
     private func makeTokenAssociationFeeExchangeRatePublisher(
-        alreadyAssociatedTokens: AssociatedTokens?
+        alreadyAssociatedTokens: AssociatedTokens
     ) -> some Publisher<HederaExchangeRate?, Error> {
-        guard let alreadyAssociatedTokens else {
-            // Unable to fetch token balances due to an error from the network layer, in this case 
-            // we can't determine if token association has to be performed for some tokens;
-            // therefore there is no point in requesting an exchange rate to calculate the token association fee
-            //
-            // Performing an early exit
-            return Just.justWithError(output: nil)
-        }
-
         if cardTokens.allSatisfy({ alreadyAssociatedTokens.contains($0.contractAddress) }) {
             // All added tokens (from `cardTokens`) are already associated with the current account;
             // therefore there is no point in requesting an exchange rate to calculate the token association fee
@@ -419,14 +398,6 @@ final class HederaWalletManager: BaseManager {
         }
     }
 
-    private func extractAssociatedTokensContractAddresses(
-        from tokenBalances: [HederaAccountBalance.TokenBalance]
-    ) -> HederaWalletManager.AssociatedTokens {
-        return tokenBalances
-            .map(\.contractAddress)
-            .toSet()
-    }
-
     // MARK: - Transaction dependencies and building
 
     private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
@@ -632,5 +603,15 @@ private extension HederaWalletManager {
         static let maxFeeMultiplier = Decimal(stringValue: "1.1")!
         /// Increment if you need to reset `dataStorage` in the next version of the app.
         static let accountIdResetVersion = 1
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension HederaAccountBalance {
+    var associatedTokensContractAddresses: HederaWalletManager.AssociatedTokens {
+        return tokenBalances
+            .map(\.contractAddress)
+            .toSet()
     }
 }
