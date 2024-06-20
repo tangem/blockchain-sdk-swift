@@ -353,6 +353,7 @@
 		B65D9A072BD8830D00EB85EC /* HederaPendingTransactionRecordMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65D9A062BD8830C00EB85EC /* HederaPendingTransactionRecordMapper.swift */; };
 		B66B57662B6C504000320FF9 /* Hedera in Frameworks */ = {isa = PBXBuildFile; productRef = B66B57652B6C504000320FF9 /* Hedera */; };
 		B66B57732B6C532F00320FF9 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = B66B57722B6C532F00320FF9 /* CryptoSwift */; };
+		B6739BE72C24688600F41A47 /* HederaNetworkResult.AccountBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6739BE62C24688600F41A47 /* HederaNetworkResult.AccountBalance.swift */; };
 		B675E95D2B320D52004AF179 /* VeChainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */; };
 		B675E95F2B320D69004AF179 /* VeChainNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */; };
 		B675E9612B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9602B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift */; };
@@ -1202,6 +1203,7 @@
 		B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainFeeParams.swift; sourceTree = "<group>"; };
 		B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkService.swift; sourceTree = "<group>"; };
 		B65D9A062BD8830C00EB85EC /* HederaPendingTransactionRecordMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaPendingTransactionRecordMapper.swift; sourceTree = "<group>"; };
+		B6739BE62C24688600F41A47 /* HederaNetworkResult.AccountBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaNetworkResult.AccountBalance.swift; sourceTree = "<group>"; };
 		B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.swift; sourceTree = "<group>"; };
 		B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.swift; sourceTree = "<group>"; };
 		B675E9602B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.AccountInfo.swift; sourceTree = "<group>"; };
@@ -2988,6 +2990,7 @@
 			children = (
 				B698247E2B71A8D300E1333D /* HederaNetworkResult.swift */,
 				B69824842B71AD4C00E1333D /* HederaNetworkResult.AccountsInfo.swift */,
+				B6739BE62C24688600F41A47 /* HederaNetworkResult.AccountBalance.swift */,
 				B68CACCA2BF4428400E4ECFE /* HederaNetworkResult.AccountHbarBalance.swift */,
 				B6B254BF2BC0BDE50057C321 /* HederaNetworkResult.AccountTokensBalance.swift */,
 				B69824802B71A8F800E1333D /* HederaNetworkResult.ExchangeRate.swift */,
@@ -4524,6 +4527,7 @@
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
 				5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */,
 				DC5E65212B1650F400E81AA5 /* OP_2ROT.swift in Sources */,
+				B6739BE72C24688600F41A47 /* HederaNetworkResult.AccountBalance.swift in Sources */,
 				2DDE5BAB29C4F8D200A5B708 /* StellarWalletAssembly.swift in Sources */,
 				2DA4A4442BB5431700E55526 /* RadiantWalletManager.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
