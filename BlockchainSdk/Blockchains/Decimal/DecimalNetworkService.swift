@@ -63,7 +63,7 @@ final class DecimalNetworkService: EthereumNetworkService {
         }
     }
     
-    override func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token : Decimal], Error> {
+    override func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token : Result<Decimal, Error>], Error> {
         do {
             let convertedAddress = try convertAddressIfNeeded(address: address)
             return super.getTokensBalance(convertedAddress, tokens: tokens)

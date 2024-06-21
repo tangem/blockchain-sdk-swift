@@ -141,28 +141,40 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Result<Decimal, Error>], Error> {
         tokens
             .publisher
             .setFailureType(to: Error.self)
             .withWeakCaptureOf(self)
-            .flatMap { networkService, token in
-                networkService.providerPublisher { provider -> AnyPublisher<(Token, Decimal), Error> in
+            .flatMap {
+                networkService,
+                token in
+                networkService.providerPublisher { provider -> AnyPublisher<(Token, Result<Decimal, Error>), Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
-
+                    
                     return provider
                         .call(contractAddress: token.contractAddress, encodedData: method.encodedData)
-                        .replaceError(with: "-") // empty string is parsed as '0' in parseEthereumDecimal below
-                        .setFailureType(to: Error.self)
-                        .compactMap { result in
-                            EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount)
+                        .tryMap { result in
+                            if Bool.random() == true {
+                                throw WalletError.empty
+                            }
+                            guard let value = EthereumUtils.parseEthereumDecimal(
+                                result,
+                                decimalsCount: token.decimalCount
+                            ) else {
+                                throw ETHError.failedToParseBalance(value: result, address: token.contractAddress, decimals: token.decimalCount)
+                            }
+                            
+                            return value
                         }
+                        .mapToResult()
                         .map { (token, $0) }
+                        .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 }
             }
             .collect()
-            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 }}
+            .map { $0.reduce(into: [Token: Result<Decimal, Error>]()) { $0[$1.0] = $1.1 }}
             .eraseToAnyPublisher()
     }
     

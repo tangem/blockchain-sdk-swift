@@ -28,7 +28,7 @@ struct CallParams: Encodable {
 /// Final Ethereum response that contain all information about address
 struct EthereumInfoResponse {
     let balance: Decimal
-    let tokenBalances: [Token: Decimal]
+    let tokenBalances: [Token: Result<Decimal, Error>]
     let txCount: Int
     let pendingTxCount: Int
     var pendingTxs: [PendingTransaction]

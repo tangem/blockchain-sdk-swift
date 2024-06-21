@@ -103,7 +103,7 @@ extension EthereumWalletManager: EthereumNetworkProvider {
         networkService.getBalance(address)
     }
 
-    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Result<Decimal, Error>], Error> {
         networkService.getTokensBalance(address, tokens: tokens)
     }
 
@@ -170,10 +170,14 @@ private extension EthereumWalletManager {
     }
 
     func updateWallet(with response: EthereumInfoResponse) {
-        wallet.clearAmounts()
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
-            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
+            switch tokenBalance.value {
+            case .success(let value):
+                wallet.add(tokenValue: value, for: tokenBalance.key)
+            case .failure:
+                wallet.remove(token: tokenBalance.key)
+            }
         }
 
         txBuilder.update(nonce: response.txCount)

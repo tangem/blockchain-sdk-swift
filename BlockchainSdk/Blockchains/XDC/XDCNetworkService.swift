@@ -42,7 +42,7 @@ final class XDCNetworkService: EthereumNetworkService {
         return super.getGasLimit(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
     }
 
-    override func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token : Decimal], Error> {
+    override func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token : Result<Decimal, Error>], Error> {
         let convertedAddress = addressConverter.convertToETHAddress(address)
         return super.getTokensBalance(convertedAddress, tokens: tokens)
     }
