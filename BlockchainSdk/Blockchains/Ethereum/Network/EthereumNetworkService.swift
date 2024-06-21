@@ -146,22 +146,15 @@ class EthereumNetworkService: MultiNetworkProvider {
             .publisher
             .setFailureType(to: Error.self)
             .withWeakCaptureOf(self)
-            .flatMap {
-                networkService,
-                token in
+            .flatMap { networkService, token in
                 networkService.providerPublisher { provider -> AnyPublisher<(Token, Result<Decimal, Error>), Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
-                    
+
                     return provider
                         .call(contractAddress: token.contractAddress, encodedData: method.encodedData)
-                        .tryMap { result in
-                            if Bool.random() == true {
-                                throw WalletError.empty
-                            }
-                            guard let value = EthereumUtils.parseEthereumDecimal(
-                                result,
-                                decimalsCount: token.decimalCount
-                            ) else {
+                        .withWeakCaptureOf(networkService)
+                        .tryMap { networkService, result in
+                            guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount) else {
                                 throw ETHError.failedToParseBalance(value: result, address: token.contractAddress, decimals: token.decimalCount)
                             }
                             
