@@ -10,7 +10,7 @@ import Foundation
 
 final class ICPAddressService: AddressService {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> any Address {
-        fatalError()
+        let principal = try ICPCryptography.selfAuthenticatingPrincipal(uncompressedPublicKey: publicKey.blockchainKey)
     }
     
     func validate(_ address: String) -> Bool {

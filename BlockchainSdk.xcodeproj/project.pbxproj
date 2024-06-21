@@ -27,6 +27,10 @@
 		0AF90CD92B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */; };
 		0AF90CDB2B87657F00772F04 /* PulsechainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */; };
 		0AF90CDD2B87658600772F04 /* AuroraExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CDC2B87658600772F04 /* AuroraExternalLinkProvider.swift */; };
+		0AFB68302C25885C00E8208C /* ICPPrincipal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB682F2C25885C00E8208C /* ICPPrincipal.swift */; };
+		0AFB68322C258A4E00E8208C /* ICPAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB68312C258A4E00E8208C /* ICPAccount.swift */; };
+		0AFB68342C258B9500E8208C /* ICPDomainSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB68332C258B9500E8208C /* ICPDomainSeparator.swift */; };
+		0AFB68362C258E9A00E8208C /* ICPCryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB68352C258E9A00E8208C /* ICPCryptography.swift */; };
 		2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */; };
 		2D01EC002B05223900DEF1CC /* DecimalExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */; };
 		2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */; };
@@ -860,6 +864,10 @@
 		0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playa3ullGamesExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsechainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CDC2B87658600772F04 /* AuroraExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuroraExternalLinkProvider.swift; sourceTree = "<group>"; };
+		0AFB682F2C25885C00E8208C /* ICPPrincipal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPPrincipal.swift; sourceTree = "<group>"; };
+		0AFB68312C258A4E00E8208C /* ICPAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPAccount.swift; sourceTree = "<group>"; };
+		0AFB68332C258B9500E8208C /* ICPDomainSeparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPDomainSeparator.swift; sourceTree = "<group>"; };
+		0AFB68352C258E9A00E8208C /* ICPCryptography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPCryptography.swift; sourceTree = "<group>"; };
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
 		2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalAddressService.swift; sourceTree = "<group>"; };
 		2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1705,11 +1713,23 @@
 		0AF5032F2C199A4200193358 /* ICP */ = {
 			isa = PBXGroup;
 			children = (
+				0AFB682E2C25881300E8208C /* Models */,
 				0AF503302C199A6200193358 /* ICPWalletAssembly.swift */,
 				0AF503322C199BC800193358 /* ICPAddressService.swift */,
 				0AF503342C199C2A00193358 /* ICPExternalLinkProvider.swift */,
+				0AFB68352C258E9A00E8208C /* ICPCryptography.swift */,
 			);
 			path = ICP;
+			sourceTree = "<group>";
+		};
+		0AFB682E2C25881300E8208C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0AFB682F2C25885C00E8208C /* ICPPrincipal.swift */,
+				0AFB68332C258B9500E8208C /* ICPDomainSeparator.swift */,
+				0AFB68312C258A4E00E8208C /* ICPAccount.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		2D01EBFB2B04FC2F00DEF1CC /* Decimal */ = {
@@ -4326,6 +4346,7 @@
 				5DED72C623A13377006D79AE /* StellarAddressService.swift in Sources */,
 				DC5E65062B1650F400E81AA5 /* OP_ABS.swift in Sources */,
 				2DDEFBE62B59B44700885675 /* AlgorandNetworkProvider.swift in Sources */,
+				0AFB68342C258B9500E8208C /* ICPDomainSeparator.swift in Sources */,
 				2DA13A052A8AD83B00E3C374 /* ChiaProviderResponses.swift in Sources */,
 				2DDEFBE12B59B44700885675 /* AlgorandRequest.swift in Sources */,
 				EF31EA1829DC6B4700A59FBE /* RavencoinFee.swift in Sources */,
@@ -4404,6 +4425,7 @@
 				2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */,
 				DC5E646D2B16098C00E81AA5 /* RIPEMD160+.swift in Sources */,
 				DC5E65072B1650F400E81AA5 /* OP_2DIV.swift in Sources */,
+				0AFB68362C258E9A00E8208C /* ICPCryptography.swift in Sources */,
 				2DA4A4422BB5431700E55526 /* RadiantTransactionBuilder.swift in Sources */,
 				EF3B19342AA85CE90084AA1C /* DogecoinExternalLinkProvider.swift in Sources */,
 				EF2D9DA52BC3F6770055C485 /* EthereumTransactionParams.swift in Sources */,
@@ -4567,6 +4589,7 @@
 				EF2BC62529DAD53B003D3F18 /* RavencoinWalletInfo.swift in Sources */,
 				B6D345F82AD8B8040009D1B2 /* NEARNetworkProvider.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
+				0AFB68302C25885C00E8208C /* ICPPrincipal.swift in Sources */,
 				B00DF98F2BBEA9AC004397CB /* APIResolver.swift in Sources */,
 				B6B254C02BC0BDE50057C321 /* HederaNetworkResult.TokensInfo.swift in Sources */,
 				5D845518243DFCE90072155E /* AdaliteNetworkProvider.swift in Sources */,
@@ -4732,6 +4755,7 @@
 				DC5E64F02B1650F400E81AA5 /* OP_SUB.swift in Sources */,
 				DC5E651A2B1650F400E81AA5 /* OP_3DUP.swift in Sources */,
 				B6FC8F3D2B33555700CD55ED /* VeChainTransactionParams.swift in Sources */,
+				0AFB68322C258A4E00E8208C /* ICPAccount.swift in Sources */,
 				DACFA7D12BA2DB1600ABEF02 /* SolanaFeeParameters.swift in Sources */,
 				B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */,
 				DC5E65032B1650F400E81AA5 /* OP_2MUL.swift in Sources */,
