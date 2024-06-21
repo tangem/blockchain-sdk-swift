@@ -176,7 +176,7 @@ private extension EthereumWalletManager {
             case .success(let value):
                 wallet.add(tokenValue: value, for: tokenBalance.key)
             case .failure:
-                wallet.remove(token: tokenBalance.key)
+                wallet.clearAmount(for: tokenBalance.key)
             }
         }
 
