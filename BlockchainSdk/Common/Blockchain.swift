@@ -76,8 +76,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     case taraxa(testnet: Bool)
     case radiant(testnet: Bool)
     case base(testnet: Bool)
-    case koinos(testnet: Bool)
     case joystream(curve: EllipticCurve)
+    case koinos(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -370,10 +370,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "TARA"
         case .radiant:
             return "RXD"
-        case .koinos:
-            return isTestnet ? "tKOIN" : "KOIN"
         case .joystream:
             return "JOY"
+        case .koinos:
+            return isTestnet ? "tKOIN" : "KOIN"
         }
     }
 
@@ -715,8 +715,8 @@ extension Blockchain: Codable {
         case .taraxa: return "taraxa"
         case .radiant: return "radiant"
         case .base: return "base"
-        case .koinos: return "koinos"
         case .joystream: return "joystream"
+        case .koinos: return "koinos"
         }
     }
 
@@ -801,8 +801,8 @@ extension Blockchain: Codable {
         case "taraxa": self = .taraxa(testnet: isTestnet)
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
-        case "koinos": self = .koinos(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
+        case "koinos": self = .koinos(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -998,10 +998,10 @@ private extension Blockchain {
             case .network: return "base"
             case .coin: return "base-ethereum"
             }
-        case .koinos:
-            return "koinos"
         case .joystream:
             return "joystream"
+        case .koinos:
+            return "koinos"
         }
     }
 

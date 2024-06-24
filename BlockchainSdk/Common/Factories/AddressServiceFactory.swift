@@ -120,11 +120,11 @@ public struct AddressServiceFactory {
             return HederaAddressService(isTestnet: isTestnet)
         case .radiant:
             return RadiantAddressService()
+        case .joystream(let curve):
+            return PolkadotAddressService(network: .joystream(curve: curve))
         case .koinos:
             let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
             return KoinosAddressService(networkParams: network.networkParams)
-        case .joystream(let curve):
-            return PolkadotAddressService(network: .joystream(curve: curve))
         }
     }
 }

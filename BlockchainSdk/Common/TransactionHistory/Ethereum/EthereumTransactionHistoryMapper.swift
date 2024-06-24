@@ -34,7 +34,7 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
             return []
         }
 
-        return transactions
+        return try transactions
             .reduce(into: []) { partialResult, transaction in
                 guard let feeValue = Decimal(stringValue: transaction.fees) else {
                     Log.log("Transaction \(transaction) doesn't contain a required information")
@@ -76,6 +76,8 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
                         amountType: amountType,
                         feeValue: feeValue
                     )
+                case .feeResource:
+                    throw BlockchainSdkError.notImplemented
                 }
             }
     }
