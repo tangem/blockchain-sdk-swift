@@ -257,7 +257,6 @@ enum EthereumTransactionBuilderError: LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-
         case .feeParametersNotFound:
             return "feeParametersNotFound"
         case .invalidAmount:
