@@ -30,13 +30,13 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let network: PolkadotNetwork = .polkadot(curve: curve)
         let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
-        let runtimeVersion: SubstrateRuntimeVersion = .v14
+        let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
 
         let txBuilder = PolkadotTransactionBuilder(
             blockchain: blockchain,
             walletPublicKey: publicKey,
             network: network,
-            runtimeVersion: runtimeVersion
+            runtimeVersionProvider: runtimeVersionProvider
         )
 
         let amount = Amount(with: blockchain, value: 0.2)
@@ -81,13 +81,13 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
-        let runtimeVersion: SubstrateRuntimeVersion = .v14
+        let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
 
         let txBuilder = PolkadotTransactionBuilder(
             blockchain: blockchain,
             walletPublicKey: publicKey,
             network: network,
-            runtimeVersion: runtimeVersion
+            runtimeVersionProvider: runtimeVersionProvider
         )
 
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
@@ -130,13 +130,13 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
-        let runtimeVersion: SubstrateRuntimeVersion = .v14
+        let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
 
         let txBuilder = PolkadotTransactionBuilder(
             blockchain: blockchain,
             walletPublicKey: publicKey,
             network: network,
-            runtimeVersion: runtimeVersion
+            runtimeVersionProvider: runtimeVersionProvider
         )
 
         let amount = Amount(with: blockchain, value: 1)
@@ -181,13 +181,13 @@ class PolkadotTests: XCTestCase {
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let blockchain: Blockchain = .azero(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
-        let runtimeVersion: SubstrateRuntimeVersion = .v14
+        let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
 
         let txBuilder = PolkadotTransactionBuilder(
             blockchain: blockchain,
             walletPublicKey: publicKey,
             network: network,
-            runtimeVersion: .v14
+            runtimeVersionProvider: runtimeVersionProvider
         )
 
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
