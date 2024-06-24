@@ -48,14 +48,19 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                 }
             } receiveValue: { [weak self] accountInfo in
                 guard let self else { return }
-                self.wallet.add(
+                
+                if wallet.amounts[.coin]?.value != accountInfo.koinBalance {
+                    wallet.clearPendingTransaction()
+                }
+                
+                wallet.add(
                     amount: Amount(
                         with: self.wallet.blockchain,
                         type: .coin,
                         value: accountInfo.koinBalance
                     )
                 )
-                self.wallet.add(
+                wallet.add(
                     amount: Amount(
                         with: self.wallet.blockchain,
                         type: .feeResource(.mana),
@@ -100,7 +105,13 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                 .flatMap(networkService.submitTransaction)
                 .map(\.id)
             }
-            .map { TransactionSendResult(hash: $0) }
+            .withWeakCaptureOf(self)
+            .map { walletManager, txId in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: txId)
+            }
             .mapError { SendTxError(error: $0) }
             .eraseToAnyPublisher()
     }

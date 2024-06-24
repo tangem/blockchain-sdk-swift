@@ -45,7 +45,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
     }
     
     private var expectedSignature: String {
-        "IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
     }
     
     
@@ -122,7 +122,7 @@ extension KoinosTransactionBuilderTests {
         
         let signedTransaction = transactionBuilder.buildForSend(
             transaction: expectedTransaction,
-            normalizedSignature: normalizedSignature
+            preparedSignature: normalizedSignature
         )
         
         XCTAssertEqual(signedTransaction.signatures.count, 1)
