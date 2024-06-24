@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BigUInt
 
 public struct EthereumBaseFee {
     public let min: BigUInt
