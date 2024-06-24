@@ -60,9 +60,9 @@ extension XRPAddressService: AddressValidator {
 }
 
 @available(iOS 13.0, *)
-extension XRPAddressService: AddressAdditionalFieldParser {
-    public func hasAdditionalField(_ address: String) -> Bool {
+extension XRPAddressService: AddressAdditionalFieldService {
+    public func canEmbedAdditionalField(into address: String) -> Bool {
         let xAddress = try? XRPAddress(xAddress: address)
-        return xAddress?.tag != nil
+        return xAddress == nil
     }
 }

@@ -26,8 +26,20 @@ struct HederaRESTNetworkProvider {
         return requestPublisher(for: .getAccounts(publicKey: publicKey))
     }
 
+    func getBalance(accountId: String) -> some Publisher<HederaNetworkResult.AccountHbarBalance, Error> {
+        return requestPublisher(for: .getAccountBalance(accountId: accountId))
+    }
+
+    func getTokens(accountId: String, entitiesLimit: Int) -> some Publisher<HederaNetworkResult.AccountTokensBalance, Error> {
+        return requestPublisher(for: .getTokens(accountId: accountId, entitiesLimit: entitiesLimit))
+    }
+
     func getExchangeRates() -> some Publisher<HederaNetworkResult.ExchangeRate, Error> {
         return requestPublisher(for: .getExchangeRate)
+    }
+
+    func getTransactionInfo(transactionHash: String) -> some Publisher<HederaNetworkResult.TransactionsInfo, Error> {
+        return requestPublisher(for: .getTransactionInfo(transactionHash: transactionHash))
     }
 
     private func requestPublisher<T: Decodable>(

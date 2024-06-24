@@ -30,11 +30,13 @@ class CardanoWalletManager: BaseManager, WalletManager {
     }
     
     private func updateWallet(with response: CardanoAddressResponse) {
-        wallet.add(coinValue: response.balance)
+        let balance = Decimal(response.balance) / wallet.blockchain.decimalValue
+        wallet.add(coinValue: balance)
         transactionBuilder.update(outputs: response.unspentOutputs)
         
-        for (key, value) in response.tokenBalances {
-            wallet.add(tokenValue: value, for: key)
+        for (token, value) in response.tokenBalances {
+            let balance = Decimal(value) / token.decimalValue
+            wallet.add(tokenValue: balance, for: token)
         }
        
         wallet.removePendingTransaction { hash in
@@ -53,9 +55,9 @@ class CardanoWalletManager: BaseManager, WalletManager {
 extension CardanoWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         // Use Just to switch on global queue because we have async signing
-        Just(())
+        return Just(())
             .receive(on: DispatchQueue.global())
                 .tryMap { [weak self] _ -> Data in
                     guard let self else {
@@ -64,19 +66,19 @@ extension CardanoWalletManager: TransactionSender {
 
                     return try self.transactionBuilder.buildForSign(transaction: transaction)
                 }
-                .flatMap { [weak self] dataForSign -> AnyPublisher<Data, Error> in
+                .flatMap { [weak self] dataForSign -> AnyPublisher<SignatureInfo, Error> in
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
 
-                    return signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
+                    return signer
+                        .sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
                 }
-                .tryMap { [weak self] signature -> Data in
+                .tryMap { [weak self] signatureInfo -> Data in
                     guard let self else {
                         throw WalletError.empty
                     }
 
-                    let signatureInfo = SignatureInfo(signature: signature, publicKey: self.wallet.publicKey.blockchainKey)
                     return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
                 .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
@@ -84,54 +86,157 @@ extension CardanoWalletManager: TransactionSender {
                         return .anyFail(error: WalletError.empty)
                     }
 
-                    return self.networkService.send(transaction: builtTransaction)
-                        .mapError { SendTxError(error: $0, tx: builtTransaction.hexString.lowercased()) }
+                    return self.networkService
+                        .send(transaction: builtTransaction)
+                        .mapSendError(tx: builtTransaction.hexString.lowercased())
                         .eraseToAnyPublisher()
                 }
                 .tryMap { [weak self] hash in
-                    guard let self = self else {
+                    guard let self else {
                         throw WalletError.empty
                     }
-
+                    
                     let mapper = PendingTransactionRecordMapper()
                     let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                     self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
+                .eraseSendError()
                 .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let dummy = Transaction(
-            amount: amount,
-            fee: Fee(.zeroCoin(for: .cardano(extended: false))),
-            sourceAddress: defaultSourceAddress,
-            destinationAddress: destination,
-            changeAddress: defaultChangeAddress
-        )
-
-        return Just(())
-            .receive(on: DispatchQueue.global())
-            .tryMap { [weak self] _ -> [Fee] in
-                guard let self else {
-                    throw WalletError.empty
-                }
-
-                var feeValue = try self.transactionBuilder.estimatedFee(transaction: dummy)
-                feeValue.round(scale: self.wallet.blockchain.decimalCount, roundingMode: .up)
-                feeValue /= self.wallet.blockchain.decimalValue
-                let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
-                let fee = Fee(feeAmount)
-                return [fee]
-            }
-            .eraseToAnyPublisher()
+        do {
+            var feeValue = try transactionBuilder.getFee(amount: amount, destination: destination, source: defaultSourceAddress)
+            feeValue.round(scale: wallet.blockchain.decimalCount, roundingMode: .up)
+            feeValue /= wallet.blockchain.decimalValue
+            let feeAmount = Amount(with: wallet.blockchain, value: feeValue)
+            let fee = Fee(feeAmount)
+            return .justWithError(output: [fee])
+        } catch {
+            return .anyFail(error: error)
+        }
     }
 }
 
 extension CardanoWalletManager: ThenProcessable {}
 
+// MARK: - DustRestrictable
+
 extension CardanoWalletManager: DustRestrictable {
     var dustValue: Amount {
-        return Amount(with: wallet.blockchain, value: 1.0)
+        return Amount(with: wallet.blockchain, value: 1)
+    }
+}
+
+// MARK: - WithdrawalNotificationProvider
+
+extension CardanoWalletManager: WithdrawalNotificationProvider {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+        return nil
+    }
+
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
+        // We have to show the notification only when send the token
+        guard amount.type.isToken else {
+            return nil
+        }
+
+        do {
+            let adaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
+            let minAmountDecimal = Decimal(adaValue) / wallet.blockchain.decimalValue
+            let amount = Amount(with: wallet.blockchain, value: minAmountDecimal)
+
+            return .cardanoWillBeSendAlongToken(amount: amount)
+
+        } catch {
+            print("CardanoWalletManager", #function, "catch error: \(error)")
+            return nil
+        }
+    }
+}
+
+// MARK: - CardanoTransferRestrictable
+
+extension CardanoWalletManager: CardanoTransferRestrictable {
+    func validateCardanoTransfer(amount: Amount, fee: Amount) throws {
+        switch amount.type {
+        case .coin:
+            let hasTokensWithBalance = try transactionBuilder.hasTokensWithBalance(exclude: nil)
+
+            guard hasTokensWithBalance else {
+                // Skip this checking. Dust checking will be after
+                return
+            }
+            
+            try validateCardanoCoinWithdrawal(amount: amount, fee: fee)
+        case .token:
+            try validateCardanoTokenWithdrawal(amount: amount, fee: fee)
+        case .reserve, .feeResource:
+            throw BlockchainSdkError.notImplemented
+        }
+    }
+
+    private func validateCardanoCoinWithdrawal(amount: Amount, fee: Amount) throws {
+        assert(!amount.type.isToken, "Only coin validation")
+
+        guard let adaBalance = wallet.amounts[.coin]?.value else {
+            throw ValidationError.balanceNotFound
+        }
+
+        let minChange = try minChange(amount: amount)
+        var change = adaBalance - amount.value
+
+        if amount.type == fee.type {
+            change -= fee.value
+        }
+
+        if change < minChange.value {
+            throw ValidationError.cardanoHasTokens(minimumAmount: minChange)
+        }
+    }
+
+    private func validateCardanoTokenWithdrawal(amount: Amount, fee: Amount) throws {
+        assert(amount.type.isToken, "Only token validation")
+
+        guard var adaBalance = wallet.amounts[.coin]?.value else {
+            throw ValidationError.balanceNotFound
+        }
+
+        guard let tokenBalance = wallet.amounts[amount.type]?.value else {
+            throw ValidationError.balanceNotFound
+        }
+
+        // the fee will be spend in any case
+        adaBalance -= fee.value
+        
+        // 1. Check if there is enough ADA to send the token
+        let minAdaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
+        let minAdaToSendDecimal = Decimal(minAdaValue) / wallet.blockchain.decimalValue
+
+        // Not enough balance to send token
+        if minAdaToSendDecimal > adaBalance {
+            throw ValidationError.cardanoInsufficientBalanceToSendToken
+        }
+
+        // 2. Check if there is enough ADA to get a change with after transaction
+        let minChange = try minChange(amount: amount)
+        let change = adaBalance - minAdaToSendDecimal
+
+        let isSendFullTokenAmount = amount.value == tokenBalance
+        let willReceiveChange = try transactionBuilder.hasTokensWithBalance(
+            exclude: isSendFullTokenAmount ? amount.type.token : nil
+        )
+
+        // If there not enough ada balance to change
+        if willReceiveChange, change < minChange.value {
+            throw ValidationError.cardanoInsufficientBalanceToSendToken
+        }
+    }
+
+    private func minChange(amount: Amount) throws -> Amount {
+        let minChangeValue = try transactionBuilder.minChange(amount: amount)
+        let minChangeDecimal = Decimal(minChangeValue) / wallet.blockchain.decimalValue
+        return Amount(with: wallet.blockchain, value: minChangeDecimal)
     }
 }

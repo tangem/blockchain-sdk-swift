@@ -32,6 +32,11 @@ struct APIKeysInfoProvider {
                 headerName: "TRON-PRO-API-KEY",
                 headerValue: config.tronGridApiKey
             )
+        case .tangemChia:
+            return .init(
+                headerName: Constants.xApiKeyHeaderName,
+                headerValue: config.chiaTangemApiKeys.mainnetApiKey
+            )
         case .fireAcademy:
             return .init(
                 headerName: Constants.xApiKeyHeaderName,
@@ -42,7 +47,7 @@ struct APIKeysInfoProvider {
                 headerName: "apikey",
                 headerValue: config.koinosProApiKey
             )
-        case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .tangemChia, .solana, .kaspa, .none:
+        case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .solana, .kaspa, .none:
             return nil
         }
     }

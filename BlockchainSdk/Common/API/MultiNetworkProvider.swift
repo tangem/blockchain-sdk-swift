@@ -67,7 +67,9 @@ extension MultiNetworkProvider {
                     return self.providerPublisher(for: requestPublisher)
                 }
                 
-                return .anyFail(error: error)
+                // Need captured currentHost, to be able to get hosting after switching.
+                let returnedError = MultiNetworkProviderError(networkError: error, lastRetryHost: currentHost)
+                return .anyFail(error: returnedError)
             }
             .eraseToAnyPublisher()
     }
@@ -91,4 +93,31 @@ extension MultiNetworkProvider {
         currentProviderIndex = 0
     }
     
+}
+
+struct MultiNetworkProviderError: LocalizedError {
+    let networkError: Error
+    let lastRetryHost: String
+    
+    // MARK: - LocalizedError
+    
+    var errorDescription: String? {
+        (networkError as? MoyaError)?.localizedDescription ?? defaultMoyaError.localizedDescription
+    }
+    
+    var failureReason: String? {
+        (networkError as? MoyaError)?.failureReason ?? defaultMoyaError.failureReason
+    }
+    
+    var recoverySuggestion: String? {
+        (networkError as? MoyaError)?.recoverySuggestion ?? defaultMoyaError.recoverySuggestion
+    }
+    
+    var helpAnchor: String? {
+        (networkError as? MoyaError)?.helpAnchor ?? defaultMoyaError.helpAnchor
+    }
+    
+    private var defaultMoyaError: MoyaError {
+        .underlying(networkError, nil)
+    }
 }

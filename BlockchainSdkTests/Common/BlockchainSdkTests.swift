@@ -51,8 +51,10 @@ class BlockchainSdkTests: XCTestCase {
         XCTAssertTrue(service.validate("LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"))
     }
     
-    func testEthChecksum() {
-        let ethAddressService = EthereumAddressService()
+    func testEthChecksum() throws {
+        let blockchain = Blockchain.ethereum(testnet: false)
+        let addressService = AddressServiceFactory(blockchain: blockchain).makeAddressService()
+        let ethAddressService = try XCTUnwrap(addressService as? EthereumAddressService)
         let chesksummed = ethAddressService.toChecksumAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")
         XCTAssertEqual(chesksummed, "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")
         

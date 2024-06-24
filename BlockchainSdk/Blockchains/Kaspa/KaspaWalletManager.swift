@@ -33,7 +33,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             }
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let kaspaTransaction: KaspaTransaction
         let hashes: [Data]
         
@@ -42,7 +42,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             kaspaTransaction = result.0
             hashes = result.1
         } catch {
-            return .anyFail(error: error)
+            return .sendTxFail(error: error)
         }
         
         return signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey)
@@ -54,7 +54,12 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .flatMap { [weak self] tx -> AnyPublisher<KaspaTransactionResponse, Error> in
                 guard let self = self else { return .emptyFail }
                 
-                return self.networkService.send(transaction: KaspaTransactionRequest(transaction: tx))
+                let encodedRawTransactionData = try? JSONEncoder().encode(tx)
+                
+                return self.networkService
+                    .send(transaction: KaspaTransactionRequest(transaction: tx))
+                    .mapSendError(tx: encodedRawTransactionData?.hexString.lowercased())
+                    .eraseToAnyPublisher()
             }
             .handleEvents(receiveOutput: { [weak self] in
                 let mapper = PendingTransactionRecordMapper()
@@ -64,6 +69,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .map {
                 TransactionSendResult(hash: $0.transactionId)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
@@ -95,11 +101,11 @@ extension KaspaWalletManager: ThenProcessable { }
 
 extension KaspaWalletManager: DustRestrictable {
     var dustValue: Amount {
-        Amount(with: wallet.blockchain, value: Decimal(0.0001))
+        Amount(with: wallet.blockchain, value: Decimal(0.2))
     }
 }
 
-extension KaspaWalletManager: WithdrawalSuggestionProvider {
+extension KaspaWalletManager: WithdrawalNotificationProvider {
     // Chia, kaspa have the same logic
     @available(*, deprecated, message: "Use MaximumAmountRestrictable")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
@@ -119,7 +125,7 @@ extension KaspaWalletManager: WithdrawalSuggestionProvider {
         )
     }
     
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         // The 'Mandatory amount change' withdrawal suggestion has been superseded by a validation performed in
         // the 'MaximumAmountRestrictable.validateMaximumAmount(amount:fee:)' method below
         return nil

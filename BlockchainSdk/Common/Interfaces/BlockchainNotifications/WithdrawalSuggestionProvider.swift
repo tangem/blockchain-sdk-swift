@@ -1,5 +1,5 @@
 //
-//  WithdrawalSuggestionProvider.swift
+//  WithdrawalNotificationProvider.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 12.02.2024.
@@ -8,14 +8,14 @@
 
 import Foundation
 
-public protocol WithdrawalSuggestionProvider {
-    @available(*, deprecated, message: "Use WithdrawalSuggestionProvider.withdrawalSuggestion")
+public protocol WithdrawalNotificationProvider {
+    @available(*, deprecated, message: "Use WithdrawalNotificationProvider.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning?
     
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion?
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification?
 }
 
-@available(*, deprecated, message: "Use WithdrawalSuggestionProvider.withdrawalSuggestion")
+@available(*, deprecated, message: "Use WithdrawalNotificationProvider.withdrawalSuggestion")
 public struct WithdrawalWarning: Hashable {
     public let warningMessage: String
     public let reduceMessage: String
@@ -23,6 +23,7 @@ public struct WithdrawalWarning: Hashable {
     public let suggestedReduceAmount: Amount
 }
 
-public enum WithdrawalSuggestion: Hashable {
+public enum WithdrawalNotification: Hashable {
     case feeIsTooHigh(reduceAmountBy: Amount)
+    case cardanoWillBeSendAlongToken(amount: Amount)
 }

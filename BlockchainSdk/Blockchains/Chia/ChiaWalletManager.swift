@@ -49,7 +49,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
             )
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         Just(())
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] Void -> [Data] in
@@ -68,7 +68,13 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
-                return self.networkService.send(spendBundle: spendBundle)
+                
+                let encodedTransactionData = try? JSONEncoder().encode(spendBundle)
+                
+                return self.networkService
+                    .send(spendBundle: spendBundle)
+                    .mapSendError(tx: encodedTransactionData?.hexString.lowercased())
+                    .eraseToAnyPublisher()
             }
             .map { [weak self] hash in
                 let mapper = PendingTransactionRecordMapper()
@@ -76,6 +82,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
@@ -119,9 +126,9 @@ private extension ChiaWalletManager {
     }
 }
 
-// MARK: - WithdrawalSuggestionProvider
+// MARK: - WithdrawalNotificationProvider
 
-extension ChiaWalletManager: WithdrawalSuggestionProvider {
+extension ChiaWalletManager: WithdrawalNotificationProvider {
     // Chia, kaspa have the same logic
     @available(*, deprecated, message: "Use MaximumAmountRestrictable")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
@@ -143,7 +150,7 @@ extension ChiaWalletManager: WithdrawalSuggestionProvider {
         )
     }
 
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         // The 'Mandatory amount change' withdrawal suggestion has been superseded by a validation performed in
         // the 'MaximumAmountRestrictable.validateMaximumAmount(amount:fee:)' method below
         return nil

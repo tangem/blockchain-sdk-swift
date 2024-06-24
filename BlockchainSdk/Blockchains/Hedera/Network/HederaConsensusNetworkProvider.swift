@@ -24,7 +24,7 @@ final class HederaConsensusNetworkProvider {
         self.callbackQueue = callbackQueue
     }
 
-    func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
+    func getBalance(accountId: String) -> some Publisher<HederaNetworkResult.AccountBalance, Error> {
         return Deferred {
             Future { promise in
                 let result = Result { try AccountId.fromString(accountId) }
@@ -37,7 +37,19 @@ final class HederaConsensusNetworkProvider {
                 .accountId(accountId)
                 .execute(networkProvider.client)
         }
-        .map(\.hbars.value)
+        .map { accountBalance in
+            let hbarBalance = Int(accountBalance.hbars.tinybars)
+
+            let tokensBalance = Self.mapTokenBalances(
+                tokenBalances: accountBalance.tokenBalances,
+                tokenDecimals: accountBalance.tokenDecimals
+            )
+
+            return HederaNetworkResult.AccountBalance(
+                hbarBalance: .init(balances: [.init(account: accountId, balance: hbarBalance)]),
+                tokensBalance: .init(tokens: tokensBalance)
+            )
+        }
         .receive(on: callbackQueue)
     }
 
@@ -72,5 +84,22 @@ final class HederaConsensusNetworkProvider {
             )
         }
         .receive(on: callbackQueue)
+    }
+
+    private static func mapTokenBalances(
+        tokenBalances: [TokenId: UInt64],
+        tokenDecimals: [TokenId: UInt32]
+    ) -> [HederaNetworkResult.AccountBalance.TokensBalance.Token] {
+        return tokenBalances.compactMap { tokenId, balance -> HederaNetworkResult.AccountBalance.TokensBalance.Token? in
+            guard let decimals = tokenDecimals[tokenId] else {
+                return nil
+            }
+
+            return .init(
+                tokenId: tokenId.toString(),
+                balance: Int(balance),
+                decimals: Int(decimals)
+            )
+        }
     }
 }

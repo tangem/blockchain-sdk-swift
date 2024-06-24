@@ -76,6 +76,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case taraxa(testnet: Bool)
     case radiant(testnet: Bool)
     case base(testnet: Bool)
+    case joystream(curve: EllipticCurve)
     case koinos(testnet: Bool)
 
     public var isTestnet: Bool {
@@ -132,7 +133,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa:
+                .kaspa,
+                .joystream:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -157,6 +159,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polkadot(let curve, _),
                 .kusama(let curve),
                 .azero(let curve, _),
+                .joystream(let curve),
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
@@ -239,6 +242,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .azero,
                 .chia:
             return 12
+        case .joystream:
+            return 10
         case .near:
             return 24
         case .algorand:
@@ -365,6 +370,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "TARA"
         case .radiant:
             return "RXD"
+        case .joystream:
+            return "JOY"
         case .koinos:
             return isTestnet ? "tKOIN" : "KOIN"
         }
@@ -408,6 +415,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .cronos:
+            return "Cronos EVM"
+        case .telos:
+            return "Telos EVM"
         case .octa:
             return "OctaSpace"
         case .chia:
@@ -429,6 +440,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Polygon zkEVM" + testnetSuffix
         case .zkSync:
             return "zkSync Era" + testnetSuffix
+        case .manta:
+            return "Manta Pacific" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -459,6 +472,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .ton: return "TON"
         case .veChain: return "VIP180"
         case .xdc: return "XRC20"
+        case .hedera: return "HTS"
         default:
             return nil
         }
@@ -469,10 +483,13 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .taraxa:
             return false
         case .binance,
-                .solana,
-                .tron,
-                .terraV1,
-                .veChain:
+             .solana,
+             .tron,
+             .terraV1,
+             .veChain,
+             .hedera,
+             .ton,
+             .cardano:
             return true
         case _ where isEvm:
             return true
@@ -688,7 +705,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
-        case .manta: return "manta-network"
+        case .manta: return "manta-pacific"
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
@@ -698,6 +715,7 @@ extension Blockchain: Codable {
         case .taraxa: return "taraxa"
         case .radiant: return "radiant"
         case .base: return "base"
+        case .joystream: return "joystream"
         case .koinos: return "koinos"
         }
     }
@@ -773,7 +791,7 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
-        case "manta-network": self = .manta(testnet: isTestnet)
+        case "manta-pacific": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
@@ -783,6 +801,7 @@ extension Blockchain: Codable {
         case "taraxa": self = .taraxa(testnet: isTestnet)
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
+        case "joystream": self = .joystream(curve: curve)
         case "koinos": self = .koinos(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -948,10 +967,7 @@ private extension Blockchain {
             case .coin: return "aurora-ethereum"
             }
         case .manta:
-            switch type {
-            case .network: return "manta-network"
-            case .coin: return "manta-network-ethereum"
-            }
+            return "manta-pacific"
         case .zkSync:
             switch type {
             case .network: return "zksync"
@@ -982,6 +998,8 @@ private extension Blockchain {
             case .network: return "base"
             case .coin: return "base-ethereum"
             }
+        case .joystream:
+            return "joystream"
         case .koinos:
             return "koinos"
         }
@@ -1052,7 +1070,7 @@ extension Blockchain {
             return TezosWalletAssembly()
         case .solana:
             return SolanaWalletAssembly()
-        case .polkadot, .kusama, .azero:
+        case .polkadot, .kusama, .azero, .joystream:
             return SubstrateWalletAssembly()
         case .tron:
             return TronWalletAssembly()
