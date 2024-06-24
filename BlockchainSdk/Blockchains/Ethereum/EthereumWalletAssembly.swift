@@ -39,9 +39,16 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             abiEncoder: WalletCoreABIEncoder()
         )
 
-        return EthereumWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService)
+        let addressConverter = EthereumAddressConverterFactory().makeConverter(for: input.blockchain)
+
+        return EthereumWalletManager(
+            wallet: input.wallet,
+            addressConverter: addressConverter,
+            txBuilder: txBuilder,
+            networkService: networkService,
+            allowsFeeSelection: input.blockchain.allowsFeeSelection
+        )
     }
-    
 }
 
 enum EthereumWalletAssemblyError: Error {

@@ -544,6 +544,16 @@ public indirect enum Blockchain: Equatable, Hashable {
 
         return false
     }
+
+    // TODO: This property only for EVM for now. Refactor all other wallet managers
+    var allowsFeeSelection: Bool {
+        switch self {
+        case .telos:
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 // MARK: - Ethereum based blockchain definition
@@ -554,10 +564,6 @@ extension Blockchain {
     // Only for Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
-        guard isEvm else {
-            return nil
-        }
-
         switch self {
         case .ethereum: return isTestnet ? 5 : 1
         case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
@@ -592,7 +598,6 @@ extension Blockchain {
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
         default:
-            assertionFailure("Don't forget about evm here")
             return nil
         }
     }
@@ -1091,7 +1096,10 @@ extension Blockchain {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .decimal,
+                .xdc,
+                .telos:
             return EthereumWalletAssembly()
         case .optimism,
              .manta,
@@ -1127,14 +1135,8 @@ extension Blockchain {
             return ChiaWalletAssembly()
         case .near:
             return NEARWalletAssembly()
-        case .telos:
-            return TelosWalletAssembly()
-        case .decimal:
-            return DecimalWalletAssembly()
         case .veChain:
             return VeChainWalletAssembly()
-        case .xdc:
-            return XDCWalletAssembly()
         case .algorand:
             return AlgorandWalletAssembly()
         case .aptos:

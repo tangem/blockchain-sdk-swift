@@ -23,27 +23,34 @@ final class EthereumOptimisticRollupWalletManager: EthereumWalletManager {
     /// This L1 fee have to used ONLY for showing to a user.
     /// When we're building transaction we have to used `gasLimit`, `gasPrice` or `baseFee` ONLY from `L2`
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        super.getFee(destination: destination, value: value, data: data)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
-                // We use EthereumFeeParameters without increase
-                guard let fee = layer2Fees.first else {
-                    return .anyFail(error: BlockchainSdkError.failedToLoadFee)
-                }
+        do {
+            let destination = try addressConverter.convertToETHAddress(destination)
 
-                return walletManager
-                    .getLayer1Fee(destination: destination, value: value, data: data, fee: fee)
-                    .map { (layer2Fees, $0) }
-                    .eraseToAnyPublisher()
-            }
-            .map { layer2Fees, layer1Fee -> [Fee] in
-                layer2Fees.map { fee in
-                    let newAmount = Amount(with: fee.amount, value: fee.amount.value + layer1Fee)
-                    let newFee = Fee(newAmount, parameters: fee.parameters)
-                    return newFee
+            return super.getFee(destination: destination, value: value, data: data)
+                .withWeakCaptureOf(self)
+                .flatMap { walletManager, layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
+                    // We use EthereumFeeParameters without increase
+                    guard let fee = layer2Fees.first else {
+                        return .anyFail(error: BlockchainSdkError.failedToLoadFee)
+                    }
+
+                    return walletManager
+                        .getLayer1Fee(destination: destination, value: value, data: data, fee: fee)
+                        .map { (layer2Fees, $0) }
+                        .eraseToAnyPublisher()
                 }
-            }
-            .eraseToAnyPublisher()
+                .map { layer2Fees, layer1Fee -> [Fee] in
+                    layer2Fees.map { fee in
+                        let newAmount = Amount(with: fee.amount, value: fee.amount.value + layer1Fee)
+                        let newFee = Fee(newAmount, parameters: fee.parameters)
+                        return newFee
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 }
 

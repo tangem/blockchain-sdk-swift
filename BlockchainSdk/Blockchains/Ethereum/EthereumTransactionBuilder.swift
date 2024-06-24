@@ -64,7 +64,7 @@ class EthereumTransactionBuilder {
 
     // MARK: - Transaction data builder
 
-    func buildForApprove(spender: String, amount: Decimal) -> Data {
+    func buildForApprove(spender: String, amount: Decimal) throws -> Data {
         let bigUInt = EthereumUtils.mapToBigUInt(amount)
         return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
     }
@@ -247,11 +247,29 @@ extension EthereumTransactionBuilder {
     }
 }
 
-enum EthereumTransactionBuilderError: Error {
+enum EthereumTransactionBuilderError: LocalizedError {
     case feeParametersNotFound
     case invalidSignatureCount
     case invalidAmount
     case invalidNonce
     case transactionEncodingFailed
     case walletCoreError(message: String)
+
+    public var errorDescription: String? {
+        switch self {
+
+        case .feeParametersNotFound:
+            return "feeParametersNotFound"
+        case .invalidAmount:
+            return "invalidAmount"
+        case .invalidNonce:
+            return "invalidNonce"
+        case .invalidSignatureCount:
+            return "invalidSignatureCount"
+        case .transactionEncodingFailed:
+            return "transactionEncodingFailed"
+        case .walletCoreError(let message):
+            return "walletCoreError: \(message)"
+        }
+    }
 }

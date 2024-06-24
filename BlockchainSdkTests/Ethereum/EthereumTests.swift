@@ -347,7 +347,7 @@ class EthereumTests: XCTestCase {
         let transactionBuilder = EthereumTransactionBuilder(chainId: 10)
         let amount = try XCTUnwrap(Decimal(stringValue: "1146241"))
 
-        let payload = transactionBuilder.buildForApprove(
+        let payload = try transactionBuilder.buildForApprove(
             spender: "0x111111125421cA6dc452d289314280a0f8842A65",
             amount: amount
         )

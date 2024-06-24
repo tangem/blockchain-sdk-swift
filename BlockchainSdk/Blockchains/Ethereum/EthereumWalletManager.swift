@@ -15,39 +15,56 @@ import Moya
 class EthereumWalletManager: BaseManager, WalletManager {
     let txBuilder: EthereumTransactionBuilder
     let networkService: EthereumNetworkService
+    let addressConverter: EthereumAddressConverter
+    let allowsFeeSelection: Bool
 
     var currentHost: String { networkService.host }
 
-    init(wallet: Wallet, txBuilder: EthereumTransactionBuilder, networkService: EthereumNetworkService) {
+    init(
+        wallet: Wallet,
+        addressConverter: EthereumAddressConverter,
+        txBuilder: EthereumTransactionBuilder,
+        networkService: EthereumNetworkService,
+        allowsFeeSelection: Bool
+    ) {
         self.txBuilder = txBuilder
         self.networkService = networkService
+        self.addressConverter = addressConverter
+        self.allowsFeeSelection = allowsFeeSelection
 
         super.init(wallet: wallet)
     }
 
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
-        cancellable = networkService
-            .getInfo(address: wallet.address, tokens: cardTokens)
-            .sink(receiveCompletion: { [weak self] completionSubscription in
-                if case let .failure(error) = completionSubscription {
-                    self?.wallet.clearAmounts()
-                    completion(.failure(error))
-                }
-            }, receiveValue: { [weak self] response in
-                self?.updateWallet(with: response)
-                completion(.success(()))
-            })
+        do {
+            let address = try addressConverter.convertToETHAddress(wallet.address)
+            cancellable = networkService
+                .getInfo(address: address, tokens: cardTokens)
+                .sink(receiveCompletion: { [weak self] completionSubscription in
+                    if case let .failure(error) = completionSubscription {
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
+                    }
+                }, receiveValue: { [weak self] response in
+                    self?.updateWallet(with: response)
+                    completion(.success(()))
+                })
+        } catch {
+            completion(.failure(error))
+        }
     }
-
-    // It can't be into extension because it will be overridden in the `TelosWalletManager`
-    var allowsFeeSelection: Bool { true }
 
     // It can't be into extension because it will be overridden in the `OptimismWalletManager`
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        if wallet.blockchain.supportsEIP1559 {
-            return getEIP1559Fee(destination: destination, value: value, data: data)
-        } else {
-            return getLegacyFee(destination: destination, value: value, data: data)
+        do {
+            let destination = try addressConverter.convertToETHAddress(destination)
+            if wallet.blockchain.supportsEIP1559 {
+                return getEIP1559Fee(destination: destination, value: value, data: data)
+            } else {
+                return getLegacyFee(destination: destination, value: value, data: data)
+            }
+        } catch {
+            return .anyFail(error: error)
         }
     }
 }
@@ -60,6 +77,7 @@ extension EthereumWalletManager: EthereumTransactionSigner {
     /// - Returns: The hex of the raw transaction ready to be sent over the network
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         do {
+            let transaction = try transaction.convertingAddresses(with: addressConverter)
             let hashToSign = try txBuilder.buildForSign(transaction: transaction)
             return signer
                 .sign(hash: hashToSign, walletPublicKey: wallet.publicKey)
@@ -80,49 +98,88 @@ extension EthereumWalletManager: EthereumTransactionSigner {
 
 extension EthereumWalletManager: EthereumNetworkProvider {
     func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
-        networkService.getAllowance(owner: owner, spender: spender, contractAddress: contractAddress)
-            .tryMap { response in
-                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
-                    return allowance
-                }
+        do {
+            let owner = try addressConverter.convertToETHAddress(owner)
+            let spender = try addressConverter.convertToETHAddress(spender)
+            let contractAddress = try addressConverter.convertToETHAddress(contractAddress)
+            return networkService.getAllowance(owner: owner, spender: spender, contractAddress: contractAddress)
+                .tryMap { response in
+                    if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
+                        return allowance
+                    }
 
-                throw ETHError.failedToParseAllowance
-            }
-            .eraseToAnyPublisher()
+                    throw ETHError.failedToParseAllowance
+                }
+                .eraseToAnyPublisher()
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 
     // Balance
 
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
-        networkService.getBalance(address)
+        do {
+            let address = try addressConverter.convertToETHAddress(address)
+            return networkService.getBalance(address)
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
-        networkService.getTokensBalance(address, tokens: tokens)
+        do {
+            let address = try addressConverter.convertToETHAddress(address)
+            return networkService.getTokensBalance(address, tokens: tokens)
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 
     // Nonce
 
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
-        networkService.getTxCount(address)
+        do {
+            let address = try addressConverter.convertToETHAddress(address)
+            return networkService.getTxCount(address)
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
-        networkService.getPendingTxCount(address)
+        do {
+            let address = try addressConverter.convertToETHAddress(address)
+            return networkService.getPendingTxCount(address)
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 
     // Fee
 
     func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
-        networkService
-            .getGasLimit(to: to, from: from, value: value, data: data)
+        do {
+            let to = try addressConverter.convertToETHAddress(to)
+            let from = try addressConverter.convertToETHAddress(from)
+            return networkService
+                .getGasLimit(to: to, from: from, value: value, data: data)
+        }
+        catch {
+            return .anyFail(error: error)
+        }
     }
 
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         networkService.getGasPrice()
     }
 
-    func getBaseFee() -> AnyPublisher<BigUInt, Error> {
+    func getBaseFee() -> AnyPublisher<EthereumBaseFee, Error> {
         networkService.getBaseFee()
     }
 
@@ -219,6 +276,7 @@ private extension EthereumWalletManager {
 
     func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
+        
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
         }
@@ -247,6 +305,7 @@ private extension EthereumWalletManager {
 extension EthereumWalletManager: TransactionFeeProvider {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
         do {
+            let destination = try addressConverter.convertToETHAddress(destination)
             switch amount.type {
             case .coin:
                 guard let hexAmount = amount.encodedForSend else {
@@ -271,22 +330,27 @@ extension EthereumWalletManager: TransactionFeeProvider {
 
 extension EthereumWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        sign(transaction, signer: signer)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, rawTransaction in
-                walletManager.networkService.send(transaction: rawTransaction)
-                    .mapSendError(tx: rawTransaction)
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, hash in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-                walletManager.wallet.addPendingTransaction(record)
+        do {
+            let transaction = try transaction.convertingAddresses(with: addressConverter)
+            return sign(transaction, signer: signer)
+                .withWeakCaptureOf(self)
+                .flatMap { walletManager, rawTransaction in
+                    walletManager.networkService.send(transaction: rawTransaction)
+                        .mapSendError(tx: rawTransaction)
+                }
+                .withWeakCaptureOf(self)
+                .tryMap { walletManager, hash in
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    walletManager.wallet.addPendingTransaction(record)
 
-                return TransactionSendResult(hash: hash)
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+                    return TransactionSendResult(hash: hash)
+                }
+                .eraseSendError()
+                .eraseToAnyPublisher()
+        } catch {
+            return .anyFail(error: SendTxError(error: error))
+        }
     }
 }
 
@@ -294,22 +358,47 @@ extension EthereumWalletManager: TransactionSender {
 
 extension EthereumWalletManager: SignatureCountValidator {
     func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
-        networkService.getSignatureCount(address: wallet.address)
-            .tryMap {
-                if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
-            }
-            .eraseToAnyPublisher()
+        do {
+            let address = try addressConverter.convertToETHAddress(wallet.address)
+            return networkService.getSignatureCount(address: address)
+                .tryMap {
+                    if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
+                }
+                .eraseToAnyPublisher()
+        } catch {
+            return .anyFail(error: SendTxError(error: error))
+        }
     }
 }
 
 // MARK: - EthereumTransactionDataBuilder
 
 extension EthereumWalletManager: EthereumTransactionDataBuilder {
-    func buildForApprove(spender: String, amount: Decimal) -> Data {
-        txBuilder.buildForApprove(spender: spender, amount: amount)
+    func buildForApprove(spender: String, amount: Decimal) throws -> Data {
+        let spender = try addressConverter.convertToETHAddress(spender)
+        return try txBuilder.buildForApprove(spender: spender, amount: amount)
     }
 
     func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
-        try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
+        let destination = try addressConverter.convertToETHAddress(destination)
+        return try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
+    }
+}
+
+
+// MARK: - Transaction+
+
+fileprivate extension Transaction {
+    func convertingAddresses(with addressConverter: EthereumAddressConverter) throws -> Transaction {
+        do {
+            return try self.then { tx in
+                tx.sourceAddress = try addressConverter.convertToETHAddress(sourceAddress)
+                tx.destinationAddress = try addressConverter.convertToETHAddress(destinationAddress)
+                tx.changeAddress = try addressConverter.convertToETHAddress(changeAddress)
+                tx.contractAddress = try contractAddress.map { try addressConverter.convertToETHAddress($0) }
+            }
+        } catch {
+            throw EthereumAddressConverterError.failedToConvertAddress(error: error)
+        }
     }
 }

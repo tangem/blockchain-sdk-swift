@@ -14,11 +14,16 @@ public protocol EthereumNetworkProvider {
     func getGasPrice() -> AnyPublisher<BigUInt, Error>
     func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error>
     func getPriorityFee() -> AnyPublisher<BigUInt, Error>
-    func getBaseFee() -> AnyPublisher<BigUInt, Error>
+    func getBaseFee() -> AnyPublisher<EthereumBaseFee, Error>
 
     func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<Decimal, Error>
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error>
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error>
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error>
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error>
+}
+
+public struct EthereumBaseFee {
+    public let min: BigUInt
+    public let average: BigUInt
 }

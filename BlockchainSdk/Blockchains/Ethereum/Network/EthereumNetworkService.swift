@@ -106,7 +106,7 @@ class EthereumNetworkService: MultiNetworkProvider {
        }
    }
 
-    func getBaseFee() -> AnyPublisher<BigUInt, Error> {
+    func getBaseFee() -> AnyPublisher<EthereumBaseFee, Error> {
         providerPublisher {
             $0.getFeeHistory()
                 .withWeakCaptureOf(self)
@@ -246,7 +246,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         return count
     }
 
-    private func getBaseFee(response: EthereumFeeHistoryResponse) throws -> BigUInt {
+    private func getBaseFee(response: EthereumFeeHistoryResponse) throws -> EthereumBaseFee {
         guard !response.baseFeePerGas.isEmpty else {
             throw ETHError.failedToParseBaseFees
         }
@@ -257,20 +257,25 @@ class EthereumNetworkService: MultiNetworkProvider {
             return EthereumUtils.parseEthereumDecimal(value, decimalsCount: 0)
         }
 
-        let average = baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)
+        let average = (baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)).rounded(roundingMode: .up)
 
-        guard average > 0 else {
+        guard let min = baseFeePerGas.min(),
+              min > 0, average > 0 else {
             throw ETHError.failedToParseBaseFees
         }
 
-        let bigUInt = EthereumUtils.mapToBigUInt(average)
-        return bigUInt
+        let baseFee = EthereumBaseFee(
+            min: EthereumUtils.mapToBigUInt(min),
+            average: EthereumUtils.mapToBigUInt(average)
+        )
+
+        return baseFee
     }
 
-    private func mapToEthereumEIP1559FeeResponse(baseFee: BigUInt, priorityFee: BigUInt, gasLimit: BigUInt) -> EthereumEIP1559FeeResponse {
-        let lowBaseFee = baseFee * BigUInt(85) / BigUInt(100) // - 15%
-        let marketBaseFee = baseFee
-        let fastBaseFee = baseFee * BigUInt(115) / BigUInt(100) // + 15%
+    private func mapToEthereumEIP1559FeeResponse(baseFee: EthereumBaseFee, priorityFee: BigUInt, gasLimit: BigUInt) -> EthereumEIP1559FeeResponse {
+        let lowBaseFee = baseFee.min
+        let marketBaseFee = baseFee.average
+        let fastBaseFee = baseFee.average * BigUInt(115) / BigUInt(100) // + 15%
 
         // We can't decrease priorityFee for the lowest fee option
         let lowPriorityFee = priorityFee
