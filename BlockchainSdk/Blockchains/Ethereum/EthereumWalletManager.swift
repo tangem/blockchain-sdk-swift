@@ -376,7 +376,7 @@ extension EthereumWalletManager: SignatureCountValidator {
 extension EthereumWalletManager: EthereumTransactionDataBuilder {
     func buildForApprove(spender: String, amount: Decimal) throws -> Data {
         let spender = try addressConverter.convertToETHAddress(spender)
-        return try txBuilder.buildForApprove(spender: spender, amount: amount)
+        return txBuilder.buildForApprove(spender: spender, amount: amount)
     }
 
     func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {

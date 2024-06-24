@@ -64,7 +64,7 @@ class EthereumTransactionBuilder {
 
     // MARK: - Transaction data builder
 
-    func buildForApprove(spender: String, amount: Decimal) throws -> Data {
+    func buildForApprove(spender: String, amount: Decimal) -> Data {
         let bigUInt = EthereumUtils.mapToBigUInt(amount)
         return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
     }
