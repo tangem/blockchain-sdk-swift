@@ -529,6 +529,7 @@
 		DC4772392C29F63700D2459D /* IdentityEthereumAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */; };
 		DC47723B2C29F64B00D2459D /* EthereumAddressConverterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47723A2C29F64B00D2459D /* EthereumAddressConverterError.swift */; };
 		DC47723D2C29F66100D2459D /* EthereumAddressConverterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47723C2C29F66100D2459D /* EthereumAddressConverterFactory.swift */; };
+		DC4772472C29FF5D00D2459D /* EthereumBaseFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772462C29FF5D00D2459D /* EthereumBaseFee.swift */; };
 		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC5E646D2B16098C00E81AA5 /* RIPEMD160+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */; };
 		DC5E64702B160FCD00E81AA5 /* Opcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E646F2B160FCD00E81AA5 /* Opcode.swift */; };
@@ -1378,6 +1379,7 @@
 		DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityEthereumAddressConverter.swift; sourceTree = "<group>"; };
 		DC47723A2C29F64B00D2459D /* EthereumAddressConverterError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressConverterError.swift; sourceTree = "<group>"; };
 		DC47723C2C29F66100D2459D /* EthereumAddressConverterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressConverterFactory.swift; sourceTree = "<group>"; };
+		DC4772462C29FF5D00D2459D /* EthereumBaseFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBaseFee.swift; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RIPEMD160+.swift"; sourceTree = "<group>"; };
 		DC5E646F2B160FCD00E81AA5 /* Opcode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Opcode.swift; sourceTree = "<group>"; };
@@ -3695,6 +3697,7 @@
 				EF2D9D9A2BC3F6770055C485 /* EthereumResponse.swift */,
 				EF2D9D9B2BC3F6770055C485 /* EthereumTransactionParams.swift */,
 				EF2D9D9C2BC3F6770055C485 /* ETHError.swift */,
+				DC4772462C29FF5D00D2459D /* EthereumBaseFee.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4810,6 +4813,7 @@
 				DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				5D304397239A6B960066B8D9 /* String+.swift in Sources */,
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
+				DC4772472C29FF5D00D2459D /* EthereumBaseFee.swift in Sources */,
 				2D24F5C42B6D2C7100D502A0 /* AptosResponse.swift in Sources */,
 				DC5E65052B1650F400E81AA5 /* OP_MIN.swift in Sources */,
 				5D7D243D25136254001B9A4F /* Serializer.swift in Sources */,

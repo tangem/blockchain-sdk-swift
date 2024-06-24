@@ -22,8 +22,3 @@ public protocol EthereumNetworkProvider {
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error>
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error>
 }
-
-public struct EthereumBaseFee {
-    public let min: BigUInt
-    public let average: BigUInt
-}
