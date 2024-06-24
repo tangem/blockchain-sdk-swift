@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import TangemSdk
 
 enum KoinosTransactionBuilderError: Error {
     case unableToParseParams
@@ -99,13 +100,13 @@ class KoinosTransactionBuilder {
         return (transactionToSign, hashToSign)
     }
     
-    func buildForSend(transaction: KoinosProtocol.Transaction, normalizedSignature: Data) -> KoinosProtocol.Transaction  {
+    func buildForSend(transaction: KoinosProtocol.Transaction, preparedSignature: Data) -> KoinosProtocol.Transaction  {
         KoinosProtocol.Transaction(
             header: transaction.header,
             id: transaction.id,
             operations: transaction.operations,
             signatures: [
-                Data([0x20] + normalizedSignature.bytes).base64URLEncodedString()
+                preparedSignature.base64URLEncodedString()
             ]
         )
     }
