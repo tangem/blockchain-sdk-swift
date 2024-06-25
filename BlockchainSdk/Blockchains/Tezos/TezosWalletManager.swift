@@ -48,9 +48,9 @@ extension TezosWalletManager: TransactionSender {
         false
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         guard let contents = txBuilder.buildContents(transaction: transaction) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+            return .sendTxFail(error: WalletError.failedToBuildTx)
         }
         
         return networkService
@@ -85,23 +85,25 @@ extension TezosWalletManager: TransactionSender {
                     .map { _ in (forgedContents, signature) }
                     .eraseToAnyPublisher()
             }
-            .flatMap {[weak self] (forgedContents, signature) -> AnyPublisher<TransactionSendResult, Error> in
-                guard let self = self else { return .emptyFail }
+            .flatMap { [weak self] (forgedContents, signature) -> AnyPublisher<TransactionSendResult, Error> in
+                guard let self else { return .emptyFail }
                 
-                let hash = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
+                let rawTransaction = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
+                
                 return self.networkService
-                    .sendTransaction(hash)
+                    .sendTransaction(rawTransaction)
                     .tryMap{[weak self] response in
                         guard let self = self else { throw WalletError.empty }
                         
                         let mapper = PendingTransactionRecordMapper()
-                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: rawTransaction)
                         self.wallet.addPendingTransaction(record)
-                        return TransactionSendResult(hash: hash)
+                        return TransactionSendResult(hash: rawTransaction)
                     }
-                    .mapError { SendTxError(error: $0, tx: hash) }
+                    .mapSendError(tx: rawTransaction)
                     .eraseToAnyPublisher()
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
@@ -144,12 +146,12 @@ extension TezosWalletManager: TransactionSender {
 
 extension TezosWalletManager: ThenProcessable { }
 
-extension TezosWalletManager: WithdrawalSuggestionProvider {
+extension TezosWalletManager: WithdrawalNotificationProvider {
     private var withdrawalMinimumAmount: Decimal {
         Decimal(string: "0.000001")!
     }
     
-    @available(*, deprecated, message: "Use WithdrawalSuggestionProvider.withdrawalSuggestion")
+    @available(*, deprecated, message: "Use WithdrawalNotificationProvider.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         guard let walletAmount = wallet.amounts[.coin] else {
             return nil
@@ -166,7 +168,7 @@ extension TezosWalletManager: WithdrawalSuggestionProvider {
         return nil
     }
     
-    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
         guard
             let walletAmount = wallet.amounts[.coin],
             amount + fee == walletAmount 

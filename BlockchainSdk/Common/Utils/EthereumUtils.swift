@@ -48,7 +48,7 @@ public enum EthereumUtils {
         } else if decimal == .greatestFiniteMagnitude {
             return BigUInt(2).power(256) - 1
         } else {
-            return BigUInt(decimal.uint64Value)
+            return BigUInt(decimal.rounded().uint64Value)
         }
     }
     

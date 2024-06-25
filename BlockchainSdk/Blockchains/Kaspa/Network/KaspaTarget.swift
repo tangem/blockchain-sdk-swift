@@ -16,15 +16,15 @@ struct KaspaTarget: TargetType {
     var path: String {
         switch request {
         case .blueScore:
-            return "/info/virtual-chain-blue-score"
+            return "info/virtual-chain-blue-score"
         case .balance(let address):
-            return "/addresses/\(address)/balance"
+            return "addresses/\(address)/balance"
         case .utxos(let address):
-            return "/addresses/\(address)/utxos"
+            return "addresses/\(address)/utxos"
         case .transactions:
-            return "/transactions"
+            return "transactions"
         case .transaction(let hash):
-            return "/transactions/\(hash)"
+            return "transactions/\(hash)"
         }
     }
     

@@ -58,7 +58,7 @@ class CardanoTests: XCTestCase {
         let signature = Data(hex: "d110d0ae92016c4edf0eefb2c54ad71b4e9b27f8427f6bd895e94f3beded57f839deecea4f50a3ff6730409b323fa2b07c1e1529e8ebbdebb5138b5ee2f4ab09")
         let publicKey = Data(hex: "de60f41ab5045ce1b9b37e386570ed63499a53ee93ca3073e54a80065678384d")
         
-        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey)
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey, hash: dataForSign)
         let encoded = try transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
         XCTAssertEqual(
             encoded.hexString.lowercased(),
@@ -98,7 +98,7 @@ class CardanoTests: XCTestCase {
         let signature = Data(hex: "d0cd5a183e63dce8f0d5bc6d617bbc2f3aa982fd24ece4e29eb10abb69c00bc8dd9d353f35084c5bcc9f81d4599e9c67980ebce32e3462951116ee39da1da406")
         let publicKey = Data(hex: "de60f41ab5045ce1b9b37e386570ed63499a53ee93ca3073e54a80065678384d")
         
-        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey)
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey, hash: dataForSign)
         let encoded = try transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
         
         XCTAssertEqual(
@@ -168,7 +168,7 @@ class CardanoTests: XCTestCase {
         let signature = Data(hex: "a3c14e049b3192c64af175ff3650f9c0a6f833d168634b3ec73f2f5609bce107d2e39a1387c844bbe521bf3d11a63c4927f62a7c06dc40a8c28da74cb072d70d")
         let publicKey = Data(hex: "de60f41ab5045ce1b9b37e386570ed63499a53ee93ca3073e54a80065678384d")
         
-        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey)
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey, hash: dataForSign)
         let encoded = try transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
         
         XCTAssertEqual(
@@ -209,7 +209,7 @@ class CardanoTests: XCTestCase {
         // Sign
         let signature = Data(hex: "f0a916cf55df99f595b49b3ead2052a17fdf3357b2e04c97c0144b1ee7a88f9a33883d9483e9c9c54cf7d496ac8c7aa31b4eb23a8a2c277fab8e406ba7af2c05")
         let publicKey = Data(hex: "6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29003391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf12e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")
-        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey)
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey, hash: dataForSign)
         let encoded = try transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
         XCTAssertEqual(
             encoded.hexString.lowercased(),

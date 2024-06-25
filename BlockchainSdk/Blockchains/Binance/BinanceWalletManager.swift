@@ -53,9 +53,9 @@ class BinanceWalletManager: BaseManager, WalletManager {
 // MARK: - TransactionSender
 
 extension BinanceWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+            return .sendTxFail(error: WalletError.failedToBuildTx)
         }
         
         let hash = msg.encodeForSignature()
@@ -71,15 +71,18 @@ extension BinanceWalletManager: TransactionSender {
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: tx).tryMap { [weak self] response in
                     guard let self = self else { throw WalletError.empty }
-                    let hash = response.tx.txHash
+                    let hash = response.broadcast.first?.hash ?? response.tx.txHash
                     let mapper = PendingTransactionRecordMapper()
                     let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                     self.wallet.addPendingTransaction(record)
                     self.latestTxDate = Date()
                     return TransactionSendResult(hash: hash)
 
-                }.eraseToAnyPublisher() ?? .emptyFail
+                    }
+                    .mapSendError(tx: tx.encodeForSignature().hexString.lowercased())
+                    .eraseToAnyPublisher() ?? .emptyFail
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }

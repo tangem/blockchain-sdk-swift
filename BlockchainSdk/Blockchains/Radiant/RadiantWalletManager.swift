@@ -66,38 +66,27 @@ private extension RadiantWalletManager {
     func sendViaCompileTransaction(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let hashesForSign: [Data]
         
         do {
             hashesForSign = try transactionBuilder.buildForSign(transaction: transaction)
         } catch {
-            return .anyFail(error: error)
+            return .sendTxFail(error: error)
         }
     
         return signer
-            .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
+            .sign(hashes: hashesForSign, walletPublicKey: wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                guard
-                    let walletCorePublicKey = PublicKey(data: walletManager.wallet.publicKey.blockchainKey, type: .secp256k1),
-                    signatures.count == hashesForSign.count
-                else {
-                    throw WalletError.failedToBuildTx
-                }
-                
-                // Verify signature by public key
-                if signatures.enumerated().contains(where: { index, sig in
-                    !walletCorePublicKey.verify(signature: sig, message: Data(hashesForSign[index]))
-                }) {
-                    throw WalletError.failedToBuildTx
-                }
-                
-                return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
+                try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
-                return walletManager.networkService.sendTransaction(data: transactionData)
+            .flatMap { walletManager, rawTransactionData -> AnyPublisher<String, Error> in
+                return walletManager.networkService
+                    .sendTransaction(data: rawTransactionData)
+                    .mapSendError(tx: rawTransactionData.hexString.lowercased())
+                    .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId -> TransactionSendResult in
@@ -106,6 +95,7 @@ private extension RadiantWalletManager {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: txId)
             }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
     
@@ -131,7 +121,7 @@ extension RadiantWalletManager: WalletManager {
         true
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         sendViaCompileTransaction(transaction, signer: signer)
     }
     

@@ -15,11 +15,8 @@ struct APINodeInfoResolver {
     func resolve(for providerType: NetworkProviderType) -> NodeInfo? {
         switch providerType {
         case .public(let link):
-            guard let url = URL(string: link) else {
-                return nil
-            }
-
-            return .init(url: url)
+            return PublicAPIResolver(blockchain: blockchain)
+                .resolve(for: link)
         case .nowNodes:
             return NowNodesAPIResolver(apiKey: config.nowNodesApiKey)
                 .resolve(for: blockchain)

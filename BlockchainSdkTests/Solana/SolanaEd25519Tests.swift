@@ -68,7 +68,7 @@ final class SolanaEd25519Tests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo])
+        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo], apiLogger: nil)
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
         let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
@@ -117,7 +117,7 @@ final class SolanaEd25519Tests: XCTestCase {
         waitForExpectations(timeout: 10)
     }
     
-    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, Error>, expectationToFill: XCTestExpectation) {
+    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, SendTxError>, expectationToFill: XCTestExpectation) {
         bag.insert(
             publisher.sink(receiveCompletion: { completion in
                 defer {
@@ -129,7 +129,7 @@ final class SolanaEd25519Tests: XCTestCase {
                     return
                 }
                 
-                guard let castedError = error as? SolanaError else {
+                guard let castedError = error.error as? SolanaError else {
                     XCTFail("Wrong error returned from manager")
                     return
                 }

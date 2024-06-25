@@ -96,13 +96,14 @@ public struct AddressServiceFactory {
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .ton,
-                .cosmos,
+        case .cosmos,
                 .terraV1,
                 .terraV2,
                 .veChain,
                 .algorand:
             return WalletCoreAddressService(blockchain: blockchain)
+        case .ton:
+            return TonAddressService()
         case .aptos:
             return AptosCoreAddressService()
         case .ducatus:
@@ -119,6 +120,8 @@ public struct AddressServiceFactory {
             return HederaAddressService(isTestnet: isTestnet)
         case .radiant:
             return RadiantAddressService()
+        case .joystream(let curve):
+            return PolkadotAddressService(network: .joystream(curve: curve))
         case .koinos:
             let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
             return KoinosAddressService(networkParams: network.networkParams)

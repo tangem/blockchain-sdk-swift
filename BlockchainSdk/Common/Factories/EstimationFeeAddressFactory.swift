@@ -23,10 +23,11 @@ struct EstimationFeeAddressFactory {
             // Tezos has a fixed fee. See: `TezosFee.transaction`
             return ""
         case .kaspa,
-             .hedera,
-             .radiant:
+             .hedera:
             // Doesn't depend on destination
             return ""
+        case .radiant:
+            return "1K8jBuCKzuwvFCjL7Qpqq69k1hnVXJ31Nc"
         case .ducatus:
             // Unsupported
             return ""
@@ -34,7 +35,7 @@ struct EstimationFeeAddressFactory {
         case .bitcoin:
             return "bc1qkrc5kmpq546wr2xk0errg58yw9jjq7thvhdk5k"
         case .litecoin:
-            return "LeAXZ4WKNy8zeybFkD6scFpBSmCPmENUEW"
+            return "MSqjXH6toL4kHqsRo3mWaWMkhmiH9GQxLR"
         case .bitcoinCash:
             return "bitcoincash:qrn96yyxa93t6sqmehvls6746qafkcsuku6zmd9460"
         case .dogecoin:
@@ -62,6 +63,8 @@ struct EstimationFeeAddressFactory {
             return "CsNtwDXUzMR4ZKBQrXCfA6bBXQBFU1DDbtSwLAsaVr13sGs"
         case .azero:
             return "5DaWppqEJPc6BhFKD2NBC1ACXPDMPYfv2AQDB5uH5KT4mpef"
+        case .joystream:
+            return "j4SXkX46sABwjxeuzicd2e5m8gDu4ieoWHW3aggbBKkh4WvtF"
         // Others
         case .cardano:
             return "addr1q95pg4z9tf26r5dwf72vmh62u3pr9sewq2waahyhpjzm3enz43pvhh0us3z0z5xen2skq200e67eu89s5v2s0sdh3fnsm9lknu"

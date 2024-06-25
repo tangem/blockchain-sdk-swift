@@ -9,6 +9,8 @@
 import Foundation
 import CryptoKit
 import WalletCore
+import TonSwift
+import BigInt
 
 /// Transaction builder for TON wallet
 final class TONTransactionBuilder {
@@ -42,9 +44,20 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
+    ///   - jettonWalletAddress: Address of jetton wallet, required for jetton transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
-    public func buildForSign(amount: Amount, destination: String, params: TONTransactionParams? = nil) throws -> TheOpenNetworkSigningInput {
-        return try self.input(amount: amount, destination: destination, params: params)
+    public func buildForSign(
+        amount: Amount,
+        destination: String,
+        jettonWalletAddress: String? = nil,
+        params: TONTransactionParams? = nil
+    ) throws -> TheOpenNetworkSigningInput {
+        return try self.input(
+            amount: amount,
+            destination: destination,
+            jettonWalletAddress: jettonWalletAddress,
+            params: params
+        )
     }
     
     /// Build for send transaction obtain external message output
@@ -61,17 +74,43 @@ final class TONTransactionBuilder {
     /// - Parameters:
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
+    ///   - jettonWalletAddress: Address of jetton wallet, required for jetton transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
-    private func input(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkSigningInput {
-        let transfer = try self.transfer(amount: amount, destination: destination, params: params)
-        
-        // Sign input with dummy key of Curve25519 private key
-        let input = TheOpenNetworkSigningInput.with {
-            $0.transfer = transfer
-            $0.privateKey = inputPrivateKey.rawRepresentation
+    private func input(
+        amount: Amount,
+        destination: String,
+        jettonWalletAddress: String? = nil,
+        params: TONTransactionParams?
+    ) throws -> TheOpenNetworkSigningInput {
+        switch amount.type {
+        case .coin, .reserve:
+            let transfer = try transfer(amountValue: amount.value, destination: destination, params: params)
+            
+            // Sign input with dummy key of Curve25519 private key
+            return TheOpenNetworkSigningInput.with {
+                $0.transfer = transfer
+                $0.privateKey = inputPrivateKey.rawRepresentation
+            }
+        case .token(let token):
+            guard let jettonWalletAddress else {
+                fatalError("Wallet address must be set for jetton trasaction")
+            }
+            let transfer = try jettonTransfer(
+                amount: amount,
+                destination: destination,
+                jettonWalletAddress: jettonWalletAddress,
+                token: token,
+                params: params
+            )
+
+            // Sign input with dummy key of Curve25519 private key
+            return TheOpenNetworkSigningInput.with {
+                $0.jettonTransfer = transfer
+                $0.privateKey = inputPrivateKey.rawRepresentation
+            }
+        case .feeResource:
+            throw BlockchainSdkError.notImplemented
         }
-        
-        return input
     }
     
     /// Create transfer message transaction to blockchain
@@ -79,16 +118,47 @@ final class TONTransactionBuilder {
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
     /// - Returns: TheOpenNetworkTransfer message for Input transaction of TON blockchain
-    private func transfer(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkTransfer {
+    private func transfer(
+        amountValue: Decimal,
+        destination: String,
+        params: TONTransactionParams?
+    ) throws -> TheOpenNetworkTransfer {
         TheOpenNetworkTransfer.with {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = destination
-            $0.amount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
+            $0.amount = (amountValue * wallet.blockchain.decimalValue).uint64Value
             $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = modeTransactionConstant
             $0.bounceable = false
             $0.comment = params?.memo ?? ""
          }
+    }
+    
+    /// Create jetton transfer message transaction to blockchain
+    /// - Parameters:
+    ///   - amount: Amount transaction
+    ///   - destination: Destination address transaction
+    ///   - jettonWalletAddress: Address of sender's jetton wallet
+    /// - Returns: TheOpenNetworkTransfer message for Input transaction of TON blockchain
+    private func jettonTransfer(
+        amount: Amount,
+        destination: String,
+        jettonWalletAddress: String,
+        token: Token,
+        params: TONTransactionParams?
+    ) throws -> TheOpenNetworkJettonTransfer {
+        let transferData = try transfer(
+            amountValue: Constants.jettonTransferProcessingFee,
+            destination: jettonWalletAddress, // we need to put SENDER's jetton wallet address here, see comment for TheOpenNetworkJettonTransfer -> transfer
+            params: params
+        )
+        return TheOpenNetworkJettonTransfer.with {
+            $0.transfer = transferData
+            $0.jettonAmount = (amount.value * token.decimalValue).uint64Value
+            $0.toOwner = destination
+            $0.responseAddress = wallet.address
+            $0.forwardAmount = 1 // needs some amount to send "jetton transfer notification", use minimum
+        }
     }
     
 }
@@ -111,4 +181,10 @@ extension TONTransactionBuilder {
         return txBuilder
     }
     
+}
+
+extension TONTransactionBuilder {
+    enum Constants {
+        static let jettonTransferProcessingFee: Decimal = 0.05 // used to cover token transfer fees, commonly used value after TON fee reduction, actual costs now are ~10 times less, excess is returned
+    }
 }

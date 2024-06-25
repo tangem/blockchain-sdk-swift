@@ -18,7 +18,7 @@ class StellarNetworkService: MultiNetworkProvider {
         self.providers = providers
     }
     
-    public func send(transaction: String) -> AnyPublisher<Bool, Error> {
+    public func send(transaction: String) -> AnyPublisher<String, Error> {
         providerPublisher {
             $0.send(transaction: transaction)
         }
