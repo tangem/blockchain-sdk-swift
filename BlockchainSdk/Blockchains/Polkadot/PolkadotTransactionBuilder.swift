@@ -14,7 +14,7 @@ class PolkadotTransactionBuilder {
     private let walletPublicKey: Data
     private let blockchain: Blockchain
     private let network: PolkadotNetwork
-    private let runtimeVersion: SubstrateRuntimeVersion
+    private let runtimeVersionProvider: SubstrateRuntimeVersionProvider
     private let codec = SCALE.default
     
     /*
@@ -51,32 +51,34 @@ class PolkadotTransactionBuilder {
         blockchain: Blockchain,
         walletPublicKey: Data,
         network: PolkadotNetwork,
-        runtimeVersion: SubstrateRuntimeVersion
+        runtimeVersionProvider: SubstrateRuntimeVersionProvider
     ) {
         self.walletPublicKey = walletPublicKey
         self.blockchain = blockchain
         self.network = network
-        self.runtimeVersion = runtimeVersion
+        self.runtimeVersionProvider = runtimeVersionProvider
     }
     
     func buildForSign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta) throws -> Data {
         let rawAddress = encodingRawAddress(specVersion: meta.specVersion)
+        let runtimeVersion = runtimeVersionProvider.runtimeVersion(for: meta)
 
         var message = Data()
         message.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
         message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
-        message.append(try encodeCheckMetadataHashExtensionModeIfNeeded())
+        message.append(try encodeCheckMetadataHashExtensionModeIfNeeded(runtimeVersion: runtimeVersion))
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
         message.append(Data(hexString: meta.blockHash))
-        message.append(try encodeCheckMetadataHashExtensionPayloadIfNeeded())
+        message.append(try encodeCheckMetadataHashExtensionPayloadIfNeeded(runtimeVersion: runtimeVersion))
 
         return message
     }
     
     func buildForSend(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signature: Data) throws -> Data {
         let rawAddress = encodingRawAddress(specVersion: meta.specVersion)
+        let runtimeVersion = runtimeVersionProvider.runtimeVersion(for: meta)
 
         let address = PolkadotAddress(publicKey: walletPublicKey, network: network)
         guard let addressBytes = address.bytes(raw: rawAddress) else {
@@ -89,7 +91,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
-        transactionData.append(try encodeCheckMetadataHashExtensionModeIfNeeded())
+        transactionData.append(try encodeCheckMetadataHashExtensionModeIfNeeded(runtimeVersion: runtimeVersion))
         transactionData.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
 
         let messageLength = try messageLength(transactionData)
@@ -170,7 +172,7 @@ class PolkadotTransactionBuilder {
         return encoded
     }
 
-    private func encodeCheckMetadataHashExtensionModeIfNeeded() throws -> Data {
+    private func encodeCheckMetadataHashExtensionModeIfNeeded(runtimeVersion: SubstrateRuntimeVersion) throws -> Data {
         var data = Data()
 
         switch runtimeVersion {
@@ -189,7 +191,7 @@ class PolkadotTransactionBuilder {
     /// The payload isn't actually used (since we've disabled the `CheckMetadataHash` runtime extension anyway),
     /// but is required by Substrate Runtime v15:
     /// https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.ibp.network%2Fkusama#/extrinsics/decode/0x0403008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480700e40b5402
-    private func encodeCheckMetadataHashExtensionPayloadIfNeeded() throws -> Data {
+    private func encodeCheckMetadataHashExtensionPayloadIfNeeded(runtimeVersion: SubstrateRuntimeVersion) throws -> Data {
         var data = Data()
 
         switch runtimeVersion {
