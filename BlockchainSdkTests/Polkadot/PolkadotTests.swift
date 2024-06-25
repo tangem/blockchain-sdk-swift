@@ -165,7 +165,77 @@ class PolkadotTests: XCTestCase {
         let (imageWithoutSignature, expectedImageWithoutSignature) = removeSignature(image: image, expectedImage: expectedImage, signature: signature)
         XCTAssertEqual(imageWithoutSignature, expectedImageWithoutSignature)
     }
-    
+
+    // MARK: - Substrate runtime v15
+
+    func testTransactionEd25519RuntimeV15() throws {
+        try testTransactionRuntimeV15(curve: .ed25519)
+    }
+
+    func testTransactionEd25519Slip0010RuntimeV15() throws {
+        try testTransactionRuntimeV15(curve: .ed25519_slip0010)
+    }
+
+    // https://westend.subscan.io/extrinsic/21410256-2
+    private func testTransactionRuntimeV15(curve: EllipticCurve) throws {
+        let privateKey = Data(hexString: "0x360B498C9157BAA460790AB4AC03D74166C6ED993A1D3C871E30AF3D86150F49")
+        let publicKey = try XCTUnwrap(Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation)
+        let blockchain: Blockchain = .polkadot(curve: curve, testnet: true)
+        let network = try XCTUnwrap(PolkadotNetwork(blockchain: blockchain))
+        let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
+
+        let txBuilder = PolkadotTransactionBuilder(
+            blockchain: blockchain,
+            walletPublicKey: publicKey,
+            network: network,
+            runtimeVersionProvider: runtimeVersionProvider
+        )
+
+        let value = try XCTUnwrap(Decimal(stringValue: "0.355728311783"))
+        let amount = Amount(with: blockchain, value: value)
+        let destination = "5C8ssaTbSTxDtTRf97rJ8cDrLzeQDULHHEnq4ngjjRMMoQRw"
+        let meta = PolkadotBlockchainMeta(
+            specVersion: 1013000,
+            transactionVersion: 26,
+            genesisHash: "0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e",
+            blockHash: "0xe0e02b2c5eae2484fd3be314282c51ec1ce65cb07a251dbcb7f21c129279d83a",
+            nonce: 0,
+            era: .init(blockNumber: 21410254, period: 128)
+        )
+
+        let runtimeVersion = runtimeVersionProvider.runtimeVersion(for: meta)
+        XCTAssertEqual(runtimeVersion, .v15)
+
+        let preImage = try XCTUnwrap(txBuilder.buildForSign(amount: amount, destination: destination, meta: meta))
+        sizeTester.testTxSize(preImage)
+
+        let signature = try XCTUnwrap(signEd25519(message: preImage, privateKey: privateKey))
+        let image = try XCTUnwrap(txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature))
+
+        let expectedPreImage = Data(
+            hexString: """
+            0x040000032EB287017C5CDE2940B5DD062D413F9D09F8AA44723FC80BF46B96C81AC23D07E7450FD352E6040000\
+            0008750F001A000000E143F23803AC50E8F6F8E62695D1CE9E4E1D68AA36C1CD2CFD15340213F3423EE0E02B2C5E\
+            AE2484FD3BE314282C51EC1CE65CB07A251DBCB7F21C129279D83A00
+            """
+        )
+        let expectedImage = Data(
+            hexString: """
+            0x45028400AAC36941B9D4DEB53D6C4A8CBADF0C25A509E39C83A7513C85DDF53B37AB4D5100E0D07A7BE3ED378AA9B004FBE50BE72\
+            3094B6754B089D118983FEB4D4038FBF230233CB1018F49F6335F2D4674C842FD29E7CC8EEEDB1365E455769310DF8905E6040000000\
+            40000032EB287017C5CDE2940B5DD062D413F9D09F8AA44723FC80BF46B96C81AC23D07E7450FD352
+            """
+        )
+        XCTAssertEqual(preImage, expectedPreImage)
+
+        let (imageWithoutSignature, expectedImageWithoutSignature) = try removeSignature(
+            image: image,
+            expectedImage: expectedImage,
+            signature: signature
+        )
+        XCTAssertEqual(imageWithoutSignature, expectedImageWithoutSignature)
+    }
+
     func testAzeroTransactionEd25519() {
         testAzeroTransaction(curve: .ed25519)
     }
