@@ -18,4 +18,6 @@ public struct SolanaFeeParameters: FeeParameters {
         self.computeUnitPrice = computeUnitPrice
         self.accountCreationFee = accountCreationFee
     }
+
+    public func validate() throws {}
 }

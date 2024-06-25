@@ -15,4 +15,6 @@ public struct BitcoinFeeParameters: FeeParameters {
     public init(rate: Int) {
         self.rate = rate
     }
+
+    public func validate() throws {}
 }

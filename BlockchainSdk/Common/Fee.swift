@@ -8,7 +8,9 @@
 
 import Foundation
 
-public protocol FeeParameters {}
+public protocol FeeParameters {
+    func validate() throws -> Void
+}
 
 public struct Fee {
     public let amount: Amount
