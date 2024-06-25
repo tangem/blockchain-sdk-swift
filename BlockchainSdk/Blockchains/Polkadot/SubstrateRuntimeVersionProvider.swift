@@ -22,8 +22,7 @@ struct SubstrateRuntimeVersionProvider {
              .kusama:
             // https://github.com/polkadot-fellows/runtimes/releases/tag/v1.2.5
             return meta.specVersion >= 1002005 ? .v15 : .v14
-        case .azero,
-             .joystream:
+        case .azero:
             return .v14
         }
     }
