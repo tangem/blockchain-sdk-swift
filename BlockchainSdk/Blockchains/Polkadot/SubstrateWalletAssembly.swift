@@ -19,7 +19,6 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
 
         return PolkadotWalletManager(network: network, wallet: input.wallet).then { walletManager in
             let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
-            let networkConfig = input.networkConfig
             let providers = network.urls.map { url in
                 PolkadotJsonRpcProvider(url: url, configuration: input.networkConfig)
             }
