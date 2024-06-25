@@ -80,6 +80,8 @@ extension CoinType {
             self = .aptos
         case .hedera:
             self = .hedera
+        case .internetComputer:
+            self = .internetComputer
         case .ethereumPoW,
              .disChain,
              .rsk,
@@ -108,7 +110,7 @@ extension CoinType {
              .taraxa,
              .radiant,
              .base,
-             .icp,
+             .internetComputer,
              .joystream:
             // Blockchains that are not in WalletCore yet
             return nil

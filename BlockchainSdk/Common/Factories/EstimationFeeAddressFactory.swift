@@ -22,7 +22,7 @@ struct EstimationFeeAddressFactory {
         case .tezos:
             // Tezos has a fixed fee. See: `TezosFee.transaction`
             return ""
-        case .icp:
+        case .internetComputer:
             // ICP has a fixed 0.0001 ICP fee
             return ""
         case .kaspa,

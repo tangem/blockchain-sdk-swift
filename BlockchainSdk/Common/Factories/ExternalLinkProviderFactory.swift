@@ -139,7 +139,7 @@ public struct ExternalLinkProviderFactory {
             return BaseExternalLinkProvider(isTestnet: isTestnet)
         case .joystream:
             return JoystreamExternalLinkProvider()
-        case .icp:
+        case .internetComputer:
             return ICPExternalLinkProvider()
         }
     }

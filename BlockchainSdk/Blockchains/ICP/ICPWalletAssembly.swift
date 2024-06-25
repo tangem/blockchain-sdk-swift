@@ -10,6 +10,22 @@ import Foundation
 
 struct ICPWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> any WalletManager {
-        fatalError()
+        let blockchain = input.blockchain
+        let config = input.blockchainSdkConfig
+        
+        let providers: [ICPProvider] = [ICPProvider(node: NodeInfo(url: URL(string: "https://icp-api.io/")!), networkConfig: input.networkConfig)]
+
+//        let providers: [ICPProvider] = APIResolver(blockchain: blockchain, config: config)
+//            .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+//                ICPProvider(node: nodeInfo, networkConfig: input.networkConfig)
+//            }
+        
+        return ICPWalletManager(
+            wallet: input.wallet,
+            networkService: ICPNetworkService(
+                providers: providers,
+                blockchain: input.blockchain
+            )
+        )
     }
 }

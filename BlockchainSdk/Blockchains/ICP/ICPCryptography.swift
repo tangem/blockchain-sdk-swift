@@ -17,21 +17,6 @@ enum ICPError: Error {
 
 enum ICPCryptography {
     private static let canonicalTextSeparator: String = "-"
-    private static let domain: ICPDomainSeparator = "account-id"
-    
-    static func accountId(of principal: ICPPrincipal, subAccountId: Data) throws -> Data {
-        guard subAccountId.count == 32 else {
-            throw ICPError.invalidSubAccountId
-        }
-        let data = Self.domain.data +
-                   principal.bytes +
-                   subAccountId.bytes
-        
-        let hashed = data.sha224()
-        let checksum = hashed.crc32()
-        let accountId = checksum + hashed
-        return accountId
-    }
     
     static func encodeCanonicalText(_ data: Data) -> String {
         let checksum = data.crc32()
@@ -84,16 +69,81 @@ extension ICPCryptography {
             
             return bytes
         }
+        
+        public static func encodeSigned(_ bigInt: BigInt) -> Data {
+            // TODO: Make this work with BigInts
+            // the BigInt shift operator >> does not produce the same results as the int shift operator...
+            // eg.    Int(-129) >> 7 = -2
+            //     BigInt(-129) >> 7 = -1   // should be -2
+            // shift operator on BigInt is not applied on the 2's complement for negative numbers, instead it is applied on their absolute value.
+            assert(bigInt.magnitude < Int.max, "Can not leb128 encode bigInts > Int.max! shift operator not working")
+            guard !bigInt.isZero else { return encodeSigned(Int(0)) }
+            let integerValue = Int(truncatingIfNeeded: bigInt)
+            return encodeSigned(integerValue)
+        }
+        
+        public static func encodeSigned(_ integer: Int) -> Data {
+            var value = integer
+            var more = true
+            var bytes = Data()
+            
+            while more {
+                var byte = UInt8(value & 0x7F)
+                value = value >> 7
+                if (value == 0 && (byte >> 6) == 0) || (value == -1 && (byte >> 6) == 1) {
+                    more = false
+                } else {
+                    byte |= 0x80
+                }
+                
+                bytes.append(byte)
+            }
+            return bytes
+        }
+        
+        // MARK: Decoding
+        internal static func decodeUnsigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
+            var result: T = .zero
+            var shift = 0
+            var uint8: UInt8
+            repeat {
+                uint8 = try stream.readNextByte()
+                result = result | (T((0x7F & uint8)) << shift)
+                shift += 7
+            } while uint8 & 0x80 != 0
+            return result
+        }
+        
+        internal static func decodeSigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
+            var result: T = .zero
+            var shift = 0
+            var uint8: UInt8
+            repeat {
+                uint8 = try stream.readNextByte()
+                result = result | (T((0x7F & uint8)) << shift)
+                shift += 7
+            } while uint8 & 0x80 != 0
+            
+            if uint8 & 0x40 != 0 {
+                result = result | (~T.zero << shift)
+            }
+            
+            return result
+        }
+        
+        static func decodeUnsigned<T: BinaryInteger>(_ data: Data) throws -> T {
+            let stream = ByteInputStream(data)
+            return try decodeUnsigned(stream)
+        }
+        
+        static func decodeSigned<T: BinaryInteger>(_ data: Data) throws -> T {
+            let stream = ByteInputStream(data)
+            return try decodeSigned(stream)
+        }
     }
 }
 
 extension ICPCryptography {
-    static func selfAuthenticatingPrincipal(uncompressedPublicKey publicKey: Data) throws -> ICPPrincipal {
-        let serialized = try Cryptography.der(uncompressedEcPublicKey: publicKey)
-        let hash = Cryptography.sha224(serialized)
-        let bytes = hash + Data([0x02])
-        return ICPPrincipal(bytes)
-    }
 }
 
 private extension Collection {
