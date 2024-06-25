@@ -77,7 +77,7 @@ struct AddressTypesConfig {
              .taraxa,
              .radiant,
              .base,
-             .icp,
+             .internetComputer,
              .joystream:
             return [.default]
         }

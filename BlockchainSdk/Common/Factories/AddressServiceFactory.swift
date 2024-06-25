@@ -100,6 +100,7 @@ public struct AddressServiceFactory {
                 .terraV1,
                 .terraV2,
                 .veChain,
+                .internetComputer,
                 .algorand:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ton:
@@ -122,8 +123,6 @@ public struct AddressServiceFactory {
             return RadiantAddressService()
         case .joystream(let curve):
             return PolkadotAddressService(network: .joystream(curve: curve))
-        case .icp:
-            return ICPAddressService()
         }
     }
 }

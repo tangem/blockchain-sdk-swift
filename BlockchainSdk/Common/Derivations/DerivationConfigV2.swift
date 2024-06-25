@@ -112,7 +112,7 @@ public struct DerivationConfigV2: DerivationConfig {
             return "m/44'/3030'/0'/0'/0'"
         case .radiant:
             return "m/44'/512'/0'/0/0"
-        case .icp:
+        case .internetComputer:
             return "m/44'/223'/0'/0/0"
         }
     }
