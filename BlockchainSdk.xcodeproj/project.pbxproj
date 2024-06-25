@@ -415,6 +415,7 @@
 		B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */; };
 		B6D6419F2B7999B500BC3F6E /* BlockchainDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D6419E2B7999B500BC3F6E /* BlockchainDataStorage.swift */; };
 		B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7131E2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift */; };
+		B6D859102C24AB1900CD52B8 /* SubstrateRuntimeVersionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D8590F2C24AB1900CD52B8 /* SubstrateRuntimeVersionProvider.swift */; };
 		B6DC28422B62AFD00070F1D2 /* HederaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DC28412B62AFD00070F1D2 /* HederaExternalLinkProvider.swift */; };
 		B6DC28442B62BA000070F1D2 /* HederaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DC28432B62BA000070F1D2 /* HederaWalletManager.swift */; };
 		B6DC28462B62BB110070F1D2 /* HederaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DC28452B62BB110070F1D2 /* HederaNetworkService.swift */; };
@@ -1263,6 +1264,7 @@
 		B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionBuilder.swift; sourceTree = "<group>"; };
 		B6D6419E2B7999B500BC3F6E /* BlockchainDataStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainDataStorage.swift; sourceTree = "<group>"; };
 		B6D7131E2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkResult.APIError.swift; sourceTree = "<group>"; };
+		B6D8590F2C24AB1900CD52B8 /* SubstrateRuntimeVersionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateRuntimeVersionProvider.swift; sourceTree = "<group>"; };
 		B6DC28412B62AFD00070F1D2 /* HederaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B6DC28432B62BA000070F1D2 /* HederaWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaWalletManager.swift; sourceTree = "<group>"; };
 		B6DC28452B62BB110070F1D2 /* HederaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaNetworkService.swift; sourceTree = "<group>"; };
@@ -3357,6 +3359,7 @@
 				DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */,
 				2DDE5B9A29C4F8D200A5B708 /* SubstrateWalletAssembly.swift */,
 				B6571BAD2C20A83000561B6D /* SubstrateRuntimeVersion.swift */,
+				B6D8590F2C24AB1900CD52B8 /* SubstrateRuntimeVersionProvider.swift */,
 				DC0468FA2B87CC4D00C785D1 /* OtherChains */,
 			);
 			path = Polkadot;
@@ -4303,6 +4306,7 @@
 				B05145012B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
+				B6D859102C24AB1900CD52B8 /* SubstrateRuntimeVersionProvider.swift in Sources */,
 				2DDEFBC72B59B37900885675 /* AlgorandWalletAssembly.swift in Sources */,
 				B00B58CA2BCEBA5D007475F7 /* CardanoAPIResolver.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
