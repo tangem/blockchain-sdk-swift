@@ -1390,6 +1390,8 @@
 		DC3550F92B5852F200A93DBA /* XDCNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCNetworkService.swift; sourceTree = "<group>"; };
 		DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCWalletAssembly.swift; sourceTree = "<group>"; };
 		DC45128D2BD18F9300DE6F94 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DC4772892C2B0BDB00D2459D /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DC47728B2C2B0C0500D2459D /* uk-UA */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "uk-UA"; path = "uk-UA.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RIPEMD160+.swift"; sourceTree = "<group>"; };
 		DC5E646F2B160FCD00E81AA5 /* Opcode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Opcode.swift; sourceTree = "<group>"; };
@@ -4028,6 +4030,8 @@
 				it,
 				ru,
 				"zh-Hant",
+				ja,
+				"uk-UA",
 			);
 			mainGroup = 5D14E4642397B80F00C15FC8;
 			packageReferences = (
@@ -5046,6 +5050,8 @@
 				5DD1935D25557EC2004AE04D /* it */,
 				5DFCBD3527B6C3EC00109595 /* ru */,
 				DADB5450298BB10000491102 /* zh-Hant */,
+				DC4772892C2B0BDB00D2459D /* ja */,
+				DC47728B2C2B0C0500D2459D /* uk-UA */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
