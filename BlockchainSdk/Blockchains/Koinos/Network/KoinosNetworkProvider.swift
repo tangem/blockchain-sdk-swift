@@ -24,7 +24,7 @@ class KoinosNetworkProvider: HostProvider {
         self.koinContractAbi = koinContractAbi
     }
     
-    func getKoinBalance(address: String) throws -> AnyPublisher<UInt64, Error> {
+    func getKoinBalance(address: String) throws -> AnyPublisher<UInt64, Never> {
         let args = try Koinos_Contracts_Token_balance_of_arguments.with {
             $0.owner = address.base58DecodedData
         }
@@ -41,15 +41,17 @@ class KoinosNetworkProvider: HostProvider {
             }
             return try Koinos_Contracts_Token_balance_of_result(serializedData: decodedResult).value
         }
+        .replaceError(with: 0)
         .eraseToAnyPublisher()
     }
     
-    func getRC(address: String) -> AnyPublisher<UInt64, Error> {
+    func getRC(address: String) -> AnyPublisher<UInt64, Never> {
         requestPublisher(
             for: .getRc(address: address),
             withResponseType: KoinosMethod.GetAccountRC.Response.self
         )
         .map(\.rc)
+        .replaceError(with: 0)
         .eraseToAnyPublisher()
     }
     

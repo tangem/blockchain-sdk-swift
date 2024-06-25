@@ -21,8 +21,8 @@ class KoinosNetworkService: MultiNetworkProvider {
     
     func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
         providerPublisher { [satoshiMultiplier] provider in
-            let balanceResult: AnyPublisher<UInt64, Error>
-            let manaResult: AnyPublisher<UInt64, Error>
+            let balanceResult: AnyPublisher<UInt64, Never>
+            let manaResult: AnyPublisher<UInt64, Never>
             
             do {
                 balanceResult = try provider.getKoinBalance(address: address)
@@ -41,6 +41,7 @@ class KoinosNetworkService: MultiNetworkProvider {
                     mana: mana
                 )
             }
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
         }
     }
