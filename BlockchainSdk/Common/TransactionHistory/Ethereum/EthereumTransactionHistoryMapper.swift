@@ -42,7 +42,7 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
                 }
 
                 switch amountType {
-                case .coin, .reserve, .feeResource:
+                case .coin, .reserve:
                     guard let info = extractTransactionInfo(from: transaction, walletAddress: walletAddress) else {
                         return
                     }

@@ -83,7 +83,7 @@ final class TONTransactionBuilder {
         params: TONTransactionParams?
     ) throws -> TheOpenNetworkSigningInput {
         switch amount.type {
-        case .coin, .reserve, .feeResource:
+        case .coin, .reserve:
             let transfer = try transfer(amountValue: amount.value, destination: destination, params: params)
             
             // Sign input with dummy key of Curve25519 private key

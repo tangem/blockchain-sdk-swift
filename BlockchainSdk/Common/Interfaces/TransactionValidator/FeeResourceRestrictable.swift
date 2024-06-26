@@ -23,7 +23,10 @@ extension FeeResourceRestrictable where Self: WalletProvider {
         let availableBalanceForTransfer = currentFeeResource - fee.value
         
         if amount.value == maxFeeResource {
-            throw ValidationError.invalidMaxAmount(validMax: availableBalanceForTransfer)
+            throw ValidationError.amountExeedsFeeResourceCapacity(
+                type: type,
+                availableAmount: availableBalanceForTransfer
+            )
         }
         
         if amount.value > availableBalanceForTransfer {
