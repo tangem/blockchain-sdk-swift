@@ -276,9 +276,9 @@ fileprivate struct EthereumMapper {
         let marketAverage = marketSum / blocksCount
         let fastAverage = fastSum / blocksCount
 
-        let lowBaseFee = baseFee * BigUInt(125) / BigUInt(100) // +12.5%
-        let marketBaseFee = baseFee * BigUInt(150) / BigUInt(100) // +50%
-        let fastBaseFee = baseFee * BigUInt(2) // + 100%
+        let lowBaseFee = pendingBaseFee * BigUInt(125) / BigUInt(100) // +12.5%
+        let marketBaseFee = pendingBaseFee * BigUInt(150) / BigUInt(100) // +50%
+        let fastBaseFee = pendingBaseFee * BigUInt(2) // + 100%
 
         let feeHistory = EthereumFeeHistory(
             baseFee: pendingBaseFee,
