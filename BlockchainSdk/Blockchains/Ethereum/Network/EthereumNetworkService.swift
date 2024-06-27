@@ -254,9 +254,9 @@ fileprivate struct EthereumMapper {
 
         let pendingBaseFee = try mapBigUInt(pendingBaseFeeString)
 
-        var lowSum: BigUInt = 0
-        var marketSum: BigUInt = 0
-        var fastSum: BigUInt = 0
+        var lowSum: Decimal = 0
+        var marketSum: Decimal = 0
+        var fastSum: Decimal = 0
 
         try response.reward.forEach {
             guard let lowString = $0[safe: 0],
@@ -265,18 +265,18 @@ fileprivate struct EthereumMapper {
                 throw ETHError.failedToParseFeeHistory
             }
 
-            lowSum += try mapBigUInt(lowString)
-            marketSum += try mapBigUInt(marketString)
-            fastSum += try mapBigUInt(fastString)
+            lowSum += try mapDecimal(lowString)
+            marketSum += try mapDecimal(marketString)
+            fastSum += try mapDecimal(fastString)
         }
 
-        let blocksCount = BigUInt(response.reward.count)
+        let blocksCount = Decimal(response.reward.count)
 
-        let lowAverage = lowSum / blocksCount
-        let marketAverage = marketSum / blocksCount
-        let fastAverage = fastSum / blocksCount
+        let lowAverage = EthereumUtils.mapToBigUInt((lowSum / blocksCount).rounded(roundingMode: .plain))
+        let marketAverage = EthereumUtils.mapToBigUInt((marketSum / blocksCount).rounded(roundingMode: .plain))
+        let fastAverage = EthereumUtils.mapToBigUInt((fastSum / blocksCount).rounded(roundingMode: .plain))
 
-        let lowBaseFee = pendingBaseFee * BigUInt(125) / BigUInt(100) // +12.5%
+        let lowBaseFee = pendingBaseFee * BigUInt(1125) / BigUInt(1000) // +12.5%
         let marketBaseFee = pendingBaseFee * BigUInt(150) / BigUInt(100) // +50%
         let fastBaseFee = pendingBaseFee * BigUInt(2) // + 100%
 
@@ -315,5 +315,13 @@ fileprivate struct EthereumMapper {
             marketGasPrice: normalGasPrice,
             fastGasPrice: maxGasPrice
         )
+    }
+
+    private static func mapDecimal(_ response: String) throws -> Decimal {
+        guard let value = UInt64(response.removeHexPrefix(), radix: 16) else {
+            throw ETHError.failedToParseGasLimit
+        }
+
+        return Decimal(value)
     }
 }
