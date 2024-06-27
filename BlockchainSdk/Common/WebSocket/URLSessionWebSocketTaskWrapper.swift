@@ -12,7 +12,7 @@ import Foundation
 class URLSessionWebSocketTaskWrapper {
     private let url: URL
     
-    private var webSocketTaskDidOpen: CheckedContinuation<Void, Never>?
+    private var webSocketTaskDidOpen: CheckedContinuation<Void, any Error>?
     private var webSocketTaskDidClose: CheckedContinuation<URLSessionWebSocketTask.CloseCode, Never>?
     private var session: URLSession?
     private var _sessionWebSocketTask: URLSessionWebSocketTask?
@@ -59,7 +59,7 @@ class URLSessionWebSocketTaskWrapper {
         return try await sessionWebSocketTask.receive()
     }
     
-    func connect() async {
+    func connect() async throws {
         // The delegate will be kept by URLSession
         let delegate = URLSessionWebSocketDelegateWrapper(
             webSocketTaskDidOpen: { [weak self] task in
@@ -67,8 +67,12 @@ class URLSessionWebSocketTaskWrapper {
             },
             webSocketTaskDidClose: { [weak self] task, closeCode in
                 self?.webSocketTaskDidClose?.resume(returning: closeCode)
-            }, webSocketTaskDidCompleteWithError: { [weak self] _, _ in
+            }, webSocketTaskDidCompleteWithError: { [weak self] _, error in
                 self?.cancel()
+                
+                if let error {
+                    self?.webSocketTaskDidOpen?.resume(throwing: error)
+                }
             }
         )
         
@@ -76,7 +80,7 @@ class URLSessionWebSocketTaskWrapper {
         _sessionWebSocketTask = session?.webSocketTask(with: url)
         _sessionWebSocketTask?.resume()
 
-        return await withCheckedContinuation { [weak self] continuation in
+        return try await withCheckedThrowingContinuation { [weak self] continuation in
             self?.webSocketTaskDidOpen = continuation
         }
     }
