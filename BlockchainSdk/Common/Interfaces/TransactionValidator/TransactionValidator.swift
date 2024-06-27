@@ -27,11 +27,11 @@ public enum DestinationType: Hashable {
 public extension TransactionValidator {
     func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
     }
     
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
     }
     
     /// Validation will be doing with `amount`, `fee` and `destinationAddress`  from the `Transaction`
@@ -45,10 +45,10 @@ public extension TransactionValidator {
 public extension TransactionValidator {
     /// Method for the sending amount and fee validation
     /// Has default implementation just for checking balance and numbers
-    func validateAmounts(amount: Amount, fee: Fee) throws {
+    func validateAmounts(amount: Amount, fee: Amount) throws {
         try validate(amount: amount)
         try validate(fee: fee)
-        try validateTotal(amount: amount, fee: fee.amount)
+        try validateTotal(amount: amount, fee: fee)
     }
     
     func validate(amount: Amount) throws {
@@ -65,21 +65,17 @@ public extension TransactionValidator {
         }
     }
     
-    func validate(fee: Fee) throws {
-        guard fee.amount.value >= 0 else {
+    func validate(fee: Amount) throws {
+        guard fee.value >= 0 else {
             throw ValidationError.invalidFee
         }
         
-        guard let feeBalance = wallet.amounts[fee.amount.type] else {
+        guard let feeBalance = wallet.amounts[fee.type] else {
             throw ValidationError.balanceNotFound
         }
         
-        guard feeBalance >= fee.amount else {
+        guard feeBalance >= fee else {
             throw ValidationError.feeExceedsBalance
-        }
-
-        if let feeParameters = fee.parameters {
-            try feeParameters.validate()
         }
     }
     
@@ -111,7 +107,7 @@ extension TransactionValidator where Self: DustRestrictable {
     }
     
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
         try validateDust(amount: amount, fee: fee.amount)
     }
 }
@@ -125,7 +121,7 @@ extension TransactionValidator where Self: MinimumBalanceRestrictable {
     }
     
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
         try validateMinimumBalance(amount: amount, fee: fee.amount)
     }
 }
@@ -139,7 +135,7 @@ extension TransactionValidator where Self: MaximumAmountRestrictable {
     }
     
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
         try validateMaximumAmount(amount: amount, fee: fee.amount)
     }
 }
@@ -153,7 +149,7 @@ extension TransactionValidator where Self: MaximumAmountRestrictable, Self: Dust
     }
 
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
         try validateDust(amount: amount, fee: fee.amount)
         try validateMaximumAmount(amount: amount, fee: fee.amount)
     }
@@ -168,7 +164,7 @@ extension TransactionValidator where Self: DustRestrictable, Self: CardanoTransf
     }
 
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
         try validateCardanoTransfer(amount: amount, fee: fee.amount)
         try validateDust(amount: amount, fee: fee.amount)
     }
@@ -178,7 +174,7 @@ extension TransactionValidator where Self: DustRestrictable, Self: CardanoTransf
 
 extension TransactionValidator where Self: ReserveAmountRestrictable {
     func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
-        try validateAmounts(amount: amount, fee: fee)
+        try validateAmounts(amount: amount, fee: fee.amount)
 
         switch destination {
         case .generate:

@@ -34,8 +34,6 @@ public struct EthereumLegacyFeeParameters: FeeParameters {
         self.gasLimit = gasLimit
         self.gasPrice = gasPrice
     }
-
-    public func validate() throws {}
 }
 
 extension EthereumLegacyFeeParameters: EthereumFeeParameters {
@@ -82,15 +80,7 @@ public struct EthereumEIP1559FeeParameters: FeeParameters {
         self.maxFeePerGas = maxFeePerGas
         self.priorityFee = priorityFee
     }
-
-    public func validate() throws {
-        // maxFeePerGas = priorityFee + baseFee
-        guard priorityFee < maxFeePerGas else {
-            throw ValidationError.maxFeePerGasTooLow
-        }
-    }
 }
-
 
 extension EthereumEIP1559FeeParameters: EthereumFeeParameters {
     public var parametersType: EthereumFeeParametersType {
@@ -114,15 +104,5 @@ extension EthereumEIP1559FeeParameters: EthereumFeeParameters {
         )
 
         return feeParameters
-    }
-}
-
-extension EthereumEIP1559FeeParameters {
-    enum ValidationError: String, LocalizedError {
-        case maxFeePerGasTooLow
-
-        var errorDescription: String? {
-            rawValue
-        }
     }
 }

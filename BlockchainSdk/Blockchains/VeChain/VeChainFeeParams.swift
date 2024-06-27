@@ -17,6 +17,4 @@ struct VeChainFeeParams: FeeParameters {
 
     let priority: TransactionPriority
     let vmGas: Int
-
-    func validate() throws {}
 }
