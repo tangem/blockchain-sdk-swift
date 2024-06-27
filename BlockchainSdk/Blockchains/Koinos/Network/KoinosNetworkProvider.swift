@@ -114,12 +114,6 @@ class KoinosNetworkProvider: HostProvider {
         provider.requestPublisher(KoinosTarget(node: node, koinContractAbi: koinContractAbi, target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(JSONRPC.Response<T, JSONRPC.APIError>.self, using: decoder)
-            .mapError { moyaError -> Error in
-                if case .objectMapping = moyaError {
-                    return WalletError.failedToParseNetworkResponse
-                }
-                return moyaError
-            }
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
     }

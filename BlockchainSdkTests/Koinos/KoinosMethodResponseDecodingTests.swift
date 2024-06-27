@@ -126,4 +126,35 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         
         XCTAssertEqual(response.id, 1)
     }
+    
+    func testDecodeEmptyResult() throws {
+        let jsonData = """
+        {
+            "jsonrpc": "2.0",
+            "result": {
+        
+            },
+            "id": 1
+        }
+        """
+        .data(using: .utf8)!
+        
+        let result = try JSONDecoder()
+            .decode(
+                JSONRPC.Response<
+                    KoinosMethod.ReadContract.Response,
+                    JSONRPC.APIError
+                >.self,
+                from: jsonData
+            )
+        
+        XCTAssertEqual(result.jsonrpc, "2.0")
+        XCTAssertEqual(result.id, 1)
+        
+        if case let .success(value) = result.result {
+            XCTAssertEqual(value.result, nil)
+        } else {
+            XCTFail("Expected result to be .success")
+        }
+    }
 }
