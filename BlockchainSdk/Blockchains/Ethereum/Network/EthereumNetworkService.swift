@@ -58,21 +58,16 @@ class EthereumNetworkService: MultiNetworkProvider {
 
     func getEIP1559Fee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumEIP1559FeeResponse, Error> {
         let gasLimitPublisher = getGasLimit(to: to, from: from, value: value, data: data)
-        let baseFeePublisher = getBaseFee()
-        let priorityFeePublisher = getPriorityFee()
+        let feeHistoryPublisher = getFeeHistory()
 
-        return Publishers.Zip3(gasLimitPublisher, baseFeePublisher, priorityFeePublisher)
-            .withWeakCaptureOf(self)
-            .tryMap { networkService, args in
-                let (gasLimit, baseFee, priorityFee) = args
-
-                return networkService.mapToEthereumEIP1559FeeResponse(
-                    baseFee: baseFee,
-                    priorityFee: priorityFee,
-                    gasLimit: gasLimit
+        return Publishers.Zip(gasLimitPublisher, feeHistoryPublisher)
+            .map { (gasLimit, feeHistory) -> EthereumEIP1559FeeResponse in
+                return EthereumMapper.mapToEthereumEIP1559FeeResponse(
+                    gasLimit: gasLimit,
+                    feeHistory: feeHistory
                 )
             }
-            .mapError { EthereumErrorMapper().mapError($0) }
+            .mapError { EthereumMapper.mapError($0) }
             .eraseToAnyPublisher()
     }
 
@@ -81,38 +76,28 @@ class EthereumNetworkService: MultiNetworkProvider {
         let gasLimitPublisher = getGasLimit(to: to, from: from, value: value, data: data)
 
         return Publishers.Zip(gasPricePublisher, gasLimitPublisher)
-            .withWeakCaptureOf(self)
-            .tryMap { networkService, args -> EthereumLegacyFeeResponse in
-                let (gasPrice, gasLimit) = args
-
-                return networkService.mapToEthereumLegacyFeeResponse(
+            .tryMap { (gasPrice, gasLimit) -> EthereumLegacyFeeResponse in
+                return EthereumMapper.mapToEthereumLegacyFeeResponse(
                     gasPrice: gasPrice,
-                    gasLimit: gasLimit,
-                    decimalCount: networkService.decimals
+                    gasLimit: gasLimit
                 )
             }
-            .mapError { EthereumErrorMapper().mapError($0) }
+            .mapError { EthereumMapper.mapError($0) }
             .eraseToAnyPublisher()
     }
 
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
        providerPublisher { provider in
            provider.getTxCount(for: address)
-               .withWeakCaptureOf(self)
-               .tryMap { networkService, result in
-                   try networkService.getTxCount(from: result)
-               }
+               .tryMap { try EthereumMapper.mapInt($0) }
                .eraseToAnyPublisher()
        }
    }
 
-    func getBaseFee() -> AnyPublisher<EthereumBaseFee, Error> {
+    func getFeeHistory() -> AnyPublisher<EthereumFeeHistory, Error> {
         providerPublisher {
             $0.getFeeHistory()
-                .withWeakCaptureOf(self)
-                .tryMap { service, response in
-                    try service.getBaseFee(response: response)
-                }
+                .tryMap { try EthereumMapper.mapFeeHistory($0) }
                 .eraseToAnyPublisher()
         }
     }
@@ -120,10 +105,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getPriorityFee() -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getPriorityFee()
-                .withWeakCaptureOf(self)
-                .tryMap { networkService, result in
-                    try networkService.getGas(from: result)
-                }
+                .tryMap { try EthereumMapper.mapBigUInt($0) }
                 .eraseToAnyPublisher()
         }
     }
@@ -131,10 +113,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasPrice()
-                .withWeakCaptureOf(self)
-                .tryMap { networkService, result in
-                    try networkService.getGas(from: result)
-                }
+                .tryMap { try EthereumMapper.mapBigUInt($0) }
                 .eraseToAnyPublisher()
         }
     }
@@ -142,10 +121,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasLimit(to: to, from: from, value: value, data: data)
-                .withWeakCaptureOf(self)
-                .tryMap { networkService, result in
-                    try networkService.getGas(from: result)
-                }
+                .tryMap { try EthereumMapper.mapBigUInt($0) }
                 .eraseToAnyPublisher()
         }
     }
@@ -211,10 +187,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         providerPublisher {
             $0.getPendingTxCount(for: address)
-                .withWeakCaptureOf(self)
-                .tryMap { networkService, result in
-                    try networkService.getTxCount(from: result)
-                }
+                .tryMap { try EthereumMapper.mapInt($0) }
                 .eraseToAnyPublisher()
         }
     }
@@ -225,85 +198,6 @@ class EthereumNetworkService: MultiNetworkProvider {
         return providerPublisher {
             $0.call(contractAddress: target.contactAddress, encodedData: encodedData)
         }
-    }
-    
-    
-    // MARK: - Private functions
-    
-    private func getGas(from response: String) throws -> BigUInt {
-        guard let count = BigUInt(response.removeHexPrefix(), radix: 16) else {
-            throw ETHError.failedToParseGasLimit
-        }
-
-        return count
-    }
-    
-    private func getTxCount(from response: String) throws -> Int {
-        guard let count = Int(response.removeHexPrefix(), radix: 16) else {
-            throw ETHError.failedToParseTxCount
-        }
-        
-        return count
-    }
-
-    private func getBaseFee(response: EthereumFeeHistoryResponse) throws -> EthereumBaseFee {
-        guard !response.baseFeePerGas.isEmpty else {
-            throw ETHError.failedToParseBaseFees
-        }
-
-        let baseFeePerGas = response.baseFeePerGas.compactMap { value -> Decimal? in
-            guard let value else { return nil }
-
-            return EthereumUtils.parseEthereumDecimal(value, decimalsCount: 0)
-        }
-
-        let average = (baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)).rounded(roundingMode: .up)
-
-        guard let min = baseFeePerGas.min(),
-              min > 0, average > 0 else {
-            throw ETHError.failedToParseBaseFees
-        }
-
-        let baseFee = EthereumBaseFee(
-            min: EthereumUtils.mapToBigUInt(min),
-            average: EthereumUtils.mapToBigUInt(average)
-        )
-
-        return baseFee
-    }
-
-    private func mapToEthereumEIP1559FeeResponse(baseFee: EthereumBaseFee, priorityFee: BigUInt, gasLimit: BigUInt) -> EthereumEIP1559FeeResponse {
-        let lowBaseFee = baseFee.min
-        let marketBaseFee = baseFee.average
-        let fastBaseFee = baseFee.average * BigUInt(115) / BigUInt(100) // + 15%
-
-        // We can't decrease priorityFee for the lowest fee option
-        let lowPriorityFee = priorityFee
-        let marketPriorityFee = priorityFee
-        // The priorityFee usually is between 1-3 GWEI. We can increase it to accelerate the transaction
-        let fastPriorityFee = priorityFee * BigUInt(2)
-
-        return EthereumEIP1559FeeResponse(
-            gasLimit: gasLimit,
-            fees: (
-                low: .init(max: lowBaseFee + lowPriorityFee, priority: lowPriorityFee),
-                market: .init(max: marketBaseFee + marketPriorityFee, priority: marketPriorityFee),
-                fast: .init(max: fastBaseFee + fastPriorityFee, priority: fastPriorityFee)
-            )
-        )
-    }
-
-    private func mapToEthereumLegacyFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) -> EthereumLegacyFeeResponse {
-        let minGasPrice = gasPrice
-        let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
-        let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
-
-        return EthereumLegacyFeeResponse(
-            gasLimit: gasLimit,
-            lowGasPrice: minGasPrice,
-            marketGasPrice: normalGasPrice,
-            fastGasPrice: maxGasPrice
-        )
     }
 }
 
@@ -317,8 +211,8 @@ extension EthereumNetworkService: EVMSmartContractInteractor {
 
 // MARK: - EthereumErrorMapper
 
-fileprivate struct EthereumErrorMapper {
-    func mapError(_ error: Error) -> Error {
+fileprivate struct EthereumMapper {
+    static func mapError(_ error: Error) -> Error {
         if let moyaError = error as? MoyaError,
            let responseData = moyaError.response?.data,
            let ethereumResponse = try? JSONDecoder().decode(JSONRPC.Response<String, JSONRPC.APIError>.self, from: responseData),
@@ -328,5 +222,98 @@ fileprivate struct EthereumErrorMapper {
         }
 
         return error
+    }
+
+    static func mapBigUInt(_ response: String) throws -> BigUInt {
+        guard let value = BigUInt(response.removeHexPrefix(), radix: 16) else {
+            throw ETHError.failedToParseGasLimit
+        }
+
+        return value
+    }
+
+    static func mapInt(_ response: String) throws -> Int {
+        guard let value = Int(response.removeHexPrefix(), radix: 16) else {
+            throw ETHError.failedToParseGasLimit
+        }
+
+        return value
+    }
+
+    //TODO: Move Estimate from mapper in NetworkService
+    static func mapFeeHistory(_ response: EthereumFeeHistoryResponse) throws -> EthereumFeeHistory {
+        guard !response.baseFeePerGas.isEmpty,
+              !response.reward.isEmpty else {
+            throw ETHError.failedToParseFeeHistory
+        }
+
+        // This is an actual baseFee for a pending block
+        guard let pendingBaseFeeString = response.baseFeePerGas.last else {
+            throw ETHError.failedToParseFeeHistory
+        }
+
+        let pendingBaseFee = try mapBigUInt(pendingBaseFeeString)
+
+        var lowSum: BigUInt = 0
+        var marketSum: BigUInt = 0
+        var fastSum: BigUInt = 0
+
+        try response.reward.forEach {
+            guard let lowString = $0[safe: 0],
+                  let marketString  = $0[safe: 1],
+                  let fastString = $0[safe: 2] else {
+                throw ETHError.failedToParseFeeHistory
+            }
+
+            lowSum += try mapBigUInt(lowString)
+            marketSum += try mapBigUInt(marketString)
+            fastSum += try mapBigUInt(fastString)
+        }
+
+        let blocksCount = BigUInt(response.reward.count)
+
+        let lowAverage = lowSum / blocksCount
+        let marketAverage = marketSum / blocksCount
+        let fastAverage = fastSum / blocksCount
+
+        let lowBaseFee = baseFee * BigUInt(125) / BigUInt(100) // +12.5%
+        let marketBaseFee = baseFee * BigUInt(150) / BigUInt(100) // +50%
+        let fastBaseFee = baseFee * BigUInt(2) // + 100%
+
+        let feeHistory = EthereumFeeHistory(
+            baseFee: pendingBaseFee,
+            lowBaseFee: lowBaseFee,
+            marketBaseFee: marketBaseFee,
+            fastBaseFee: fastBaseFee,
+            lowPriorityFee: lowAverage,
+            marketPriorityFee: marketAverage,
+            fastPriorityFee: fastAverage
+        )
+
+        return feeHistory
+    }
+
+    static func mapToEthereumEIP1559FeeResponse(gasLimit: BigUInt, feeHistory: EthereumFeeHistory) -> EthereumEIP1559FeeResponse {
+        return EthereumEIP1559FeeResponse(
+            gasLimit: gasLimit,
+            fees: (
+                low: .init(max: feeHistory.lowBaseFee + feeHistory.lowPriorityFee, priority: feeHistory.lowPriorityFee),
+                market: .init(max: feeHistory.marketBaseFee + feeHistory.marketPriorityFee, priority: feeHistory.marketPriorityFee),
+                fast: .init(max: feeHistory.fastBaseFee + feeHistory.fastPriorityFee, priority: feeHistory.fastPriorityFee)
+            )
+        )
+    }
+
+    static func mapToEthereumLegacyFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt) -> EthereumLegacyFeeResponse {
+        let minGasPrice = gasPrice
+        let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
+        let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
+
+        return EthereumLegacyFeeResponse(
+            gasLimit: gasLimit,
+            lowGasPrice: minGasPrice,
+            marketGasPrice: normalGasPrice,
+            fastGasPrice: maxGasPrice
+        )
     }
 }

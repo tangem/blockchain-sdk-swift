@@ -57,11 +57,12 @@ class EthereumWalletManager: BaseManager, WalletManager {
     // It can't be into extension because it will be overridden in the `OptimismWalletManager`
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         do {
+            let from = try addressConverter.convertToETHAddress(defaultSourceAddress)
             let destination = try addressConverter.convertToETHAddress(destination)
             if wallet.blockchain.supportsEIP1559 {
-                return getEIP1559Fee(destination: destination, value: value, data: data)
+                return getEIP1559Fee(from: from, destination: destination, value: value, data: data)
             } else {
-                return getLegacyFee(destination: destination, value: value, data: data)
+                return getLegacyFee(from: from, destination: destination, value: value, data: data)
             }
         } catch {
             return .anyFail(error: error)
@@ -179,22 +180,18 @@ extension EthereumWalletManager: EthereumNetworkProvider {
         networkService.getGasPrice()
     }
 
-    func getBaseFee() -> AnyPublisher<EthereumBaseFee, Error> {
-        networkService.getBaseFee()
-    }
-
-    func getPriorityFee() -> AnyPublisher<BigUInt, Error> {
-        networkService.getPriorityFee()
+    func getFeeHistory() -> AnyPublisher<EthereumFeeHistory, Error> {
+        networkService.getFeeHistory()
     }
 }
 
 // MARK: - Private
 
 private extension EthereumWalletManager {
-    func getEIP1559Fee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+    func getEIP1559Fee(from: String, destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         networkService.getEIP1559Fee(
             to: destination,
-            from: defaultSourceAddress,
+            from: from,
             value: value,
             data: data?.hexString.addHexPrefix()
         )
@@ -206,7 +203,7 @@ private extension EthereumWalletManager {
     }
 
     func proceedEIP1559Fee(response: EthereumEIP1559FeeResponse) -> [Fee] {
-        var feeParameters = [
+        let feeParameters = [
             EthereumEIP1559FeeParameters(
                 gasLimit: response.gasLimit,
                 maxFeePerGas: response.fees.low.max,
@@ -234,10 +231,10 @@ private extension EthereumWalletManager {
         return fees
     }
 
-    func getLegacyFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+    func getLegacyFee(from: String, destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         networkService.getLegacyFee(
             to: destination,
-            from: defaultSourceAddress,
+            from: from,
             value: value,
             data: data?.hexString.addHexPrefix()
         )
@@ -249,7 +246,7 @@ private extension EthereumWalletManager {
     }
 
     func proceedLegacyFee(response: EthereumLegacyFeeResponse) -> [Fee] {
-        var feeParameters = [
+        let feeParameters = [
             EthereumLegacyFeeParameters(
                 gasLimit: response.gasLimit,
                 gasPrice: response.lowGasPrice

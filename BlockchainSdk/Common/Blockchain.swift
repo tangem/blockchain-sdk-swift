@@ -506,43 +506,24 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum,
-                .stellar,
-                .optimism,
+        case .stellar,
                 .ton,
                 .near,
                 .aptos,
-                .hedera,
-                .areon,
-                .playa3ullGames,
-                .pulsechain,
-                .aurora,
-                .manta,
-                .zkSync,
-                .moonbeam,
-                .polygonZkEVM,
-                .moonriver,
-                .mantle,
-                .flare,
-                .taraxa,
-                .base:
+                .hedera:
             return true
-        case .fantom,
-                .tron,
-                .gnosis,
-                .avalanche,
-                .ethereumPoW,
-                .cronos,
-                .veChain,
-                .xdc:
+        case .tron,
+                .veChain:
             if case .token = amountType {
                 return true
             }
-        default:
-            break
-        }
 
-        return false
+            return false
+        case _ where isEvm:
+            return true
+        default:
+            return false
+        }
     }
 
     // TODO: This property only for EVM for now. Refactor all other wallet managers

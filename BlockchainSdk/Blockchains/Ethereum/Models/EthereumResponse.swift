@@ -25,6 +25,24 @@ struct CallParams: Encodable {
 
 // MARK: - Response
 
+struct EthereumFeeHistoryResponse: Decodable {
+    let baseFeePerGas: [String]
+    let reward: [[String]]
+}
+
+public struct EthereumFeeHistory{
+    /// for pending block
+    public let baseFee: BigUInt
+
+    public let lowBaseFee: BigUInt
+    public let marketBaseFee: BigUInt
+    public let fastBaseFee: BigUInt
+
+    public let lowPriorityFee: BigUInt
+    public let marketPriorityFee: BigUInt
+    public let fastPriorityFee: BigUInt
+}
+
 /// Final Ethereum response that contain all information about address
 struct EthereumInfoResponse {
     let balance: Decimal
@@ -49,8 +67,4 @@ struct EthereumLegacyFeeResponse {
     let lowGasPrice: BigUInt
     let marketGasPrice: BigUInt
     let fastGasPrice: BigUInt
-}
-
-struct EthereumFeeHistoryResponse: Decodable {
-    let baseFeePerGas: [String?]
 }
