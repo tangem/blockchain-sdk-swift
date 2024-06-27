@@ -13,8 +13,19 @@ import BigInt
 public protocol EthereumFeeParameters where Self: FeeParameters {
     var parametersType: EthereumFeeParametersType { get }
 
-    func multiplyingGasLimit(to value: BigUInt) -> Self
+    func changingGasLimit(to value: BigUInt) -> Self
     func calculateFee(decimalValue: Decimal) -> Decimal
+}
+
+public extension EthereumFeeParameters {
+    var gasLimit: BigUInt {
+        switch parametersType {
+        case .eip1559(let params):
+            return params.gasLimit
+        case .legacy(let params):
+            return params.gasLimit
+        }
+    }
 }
 
 // MARK: - EthereumFeeParametersType
@@ -50,9 +61,9 @@ extension EthereumLegacyFeeParameters: EthereumFeeParameters {
         return feeValue / decimalValue
     }
 
-    public func multiplyingGasLimit(to value: BigUInt) -> EthereumLegacyFeeParameters {
+    public func changingGasLimit(to value: BigUInt) -> EthereumLegacyFeeParameters {
         let feeParameters = EthereumLegacyFeeParameters(
-            gasLimit: gasLimit * value,
+            gasLimit: value,
             gasPrice: gasPrice
         )
 
@@ -96,9 +107,9 @@ extension EthereumEIP1559FeeParameters: EthereumFeeParameters {
         return feeValue / decimalValue
     }
 
-    public func multiplyingGasLimit(to value: BigUInt) -> EthereumEIP1559FeeParameters {
+    public func changingGasLimit(to value: BigUInt) -> EthereumEIP1559FeeParameters {
         let feeParameters = EthereumEIP1559FeeParameters(
-            gasLimit: gasLimit * value,
+            gasLimit: value,
             maxFeePerGas: maxFeePerGas,
             priorityFee: priorityFee
         )
