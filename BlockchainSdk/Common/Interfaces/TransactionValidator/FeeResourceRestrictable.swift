@@ -14,15 +14,23 @@ protocol FeeResourceRestrictable {
 
 extension FeeResourceRestrictable where Self: WalletProvider {
     func validateFeeResource(amount: Amount, fee: Amount) throws {
-        guard case let .feeResource(type) = fee.type else {
+        guard case let .feeResource(type) = fee.type, fee.value >= 0 else {
             throw ValidationError.invalidFee
         }
         
-        let currentFeeResource = wallet.amounts[fee.type]?.value ?? .zero
-        let maxFeeResource = wallet.amounts[amount.type]?.value ?? .zero
+        guard let currentFeeResource = wallet.amounts[fee.type]?.value,
+              let maxFeeResource = wallet.amounts[amount.type]?.value
+        else {
+            throw ValidationError.balanceNotFound
+        }
+        
+        if fee.value > maxFeeResource {
+            throw ValidationError.feeExceedsMaxFeeResource
+        }
+        
         let availableBalanceForTransfer = currentFeeResource - fee.value
         
-        if amount.value == maxFeeResource {
+        if amount.value == maxFeeResource, availableBalanceForTransfer > 0 {
             throw ValidationError.amountExeedsFeeResourceCapacity(
                 type: type,
                 availableAmount: availableBalanceForTransfer

@@ -194,7 +194,7 @@ extension TransactionValidator where Self: FeeResourceRestrictable {
     }
     
     func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee.amount)
+        try validate(amount: amount)
         try validateFeeResource(amount: amount, fee: fee.amount)
     }
 }

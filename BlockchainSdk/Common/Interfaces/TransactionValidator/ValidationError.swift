@@ -27,6 +27,7 @@ public enum ValidationError: Hashable, LocalizedError {
     
     case insufficientFeeResource(type: FeeResourceType, current: Decimal, max: Decimal)
     case amountExeedsFeeResourceCapacity(type: FeeResourceType, availableAmount: Decimal)
+    case feeExceedsMaxFeeResource
 
     public var errorDescription: String? {
         switch self {
@@ -40,7 +41,7 @@ public enum ValidationError: Hashable, LocalizedError {
            return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
         case .minimumBalance(let minimumBalance):
             return String(format: "send_error_minimum_balance_format".localized, minimumBalance.string(roundingMode: .plain))
-        case .feeExceedsBalance:
+        case .feeExceedsBalance, .feeExceedsMaxFeeResource:
             return "send_validation_invalid_fee".localized
         case .invalidAmount, .amountExeedsFeeResourceCapacity:
             return "send_validation_invalid_amount".localized
