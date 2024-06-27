@@ -78,7 +78,7 @@ extension EthereumWalletManager: EthereumTransactionSigner {
     /// - Returns: The hex of the raw transaction ready to be sent over the network
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         do {
-            let transaction = try transaction.convertingAddresses(with: addressConverter)
+            let transaction = try convertAddresses(in: transaction)
             let hashToSign = try txBuilder.buildForSign(transaction: transaction)
             return signer
                 .sign(hash: hashToSign, walletPublicKey: wallet.publicKey)
@@ -295,6 +295,19 @@ private extension EthereumWalletManager {
             }
         }
     }
+
+    func convertAddresses(in transaction: Transaction) throws -> Transaction {
+        do {
+            var tx = transaction
+            tx.sourceAddress = try addressConverter.convertToETHAddress(tx.sourceAddress)
+            tx.destinationAddress = try addressConverter.convertToETHAddress(tx.destinationAddress)
+            tx.changeAddress = try addressConverter.convertToETHAddress(tx.changeAddress)
+            tx.contractAddress = try tx.contractAddress.map { try addressConverter.convertToETHAddress($0) }
+            return tx
+        } catch {
+            throw EthereumAddressConverterError.failedToConvertAddress(error: error)
+        }
+    }
 }
 
 // MARK: - TransactionFeeProvider
@@ -328,7 +341,7 @@ extension EthereumWalletManager: TransactionFeeProvider {
 extension EthereumWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         do {
-            let transaction = try transaction.convertingAddresses(with: addressConverter)
+            let transaction = try convertAddresses(in: transaction)
             return sign(transaction, signer: signer)
                 .withWeakCaptureOf(self)
                 .flatMap { walletManager, rawTransaction in
@@ -379,23 +392,5 @@ extension EthereumWalletManager: EthereumTransactionDataBuilder {
     func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
         let destination = try addressConverter.convertToETHAddress(destination)
         return try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
-    }
-}
-
-
-// MARK: - Transaction+
-
-fileprivate extension Transaction {
-    func convertingAddresses(with addressConverter: EthereumAddressConverter) throws -> Transaction {
-        do {
-            return try self.then { tx in
-                tx.sourceAddress = try addressConverter.convertToETHAddress(sourceAddress)
-                tx.destinationAddress = try addressConverter.convertToETHAddress(destinationAddress)
-                tx.changeAddress = try addressConverter.convertToETHAddress(changeAddress)
-                tx.contractAddress = try contractAddress.map { try addressConverter.convertToETHAddress($0) }
-            }
-        } catch {
-            throw EthereumAddressConverterError.failedToConvertAddress(error: error)
-        }
     }
 }
