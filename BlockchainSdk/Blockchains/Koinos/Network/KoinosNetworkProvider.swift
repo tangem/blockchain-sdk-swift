@@ -46,8 +46,6 @@ class KoinosNetworkProvider: HostProvider {
             }
             return try Koinos_Contracts_Token_balance_of_result(serializedData: decodedResult).value
         }
-        .replaceError(with: 0)
-        .setFailureType(to: Error.self)
         .eraseToAnyPublisher()
     }
     
@@ -57,8 +55,6 @@ class KoinosNetworkProvider: HostProvider {
             withResponseType: KoinosMethod.GetAccountRC.Response.self
         )
         .map(\.rc)
-        .replaceError(with: 0)
-        .setFailureType(to: Error.self)
         .eraseToAnyPublisher()
     }
     
