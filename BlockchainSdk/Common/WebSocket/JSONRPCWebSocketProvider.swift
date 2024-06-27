@@ -13,7 +13,7 @@ actor JSONRPCWebSocketProvider {
     private let connection: WebSocketConnection
     
     // Internal
-    private var requests: [Int: CheckedContinuation<Data, Error>] = [:]
+    private var requests: [Int: Continuation] = [:]
     private var receiveTask: Task<Void, Never>?
     private var counter: Int = 0
 
@@ -37,7 +37,7 @@ actor JSONRPCWebSocketProvider {
         setupReceiveTask()
          
         let data: Data = try await withCheckedThrowingContinuation { continuation in
-            requests.updateValue(continuation, forKey: request.id)
+            requests.updateValue(.init(continuation: continuation), forKey: request.id)
         }
 
         try Task.checkCancellation()
@@ -54,7 +54,8 @@ actor JSONRPCWebSocketProvider {
     
     func cancel() {
         receiveTask?.cancel()
-        requests.values.forEach { $0.resume(throwing: CancellationError()) }
+        requests.values.forEach { $0.cancel() }
+        requests.removeAll()
     }
 }
 
@@ -109,5 +110,39 @@ extension JSONRPCWebSocketProvider: HostProvider {
 extension JSONRPCWebSocketProvider: CustomStringConvertible {
     nonisolated var description: String {
         objectDescription(self)
+    }
+}
+
+private class Continuation {
+    private let continuation: CheckedContinuation<Data, Error>
+    private var isResumed: Bool = false
+
+    init(continuation: CheckedContinuation<Data, Error>) {
+        self.continuation = continuation
+    }
+
+    deinit {
+        assert(isResumed, "resume wasn't called")
+    }
+
+    func resume(returning data: Data) {
+        guard !isResumed else { return }
+
+        continuation.resume(returning: data)
+        isResumed = true
+    }
+
+    func resume(throwing error: any Error) {
+        guard !isResumed else { return }
+
+        continuation.resume(throwing: error)
+        isResumed = true
+    }
+
+    func cancel() {
+        guard !isResumed else { return }
+
+        continuation.resume(throwing: CancellationError())
+        isResumed = true
     }
 }
