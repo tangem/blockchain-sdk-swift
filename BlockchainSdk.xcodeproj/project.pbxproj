@@ -528,6 +528,7 @@
 		DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */; };
 		DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */; };
 		DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */; };
+		DC3C73912C2EF46E00B33990 /* EthereumModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C73902C2EF46E00B33990 /* EthereumModels.swift */; };
 		DC4772352C29EC7900D2459D /* EthereumAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772342C29EC7900D2459D /* EthereumAddressConverter.swift */; };
 		DC4772392C29F63700D2459D /* IdentityEthereumAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */; };
 		DC47723B2C29F64B00D2459D /* EthereumAddressConverterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47723A2C29F64B00D2459D /* EthereumAddressConverterError.swift */; };
@@ -1379,6 +1380,7 @@
 		DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressService.swift; sourceTree = "<group>"; };
 		DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressConverter.swift; sourceTree = "<group>"; };
+		DC3C73902C2EF46E00B33990 /* EthereumModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumModels.swift; sourceTree = "<group>"; };
 		DC45128D2BD18F9300DE6F94 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		DC4772342C29EC7900D2459D /* EthereumAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressConverter.swift; sourceTree = "<group>"; };
 		DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityEthereumAddressConverter.swift; sourceTree = "<group>"; };
@@ -3704,6 +3706,7 @@
 				EF2D9D9A2BC3F6770055C485 /* EthereumResponse.swift */,
 				EF2D9D9B2BC3F6770055C485 /* EthereumTransactionParams.swift */,
 				EF2D9D9C2BC3F6770055C485 /* ETHError.swift */,
+				DC3C73902C2EF46E00B33990 /* EthereumModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4791,6 +4794,7 @@
 				DC5E65042B1650F400E81AA5 /* OP_NUMEQUAL.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
+				DC3C73912C2EF46E00B33990 /* EthereumModels.swift in Sources */,
 				2DDEFBC52B59B36A00885675 /* AlgorandTransactionParams.swift in Sources */,
 				2D24F5B22B6D2C6500D502A0 /* AptosTransactionInfo.swift in Sources */,
 				DC5E65102B1650F400E81AA5 /* OP_2SWAP.swift in Sources */,
