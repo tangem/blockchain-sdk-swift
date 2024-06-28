@@ -41,11 +41,13 @@ extension KoinosMethod {
             
             init(from decoder: any Decoder) throws {
                 let container = try decoder.container(keyedBy: KoinosMethod.GetAccountRC.Response.CodingKeys.self)
-                let stringRC = try container.decode(String.self, forKey: KoinosMethod.GetAccountRC.Response.CodingKeys.rc)
-                guard let rc = UInt64(stringRC) else {
-                    throw WalletError.failedToParseNetworkResponse
+                let stringRC = try container.decodeIfPresent(String.self, forKey: KoinosMethod.GetAccountRC.Response.CodingKeys.rc)
+                
+                self.rc = if let stringRC, let rc = UInt64(stringRC) {
+                    rc
+                } else {
+                    0
                 }
-                self.rc = rc
             }
         }
     }
