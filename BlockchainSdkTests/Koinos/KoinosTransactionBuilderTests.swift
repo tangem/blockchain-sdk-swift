@@ -11,8 +11,10 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosTransactionBuilderTests: XCTestCase {
-    private let transactionBuilder = KoinosTransactionBuilder(isTestnet: false)
-    private let transactionBuilderTestnet = KoinosTransactionBuilder(isTestnet: true)
+    private let koinContractAbi = KoinContractAbi(isTestnet: false, decimalCount: 8)
+    private let koinContractAbiTestnet = KoinContractAbi(isTestnet: true, decimalCount: 8)
+    private lazy var transactionBuilder = KoinosTransactionBuilder(koinContractAbi: koinContractAbi)
+    private lazy var transactionBuilderTestnet = KoinosTransactionBuilder(koinContractAbi: koinContractAbiTestnet)
     
     // MARK: Mainnet
     
@@ -30,9 +32,9 @@ final class KoinosTransactionBuilderTests: XCTestCase {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractIdBase58: "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
+                        contractId: "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
                         entryPoint: 670398154,
-                        argsBase64: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
+                        args: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
                     )
                 )
             ],
@@ -65,9 +67,9 @@ final class KoinosTransactionBuilderTests: XCTestCase {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractIdBase58: "1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju",
+                        contractId: "1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju",
                         entryPoint: 670398154,
-                        argsBase64: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
+                        args: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
                     )
                 )
             ],

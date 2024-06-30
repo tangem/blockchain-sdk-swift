@@ -11,7 +11,9 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosWalletManagerTests: XCTestCase {
-    private let walletManager = KoinosWalletManager(
+    private let koinContractAbi = KoinContractAbi(isTestnet: false, decimalCount: 8)
+    
+    private lazy var walletManager = KoinosWalletManager(
         wallet: Wallet(
             blockchain: .koinos(testnet: false),
             addresses: [
@@ -22,11 +24,8 @@ final class KoinosWalletManagerTests: XCTestCase {
                 )
             ]
         ),
-        networkService: KoinosNetworkService(
-            providers: [],
-            decimalCount: 8
-        ), 
-        transactionBuilder: KoinosTransactionBuilder(isTestnet: false)
+        networkService: KoinosNetworkService(providers: []),
+        transactionBuilder: KoinosTransactionBuilder(koinContractAbi: koinContractAbi)
     )
     
     override func setUp() {

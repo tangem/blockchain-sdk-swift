@@ -10,6 +10,8 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosMethodResponseDecodingTests: XCTestCase {
+    private let decoder = JSONDecoder.withSnakeCaseStrategy
+    
     func testGetAccountNonceResponseDecoding1() throws {
         let jsonData = """
         {
@@ -18,9 +20,10 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         """
         .data(using: .utf8)!
         
-        let response = try JSONDecoder().decode(KoinosMethod.GetAccountNonce.Response.self, from: jsonData)
+        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: jsonData)
+        let nonce = try KoinosDTOMapper.convertNonce(response)
         
-        XCTAssertEqual(response.nonce, 0)
+        XCTAssertEqual(nonce.nonce, 0)
     }
     
     func testGetAccountNonceResponseDecoding2() throws {
@@ -31,9 +34,10 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         """
         .data(using: .utf8)!
         
-        let response = try JSONDecoder().decode(KoinosMethod.GetAccountNonce.Response.self, from: jsonData)
+        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: jsonData)
+        let nonce = try KoinosDTOMapper.convertNonce(response)
         
-        XCTAssertEqual(response.nonce, 1)
+        XCTAssertEqual(nonce.nonce, 1)
     }
     
     func testNonceEncoding1() throws {
@@ -115,7 +119,7 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         """
         .data(using: .utf8)!
         
-        let response = try JSONDecoder()
+        let response = try decoder
             .decode(
                 JSONRPC.Response<
                     KoinosMethod.SubmitTransaction.Response,
@@ -139,7 +143,7 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         """
         .data(using: .utf8)!
         
-        let result = try JSONDecoder()
+        let result = try decoder
             .decode(
                 JSONRPC.Response<
                     KoinosMethod.ReadContract.Response,

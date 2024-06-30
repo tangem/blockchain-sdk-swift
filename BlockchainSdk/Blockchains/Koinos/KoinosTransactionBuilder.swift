@@ -16,8 +16,8 @@ enum KoinosTransactionBuilderError: Error {
 class KoinosTransactionBuilder {
     private let koinContractAbi: KoinContractAbi
     
-    init(isTestnet: Bool) {
-        self.koinContractAbi = KoinContractAbi(isTestnet: isTestnet)
+    init(koinContractAbi: KoinContractAbi) {
+        self.koinContractAbi = koinContractAbi
     }
     
     func buildForSign(
@@ -88,9 +88,9 @@ class KoinosTransactionBuilder {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractIdBase58: koinContractAbi.contractID,
+                        contractId: koinContractAbi.contractID,
                         entryPoint: Int(KoinContractAbi.Transfer.entryPoint),
-                        argsBase64: operation.callContract.args.base64URLEncodedString()
+                        args: operation.callContract.args.base64URLEncodedString()
                     )
                 )
             ],

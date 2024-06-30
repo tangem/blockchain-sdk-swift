@@ -33,22 +33,7 @@ extension KoinosMethod {
         }
         
         struct Response: Decodable {
-            let rc: UInt64
-            
-            enum CodingKeys: CodingKey {
-                case rc
-            }
-            
-            init(from decoder: any Decoder) throws {
-                let container = try decoder.container(keyedBy: KoinosMethod.GetAccountRC.Response.CodingKeys.self)
-                let stringRC = try container.decodeIfPresent(String.self, forKey: KoinosMethod.GetAccountRC.Response.CodingKeys.rc)
-                
-                self.rc = if let stringRC, let rc = UInt64(stringRC) {
-                    rc
-                } else {
-                    0
-                }
-            }
+            let rc: String?
         }
     }
 }
@@ -60,23 +45,7 @@ extension KoinosMethod {
         }
         
         struct Response: Decodable {
-            let nonce: UInt64
-            
-            init(from decoder: any Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                let base64EncodedNonce: String = try container.decode(forKey: .nonce)
-                
-                guard let data = base64EncodedNonce.base64URLDecodedData(),
-                      let type = try? Koinos_Chain_value_type(serializedData: data)
-                else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                self.nonce = type.uint64Value
-            }
-            
-            enum CodingKeys: String, CodingKey {
-                case nonce
-            }
+            let nonce: String
         }
     }
 }
@@ -84,7 +53,7 @@ extension KoinosMethod {
 extension KoinosMethod {
     enum GetResourceLimits {
         struct Response: Decodable {
-            let resourceLimitData: KoinosChain.ResourceLimitData
+            let resourceLimitData: KoinosProtocol.ResourceLimitData
         }
     }
 }
@@ -100,5 +69,4 @@ extension KoinosMethod {
             let receipt: KoinosProtocol.TransactionReceipt
         }
     }
-    
 }

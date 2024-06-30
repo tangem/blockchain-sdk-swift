@@ -11,8 +11,9 @@ import Foundation
 final class KoinContractAbi {
     let contractID: String
     let chainID: String
+    let satoshiMultiplier: Decimal
     
-    init(isTestnet: Bool) {
+    init(isTestnet: Bool, decimalCount: Int) {
         if isTestnet {
             contractID = KoinContractAbiConstants.ContractIDTestnet
             chainID = KoinContractAbiConstants.ChainIDTestnet
@@ -20,6 +21,7 @@ final class KoinContractAbi {
             contractID = KoinContractAbiConstants.ContractID
             chainID = KoinContractAbiConstants.ChainID
         }
+        satoshiMultiplier = pow(10, decimalCount)
     }
 }
 

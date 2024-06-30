@@ -24,6 +24,57 @@ class KoinosNetworkProvider: HostProvider {
         self.koinContractAbi = koinContractAbi
     }
     
+    func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
+        let balanceResult = getKoinBalance(address: address)
+        let manaResult = getRC(address: address)
+        let satoshiMultiplier = koinContractAbi.satoshiMultiplier
+        
+        return Publishers.Zip(
+            balanceResult.map { Decimal($0) / satoshiMultiplier },
+            manaResult.map { Decimal($0) / satoshiMultiplier }
+        )
+        .map { balance, mana in
+            KoinosAccountInfo(
+                koinBalance: balance,
+                mana: mana
+            )
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func getNonce(address: String) -> AnyPublisher<KoinosAccountNonce, Error> {
+        requestPublisher(
+            for: .getNonce(address: address),
+            withResponseType: KoinosMethod.GetAccountNonce.Response.self
+        )
+        .tryMap(KoinosDTOMapper.convertNonce)
+        .eraseToAnyPublisher()
+    }
+    
+    func getRCLimit() -> AnyPublisher<Decimal, Error> {
+        getResourceLimits()
+            .map { [satoshiMultiplier = koinContractAbi.satoshiMultiplier] limits in
+                let rcLimitSatoshi = Constants.maxDiskStorageLimit * limits.diskStorageCost
+                    + Constants.maxNetworkLimit * limits.networkBandwidthCost
+                    + Constants.maxComputeLimit * limits.computeBandwidthCost
+                
+                return Decimal(rcLimitSatoshi) / satoshiMultiplier
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func submitTransaction(transaction: KoinosProtocol.Transaction) -> AnyPublisher<KoinosTransactionEntry, Error> {
+        requestPublisher(
+            for: .submitTransaction(transaction: transaction),
+            withResponseType: KoinosMethod.SubmitTransaction.Response.self
+        )
+        .map(\.receipt)
+        .tryMap(KoinosDTOMapper.convertTransactionEntry)
+        .eraseToAnyPublisher()
+    }
+}
+
+private extension KoinosNetworkProvider {
     func getKoinBalance(address: String) -> AnyPublisher<UInt64, Error> {
         let args: String
         do {
@@ -40,12 +91,7 @@ class KoinosNetworkProvider: HostProvider {
             for: .getKoinBalance(args: args),
             withResponseType: KoinosMethod.ReadContract.Response.self
         )
-        .tryMap { response in
-            guard let result = response.result, let decodedResult = result.base64URLDecodedData() else {
-                return 0
-            }
-            return try Koinos_Contracts_Token_balance_of_result(serializedData: decodedResult).value
-        }
+        .tryMap(KoinosDTOMapper.convertKoinBalance)
         .eraseToAnyPublisher()
     }
     
@@ -54,67 +100,35 @@ class KoinosNetworkProvider: HostProvider {
             for: .getRc(address: address),
             withResponseType: KoinosMethod.GetAccountRC.Response.self
         )
-        .map(\.rc)
+        .map(KoinosDTOMapper.convertAccountRC)
         .eraseToAnyPublisher()
     }
     
-    func getNonce(address: String) -> AnyPublisher<UInt64, Error> {
-        requestPublisher(
-            for: .getNonce(address: address),
-            withResponseType: KoinosMethod.GetAccountNonce.Response.self
-        )
-        .map(\.nonce)
-        .eraseToAnyPublisher()
-    }
-    
-    func getResourceLimits() -> AnyPublisher<KoinosChain.ResourceLimitData, Error> {
+    func getResourceLimits() -> AnyPublisher<KoinosResourceLimitData, Error> {
         requestPublisher(
             for: .getResourceLimits,
             withResponseType: KoinosMethod.GetResourceLimits.Response.self
         )
-        .map(\.resourceLimitData)
+        .tryMap(KoinosDTOMapper.convertResourceLimitData)
         .eraseToAnyPublisher()
     }
     
-    func submitTransaction(transaction: KoinosProtocol.Transaction) -> AnyPublisher<KoinosTransactionEntry, Error> {
-        requestPublisher(
-            for: .submitTransaction(transaction: transaction),
-            withResponseType: KoinosMethod.SubmitTransaction.Response.self,
-            decoder: .init()
-        )
-        .map(\.receipt)
-        .tryMap { receipt in
-            guard let encodedEvent = receipt.events.first?.eventData, let data = encodedEvent.base64URLDecodedData() else {
-                throw WalletError.failedToParseNetworkResponse
-            }
-            
-            let decodedEvent = try Koinos_Contracts_Token_transfer_event(serializedData: data)
-            
-            return KoinosTransactionEntry(
-                id: receipt.id,
-                sequenceNum: UInt64.max,
-                payerAddress: receipt.payer,
-                rcLimit: receipt.maxPayerRc,
-                rcUsed: receipt.rcUsed,
-                event: KoinosTransferEvent(
-                    fromAccount: decodedEvent.from.base58EncodedString,
-                    toAccount: decodedEvent.to.base58EncodedString,
-                    value: decodedEvent.value
-                )
-            )
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    private func requestPublisher<T: Decodable>(
+    func requestPublisher<T: Decodable>(
         for target: KoinosTarget.KoinosTargetType,
-        withResponseType: T.Type,
-        decoder: JSONDecoder = .withSnakeCaseStrategy
+        withResponseType: T.Type
     ) -> AnyPublisher<T, Error> {
         provider.requestPublisher(KoinosTarget(node: node, koinContractAbi: koinContractAbi, target))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(JSONRPC.Response<T, JSONRPC.APIError>.self, using: decoder)
+            .map(JSONRPC.Response<T, JSONRPC.APIError>.self, using: .withSnakeCaseStrategy)
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
+    }
+}
+
+private extension KoinosNetworkProvider {
+    enum Constants {
+        static let maxDiskStorageLimit: UInt64 = 118
+        static let maxNetworkLimit: UInt64 = 408
+        static let maxComputeLimit: UInt64 = 1_000_000
     }
 }

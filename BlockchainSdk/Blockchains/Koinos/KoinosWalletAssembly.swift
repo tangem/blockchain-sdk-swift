@@ -12,7 +12,10 @@ struct KoinosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let blockchain = input.blockchain
         let isTestnet = blockchain.isTestnet
-        let koinContractAbi = KoinContractAbi(isTestnet: isTestnet)
+        let koinContractAbi = KoinContractAbi(
+            isTestnet: isTestnet,
+            decimalCount: blockchain.decimalCount
+        )
         
         return KoinosWalletManager(
             wallet: input.wallet,
@@ -24,10 +27,9 @@ struct KoinosWalletAssembly: WalletManagerAssembly {
                             koinContractAbi: koinContractAbi,
                             configuration: input.networkConfig
                         )
-                    },
-                decimalCount: blockchain.decimalCount
+                    }
             ),
-            transactionBuilder: KoinosTransactionBuilder(isTestnet: isTestnet)
+            transactionBuilder: KoinosTransactionBuilder(koinContractAbi: koinContractAbi)
         )
     }
 }
