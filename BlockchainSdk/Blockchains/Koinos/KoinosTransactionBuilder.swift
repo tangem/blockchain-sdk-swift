@@ -14,10 +14,10 @@ enum KoinosTransactionBuilderError: Error {
 }
 
 class KoinosTransactionBuilder {
-    private let koinContractAbi: KoinContractAbi
+    private let koinosNetworkParams: KoinosNetworkParams
     
-    init(koinContractAbi: KoinContractAbi) {
-        self.koinContractAbi = koinContractAbi
+    init(koinosNetworkParams: KoinosNetworkParams) {
+        self.koinosNetworkParams = koinosNetworkParams
     }
     
     func buildForSign(
@@ -42,8 +42,8 @@ class KoinosTransactionBuilder {
 
         let operation = try Koinos_Protocol_operation.with {
             $0.callContract = try Koinos_Protocol_call_contract_operation.with {
-                $0.contractID = koinContractAbi.contractID.base58DecodedData
-                $0.entryPoint = KoinContractAbi.Transfer.entryPoint
+                $0.contractID = koinosNetworkParams.contractID.base58DecodedData
+                $0.entryPoint = KoinosNetworkParams.Transfer.entryPoint
                 $0.args = try Koinos_Contracts_Token_transfer_arguments.with {
                     $0.from = from.base58DecodedData
                     $0.to = to.base58DecodedData
@@ -60,7 +60,7 @@ class KoinosTransactionBuilder {
         }
         .serializedData()
         
-        guard let chainID = koinContractAbi.chainID.base64URLDecodedData() else {
+        guard let chainID = koinosNetworkParams.chainID.base64URLDecodedData() else {
             throw WalletError.failedToBuildTx
         }
         
@@ -73,11 +73,11 @@ class KoinosTransactionBuilder {
         }
         
         let hashToSign = try header.serializedData().getSha256()
-        let transactionId = "\(KoinContractAbi.Transfer.transactionIDPrefix)\(hashToSign.hexString.lowercased())"
+        let transactionId = "\(KoinosNetworkParams.Transfer.transactionIDPrefix)\(hashToSign.hexString.lowercased())"
         
         let transactionToSign = KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
-                chainId: koinContractAbi.chainID,
+                chainId: koinosNetworkParams.chainID,
                 rcLimit: manaLimitSatoshi,
                 nonce: encodedNextNonce.base64URLEncodedString(),
                 operationMerkleRoot: operationMerkleRoot.base64URLEncodedString(),
@@ -88,8 +88,8 @@ class KoinosTransactionBuilder {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractId: koinContractAbi.contractID,
-                        entryPoint: Int(KoinContractAbi.Transfer.entryPoint),
+                        contractId: koinosNetworkParams.contractID,
+                        entryPoint: Int(KoinosNetworkParams.Transfer.entryPoint),
                         args: operation.callContract.args.base64URLEncodedString()
                     )
                 )

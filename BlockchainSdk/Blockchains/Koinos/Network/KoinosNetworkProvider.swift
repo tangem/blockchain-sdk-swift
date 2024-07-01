@@ -16,18 +16,18 @@ class KoinosNetworkProvider: HostProvider {
     
     private let node: NodeInfo
     private let provider: NetworkProvider<KoinosTarget>
-    private let koinContractAbi: KoinContractAbi
+    private let koinosNetworkParams: KoinosNetworkParams
     
-    init(node: NodeInfo, koinContractAbi: KoinContractAbi, configuration: NetworkProviderConfiguration) {
+    init(node: NodeInfo, koinosNetworkParams: KoinosNetworkParams, configuration: NetworkProviderConfiguration) {
         self.node = node
         provider = NetworkProvider<KoinosTarget>(configuration: configuration)
-        self.koinContractAbi = koinContractAbi
+        self.koinosNetworkParams = koinosNetworkParams
     }
     
     func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
         let balanceResult = getKoinBalance(address: address)
         let manaResult = getRC(address: address)
-        let satoshiMultiplier = koinContractAbi.satoshiMultiplier
+        let satoshiMultiplier = koinosNetworkParams.satoshiMultiplier
         
         return Publishers.Zip(
             balanceResult.map { Decimal($0) / satoshiMultiplier },
@@ -53,7 +53,7 @@ class KoinosNetworkProvider: HostProvider {
     
     func getRCLimit() -> AnyPublisher<Decimal, Error> {
         getResourceLimits()
-            .map { [satoshiMultiplier = koinContractAbi.satoshiMultiplier] limits in
+            .map { [satoshiMultiplier = koinosNetworkParams.satoshiMultiplier] limits in
                 let rcLimitSatoshi = Constants.maxDiskStorageLimit * limits.diskStorageCost
                     + Constants.maxNetworkLimit * limits.networkBandwidthCost
                     + Constants.maxComputeLimit * limits.computeBandwidthCost
@@ -117,7 +117,7 @@ private extension KoinosNetworkProvider {
         for target: KoinosTarget.KoinosTargetType,
         withResponseType: T.Type
     ) -> AnyPublisher<T, Error> {
-        provider.requestPublisher(KoinosTarget(node: node, koinContractAbi: koinContractAbi, target))
+        provider.requestPublisher(KoinosTarget(node: node, koinosNetworkParams: koinosNetworkParams, target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(JSONRPC.Response<T, JSONRPC.APIError>.self, using: .withSnakeCaseStrategy)
             .tryMap { try $0.result.get() }

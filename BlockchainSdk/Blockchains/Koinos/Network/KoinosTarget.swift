@@ -35,11 +35,11 @@ struct KoinosTarget: TargetType {
     
     let node: NodeInfo
     let type: KoinosTargetType
-    let koinContractAbi: KoinContractAbi
+    let koinosNetworkParams: KoinosNetworkParams
     
-    init(node: NodeInfo, koinContractAbi: KoinContractAbi, _ type: KoinosTargetType) {
+    init(node: NodeInfo, koinosNetworkParams: KoinosNetworkParams, _ type: KoinosTargetType) {
         self.node = node
-        self.koinContractAbi = koinContractAbi
+        self.koinosNetworkParams = koinosNetworkParams
         self.type = type
     }
 
@@ -62,8 +62,8 @@ struct KoinosTarget: TargetType {
                 id: Constants.jsonRPCMethodId,
                 method: type.method,
                 params: KoinosMethod.ReadContract.RequestParams(
-                    contractId: koinContractAbi.contractID,
-                    entryPoint: KoinContractAbi.BalanceOf.entryPoint,
+                    contractId: koinosNetworkParams.contractID,
+                    entryPoint: KoinosNetworkParams.BalanceOf.entryPoint,
                     args: args
                 ),
                 encoder: JSONEncoder.withSnakeCaseStrategy

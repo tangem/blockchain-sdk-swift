@@ -11,10 +11,11 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosTransactionBuilderTests: XCTestCase {
-    private let koinContractAbi = KoinContractAbi(isTestnet: false, decimalCount: 8)
-    private let koinContractAbiTestnet = KoinContractAbi(isTestnet: true, decimalCount: 8)
-    private lazy var transactionBuilder = KoinosTransactionBuilder(koinContractAbi: koinContractAbi)
-    private lazy var transactionBuilderTestnet = KoinosTransactionBuilder(koinContractAbi: koinContractAbiTestnet)
+    private let decimalValue = Blockchain.koinos(testnet: false).decimalValue
+    private lazy var koinosNetworkParams = KoinosNetworkParams(isTestnet: false, decimalValue: decimalValue)
+    private lazy var koinContractAbiTestnet = KoinosNetworkParams(isTestnet: true, decimalValue: decimalValue)
+    private lazy var transactionBuilder = KoinosTransactionBuilder(koinosNetworkParams: koinosNetworkParams)
+    private lazy var transactionBuilderTestnet = KoinosTransactionBuilder(koinosNetworkParams: koinContractAbiTestnet)
     
     // MARK: Mainnet
     
