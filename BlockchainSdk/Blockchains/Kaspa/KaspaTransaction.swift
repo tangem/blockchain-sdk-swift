@@ -83,6 +83,7 @@ struct KaspaTransaction {
     
     private func blake2bDigest(for data: Data) -> Data {
         let length = 32
+        // TODO: Use extension from Data+ and refactor to handle optional Data
         return Data(Sodium().genericHash.hash(message: data.bytes, key: blake2bDigestKey, outputLength: length) ?? [])
     }
 }
