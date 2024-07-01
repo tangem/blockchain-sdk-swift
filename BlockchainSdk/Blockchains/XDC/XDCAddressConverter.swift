@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct XDCAddressConverter {
-    func convertToETHAddress(_ address: String) -> String {
+struct XDCAddressConverter: EthereumAddressConverter {
+    func convertToETHAddress(_ address: String) throws -> String {
         if address.starts(with: Constants.xdcAddressPrefix) {
             let cleaned = String(address.dropFirst(Constants.xdcAddressPrefix.count))
             return cleaned.addHexPrefix()
