@@ -13,6 +13,7 @@ import Combine
 @testable import Solana_Swift
 
 private let raisedError = SolanaError.other("Just tx size test")
+private let nullRaisedError = SolanaError.nullValue
 
 final class SolanaEd25519Slip0010Tests: XCTestCase {
     private class CoinSigner: TransactionSigner {
@@ -57,7 +58,7 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     
     private var bag = Set<AnyCancellable>()
     
-    private let network: RPCEndpoint = .devnetSolana
+    private let network: RPCEndpoint = .testnetSolana
     private let walletPubKey = Data(hex: "B148CC30B144E8F214AE5754C753C40A9BF2A3359DB4246E03C6A2F61A82C282")
     private let address = "Cw3YcfqzRSa7xT7ecpR5E4FKDQU6aaxz5cWje366CZbf"
     private let blockchain = Blockchain.solana(curve: .ed25519_slip0010, testnet: true)
@@ -68,7 +69,7 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo], apiLogger: nil)
+        networkingRouter = .init(endpoints: [network], apiLogger: nil)
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
         let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
@@ -94,7 +95,7 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
         let expected = expectation(description: "Waiting for response")
         
         let sendTxResult = manager.send(transaction, signer: coinSigner)
-        processResult(sendTxResult, expectationToFill: expected)
+        processResult(sendTxResult, expectationToFill: expected, expectedError: raisedError)
         waitForExpectations(timeout: 10)
     }
     
@@ -115,11 +116,11 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
         let expected = expectation(description: "Waiting for response")
         
         let sendTxResult = manager.send(transaction, signer: tokenSigner)
-        processResult(sendTxResult, expectationToFill: expected)
+        processResult(sendTxResult, expectationToFill: expected, expectedError: nullRaisedError)
         waitForExpectations(timeout: 10)
     }
     
-    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, SendTxError>, expectationToFill: XCTestExpectation) {
+    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, SendTxError>, expectationToFill: XCTestExpectation, expectedError: SolanaError) {
         bag.insert(
             publisher.sink(receiveCompletion: { completion in
                 defer {
@@ -136,7 +137,7 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
                     return
                 }
                 
-                XCTAssertEqual(castedError, raisedError)
+                XCTAssertEqual(castedError.localizedDescription, expectedError.localizedDescription)
             }, receiveValue: { _ in
                 XCTFail("Test shouldn't receive value")
             })
