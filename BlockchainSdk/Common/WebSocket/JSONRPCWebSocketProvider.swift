@@ -52,10 +52,13 @@ actor JSONRPCWebSocketProvider {
         return try response.result.get()
     }
     
-    func cancel() {
+    func cancel() async {
         receiveTask?.cancel()
-        requests.values.forEach { $0.cancel() }
-        requests.removeAll()
+
+        for key in requests.keys {
+            await requests[key]?.cancel()
+            requests.removeValue(forKey: key)
+        }
     }
 }
 
@@ -84,7 +87,7 @@ private extension JSONRPCWebSocketProvider {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
             if let id = json?["id"] as? Int, let continuation = requests[id] {
-                continuation.resume(returning: data)
+                await continuation.resume(returning: data)
             } else {
                 log("Received json: \(String(describing: json)) is not handled")
             }
@@ -113,16 +116,12 @@ extension JSONRPCWebSocketProvider: CustomStringConvertible {
     }
 }
 
-private class Continuation {
+private actor Continuation {
     private let continuation: CheckedContinuation<Data, Error>
     private var isResumed: Bool = false
 
     init(continuation: CheckedContinuation<Data, Error>) {
         self.continuation = continuation
-    }
-
-    deinit {
-        assert(isResumed, "resume wasn't called")
     }
 
     func resume(returning data: Data) {
