@@ -48,12 +48,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
                 $0.transactionHash.caseInsensitiveEquals(to: hash)
             }
 
-            return recentContains || outputsContains
-        }
-
-        // If we have pending transaction but we haven't unspentOutputs then clear it
-        if response.recentTransactionsHashes.isEmpty, response.unspentOutputs.isEmpty {
-            wallet.clearPendingTransaction()
+            return recentContains || outputsContains || response.unspentOutputs.isEmpty
         }
     }
 }
