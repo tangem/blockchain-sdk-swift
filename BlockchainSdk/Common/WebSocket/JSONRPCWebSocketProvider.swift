@@ -71,8 +71,8 @@ private extension JSONRPCWebSocketProvider {
             
             do {
                 let data = try await connection.receive()
-                async let _ = proceedReceive(data: data)
-                
+                await proceedReceive(data: data)
+
                 // Handle next message
                 await setupReceiveTask()
             } catch {
