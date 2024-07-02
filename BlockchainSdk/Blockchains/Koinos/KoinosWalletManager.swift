@@ -89,17 +89,13 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     walletPublicKey: wallet.publicKey
                 )
                 .tryMap { signature in
-                    let extendedSignature = try Secp256k1Signature(with: signature)
+                    try Secp256k1Signature(with: signature)
                         .unmarshal(with: wallet.publicKey.blockchainKey, hash: hashToSign)
-                    
-                    let recId = extendedSignature.v.bytes[0] - 27
-                    let newV = recId + 31
-                    return Data([newV]) + extendedSignature.r + extendedSignature.s
                 }
-                .map { preparedSignature in
+                .map { extendedSignature in
                     transactionBuilder.buildForSend(
                         transaction: transaction,
-                        preparedSignature: preparedSignature
+                        extendedSignature: extendedSignature
                     )
                 }
                 .flatMap(networkService.submitTransaction)

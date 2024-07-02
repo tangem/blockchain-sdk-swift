@@ -7,10 +7,6 @@
 
 import Foundation
 
-enum KoinosDTOMapperError: Error {
-    case failedToMapKoinosDTO
-}
-
 enum KoinosDTOMapper {
     static func convertResourceLimitData(_ dto: KoinosMethod.GetResourceLimits.Response) throws -> KoinosResourceLimitData {
         let limits = dto.resourceLimitData
@@ -53,7 +49,7 @@ enum KoinosDTOMapper {
         let base64EncodedNonce = dto.nonce
         
         guard let data = base64EncodedNonce.base64URLDecodedData() else {
-            throw WalletError.failedToParseNetworkResponse
+            throw KoinosDTOMapperError.failedToMapKoinosDTO
         }
         
         let type = try Koinos_Chain_value_type(serializedData: data)
@@ -84,4 +80,8 @@ enum KoinosDTOMapper {
             )
         )
     }
+}
+
+enum KoinosDTOMapperError: Error {
+    case failedToMapKoinosDTO
 }

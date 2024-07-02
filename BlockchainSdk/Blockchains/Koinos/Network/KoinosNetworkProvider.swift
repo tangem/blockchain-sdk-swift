@@ -76,21 +76,21 @@ class KoinosNetworkProvider: HostProvider {
 
 private extension KoinosNetworkProvider {
     func getKoinBalance(address: String) -> AnyPublisher<UInt64, Error> {
-        let args: String
-        do {
-            args = try Koinos_Contracts_Token_balance_of_arguments.with {
+        Result {
+            try Koinos_Contracts_Token_balance_of_arguments.with {
                 $0.owner = address.base58DecodedData
             }
             .serializedData()
             .base64URLEncodedString()
-        } catch {
-            return Fail(error: error).eraseToAnyPublisher()
         }
-        
-        return requestPublisher(
-            for: .getKoinBalance(args: args),
-            withResponseType: KoinosMethod.ReadContract.Response.self
-        )
+        .publisher
+        .withWeakCaptureOf(self)
+        .flatMap { provider, args in
+            provider.requestPublisher(
+                for: .getKoinBalance(args: args),
+                withResponseType: KoinosMethod.ReadContract.Response.self
+            )
+        }
         .tryMap(KoinosDTOMapper.convertKoinBalance)
         .eraseToAnyPublisher()
     }

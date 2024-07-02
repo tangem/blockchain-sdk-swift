@@ -9,10 +9,6 @@
 import Foundation
 import TangemSdk
 
-enum KoinosTransactionBuilderError: Error {
-    case unableToParseParams
-}
-
 class KoinosTransactionBuilder {
     private let koinosNetworkParams: KoinosNetworkParams
     
@@ -61,7 +57,7 @@ class KoinosTransactionBuilder {
         .serializedData()
         
         guard let chainID = koinosNetworkParams.chainID.base64URLDecodedData() else {
-            throw WalletError.failedToBuildTx
+            throw KoinosTransactionBuilderError.unableToDecodeChainID
         }
         
         let header = Koinos_Protocol_transaction_header.with {
@@ -100,8 +96,15 @@ class KoinosTransactionBuilder {
         return (transactionToSign, hashToSign)
     }
     
-    func buildForSend(transaction: KoinosProtocol.Transaction, preparedSignature: Data) -> KoinosProtocol.Transaction  {
-        KoinosProtocol.Transaction(
+    func buildForSend(
+        transaction: KoinosProtocol.Transaction,
+        extendedSignature: Secp256k1Signature.Extended
+    ) -> KoinosProtocol.Transaction  {
+        let recId = extendedSignature.v.bytes[0] - 27
+        let newV = recId + 31
+        let preparedSignature = Data([newV]) + extendedSignature.r + extendedSignature.s
+        
+        return KoinosProtocol.Transaction(
             header: transaction.header,
             id: transaction.id,
             operations: transaction.operations,
@@ -110,4 +113,9 @@ class KoinosTransactionBuilder {
             ]
         )
     }
+}
+
+enum KoinosTransactionBuilderError: Error {
+    case unableToParseParams
+    case unableToDecodeChainID
 }
