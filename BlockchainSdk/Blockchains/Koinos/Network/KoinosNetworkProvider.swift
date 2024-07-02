@@ -18,20 +18,20 @@ class KoinosNetworkProvider: HostProvider {
     private let provider: NetworkProvider<KoinosTarget>
     private let koinosNetworkParams: KoinosNetworkParams
     
-    init(node: NodeInfo, koinosNetworkParams: KoinosNetworkParams, configuration: NetworkProviderConfiguration) {
+    init(
+        node: NodeInfo,
+        koinosNetworkParams: KoinosNetworkParams,
+        configuration: NetworkProviderConfiguration
+    ) {
         self.node = node
         provider = NetworkProvider<KoinosTarget>(configuration: configuration)
         self.koinosNetworkParams = koinosNetworkParams
     }
     
     func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
-        let balanceResult = getKoinBalance(address: address)
-        let manaResult = getRC(address: address)
-        let satoshiMultiplier = koinosNetworkParams.satoshiMultiplier
-        
-        return Publishers.Zip(
-            balanceResult.map { Decimal($0) / satoshiMultiplier },
-            manaResult.map { Decimal($0) / satoshiMultiplier }
+        Publishers.Zip(
+            getKoinBalance(address: address),
+            getRC(address: address)
         )
         .map { balance, mana in
             KoinosAccountInfo(
@@ -51,14 +51,12 @@ class KoinosNetworkProvider: HostProvider {
         .eraseToAnyPublisher()
     }
     
-    func getRCLimit() -> AnyPublisher<Decimal, Error> {
+    func getRCLimit() -> AnyPublisher<UInt64, Error> {
         getResourceLimits()
-            .map { [satoshiMultiplier = koinosNetworkParams.satoshiMultiplier] limits in
-                let rcLimitSatoshi = Constants.maxDiskStorageLimit * limits.diskStorageCost
+            .map { limits in
+                Constants.maxDiskStorageLimit * limits.diskStorageCost
                     + Constants.maxNetworkLimit * limits.networkBandwidthCost
                     + Constants.maxComputeLimit * limits.computeBandwidthCost
-                
-                return Decimal(rcLimitSatoshi) / satoshiMultiplier
             }
             .eraseToAnyPublisher()
     }

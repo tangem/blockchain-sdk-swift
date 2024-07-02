@@ -11,26 +11,27 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosWalletManagerTests: XCTestCase {
-    private let decimalValue = Blockchain.koinos(testnet: false).decimalValue
-    private lazy var koinosNetworkParams = KoinosNetworkParams(isTestnet: false, decimalValue: decimalValue)
-    
-    private lazy var walletManager = KoinosWalletManager(
-        wallet: Wallet(
-            blockchain: .koinos(testnet: false),
-            addresses: [
-                .default: PlainAddress(
-                    value: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
-                    publicKey: .init(seedKey: .init(), derivationType: nil),
-                    type: .default
-                )
-            ]
-        ),
-        networkService: KoinosNetworkService(providers: []),
-        transactionBuilder: KoinosTransactionBuilder(koinosNetworkParams: koinosNetworkParams)
-    )
+    private var walletManager: KoinosWalletManager!
     
     override func setUp() {
-        walletManager.wallet.clearAmounts()
+        walletManager = KoinosWalletManager(
+            wallet: Wallet(
+                blockchain: .koinos(testnet: false),
+                addresses: [
+                    .default: PlainAddress(
+                        value: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
+                        publicKey: .init(seedKey: .init(), derivationType: nil),
+                        type: .default
+                    )
+                ]
+            ),
+            networkService: KoinosNetworkService(providers: []),
+            transactionBuilder: KoinosTransactionBuilder(koinosNetworkParams: KoinosNetworkParams(isTestnet: false))
+        )
+    }
+    
+    override func tearDown() {
+        walletManager = nil
     }
 
     func testTxValidationSmoke() {

@@ -49,22 +49,26 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
             } receiveValue: { [weak self] accountInfo in
                 guard let self else { return }
                 
-                if wallet.amounts[.coin]?.value != accountInfo.koinBalance {
+                let atimicUnitMultiplier = wallet.blockchain.decimalValue
+                let koinBalance = Decimal(accountInfo.koinBalance) / atimicUnitMultiplier
+                let mana = Decimal(accountInfo.mana) / atimicUnitMultiplier
+                
+                if wallet.amounts[.coin]?.value != koinBalance {
                     wallet.clearPendingTransaction()
                 }
                 
                 wallet.add(
                     amount: Amount(
-                        with: self.wallet.blockchain,
+                        with: wallet.blockchain,
                         type: .coin,
-                        value: accountInfo.koinBalance
+                        value: koinBalance
                     )
                 )
                 wallet.add(
                     amount: Amount(
                         with: self.wallet.blockchain,
                         type: .feeResource(.mana),
-                        value: accountInfo.mana
+                        value: mana
                     )
                 )
             }
@@ -88,14 +92,17 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     hash: hashToSign,
                     walletPublicKey: wallet.publicKey
                 )
-                .tryMap { signature in
-                    try Secp256k1Signature(with: signature)
-                        .unmarshal(with: wallet.publicKey.blockchainKey, hash: hashToSign)
+                .map { signature in
+                    SignatureInfo(
+                        signature: signature,
+                        publicKey: wallet.publicKey.blockchainKey,
+                        hash: hashToSign
+                    )
                 }
-                .map { extendedSignature in
-                    transactionBuilder.buildForSend(
+                .tryMap { signature in
+                    try transactionBuilder.buildForSend(
                         transaction: transaction,
-                        extendedSignature: extendedSignature
+                        signature: signature
                     )
                 }
                 .flatMap(networkService.submitTransaction)
@@ -115,13 +122,13 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
         networkService.getRCLimit()
-            .map { [wallet] rcLimit in
+            .map { [blockchain = wallet.blockchain] rcLimit in
                 Fee(
                     Amount(
                         type: .feeResource(.mana),
                         currencySymbol: FeeResourceType.mana.rawValue,
-                        value: rcLimit,
-                        decimals: wallet.blockchain.decimalCount
+                        value: Decimal(rcLimit) / blockchain.decimalValue,
+                        decimals: blockchain.decimalCount
                     )
                 )
             }

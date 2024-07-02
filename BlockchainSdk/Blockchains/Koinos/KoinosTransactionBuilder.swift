@@ -98,8 +98,11 @@ class KoinosTransactionBuilder {
     
     func buildForSend(
         transaction: KoinosProtocol.Transaction,
-        extendedSignature: Secp256k1Signature.Extended
-    ) -> KoinosProtocol.Transaction  {
+        signature: SignatureInfo
+    ) throws -> KoinosProtocol.Transaction  {
+        let extendedSignature = try Secp256k1Signature(with: signature.signature)
+            .unmarshal(with: signature.publicKey, hash: signature.hash)
+        
         let recId = extendedSignature.v.bytes[0] - 27
         let newV = recId + 31
         let preparedSignature = Data([newV]) + extendedSignature.r + extendedSignature.s

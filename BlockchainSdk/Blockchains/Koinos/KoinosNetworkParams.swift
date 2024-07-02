@@ -11,9 +11,8 @@ import Foundation
 struct KoinosNetworkParams {
     let contractID: String
     let chainID: String
-    let satoshiMultiplier: Decimal
     
-    init(isTestnet: Bool, decimalValue: Decimal) {
+    init(isTestnet: Bool) {
         if isTestnet {
             contractID = KoinContractAbiConstants.ContractIDTestnet
             chainID = KoinContractAbiConstants.ChainIDTestnet
@@ -21,7 +20,6 @@ struct KoinosNetworkParams {
             contractID = KoinContractAbiConstants.ContractID
             chainID = KoinContractAbiConstants.ChainID
         }
-        satoshiMultiplier = decimalValue
     }
 }
 

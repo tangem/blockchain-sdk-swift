@@ -11,11 +11,8 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosTransactionBuilderTests: XCTestCase {
-    private let decimalValue = Blockchain.koinos(testnet: false).decimalValue
-    private lazy var koinosNetworkParams = KoinosNetworkParams(isTestnet: false, decimalValue: decimalValue)
-    private lazy var koinContractAbiTestnet = KoinosNetworkParams(isTestnet: true, decimalValue: decimalValue)
-    private lazy var transactionBuilder = KoinosTransactionBuilder(koinosNetworkParams: koinosNetworkParams)
-    private lazy var transactionBuilderTestnet = KoinosTransactionBuilder(koinosNetworkParams: koinContractAbiTestnet)
+    private let transactionBuilder = KoinosTransactionBuilder(koinosNetworkParams: KoinosNetworkParams(isTestnet: false))
+    private let transactionBuilderTestnet = KoinosTransactionBuilder(koinosNetworkParams: KoinosNetworkParams(isTestnet: true))
     
     // MARK: Mainnet
     
@@ -121,11 +118,15 @@ extension KoinosTransactionBuilderTests {
     
     func testBuildForSend() throws {
         let signature = Data(Array(repeating: 0x00, count: 64))
-        let normalizedSignature = try Secp256k1Signature(with: signature).normalize()
+        let publicKey = Wallet.PublicKey(seedKey: Data(), derivationType: nil) // TODO: [KOINOS] What to use here?
         
-        let signedTransaction = transactionBuilder.buildForSend(
+        let signedTransaction = try transactionBuilder.buildForSend(
             transaction: expectedTransaction,
-            preparedSignature: normalizedSignature
+            signature: SignatureInfo(
+                signature: signature,
+                publicKey: publicKey.blockchainKey,
+                hash: expectedHash
+            )
         )
         
         XCTAssertEqual(signedTransaction.signatures.count, 1)

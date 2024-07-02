@@ -35,7 +35,7 @@ class KoinosNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getRCLimit() -> AnyPublisher<Decimal, Error> {
+    func getRCLimit() -> AnyPublisher<UInt64, Error> {
         providerPublisher { provider in
             provider.getRCLimit()
         }

@@ -18,9 +18,9 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
             "nonce": "KAA="
         }
         """
-        .data(using: .utf8)!
+        .data(using: .utf8)
         
-        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: jsonData)
+        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: XCTUnwrap(jsonData))
         let nonce = try KoinosDTOMapper.convertNonce(response)
         
         XCTAssertEqual(nonce.nonce, 0)
@@ -32,9 +32,9 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
             "nonce": "KAE="
         }
         """
-        .data(using: .utf8)!
+        .data(using: .utf8)
         
-        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: jsonData)
+        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: XCTUnwrap(jsonData))
         let nonce = try KoinosDTOMapper.convertNonce(response)
         
         XCTAssertEqual(nonce.nonce, 1)
@@ -117,7 +117,7 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
           "id": 1
         }
         """
-        .data(using: .utf8)!
+        .data(using: .utf8)
         
         let response = try decoder
             .decode(
@@ -125,7 +125,7 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
                     KoinosMethod.SubmitTransaction.Response,
                     NEARNetworkResult.APIError
                 >.self, 
-                from: jsonData
+                from: XCTUnwrap(jsonData)
             )
         
         XCTAssertEqual(response.id, 1)
@@ -141,7 +141,7 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
             "id": 1
         }
         """
-        .data(using: .utf8)!
+        .data(using: .utf8)
         
         let result = try decoder
             .decode(
@@ -149,7 +149,7 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
                     KoinosMethod.ReadContract.Response,
                     JSONRPC.APIError
                 >.self,
-                from: jsonData
+                from: XCTUnwrap(jsonData)
             )
         
         XCTAssertEqual(result.jsonrpc, "2.0")
