@@ -120,7 +120,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     Amount(
                         type: .feeResource(.mana),
                         currencySymbol: FeeResourceType.mana.rawValue,
-                        value: (rcLimit / BigUInt(blockchain.decimalValue.uint64Value)).decimal ?? .zero,
+                        value: (rcLimit.decimal ?? .zero) / blockchain.decimalValue,
                         decimals: blockchain.decimalCount
                     )
                 )

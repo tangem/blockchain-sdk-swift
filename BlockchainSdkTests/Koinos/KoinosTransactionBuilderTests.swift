@@ -46,7 +46,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
     }
     
     private var expectedSignature: String {
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+        "Hxeh6xzso62xaxeutW30BRJyC3mu_OGEwWJt1n5e8Ugjc0Cfj2cxVzY7JjxgspGu2Nq9MLbr8c0-lY64FKwj_pQ="
     }
     
     
@@ -118,21 +118,16 @@ extension KoinosTransactionBuilderTests {
     }
     
     func testBuildForSend() throws {
-        let signature = Data(Array(repeating: 0x00, count: 64))
-        
-        let privateKeyRaw = Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")
-        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
-
-        let publicKeyRaw = privateKey.getPublicKeySecp256k1(compressed: true).data
-        let publicKey = Wallet.PublicKey(seedKey: publicKeyRaw, derivationType: nil)
-        
+        let signature = "17A1EB1CECA3ADB16B17AEB56DF40512720B79AEFCE184C1626DD67E5EF1482373409F8F673157363B263C60B291AED8DABD30B6EBF1CD3E958EB814AC23FE94"
+        let publicKey = "0350413909F40AAE7DD6A084A32017E5A45089FB29E91BBE47D41E29C32355BFCD"
+        let hash = "E5E8126605ECCD2B1AAC084E8D7A6D7C708C9CE9E63AF4D1371EE7E2C2BFB339"
         
         let signedTransaction = try transactionBuilder.buildForSend(
             transaction: expectedTransaction,
             signature: SignatureInfo(
-                signature: signature,
-                publicKey: publicKey.blockchainKey,
-                hash: expectedHash
+                signature: XCTUnwrap(signature.data(using: .hexadecimal)),
+                publicKey: XCTUnwrap(publicKey.data(using: .hexadecimal)),
+                hash: XCTUnwrap(hash.data(using: .hexadecimal))
             )
         )
         
