@@ -197,13 +197,15 @@ extension CardanoTransactionBuilder {
     }
 
     func asset(for token: Token) throws -> CardanoUnspentOutput.Asset {
+        let assetFilter = CardanoAssetFilter(contractAddress: token.contractAddress)
+
         let asset = outputs
             .flatMap { $0.assets }
             .first { asset in
-                // We should use this HACK here to find
-                // right policyID and the hexadecimal asset name
-                // Must be used exactly same as in utxo
-                token.contractAddress.hasPrefix(asset.policyID)
+                assetFilter.isEqualToAssetWith(
+                    policyId: asset.policyID,
+                    assetNameHex: asset.assetNameHex
+                )
             }
 
         guard let asset else {

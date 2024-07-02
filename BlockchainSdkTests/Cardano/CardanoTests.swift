@@ -113,7 +113,7 @@ class CardanoTests: XCTestCase {
         let token = Token(
             name: "SingularityNET",
             symbol: "AGIX",
-            contractAddress: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
+            contractAddress: "asset1wwyy88f8u937hz7kunlkss7gu446p6ed5gdfp6",
             decimalCount: 8
         )
         

@@ -529,6 +529,10 @@
 		DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */; };
 		DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */; };
 		DC3C73912C2EF46E00B33990 /* EthereumModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C73902C2EF46E00B33990 /* EthereumModels.swift */; };
+		DC3C8E132C32DEF600615EAB /* CardanoTokenContractAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C8E122C32DEF600615EAB /* CardanoTokenContractAddressService.swift */; };
+		DC3C8E152C3333ED00615EAB /* CardanoAssetFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C8E142C3333ED00615EAB /* CardanoAssetFilter.swift */; };
+		DC3C8E172C33386D00615EAB /* CardanoTokenContractAddressServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C8E162C33386D00615EAB /* CardanoTokenContractAddressServiceTests.swift */; };
+		DC3C8E192C333A5100615EAB /* ContractAddressValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C8E182C333A5100615EAB /* ContractAddressValidatorFactory.swift */; };
 		DC4772352C29EC7900D2459D /* EthereumAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772342C29EC7900D2459D /* EthereumAddressConverter.swift */; };
 		DC4772392C29F63700D2459D /* IdentityEthereumAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */; };
 		DC47723B2C29F64B00D2459D /* EthereumAddressConverterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47723A2C29F64B00D2459D /* EthereumAddressConverterError.swift */; };
@@ -1381,6 +1385,10 @@
 		DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressService.swift; sourceTree = "<group>"; };
 		DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressConverter.swift; sourceTree = "<group>"; };
 		DC3C73902C2EF46E00B33990 /* EthereumModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumModels.swift; sourceTree = "<group>"; };
+		DC3C8E122C32DEF600615EAB /* CardanoTokenContractAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoTokenContractAddressService.swift; sourceTree = "<group>"; };
+		DC3C8E142C3333ED00615EAB /* CardanoAssetFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoAssetFilter.swift; sourceTree = "<group>"; };
+		DC3C8E162C33386D00615EAB /* CardanoTokenContractAddressServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoTokenContractAddressServiceTests.swift; sourceTree = "<group>"; };
+		DC3C8E182C333A5100615EAB /* ContractAddressValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractAddressValidatorFactory.swift; sourceTree = "<group>"; };
 		DC45128D2BD18F9300DE6F94 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		DC4772342C29EC7900D2459D /* EthereumAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressConverter.swift; sourceTree = "<group>"; };
 		DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityEthereumAddressConverter.swift; sourceTree = "<group>"; };
@@ -2477,6 +2485,8 @@
 				B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */,
 				EFAD40A62A9756A200364D65 /* CardanoResponseMapper.swift */,
 				EF34FCF62A41CA8700E18670 /* CardanoTransactionBuilder.swift */,
+				DC3C8E122C32DEF600615EAB /* CardanoTokenContractAddressService.swift */,
+				DC3C8E142C3333ED00615EAB /* CardanoAssetFilter.swift */,
 				EF54FC282A8A8A0E00968C52 /* CardanoUtil.swift */,
 				2DDE5B9429C4F8D200A5B708 /* CardanoWalletAssembly.swift */,
 				5D84550D243DE9B40072155E /* CardanoWalletManager.swift */,
@@ -3730,6 +3740,7 @@
 			isa = PBXGroup;
 			children = (
 				EF32FEE22A3B626E002ED43F /* CardanoTests.swift */,
+				DC3C8E162C33386D00615EAB /* CardanoTokenContractAddressServiceTests.swift */,
 			);
 			path = Cardano;
 			sourceTree = "<group>";
@@ -3853,6 +3864,7 @@
 				EF666C292A2DFB120044986F /* WalletManagerFactory.swift */,
 				EFD717D42A26330F00E5430D /* WalletFactory.swift */,
 				EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */,
+				DC3C8E182C333A5100615EAB /* ContractAddressValidatorFactory.swift */,
 				EFBE76902A7C066C00CD918B /* TransactionHistoryProviderFactory.swift */,
 				EF3B19652AA86A620084AA1C /* ExternalLinkProviderFactory.swift */,
 				EF5820402B31B54D00940387 /* EstimationFeeAddressFactory.swift */,
@@ -4223,6 +4235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
+				DC3C8E152C3333ED00615EAB /* CardanoAssetFilter.swift in Sources */,
 				B6F89EB92BB21D590009A453 /* PolkadotTransaction.swift in Sources */,
 				B6A7A91B2B318DA50053DCF7 /* VeChainTarget.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
@@ -4438,6 +4451,7 @@
 				B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift in Sources */,
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
+				DC3C8E132C32DEF600615EAB /* CardanoTokenContractAddressService.swift in Sources */,
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
 				DC47723B2C29F64B00D2459D /* EthereumAddressConverterError.swift in Sources */,
 				B6582CD92B3CA9BA00711283 /* VeChainFeeParams.swift in Sources */,
@@ -4870,6 +4884,7 @@
 				B68507082AEF494E004A431B /* NEARProtocolConfigCache.swift in Sources */,
 				2DF7621D2B7AB92300666B74 /* AptosFeeInfo.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
+				DC3C8E192C333A5100615EAB /* ContractAddressValidatorFactory.swift in Sources */,
 				2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */,
 				B6DC284D2B6319C50070F1D2 /* HederaTarget.swift in Sources */,
 				DC5E64E72B1650F400E81AA5 /* OP_RESERVED2.swift in Sources */,
@@ -4958,6 +4973,7 @@
 				B69293752AEC6A2300D6A85A /* NEARTests.swift in Sources */,
 				B00DEAD128FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift in Sources */,
 				DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */,
+				DC3C8E172C33386D00615EAB /* CardanoTokenContractAddressServiceTests.swift in Sources */,
 				2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */,
 				2D535E782A0CC5E50081EB76 /* KeysServiceManagerUtility.swift in Sources */,
 				DC136B432B1A6249008A7D41 /* Bech32Tests.swift in Sources */,
