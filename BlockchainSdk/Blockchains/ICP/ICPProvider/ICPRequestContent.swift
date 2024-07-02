@@ -15,7 +15,13 @@ protocol ICPRequestContent: Encodable {
     var ingress_expiry: Int { get }
 }
 
-struct ReadStateRequestContent: ICPRequestContent {
+extension ICPRequestContent {
+    func calculateRequestId() throws -> Data {
+        try ICPCryptography.orderIndependentHash(self)
+    }
+}
+
+struct ICPReadStateRequestContent: ICPRequestContent {
     let request_type: ICPRequestType
     let sender: Data
     let nonce: Data
@@ -24,7 +30,7 @@ struct ReadStateRequestContent: ICPRequestContent {
     let paths: [[Data]]
 }
 
-struct CallRequestContent: ICPRequestContent {
+struct ICPCallRequestContent: ICPRequestContent {
     let request_type: ICPRequestType
     let sender: Data
     let nonce: Data

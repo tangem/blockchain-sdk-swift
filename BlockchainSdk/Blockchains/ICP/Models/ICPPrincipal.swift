@@ -21,4 +21,9 @@ public struct ICPPrincipal {
         self.bytes = bytes
         self.string = ICPCryptography.encodeCanonicalText(bytes)
     }
+    
+    public static func selfAuthenticatingPrincipal(derEncodedPublicKey publicKey: Data) throws -> ICPPrincipal {
+        let bytes = publicKey.sha224() + Data([0x02])
+        return ICPPrincipal(bytes)
+    }
 }

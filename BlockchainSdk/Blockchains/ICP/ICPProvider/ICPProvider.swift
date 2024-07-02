@@ -40,14 +40,22 @@ struct ICPProvider: HostProvider {
     /// - Parameter address: ICP address wallet
     /// - Returns: account balance
     func getInfo(request: ICPRequest) -> AnyPublisher<CandidValue, Error> {
-        requestPublisher(for: request)
+        requestPublisher(for: request, map: parseQueryResponse(_:))
     }
     
     /// Send transaction data message for raw cell ICP
     /// - Parameter message: String data if cell message
     /// - Returns: Result of hash transaction
-    func send(request: ICPRequest) -> AnyPublisher<CandidValue, Error> {
-        requestPublisher(for: request)
+    func send(data: Data) -> AnyPublisher<Void, Error> {
+        let target = ICPProviderTarget(node: node, requestType: .call, requestData: data)
+        return requestPublisher(for: target, map: { _ in })
+    }
+    
+    func readState(data: Data, paths: [ICPStateTreePath]) -> AnyPublisher<CandidValue?, Error> {
+        let target = ICPProviderTarget(node: node, requestType: .readState, requestData: data)
+        return requestPublisher(for: target) { data in
+            try parseReadStateResponse(data, paths)
+        }
     }
     
     // MARK: - Private Implementation
@@ -58,22 +66,34 @@ struct ICPProvider: HostProvider {
         return try CodableCBOREncoder().encode(envelope)
     }
     
-    private func requestPublisher(for request: ICPRequest) -> AnyPublisher<CandidValue, Error> {
+    private func requestPublisher<T>(
+        for request: ICPRequest,
+        map: @escaping (Data) throws -> T
+    ) -> AnyPublisher<T, Error> {
         do {
-            let requestType = ICPRequestType.from(request)
-            let data = try requestData(from: request)
-            let target = ICPProviderTarget(node: node, requestType: requestType, requestData: data)
-            
-            return network.requestPublisher(target)
-                .filterSuccessfulStatusAndRedirectCodes()
-                .tryMap { response in
-                    try parseQueryResponse(response.data)
-                }
-                .mapError { _ in WalletError.empty }
-                .eraseToAnyPublisher()
+            return try requestPublisher(for: target(for: request), map: map)
         } catch {
             return Fail(error: error).eraseToAnyPublisher()
         }
+    }
+    
+    private func target(for request: ICPRequest) throws -> ICPProviderTarget {
+        let requestType = ICPRequestType.from(request)
+        let data = try requestData(from: request)
+        return ICPProviderTarget(node: node, requestType: requestType, requestData: data)
+    }
+    
+    private func requestPublisher<T>(
+        for target: ICPProviderTarget,
+        map: @escaping (Data) throws -> T
+    ) -> AnyPublisher<T, Error> {
+        network.requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .tryMap { response in
+                try map(response.data)
+            }
+            .mapError { _ in WalletError.empty }
+            .eraseToAnyPublisher()
     }
     
     private func parseQueryResponse(_ data: Data) throws -> CandidValue {
@@ -94,6 +114,53 @@ struct ICPProvider: HostProvider {
         }
         return firstCandidValue
     }
+    
+    private func parseReadStateResponse(_ data: Data, _ paths: [ICPStateTreePath]) throws -> CandidValue? {
+        let readStateResponse = try ICPCryptography.CBOR.deserialise(ReadStateResponseDecodable.self, from: data)
+        let certificateCbor = try ICPCryptography.CBOR.deserialiseCbor(from: readStateResponse.certificate)
+        let certificate = try ICPStateCertificate.parse(certificateCbor)
+        let pathResponses = Dictionary(uniqueKeysWithValues: paths
+            .map { ($0, certificate.tree.getValue(for: $0)) }
+            .filter { $0.1 != nil }
+            .map { ($0.0, $0.1!) }
+        )
+        
+        let statusResponse = ICPReadStateResponse(stateValues: pathResponses)
+        guard let statusString = statusResponse.stringValueForPath(endingWith: "status"),
+              let status = ICPRequestStatusCode(rawValue: statusString) else {
+            throw ICPPollingError.parsingError
+        }
+        switch status {
+        case .done:
+            throw ICPPollingError.requestIsDone
+            
+        case .rejected:
+            guard let rejectCodeValue = statusResponse.rawValueForPath(endingWith: "reject_code"),
+                  let rejectCode = ICPRequestRejectCode(rawValue: UInt8.from(rejectCodeValue)) else {
+                throw ICPPollingError.parsingError
+            }
+            let rejectMessage = statusResponse.stringValueForPath(endingWith: "reject_message")
+            throw ICPPollingError.requestRejected(rejectCode, rejectMessage)
+            
+        case .replied:
+            guard let replyData = statusResponse.rawValueForPath(endingWith: "reply"),
+                  let candidValue = try CandidDeserialiser().decode(replyData).first else {
+                throw ICPPollingError.parsingError
+            }
+            return candidValue
+            
+        case .processing, .received:
+            return nil
+        }
+    }
+}
+
+public enum ICPPollingError: Error {
+    case malformedRequestId
+    case requestIsDone
+    case requestRejected(ICPRequestRejectCode, String?)
+    case parsingError
+    case timeout
 }
 
 public enum ICPRequestRejectCode: UInt8, Decodable {
@@ -148,3 +215,19 @@ fileprivate struct QueryResponseDecodable: Decodable {
 private struct ReadStateResponseDecodable: Decodable {
     let certificate: Data
 }
+
+public struct ICPReadStateResponse {
+    public let stateValues: [ICPStateTreePath: Data]
+       
+    public func stringValueForPath(endingWith suffix: String) -> String? {
+        guard let data = rawValueForPath(endingWith: suffix) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+    
+    public func rawValueForPath(endingWith suffix: String) -> Data? {
+        stateValues.first { (path, value) in
+            path.components.last?.stringValue == suffix
+        }?.value
+    }
+}
+

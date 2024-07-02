@@ -23,6 +23,16 @@ public struct ICPStateTreePath: Hashable {
     public var firstComponent: ICPStateTreePathComponent? { components.first }
     public var removingFirstComponent: ICPStateTreePath { .init(components.suffix(from: 1)) }
     public var isEmpty: Bool { components.isEmpty }
+    
+    static func readStateRequestPaths(requestID: Data) -> [ICPStateTreePath] {
+        [
+            ["time"],
+            ["request_status", .data(requestID), "status"],
+            ["request_status", .data(requestID), "reply"],
+            ["request_status", .data(requestID), "reject_code"],
+            ["request_status", .data(requestID), "reject_message"]
+        ].map { ICPStateTreePath($0) }
+    }
 }
 
 public enum ICPStateTreePathComponent: Hashable {

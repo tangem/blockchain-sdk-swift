@@ -45,6 +45,12 @@
 		0A7624E92C298E91002FA139 /* ICPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624E82C298E91002FA139 /* ICPNetworkService.swift */; };
 		0A7624EB2C2993ED002FA139 /* CandidValue+ICPType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624EA2C2993ED002FA139 /* CandidValue+ICPType.swift */; };
 		0A7624ED2C29971B002FA139 /* ICPProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624EC2C29971B002FA139 /* ICPProvider.swift */; };
+		0A7AD2542C2D55F50036C4BA /* ICPSigningPrincipal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD2532C2D55F50036C4BA /* ICPSigningPrincipal.swift */; };
+		0A7AD2562C2D56100036C4BA /* ICPDomainSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD2552C2D56100036C4BA /* ICPDomainSeparator.swift */; };
+		0A7AD2592C2D654C0036C4BA /* PotentCodables in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7AD2582C2D654C0036C4BA /* PotentCodables */; };
+		0A7AD25B2C2D65900036C4BA /* OrderIndependentHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD25A2C2D65900036C4BA /* OrderIndependentHash.swift */; };
+		0A7AD2692C3428530036C4BA /* ICPStateCertificate+CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD2682C3428520036C4BA /* ICPStateCertificate+CBOR.swift */; };
+		0A7AD26B2C34286D0036C4BA /* ICPStateCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD26A2C34286D0036C4BA /* ICPStateCertificate.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
 		0AF503312C199A6200193358 /* ICPWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF503302C199A6200193358 /* ICPWalletAssembly.swift */; };
@@ -907,6 +913,11 @@
 		0A7624E82C298E91002FA139 /* ICPNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPNetworkService.swift; sourceTree = "<group>"; };
 		0A7624EA2C2993ED002FA139 /* CandidValue+ICPType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CandidValue+ICPType.swift"; sourceTree = "<group>"; };
 		0A7624EC2C29971B002FA139 /* ICPProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPProvider.swift; sourceTree = "<group>"; };
+		0A7AD2532C2D55F50036C4BA /* ICPSigningPrincipal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPSigningPrincipal.swift; sourceTree = "<group>"; };
+		0A7AD2552C2D56100036C4BA /* ICPDomainSeparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPDomainSeparator.swift; sourceTree = "<group>"; };
+		0A7AD25A2C2D65900036C4BA /* OrderIndependentHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderIndependentHash.swift; sourceTree = "<group>"; };
+		0A7AD2682C3428520036C4BA /* ICPStateCertificate+CBOR.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ICPStateCertificate+CBOR.swift"; sourceTree = "<group>"; };
+		0A7AD26A2C34286D0036C4BA /* ICPStateCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ICPStateCertificate.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		0AF503302C199A6200193358 /* ICPWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1721,6 +1732,7 @@
 				BFF1171432045E1915ABA71F /* Pods_BlockchainSdk.framework in Frameworks */,
 				B66B57662B6C504000320FF9 /* Hedera in Frameworks */,
 				B66B57732B6C532F00320FF9 /* CryptoSwift in Frameworks */,
+				0A7AD2592C2D654C0036C4BA /* PotentCodables in Frameworks */,
 				B6A2CC482B6C56D900864CD2 /* SwiftProtobuf in Frameworks */,
 				B63BAA602B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */,
 			);
@@ -1818,9 +1830,14 @@
 		0AFB682E2C25881300E8208C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0A7AD26A2C34286D0036C4BA /* ICPStateCertificate.swift */,
+				0A7AD2682C3428520036C4BA /* ICPStateCertificate+CBOR.swift */,
 				0AFB682F2C25885C00E8208C /* ICPPrincipal.swift */,
 				0A7624E02C29667D002FA139 /* ICPTreePathComponent.swift */,
 				0A7624E62C298DFB002FA139 /* ICPSystemCanisters.swift */,
+				0A7AD2532C2D55F50036C4BA /* ICPSigningPrincipal.swift */,
+				0A7AD2552C2D56100036C4BA /* ICPDomainSeparator.swift */,
+				0A7AD25A2C2D65900036C4BA /* OrderIndependentHash.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4077,6 +4094,7 @@
 				B66B57652B6C504000320FF9 /* Hedera */,
 				B6A2CC472B6C56D900864CD2 /* SwiftProtobuf */,
 				B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */,
+				0A7AD2582C2D654C0036C4BA /* PotentCodables */,
 			);
 			productName = BlockchainSdk;
 			productReference = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */;
@@ -4171,6 +4189,7 @@
 				B66B57642B6C504000320FF9 /* XCRemoteSwiftPackageReference "hedera-sdk-swift" */,
 				B6A2CC462B6C56D900864CD2 /* XCRemoteSwiftPackageReference "swift-protobuf-binaries" */,
 				B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */,
+				0A7AD2572C2D654C0036C4BA /* XCRemoteSwiftPackageReference "PotentCodables" */,
 			);
 			productRefGroup = 5D14E46F2397B80F00C15FC8 /* Products */;
 			projectDirPath = "";
@@ -4574,6 +4593,7 @@
 				2DDEFBC92B59B39900885675 /* AlgorandExternalLinkProvider.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
 				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
+				0A7AD2542C2D55F50036C4BA /* ICPSigningPrincipal.swift in Sources */,
 				0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */,
 				EF3B19642AA85F280084AA1C /* ChiaExternalLinkProvider.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
@@ -4582,6 +4602,7 @@
 				B6BA93712AEA0E8000F84E36 /* NEARNetworkParams.ViewAccessKey.swift in Sources */,
 				B633EA1A2B8FC5D500F11BFF /* TronTransactionHistoryMapper.swift in Sources */,
 				B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift in Sources */,
+				0A7AD2562C2D56100036C4BA /* ICPDomainSeparator.swift in Sources */,
 				2D3FF8842B1754BC004416A2 /* DecimalNetworkService.swift in Sources */,
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
@@ -4755,6 +4776,7 @@
 				B63068CE2B31164600E79053 /* VeChainNetworkService.swift in Sources */,
 				DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */,
 				2DDE5BAD29C4F8D200A5B708 /* EthereumWalletAssembly.swift in Sources */,
+				0A7AD2692C3428530036C4BA /* ICPStateCertificate+CBOR.swift in Sources */,
 				B63B32AD2B8374B40089DF4B /* HederaCreatedAccount.swift in Sources */,
 				2DDEFBDF2B59B44700885675 /* AlgorandResponse+Error.swift in Sources */,
 				B6BA936F2AEA0E7700F84E36 /* NEARNetworkParams.ViewAccount.swift in Sources */,
@@ -4858,6 +4880,7 @@
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
 				2D24F5762B6A423500D502A0 /* AptosTransactionBuilder.swift in Sources */,
+				0A7AD25B2C2D65900036C4BA /* OrderIndependentHash.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				2DDEFBE22B59B44700885675 /* AlgorandResponse+TransactionResult.swift in Sources */,
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
@@ -5042,6 +5065,7 @@
 				0A7624DD2C295823002FA139 /* ICPRequestContent.swift in Sources */,
 				0A7624CA2C2946FE002FA139 /* CandidSerialiser.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
+				0A7AD26B2C34286D0036C4BA /* ICPStateCertificate.swift in Sources */,
 				2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */,
 				B6DC284D2B6319C50070F1D2 /* HederaTarget.swift in Sources */,
 				DC5E64E72B1650F400E81AA5 /* OP_RESERVED2.swift in Sources */,
@@ -5570,12 +5594,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0A7AD2572C2D654C0036C4BA /* XCRemoteSwiftPackageReference "PotentCodables" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/outfoxx/PotentCodables.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.5.0;
+			};
+		};
 		B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/wallet-core-binaries-ios.git";
 			requirement = {
-				kind = exactVersion;
-				version = "4.0.21-tangem6";
+				kind = revision;
+				revision = f2f48ed51fdea086181c958f1eafd759034633aa;
 			};
 		};
 		B66B57642B6C504000320FF9 /* XCRemoteSwiftPackageReference "hedera-sdk-swift" */ = {
@@ -5613,6 +5645,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0A7AD2582C2D654C0036C4BA /* PotentCodables */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A7AD2572C2D654C0036C4BA /* XCRemoteSwiftPackageReference "PotentCodables" */;
+			productName = PotentCodables;
+		};
 		B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */;

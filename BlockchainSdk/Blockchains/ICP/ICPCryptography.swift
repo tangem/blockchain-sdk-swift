@@ -9,6 +9,8 @@
 import Foundation
 import BigInt
 import CryptoSwift
+import PotentCBOR
+import PotentASN1
 
 enum ICPError: Error {
     case invalidChecksum
@@ -144,6 +146,59 @@ extension ICPCryptography {
 }
 
 extension ICPCryptography {
+    enum CBOR {
+        public static func serialise(_ value: any Encodable, wrapWithCborTag: Bool = true) throws -> Data {
+            var cbor = try CBOREncoder.default.encodeTree(value)
+            if wrapWithCborTag {
+                // wrap everything in a CBOR self describe tag (55799)
+                cbor = PotentCBOR.CBOR.tagged(.selfDescribeCBOR, cbor)
+            }
+            let serialised = try CBORSerialization.data(from: cbor)
+            return serialised
+        }
+        
+        public static func deserialise<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+            let cbor = try deserialiseCbor(from: data)
+            let decoded = try CBORDecoder.default.decodeTree(type, from: cbor)
+            return decoded
+        }
+        
+        public static func deserialiseCbor(from data: Data) throws -> PotentCBOR.CBOR {
+            let cbor = try CBORSerialization.cbor(from: data)
+            return cbor.untagged
+        }
+    }
+}
+
+// https://www.ibm.com/docs/en/zos/2.1.0?topic=programming-object-identifiers
+private enum ObjectIdentifiers {
+    static let ecPublicKey: ASN1 = .objectIdentifier([1, 2, 840, 10045, 2, 1])  // Asymmetric Encryption Algorithms: ECC (ecPublicKey)
+    static let secp256k1: ASN1 = .objectIdentifier([1, 3, 132, 0, 10])          // ECC Name Curves: Secp256k1
+}
+
+extension ICPCryptography {
+    enum DER {
+        public static func encoded(_ data: Data) throws -> Data {
+            guard data.count == 65,
+                  data.first == 0x04 else {
+                throw DERError.invalidPublicKey
+            }
+            let encoded = try PotentASN1.ASN1Serialization.der(from:
+                .sequence([
+                    .sequence([
+                        ObjectIdentifiers.ecPublicKey,
+                        ObjectIdentifiers.secp256k1
+                    ]),
+                    .bitString(0, data)
+                ])
+            )
+            return encoded
+        }
+        
+        enum DERError: Error {
+            case invalidPublicKey
+        }
+    }
 }
 
 private extension Collection {

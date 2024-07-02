@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import BigInt
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,6 +18,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let contentView = BlockchainSdkExampleView()
             .environmentObject(model)
+        
+//        eg.    Int(-129) >> 7 = -2
+//            BigInt(-129) >> 7 = -1   // should be -2
+        
+        let i1 = Int(-129) >> 7
+        let i2 = BigInt(-129) >> 7
+        
         let window = UIWindow()
         window.rootViewController = UIHostingController(rootView: contentView)
         self.window = window
@@ -24,3 +32,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 }
+
+//extension BigInt {
+//    func rightShiftFix<Other: BinaryInteger>(by other: Other) -> BigInt {
+//        guard other >= (0 as any BinaryInteger) else { return self << (0 - other) }
+//        return self >> other
+//    }
+//    
+//    func leftShiftFix<Other: BinaryInteger>(by other: Other) -> BigInt {
+//        
+//    }
+//}

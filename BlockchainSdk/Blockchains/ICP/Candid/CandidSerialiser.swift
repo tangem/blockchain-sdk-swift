@@ -7,7 +7,6 @@
 
 import Foundation
 import BigInt
-//import OrderedCollections
 
 /// see section Serialisation at the bottom of
 /// https://github.com/dfinity/candid/blob/master/spec/Candid.md
