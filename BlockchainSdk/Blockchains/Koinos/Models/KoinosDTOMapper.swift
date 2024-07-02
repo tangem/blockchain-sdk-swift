@@ -39,10 +39,10 @@ enum KoinosDTOMapper {
     }
     
     static func convertAccountRC(_ dto: KoinosMethod.GetAccountRC.Response) -> UInt64 {
-        if let stringRC = dto.rc, let rc = UInt64(stringRC) {
-            return rc
+        guard let stringRC = dto.rc, let rc = UInt64(stringRC) else {
+            return 0
         }
-        return 0
+        return rc
     }
     
     static func convertNonce(_ dto: KoinosMethod.GetAccountNonce.Response) throws -> KoinosAccountNonce {
