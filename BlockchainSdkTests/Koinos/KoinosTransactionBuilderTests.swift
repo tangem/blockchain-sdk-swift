@@ -7,6 +7,7 @@
 //
 
 import TangemSdk
+import WalletCore
 import XCTest
 @testable import BlockchainSdk
 
@@ -118,7 +119,13 @@ extension KoinosTransactionBuilderTests {
     
     func testBuildForSend() throws {
         let signature = Data(Array(repeating: 0x00, count: 64))
-        let publicKey = Wallet.PublicKey(seedKey: Data(), derivationType: nil) // TODO: [KOINOS] What to use here?
+        
+        let privateKeyRaw = Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+
+        let publicKeyRaw = privateKey.getPublicKeySecp256k1(compressed: true).data
+        let publicKey = Wallet.PublicKey(seedKey: publicKeyRaw, derivationType: nil)
+        
         
         let signedTransaction = try transactionBuilder.buildForSend(
             transaction: expectedTransaction,

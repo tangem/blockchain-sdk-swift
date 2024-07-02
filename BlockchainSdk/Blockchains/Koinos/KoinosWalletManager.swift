@@ -6,8 +6,8 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import Combine
-import Foundation
 import TangemSdk
 
 class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
@@ -92,13 +92,6 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     hash: hashToSign,
                     walletPublicKey: wallet.publicKey
                 )
-                .map { signature in
-                    SignatureInfo(
-                        signature: signature,
-                        publicKey: wallet.publicKey.blockchainKey,
-                        hash: hashToSign
-                    )
-                }
                 .tryMap { signature in
                     try transactionBuilder.buildForSend(
                         transaction: transaction,
@@ -127,7 +120,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                     Amount(
                         type: .feeResource(.mana),
                         currencySymbol: FeeResourceType.mana.rawValue,
-                        value: Decimal(rcLimit) / blockchain.decimalValue,
+                        value: (rcLimit / BigUInt(blockchain.decimalValue.uint64Value)).decimal ?? .zero,
                         decimals: blockchain.decimalCount
                     )
                 )

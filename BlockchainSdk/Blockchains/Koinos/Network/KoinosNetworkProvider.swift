@@ -6,8 +6,8 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import Combine
-import Foundation
 
 class KoinosNetworkProvider: HostProvider {
     var host: String {
@@ -51,7 +51,7 @@ class KoinosNetworkProvider: HostProvider {
         .eraseToAnyPublisher()
     }
     
-    func getRCLimit() -> AnyPublisher<UInt64, Error> {
+    func getRCLimit() -> AnyPublisher<BigUInt, Error> {
         getResourceLimits()
             .map { limits in
                 Constants.maxDiskStorageLimit * limits.diskStorageCost
@@ -125,8 +125,8 @@ private extension KoinosNetworkProvider {
 
 private extension KoinosNetworkProvider {
     enum Constants {
-        static let maxDiskStorageLimit: UInt64 = 118
-        static let maxNetworkLimit: UInt64 = 408
-        static let maxComputeLimit: UInt64 = 1_000_000
+        static let maxDiskStorageLimit: BigUInt = 118
+        static let maxNetworkLimit: BigUInt = 408
+        static let maxComputeLimit: BigUInt = 1_000_000
     }
 }

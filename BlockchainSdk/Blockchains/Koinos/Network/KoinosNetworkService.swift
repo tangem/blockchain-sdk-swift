@@ -6,8 +6,8 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import Combine
-import Foundation
 
 class KoinosNetworkService: MultiNetworkProvider {
     let providers: [KoinosNetworkProvider]
@@ -35,7 +35,7 @@ class KoinosNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getRCLimit() -> AnyPublisher<UInt64, Error> {
+    func getRCLimit() -> AnyPublisher<BigUInt, Error> {
         providerPublisher { provider in
             provider.getRCLimit()
         }

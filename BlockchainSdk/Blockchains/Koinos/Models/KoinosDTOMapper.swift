@@ -6,18 +6,18 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
-import Foundation
+import BigInt
 
 enum KoinosDTOMapper {
     static func convertResourceLimitData(_ dto: KoinosMethod.GetResourceLimits.Response) throws -> KoinosResourceLimitData {
         let limits = dto.resourceLimitData
         
-        guard let diskStorageLimit = UInt64(limits.diskStorageLimit),
-              let diskStorageCost = UInt64(limits.diskStorageCost),
-              let networkBandwidthLimit = UInt64(limits.networkBandwidthLimit),
-              let networkBandwidthCost = UInt64(limits.networkBandwidthCost),
-              let computeBandwidthLimit = UInt64(limits.computeBandwidthLimit),
-              let computeBandwidthCost = UInt64(limits.computeBandwidthCost)
+        guard let diskStorageLimit = BigUInt(limits.diskStorageLimit),
+              let diskStorageCost = BigUInt(limits.diskStorageCost),
+              let networkBandwidthLimit = BigUInt(limits.networkBandwidthLimit),
+              let networkBandwidthCost = BigUInt(limits.networkBandwidthCost),
+              let computeBandwidthLimit = BigUInt(limits.computeBandwidthLimit),
+              let computeBandwidthCost = BigUInt(limits.computeBandwidthCost)
         else {
             throw KoinosDTOMapperError.failedToMapKoinosDTO
         }
