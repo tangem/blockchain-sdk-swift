@@ -15,6 +15,8 @@ public struct ICPDomainSeparator {
     public init(_ domain: String) {
         self.domain = domain
         self.data = ICPCryptography.Leb128.encodeUnsigned(domain.count) + Data(domain.utf8)
+        let bytes = self.data.bytes
+        print(bytes)
     }
     
     public func domainSeparatedData(_ data: any DataProtocol) -> Data {

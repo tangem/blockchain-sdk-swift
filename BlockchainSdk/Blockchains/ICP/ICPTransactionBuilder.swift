@@ -31,9 +31,27 @@ final class ICPTransactionBuilder {
     
     public func buildForSignOld(
         transaction: Transaction
-    ) throws -> InternetComputerSigningInput {
+    ) throws -> Data {
+        let input = input(transaction: transaction)
+        let txInputData = try input.serializedData()
+        
+        guard !txInputData.isEmpty else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: .internetComputer, txInputData: txInputData)
+        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
+        
+        guard preSigningOutput.error == .ok, !preSigningOutput.data.isEmpty else {
+            Log.debug("AptosPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
+            throw WalletError.failedToBuildTx
+        }
+
+        return preSigningOutput.data
+    }
+    
+    private func input(transaction: Transaction) -> InternetComputerSigningInput {
         InternetComputerSigningInput.with {
-            $0.privateKey = inputPrivateKey.privateKey
             $0.transaction = InternetComputerTransaction.with {
                 $0.transfer = InternetComputerTransaction.Transfer.with {
                     $0.toAccountIdentifier = transaction.destinationAddress
@@ -45,10 +63,29 @@ final class ICPTransactionBuilder {
         }
     }
     
-    public func buildForSendOld(
-        output: InternetComputerSigningOutput
-    ) -> Data {
-        output.signedTransaction
+    func buildForSendOld(transaction: Transaction, signature: Data) throws -> String {
+        let input = input(transaction: transaction)
+        let txInputData = try input.serializedData()
+
+        guard !txInputData.isEmpty else {
+            throw WalletError.failedToBuildTx
+        }
+
+        let compiledTransaction = TransactionCompiler.compileWithSignatures(
+            coinType: .internetComputer,
+            txInputData: txInputData,
+            signatures: signature.asDataVector(),
+            publicKeys: wallet.publicKey.blockchainKey.asDataVector()
+        )
+        
+        let signingOutput = try InternetComputerSigningOutput(serializedData: compiledTransaction)
+
+        guard signingOutput.error == .ok, !signingOutput.signedTransaction.isEmpty else {
+            Log.debug("AptosSigningOutput has a error")
+            throw WalletError.failedToBuildTx
+        }
+        
+        return signingOutput.signedTransaction.hexString
     }
     
     /// Build input for sign transaction from Parameters
@@ -134,7 +171,7 @@ struct ICPSinger {
                         throw WalletError.empty
                     }
                     return ICPSigningOutput(
-                        requestID: try data.callRequestContent.calculateRequestId(),
+                        requestID: data.callRequestID,
                         callEnvelope: callEnvelope,
                         readStateEnvelope: readStateEnvelope
                     )
@@ -155,50 +192,60 @@ struct ICPSinger {
         
         let derEncodedPublicKey = try ICPCryptography.DER.encoded(publicKey.data)
         let sender = try ICPPrincipal.selfAuthenticatingPrincipal(derEncodedPublicKey: derEncodedPublicKey)
-        
-        let method = method(from: input)
-        let serialisedArgs = CandidSerialiser().encode(method.args)
-        let callRequest = ICPRequest.call(method)
-        
         let nonce = { try CryptoUtils.generateRandomBytes(count: 32) }
         
-        let callRequestContent = ICPCallRequestContent(
-            request_type: .from(callRequest),
-            sender: sender.bytes,
-            nonce: try nonce(),
-            ingress_expiry: createIngressExpiry(),
-            method_name: method.methodName,
-            canister_id: method.canister.bytes,
-            arg: serialisedArgs
-        )
+        let callRequestContent = makeCallRequestContent(input: input, sender: sender, nonce: try nonce())
         
         let requestID = try callRequestContent.calculateRequestId()
         
-        let paths: [ICPStateTreePath] = [
-            ["time"],
-            ["request_status", .data(requestID), "status"],
-            ["request_status", .data(requestID), "reply"],
-            ["request_status", .data(requestID), "reject_code"],
-            ["request_status", .data(requestID), "reject_message"]
-        ].map { ICPStateTreePath($0) }
-        
-        let readStateRequest = ICPRequest.readState(paths: paths)
-        let readStateRequestContent = ICPReadStateRequestContent(
-            request_type: .from(readStateRequest),
-            sender: sender.bytes,
-            nonce: try nonce(),
-            ingress_expiry: createIngressExpiry(),
-            paths: paths.map { $0.encodedComponents() }
+        let readStateRequestContent = makeReadStateRequestContent(
+            requestID: requestID,
+            sender: sender,
+            nonce: try nonce()
         )
         
         return ICPRequestsData(
             derEncodedPublicKey: derEncodedPublicKey,
+            callRequestID: requestID,
             callRequestContent: callRequestContent,
             readStateRequestContent: readStateRequestContent
         )
     }
     
-    private func createIngressExpiry(_ seconds: TimeInterval = Self.defaultIngressExpirySeconds) -> Int {
+    private func makeCallRequestContent(
+        input: ICPSigningInput,
+        sender: ICPPrincipal,
+        nonce: Data
+    ) -> ICPRequestContent {
+        let method = method(from: input)
+        let serialisedArgs = CandidSerialiser().encode(method.args)
+        let callRequest = ICPRequest.call(method)
+        
+        return ICPCallRequestContent(
+            request_type: .from(callRequest),
+            sender: sender.bytes,
+            nonce: nonce,
+            ingress_expiry: makeIngressExpiry(),
+            method_name: method.methodName,
+            canister_id: method.canister.bytes,
+            arg: serialisedArgs
+        )
+    }
+    
+    private func makeReadStateRequestContent(requestID: Data, sender: ICPPrincipal, nonce: Data) -> ICPReadStateRequestContent {
+        let paths = ICPStateTreePath.readStateRequestPaths(requestID: requestID)
+        
+        let readStateRequest = ICPRequest.readState(paths: paths)
+        return ICPReadStateRequestContent(
+            request_type: .from(readStateRequest),
+            sender: sender.bytes,
+            nonce: nonce,
+            ingress_expiry: makeIngressExpiry(),
+            paths: paths.map { $0.encodedComponents() }
+        )
+    }
+    
+    private func makeIngressExpiry(_ seconds: TimeInterval = Self.defaultIngressExpirySeconds) -> Int {
         let expiryDate = Date().addingTimeInterval(seconds)
         let nanoSecondsSince1970 = expiryDate.timeIntervalSince1970 * 1_000_000_000
         return Int(nanoSecondsSince1970)
@@ -207,7 +254,7 @@ struct ICPSinger {
     private func method(from input: ICPSigningInput) -> ICPMethod {
         ICPMethod(
             canister: ICPSystemCanisters.ledger,
-            methodName: "send_pb",
+            methodName: "transfer",
             args: .record([
                 "from_subaccount": .option(.blob(Data(hex: input.source))),
                 "to": .blob(Data(hex: input.destination)),
@@ -222,6 +269,7 @@ struct ICPSinger {
 
 fileprivate struct ICPRequestsData {
     let derEncodedPublicKey: Data
+    let callRequestID: Data
     let callRequestContent: ICPRequestContent
     let readStateRequestContent: ICPRequestContent
 }

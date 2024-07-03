@@ -183,6 +183,14 @@ extension ICPCryptography {
                   data.first == 0x04 else {
                 throw DERError.invalidPublicKey
             }
+            
+            let enc = ASN1.sequence([
+                .sequence([
+                    ObjectIdentifiers.ecPublicKey,
+                    ObjectIdentifiers.secp256k1
+                ]),
+                .bitString(0, data)
+            ])
             let encoded = try PotentASN1.ASN1Serialization.der(from:
                 .sequence([
                     .sequence([
