@@ -89,6 +89,9 @@ extension CardanoTransactionBuilder {
     func minChange(amount: Amount) throws -> UInt64 {
         switch amount.type {
         case .coin:
+            let hasTokens = outputs.contains { $0.assets.contains { $0.amount > 0 } }
+            assert(hasTokens, "Use this only if wallet has tokens")
+
             return try minChange(exclude: nil)
             
         case .token(let token):
@@ -263,12 +266,6 @@ private extension CardanoTransactionBuilder {
         )
     }
 
-    enum BuildCardanoSigningInputOption {
-        case useMaxAmount
-        case adaValue(UInt64)
-        case parameters(CardanoFeeParameters)
-    }
-
     func buildCardanoSigningInput(source: String, destination: String, option: BuildCardanoSigningInputOption, tokenAmount: TokenAmount?) throws -> CardanoSigningInput {
         if outputs.isEmpty {
             throw CardanoError.noUnspents
@@ -357,6 +354,12 @@ private extension CardanoTransactionBuilder {
     struct TokenAmount {
         let token: Token
         let amount: UInt64
+    }
+
+    enum BuildCardanoSigningInputOption {
+        case useMaxAmount
+        case adaValue(UInt64)
+        case parameters(CardanoFeeParameters)
     }
 }
 
