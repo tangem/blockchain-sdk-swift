@@ -40,14 +40,15 @@ class CardanoWalletManager: BaseManager, WalletManager {
         }
        
         wallet.removePendingTransaction { hash in
-            response.recentTransactionsHashes.contains {
-                $0.caseInsensitiveCompare(hash) == .orderedSame
+            let recentContains = response.recentTransactionsHashes.contains {
+                $0.caseInsensitiveEquals(to: hash)
             }
-        }
 
-        // If we have pending transaction but we haven't unspentOutputs then clear it
-        if response.recentTransactionsHashes.isEmpty, response.unspentOutputs.isEmpty {
-            wallet.clearPendingTransaction()
+            let outputsContains = response.unspentOutputs.contains {
+                $0.transactionHash.caseInsensitiveEquals(to: hash)
+            }
+
+            return recentContains || outputsContains || response.unspentOutputs.isEmpty
         }
     }
 }

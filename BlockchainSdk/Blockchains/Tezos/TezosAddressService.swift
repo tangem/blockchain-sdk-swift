@@ -37,6 +37,7 @@ extension TezosAddressService: AddressProvider {
         default:
             fatalError("Unsupported curve")
         }
+        // TODO: Use extension from Data+
         let publicKeyHash = Sodium().genericHash.hash(message: key.bytes, outputLength: 20)!
         let prefix = TezosPrefix.addressPrefix(for: curve)
         let prefixedHash = prefix + publicKeyHash

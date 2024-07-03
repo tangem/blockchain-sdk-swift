@@ -121,6 +121,7 @@ fileprivate extension SS58 {
     }
 }
 
+// TODO: Use extension from Data+ and refactor call stack to handle optional Data
 fileprivate extension Data {
     func blake2hash(outputLength: Int) -> Data {
         guard let hash = Sodium().genericHash.hash(message: self.bytes, outputLength: outputLength) else {
