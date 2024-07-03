@@ -25,14 +25,6 @@ class CardanoTests: XCTestCase {
     // Successful transaction
     // https://cardanoscan.io/transaction/db2306d819d848f67f70ab898028d9827e5d1fccc7033531534fdd39e93a796e
     func testSignTransfer() throws {
-        let transaction = Transaction(
-            amount: Amount(with: blockchain, value: 1.8),
-            fee: Fee(.zeroCoin(for: blockchain)),
-            sourceAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
-            destinationAddress: "addr1q90uh2eawrdc9vaemftgd50l28yrh9lqxtjjh4z6dnn0u7ggasexxdyyk9f05atygnjlccsjsggtc87hhqjna32fpv5qeq96ls",
-            changeAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
-        )
-        
         let utxos = [
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 2500000,
@@ -47,6 +39,22 @@ class CardanoTests: XCTestCase {
         ]
 
         transactionBuilder.update(outputs: utxos)
+
+        let (_, parameters) = try transactionBuilder.getFee(
+            amount: Amount(with: blockchain, value: 1.8),
+            destination: "Ae2tdPwUPEZ4kps4As3f38H3gyjMs2YoMdJVMCq3UQzK4zhLunRriZpfbhs",
+            source: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
+        )
+
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, value: 1.8),
+            fee: Fee(.zeroCoin(for: blockchain), parameters: parameters), // parameters is manandatory
+            sourceAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
+            destinationAddress: "addr1q90uh2eawrdc9vaemftgd50l28yrh9lqxtjjh4z6dnn0u7ggasexxdyyk9f05atygnjlccsjsggtc87hhqjna32fpv5qeq96ls",
+            changeAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
+        )
+        
+
         
         let dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
         XCTAssertEqual(
@@ -69,14 +77,6 @@ class CardanoTests: XCTestCase {
     // Successful transaction
     // https://cardanoscan.io/transaction/03946fe122634d05e93219fde628ce55a5e0d06f23afa456864897357c5dade8
     func testSignTransferFromLegacy() throws {
-        let transaction = Transaction(
-            amount: Amount(with: blockchain, value: 1.3),
-            fee: Fee(.zeroCoin(for: blockchain)),
-            sourceAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
-            destinationAddress: "Ae2tdPwUPEZ4kps4As3f38H3gyjMs2YoMdJVMCq3UQzK4zhLunRriZpfbhs",
-            changeAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
-        )
-        
         let utxos = [
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 1981037,
@@ -89,8 +89,23 @@ class CardanoTests: XCTestCase {
                                  transactionHash: "848c0861a3dc02a806d71cb35de83ffbc2a8553d161e2449c37572d7c2de44a7",
                                  assets: []),
         ]
-        
+
         transactionBuilder.update(outputs: utxos)
+
+        let (_, parameters) = try transactionBuilder.getFee(
+            amount: Amount(with: blockchain, value: 1.3),
+            destination: "Ae2tdPwUPEZ4kps4As3f38H3gyjMs2YoMdJVMCq3UQzK4zhLunRriZpfbhs",
+            source: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
+        )
+
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, value: 1.3),
+            fee: Fee(.zeroCoin(for: blockchain), parameters: parameters), // parameters is manandatory
+            sourceAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
+            destinationAddress: "Ae2tdPwUPEZ4kps4As3f38H3gyjMs2YoMdJVMCq3UQzK4zhLunRriZpfbhs",
+            changeAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
+        )
+
         let dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
         XCTAssertEqual(dataForSign.hexString.lowercased(), "03946fe122634d05e93219fde628ce55a5e0d06f23afa456864897357c5dade8")
 
@@ -110,21 +125,6 @@ class CardanoTests: XCTestCase {
     // Successful transaction
     // https://cardanoscan.io/transaction/3ac6b76c63e109494823fe13e6f6d52544896a5ab81ae711ce56f039d6777bd1
     func testSignTransferToken() throws {
-        let token = Token(
-            name: "SingularityNET",
-            symbol: "AGIX",
-            contractAddress: "asset1wwyy88f8u937hz7kunlkss7gu446p6ed5gdfp6",
-            decimalCount: 8
-        )
-        
-        let transaction = Transaction(
-            amount: Amount(with: blockchain, type: .token(value: token), value: 0.65),
-            fee: Fee(.zeroCoin(for: blockchain)), // Will not be used
-            sourceAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
-            destinationAddress: "addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08",
-            changeAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
-        )
-        
         let utxos = [
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 1796085,
@@ -159,8 +159,30 @@ class CardanoTests: XCTestCase {
                                     )
                                  ]),
         ]
-        
+
         transactionBuilder.update(outputs: utxos)
+        
+        let token = Token(
+            name: "SingularityNET",
+            symbol: "AGIX",
+            contractAddress: "asset1wwyy88f8u937hz7kunlkss7gu446p6ed5gdfp6",
+            decimalCount: 8
+        )
+
+        let (_, parameters) = try transactionBuilder.getFee(
+            amount: Amount(with: blockchain, type: .token(value: token), value: 0.65),
+            destination: "addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08",
+            source: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
+        )
+
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, type: .token(value: token), value: 0.65),
+            fee: Fee(.zeroCoin(for: blockchain), parameters: parameters), // parameters is manandatory
+            sourceAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
+            destinationAddress: "addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08",
+            changeAddress: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
+        )
+
         let dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
         XCTAssertEqual(dataForSign.hexString.lowercased(), "3ac6b76c63e109494823fe13e6f6d52544896a5ab81ae711ce56f039d6777bd1")
 
@@ -178,14 +200,6 @@ class CardanoTests: XCTestCase {
     }
     
     func testSignTransferExtendedKey() throws {
-        let transaction = Transaction(
-            amount: Amount(with: blockchain, value: 7),
-            fee: Fee(.zeroCoin(for: blockchain)),
-            sourceAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
-            destinationAddress: "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
-            changeAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
-        )
-        
         let utxos = [
             CardanoUnspentOutput(address: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
                                  amount: 1500000,
@@ -200,6 +214,21 @@ class CardanoTests: XCTestCase {
         ]
 
         transactionBuilder.update(outputs: utxos)
+
+        let (_, parameters) = try transactionBuilder.getFee(
+            amount: Amount(with: blockchain, value: 7),
+            destination: "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
+            source: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
+        )
+
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, value: 7),
+            fee: Fee(.zeroCoin(for: blockchain), parameters: parameters), // parameters is manandatory
+            sourceAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
+            destinationAddress: "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
+            changeAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
+        )
+
         let dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
         XCTAssertEqual(
             dataForSign.hexString.lowercased(),
