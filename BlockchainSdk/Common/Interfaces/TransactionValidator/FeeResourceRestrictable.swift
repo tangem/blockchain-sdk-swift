@@ -9,6 +9,8 @@
 import Foundation
 
 protocol FeeResourceRestrictable {
+    /// This currently works only for networks where the maxFeeResource is equal to the coin balance.
+    /// Koinos is one such network.
     func validateFeeResource(amount: Amount, fee: Amount) throws
 }
 
