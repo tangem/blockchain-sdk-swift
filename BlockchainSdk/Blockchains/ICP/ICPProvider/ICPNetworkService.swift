@@ -28,7 +28,6 @@ final class ICPNetworkService: MultiNetworkProvider {
     
     
     func getInfo(address: String) -> AnyPublisher<Decimal, Error> {
-        let address = "178197f9833164374be1e0ff8e9cf8b78c964f3ea294ab0da9bddc800c7ac64f"
         let method = accountBalanceMethod(address)
         
         return providerPublisher { provider in
@@ -52,8 +51,8 @@ final class ICPNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .readState(data: data, paths: paths)
-                .tryMap { [weak self] result in
-                    try result.flatMap { try self?.parseTranserResponse($0) }
+                .map { [weak self] result in
+                    try? result.flatMap { try self?.parseTranserResponse($0) }
                 }
                 .eraseToAnyPublisher()
         }
@@ -80,6 +79,7 @@ final class ICPNetworkService: MultiNetworkProvider {
         guard let variant = response.variantValue else {
             throw ICPLedgerCanisterError.invalidResponse
         }
+        
         guard let blockIndex = variant["Ok"]?.natural64Value else {
             guard let error = variant["Err"]?.variantValue else {
                 throw ICPLedgerCanisterError.invalidResponse

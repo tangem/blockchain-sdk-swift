@@ -54,7 +54,7 @@ struct ICPProvider: HostProvider {
     func readState(data: Data, paths: [ICPStateTreePath]) -> AnyPublisher<CandidValue?, Error> {
         let target = ICPProviderTarget(node: node, requestType: .readState, requestData: data)
         return requestPublisher(for: target) { data in
-            try parseReadStateResponse(data, paths)
+            try? parseReadStateResponse(data, paths)
         }
     }
     

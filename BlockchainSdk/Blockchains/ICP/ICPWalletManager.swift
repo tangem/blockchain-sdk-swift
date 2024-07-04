@@ -126,34 +126,34 @@ final class ICPWalletManager: BaseManager, WalletManager {
         _ transaction: Transaction,
         signer: TransactionSigner
     ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        sendOld(transaction, signer: signer)
-//        Just(())
-//            .receive(on: DispatchQueue.global())
-//            .tryMap { [txBuilder] _ in
-//                try txBuilder.buildForSign(transaction: transaction)
-//            }
-//            .withWeakCaptureOf(self)
-//            .flatMap { walletManager, input in
-//                walletManager.buildTransaction(input: input, with: signer)
-//                    .handleEvents(receiveOutput: { [weak self] output in
-//                        self?.signingOutput = output
-//                    })
-//                    .withWeakCaptureOf(self)
-//                    .tryMap { walletManager, output in
-//                        try walletManager.txBuilder.buildForSend(output: output.callEnvelope)
-//                    }
-//                    .flatMap { signedTransaction in
-//                        walletManager.networkService
-//                            .send(data: signedTransaction)
-//                            .handleEvents(receiveOutput: { [weak self] value in
-//                                self?.trackStransactionStatus()
-//                            })
-//                            .map { TransactionSendResult(hash: "") }
-//                            .mapSendError(tx: signedTransaction.hexString.lowercased())
-//                    }
-//            }
-//            .eraseSendError()
-//            .eraseToAnyPublisher()
+//        sendOld(transaction, signer: signer)
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .tryMap { [txBuilder] _ in
+                try txBuilder.buildForSign(transaction: transaction)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, input in
+                walletManager.buildTransaction(input: input, with: signer)
+                    .handleEvents(receiveOutput: { [weak self] output in
+                        self?.signingOutput = output
+                    })
+                    .withWeakCaptureOf(self)
+                    .tryMap { walletManager, output in
+                        try walletManager.txBuilder.buildForSend(output: output.callEnvelope)
+                    }
+                    .flatMap { signedTransaction in
+                        walletManager.networkService
+                            .send(data: signedTransaction)
+                            .handleEvents(receiveOutput: { [weak self] value in
+                                self?.trackStransactionStatus()
+                            })
+                            .map { TransactionSendResult(hash: "") }
+                            .mapSendError(tx: signedTransaction.hexString.lowercased())
+                    }
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
     }
     
     private func trackStransactionStatus()  {

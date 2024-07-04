@@ -217,12 +217,11 @@ struct ICPSinger {
         sender: ICPPrincipal,
         nonce: Data
     ) -> ICPRequestContent {
-        let method = method(from: input)
+        let method = method(from: input, sender: sender)
         let serialisedArgs = CandidSerialiser().encode(method.args)
-        let callRequest = ICPRequest.call(method)
         
         return ICPCallRequestContent(
-            request_type: .from(callRequest),
+            request_type: .call,
             sender: sender.bytes,
             nonce: nonce,
             ingress_expiry: makeIngressExpiry(),
@@ -234,10 +233,8 @@ struct ICPSinger {
     
     private func makeReadStateRequestContent(requestID: Data, sender: ICPPrincipal, nonce: Data) -> ICPReadStateRequestContent {
         let paths = ICPStateTreePath.readStateRequestPaths(requestID: requestID)
-        
-        let readStateRequest = ICPRequest.readState(paths: paths)
         return ICPReadStateRequestContent(
-            request_type: .from(readStateRequest),
+            request_type: .readState,
             sender: sender.bytes,
             nonce: nonce,
             ingress_expiry: makeIngressExpiry(),
@@ -251,12 +248,12 @@ struct ICPSinger {
         return Int(nanoSecondsSince1970)
     }
     
-    private func method(from input: ICPSigningInput) -> ICPMethod {
+    private func method(from input: ICPSigningInput, sender: ICPPrincipal) -> ICPMethod {
         ICPMethod(
             canister: ICPSystemCanisters.ledger,
             methodName: "transfer",
             args: .record([
-                "from_subaccount": .option(.blob(Data(hex: input.source))),
+                "from_subaccount": .option(.blob(Data(repeating: 0, count: 32))),
                 "to": .blob(Data(hex: input.destination)),
                 "amount": .ICPAmount(input.amount.uint64Value),
                 "fee": .ICPAmount(10000),
