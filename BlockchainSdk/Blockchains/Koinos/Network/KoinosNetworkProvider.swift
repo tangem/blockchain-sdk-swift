@@ -133,6 +133,7 @@ private extension KoinosNetworkProvider {
 }
 
 private extension KoinosNetworkProvider {
+    // These constants were calculated for us by the Koinos developers and provided to us in a Telegram chat.
     enum Constants {
         static let maxDiskStorageLimit: BigUInt = 118
         static let maxNetworkLimit: BigUInt = 408
