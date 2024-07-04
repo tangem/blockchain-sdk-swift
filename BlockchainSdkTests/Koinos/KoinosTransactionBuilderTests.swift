@@ -21,7 +21,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
         KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
                 chainId: "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA==",
-                rcLimit: 500000000,
+                rcLimit: "500000000",
                 nonce: "KAs=",
                 operationMerkleRoot: "EiBd86ETLP-Tmmq-Oj6wxfe1o2KzRGf_9LV-9O3_9Qmu8w==",
                 payer: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
@@ -56,7 +56,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
         KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
                 chainId: "EiBncD4pKRIQWco_WRqo5Q-xnXR7JuO3PtZv983mKdKHSQ==",
-                rcLimit: 500000000,
+                rcLimit: "500000000",
                 nonce: "KAs=",
                 operationMerkleRoot: "EiCjvMCnYVk5GqAaz7D2e8LCbaJ6448pJMXS4LI_EjtW4Q==",
                 payer: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
