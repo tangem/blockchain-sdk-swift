@@ -42,7 +42,7 @@ class CardanoTests: XCTestCase {
 
         let (_, parameters) = try transactionBuilder.getFee(
             amount: Amount(with: blockchain, value: 1.8),
-            destination: "Ae2tdPwUPEZ4kps4As3f38H3gyjMs2YoMdJVMCq3UQzK4zhLunRriZpfbhs",
+            destination: "addr1q90uh2eawrdc9vaemftgd50l28yrh9lqxtjjh4z6dnn0u7ggasexxdyyk9f05atygnjlccsjsggtc87hhqjna32fpv5qeq96ls",
             source: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn"
         )
 
