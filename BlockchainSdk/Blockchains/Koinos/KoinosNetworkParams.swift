@@ -1,5 +1,5 @@
 //
-//  koinosNetworkParams.swift
+//  KoinosNetworkParams.swift
 //  BlockchainSdk
 //
 //  Created by Aleksei Muraveinik on 28.05.24.
