@@ -29,15 +29,21 @@ class KoinosNetworkService: MultiNetworkProvider {
         }
     }
     
+    func getRCLimit() -> AnyPublisher<BigUInt, Error> {
+        providerPublisher { provider in
+            provider.getRCLimit()
+        }
+    }
+    
     func submitTransaction(transaction: KoinosProtocol.Transaction) -> AnyPublisher<KoinosTransactionEntry, Error> {
         providerPublisher { provider in
             provider.submitTransaction(transaction: transaction)
         }
     }
     
-    func getRCLimit() -> AnyPublisher<BigUInt, Error> {
+    func isTransactionExist(transactionID: String) -> AnyPublisher<Bool, Error> {
         providerPublisher { provider in
-            provider.getRCLimit()
+            provider.isTransactionExist(transactionID: transactionID)
         }
     }
 }

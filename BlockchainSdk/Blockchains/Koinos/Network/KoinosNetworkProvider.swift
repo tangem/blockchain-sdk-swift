@@ -70,6 +70,15 @@ class KoinosNetworkProvider: HostProvider {
         .tryMap(KoinosDTOMapper.convertTransactionEntry)
         .eraseToAnyPublisher()
     }
+    
+    func isTransactionExist(transactionID: String) -> AnyPublisher<Bool, Error> {
+        requestPublisher(
+            for: .getTransaction(transactionID: transactionID),
+            withResponseType: KoinosMethod.GetTransaction.Response.self
+        )
+        .map { $0.transactions != nil }
+        .eraseToAnyPublisher()
+    }
 }
 
 private extension KoinosNetworkProvider {

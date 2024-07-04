@@ -9,27 +9,32 @@
 import Foundation
 
 enum KoinosProtocol {
-    struct Transaction: Equatable, Encodable {
+    struct TransactionBlock: Decodable {
+        let transaction: Transaction
+        let containingBlocks: [String]
+    }
+    
+    struct Transaction: Equatable, Codable {
         let header: TransactionHeader
         let id: String
         let operations: [Operation]
         let signatures: [String]
     }
 
-    struct TransactionHeader: Equatable, Encodable {
+    struct TransactionHeader: Equatable, Codable {
         let chainId: String
-        let rcLimit: UInt64
+        let rcLimit: String
         let nonce: String
         let operationMerkleRoot: String
         let payer: String
         let payee: String?
     }
 
-    struct Operation: Equatable, Encodable {
+    struct Operation: Equatable, Codable {
         let callContract: CallContractOperation
     }
 
-    struct CallContractOperation: Equatable, Encodable {
+    struct CallContractOperation: Equatable, Codable {
         let contractId: String
         let entryPoint: Int
         let args: String

@@ -70,3 +70,15 @@ extension KoinosMethod {
         }
     }
 }
+
+extension KoinosMethod {
+    enum GetTransaction {
+        struct RequestParams: Encodable {
+            let transactionIds: [String]
+        }
+        
+        struct Response: Decodable {
+            let transactions: [KoinosProtocol.TransactionBlock]?
+        }
+    }
+}

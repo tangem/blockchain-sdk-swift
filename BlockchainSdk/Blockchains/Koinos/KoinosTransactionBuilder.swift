@@ -74,7 +74,7 @@ class KoinosTransactionBuilder {
         let transactionToSign = KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
                 chainId: koinosNetworkParams.chainID,
-                rcLimit: manaLimitSatoshi,
+                rcLimit: "\(manaLimitSatoshi)",
                 nonce: encodedNextNonce.base64URLEncodedString(),
                 operationMerkleRoot: operationMerkleRoot.base64URLEncodedString(),
                 payer: from,

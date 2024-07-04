@@ -37,41 +37,57 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     }
     
     override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
-        cancellable = networkService.getInfo(address: wallet.address)
-            .sink { [weak self] in
-                switch $0 {
-                case .failure(let error):
-                    self?.wallet.clearAmounts()
-                    completion(.failure(error))
-                case .finished:
-                    completion(.success(()))
+        let isPendingTransactionExist = Just(wallet.pendingTransactions.first?.hash)
+            .flatMap { [networkService] transactionID in
+                if let transactionID {
+                    return networkService
+                        .isTransactionExist(transactionID: transactionID)
+                        .map(Optional.some)
+                        .eraseToAnyPublisher()
                 }
-            } receiveValue: { [weak self] accountInfo in
-                guard let self else { return }
-                
-                let atimicUnitMultiplier = wallet.blockchain.decimalValue
-                let koinBalance = Decimal(accountInfo.koinBalance) / atimicUnitMultiplier
-                let mana = Decimal(accountInfo.mana) / atimicUnitMultiplier
-                
-                if wallet.amounts[.coin]?.value != koinBalance {
-                    wallet.clearPendingTransaction()
-                }
-                
-                wallet.add(
-                    amount: Amount(
-                        with: wallet.blockchain,
-                        type: .coin,
-                        value: koinBalance
-                    )
-                )
-                wallet.add(
-                    amount: Amount(
-                        with: self.wallet.blockchain,
-                        type: .feeResource(.mana),
-                        value: mana
-                    )
-                )
+                return Just<Bool?>(nil)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
             }
+        
+        cancellable = Publishers.CombineLatest(
+            networkService.getInfo(address: wallet.address),
+            isPendingTransactionExist
+        )
+        .sink { [weak self] in
+            switch $0 {
+            case .failure(let error):
+                self?.wallet.clearAmounts()
+                completion(.failure(error))
+            case .finished:
+                completion(.success(()))
+            }
+        } receiveValue: { [weak self] accountInfo, isPendingTransactionExist in
+            guard let self else { return }
+            
+            let atomicUnitMultiplier = wallet.blockchain.decimalValue
+            let koinBalance = Decimal(accountInfo.koinBalance) / atomicUnitMultiplier
+            let mana = Decimal(accountInfo.mana) / atomicUnitMultiplier
+            
+            wallet.add(
+                amount: Amount(
+                    with: wallet.blockchain,
+                    type: .coin,
+                    value: koinBalance
+                )
+            )
+            wallet.add(
+                amount: Amount(
+                    with: self.wallet.blockchain,
+                    type: .feeResource(.mana),
+                    value: mana
+                )
+            )
+            
+            if isPendingTransactionExist == true {
+                wallet.clearPendingTransaction()
+            }
+        }
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
