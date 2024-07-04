@@ -592,8 +592,8 @@ extension Blockchain {
         switch self {
         case .ethereum: return true
         case .ethereumClassic: return false // eth_feeHistory all zeroes
-        case .ethereumPoW: return true
-        case .disChain: return true
+        case .ethereumPoW: return false // eth_feeHistory with zeros
+        case .disChain: return false // eth_feeHistory with zeros
         case .rsk: return false
         case .bsc: return true
         case .polygon: return true
@@ -608,7 +608,7 @@ extension Blockchain {
         case .octa: return false // eth_feeHistory all zeroes
         case .decimal: return true
         case .xdc: return false
-        case .shibarium: return true
+        case .shibarium: return false // wrong base fee in eth_feeHistory. wei instead of gwei
         case .areon: return true
         case .playa3ullGames: return true
         case .pulsechain: return true
