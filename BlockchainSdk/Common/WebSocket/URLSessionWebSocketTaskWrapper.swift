@@ -129,10 +129,10 @@ private extension URLSessionWebSocketTaskWrapper {
     /// - The wrapped continuation never leaks (by leaving unresumed).
     final class CheckedContinuationWrapper<T, E> where E: Error {
         private var continuation: CheckedContinuation<T, E>?
-        private let fallback: Result<T, E>
+        private let fallback: () -> Result<T, E>
         private let criticalSection = Lock(isRecursive: false)
 
-        init(fallback: Result<T, E>) {
+        init(fallback: @autoclosure @escaping () -> Result<T, E>) {
             self.fallback = fallback
         }
 
@@ -142,7 +142,7 @@ private extension URLSessionWebSocketTaskWrapper {
 
         func set(_ newContinuation: CheckedContinuation<T, E>?) {
             criticalSection {
-                continuation?.resume(with: fallback)
+                continuation?.resume(with: fallback())
                 continuation = newContinuation
             }
         }
