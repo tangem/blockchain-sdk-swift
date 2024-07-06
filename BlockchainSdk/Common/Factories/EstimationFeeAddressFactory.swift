@@ -50,7 +50,7 @@ struct EstimationFeeAddressFactory {
                 .kava, .cronos, .telos, .octa, .shibarium, .disChain,
                 .areon, .playa3ullGames, .pulsechain, .aurora, .manta,
                 .zkSync, .moonbeam, .polygonZkEVM, .moonriver, .mantle,
-                .flare, .taraxa, .base:
+                .flare, .taraxa, .base, .cyber:
             return "0x52bb4012854f808CF9BAbd855e44E506dAf6C077"
         case .ethereumClassic:
             return "0xc49722a6f4Fe5A1347710dEAAa1fafF4c275689b"

@@ -77,6 +77,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case radiant(testnet: Bool)
     case base(testnet: Bool)
     case joystream(curve: EllipticCurve)
+    case cyber(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -113,7 +114,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .flare(let testnet),
                 .taraxa(let testnet),
                 .radiant(let testnet),
-                .base(let testnet):
+                .base(let testnet),
+                .cyber(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -219,7 +221,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .mantle,
                 .flare,
                 .taraxa,
-                .base:
+                .base,
+                .cyber:
             return 18
         case .cardano,
                 .xrp,
@@ -265,7 +268,8 @@ public indirect enum Blockchain: Equatable, Hashable {
              .manta,
              .zkSync,
              .polygonZkEVM,
-             .base:
+             .base,
+             .cyber:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -578,6 +582,7 @@ extension Blockchain {
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
+        case .cyber: return isTestnet ? 111557560 : 7560
         default:
             return nil
         }
@@ -622,6 +627,7 @@ extension Blockchain {
         case .flare: return true
         case .taraxa: return false
         case .base: return true
+        case .cyber: return true
         default:
             assertionFailure("Don't forget about evm here")
             return false
@@ -745,6 +751,7 @@ extension Blockchain: Codable {
         case .radiant: return "radiant"
         case .base: return "base"
         case .joystream: return "joystream"
+        case .cyber: return "cyber"
         }
     }
 
@@ -830,6 +837,7 @@ extension Blockchain: Codable {
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
+        case "cyber": self = .cyber(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1027,6 +1035,8 @@ private extension Blockchain {
             }
         case .joystream:
             return "joystream"
+        case .cyber:
+            return "cyber"
         }
     }
 
@@ -1084,7 +1094,8 @@ extension Blockchain {
             return EthereumWalletAssembly()
         case .optimism,
              .manta,
-             .base:
+             .base,
+             .cyber:
             return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:
             return BitcoinCashWalletAssembly()

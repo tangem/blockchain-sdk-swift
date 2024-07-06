@@ -139,6 +139,8 @@ public struct ExternalLinkProviderFactory {
             return BaseExternalLinkProvider(isTestnet: isTestnet)
         case .joystream:
             return JoystreamExternalLinkProvider()
+        case .cyber:
+            return CyberExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }
