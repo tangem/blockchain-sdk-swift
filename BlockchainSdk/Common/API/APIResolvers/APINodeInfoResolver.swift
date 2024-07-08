@@ -47,6 +47,12 @@ struct APINodeInfoResolver {
         case .kaspa:
             return KaspaAPIResolver(config: config)
                 .resolve(blockchain: blockchain)
+        case .onfinality:
+            return OnfinalityAPIResolver(config: config)
+                .resolve()
+        case .dwellir:
+            return DwellirAPIResolver(config: config)
+                .resolve()
         case .blockchair, .blockcypher, .solana:
             return nil
         }
