@@ -11,13 +11,13 @@ import Combine
 import Moya
 
 class PolkadotJsonRpcProvider: HostProvider {
-    var host: String { url.hostOrUnknown }
+    var host: String { node.url.hostOrUnknown }
 
-    private let url: URL
+    private let node: NodeInfo
     private let provider: NetworkProvider<PolkadotTarget>
     
-    init(url: URL, configuration: NetworkProviderConfiguration) {
-        self.url = url
+    init(node: NodeInfo, configuration: NetworkProviderConfiguration) {
+        self.node = node
         provider = NetworkProvider<PolkadotTarget>(configuration: configuration)
     }
     
@@ -42,7 +42,7 @@ class PolkadotJsonRpcProvider: HostProvider {
     }
     
     func runtimeVersion() -> AnyPublisher<PolkadotRuntimeVersion, Error> {
-        requestPublisher(for: .runtimeVersion(url: url))
+        requestPublisher(for: .runtimeVersion(url: node.url))
     }
     
     func submitExtrinsic(_ extrinsic: String) -> AnyPublisher<String, Error> {
@@ -50,7 +50,7 @@ class PolkadotJsonRpcProvider: HostProvider {
     }
     
     private func requestPublisher<T: Codable>(for target: PolkadotTarget.Target) -> AnyPublisher<T, Error> {
-        return provider.requestPublisher(PolkadotTarget(baseURL: url, target: target))
+        return provider.requestPublisher(PolkadotTarget(node: node, target: target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(PolkadotJsonRpcResponse<T>.self)
             .tryMap {

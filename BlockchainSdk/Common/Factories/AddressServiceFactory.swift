@@ -122,6 +122,8 @@ public struct AddressServiceFactory {
             return RadiantAddressService()
         case .joystream(let curve):
             return PolkadotAddressService(network: .joystream(curve: curve))
+        case .bittensor(let curve):
+            return PolkadotAddressService(network: .bittensor(curve: curve))
         }
     }
 }

@@ -608,6 +608,20 @@ class AddressesTests: XCTestCase {
         )
     }
     
+    func testBittensor() throws {
+        testSubstrateNetwork(
+            .bittensor(curve: .ed25519),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+        
+        testSubstrateNetwork(
+            .bittensor(curve: .ed25519_slip0010),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+    }
+    
     func testSubstrateNetwork(_ blockchain: Blockchain, publicKey: Data, expectedAddress: String) {
         let network = PolkadotNetwork(blockchain: blockchain)!
         let service = PolkadotAddressService(network: network)
@@ -618,10 +632,13 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
         XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
 
-        XCTAssertNotNil(addressFromString)
-        XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
+        guard let addressFromString else {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(addressFromString.bytes(raw: true), publicKey)
         XCTAssertEqual(address.value, expectedAddress)
-        XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
+        XCTAssertNotEqual(addressFromString.bytes(raw: false), publicKey)
     }
     
     func testTron() throws {
