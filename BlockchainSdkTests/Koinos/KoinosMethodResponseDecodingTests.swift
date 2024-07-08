@@ -123,8 +123,8 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
             .decode(
                 JSONRPC.Response<
                     KoinosMethod.SubmitTransaction.Response,
-                    NEARNetworkResult.APIError
-                >.self, 
+                    JSONRPC.APIError
+                >.self,
                 from: XCTUnwrap(jsonData)
             )
         

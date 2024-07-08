@@ -131,12 +131,15 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
         networkService.getRCLimit()
-            .map { [blockchain = wallet.blockchain] rcLimit in
-                Fee(
+            .tryMap { [blockchain = wallet.blockchain] rcLimit in
+                guard let rcLimit = rcLimit.decimal else {
+                    throw WalletError.failedToGetFee
+                }
+                return Fee(
                     Amount(
                         type: .feeResource(.mana),
                         currencySymbol: FeeResourceType.mana.rawValue,
-                        value: (rcLimit.decimal ?? .zero) / blockchain.decimalValue,
+                        value: rcLimit / blockchain.decimalValue,
                         decimals: blockchain.decimalCount
                     )
                 )
