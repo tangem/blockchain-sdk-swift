@@ -1,5 +1,5 @@
 {
-  "originHash" : "37caf723b47bac7e8185f17f998cd6e94cfa725440c1d89abc8cd061cbee1ad4",
+  "originHash" : "562434b588e71c79f752c3a23bc2ca7f7bee1285e7df1cb86e360f01aa276b9c",
   "pins" : [
     {
       "identity" : "anyasyncsequence",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "9fee8443252bb25e191b0b3b03a006aabac44088",
         "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "base32",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jarema/Base32.git",
+      "state" : {
+        "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
+        "version" : "0.10.2"
       }
     },
     {

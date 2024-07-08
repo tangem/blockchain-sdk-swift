@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import IcpKit
 import Moya
 
 struct ICPProviderTarget: TargetType {

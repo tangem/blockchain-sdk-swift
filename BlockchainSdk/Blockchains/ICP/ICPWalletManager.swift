@@ -9,7 +9,8 @@
 import Foundation
 import WalletCore
 import Combine
-import PotentCBOR
+import IcpKit
+import TangemSdk
 
 final class ICPWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
@@ -31,7 +32,11 @@ final class ICPWalletManager: BaseManager, WalletManager {
     }
     
     override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
-        cancellable = networkService.getInfo(address: wallet.address)
+        guard let balanceRequestData = try? makeBalanceRequestData() else {
+            completion(.failure(WalletError.empty))
+            return
+        }
+        cancellable = networkService.getBalance(data: balanceRequestData)
             .sink(
                 receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
@@ -56,69 +61,10 @@ final class ICPWalletManager: BaseManager, WalletManager {
     ) -> AnyPublisher<ICPSigningOutput, Error> {
         let icpSigner = ICPSinger(signer: signer, walletPublicKey: wallet.publicKey)
         return icpSigner.sign(input: input)
-    }
-    
-    func buildTransactionOld(input: InternetComputerSigningInput, with signer: TransactionSigner? = nil) throws -> InternetComputerSigningOutput {
-        let output: InternetComputerSigningOutput
-        
-        if let signer {
-            guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: CoinType.internetComputer.publicKeyType) else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            
-            
-            let coreSigner = WalletCoreSigner(
-                sdkSigner: signer,
-                blockchainKey: publicKey.data,
-                walletPublicKey: self.wallet.publicKey,
-                curve: wallet.blockchain.curve
-            )
-            output = try AnySigner.signExternally(input: input, coin: .internetComputer, signer: coreSigner)
-        } else {
-            output = AnySigner.sign(input: input, coin: .internetComputer)
-        }
-        
-        return output
-    }
-    
-    func sendOld(
-        _ transaction: Transaction,
-        signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        let dataForSign: Data
-        do {
-            dataForSign = try txBuilder.buildForSignOld(transaction: transaction)
-        } catch {
-            return .sendTxFail(error: WalletError.failedToBuildTx)
-        }
-        
-        let publisher: AnyPublisher<Data, Error> = signer.sign(hash: dataForSign, walletPublicKey: wallet.publicKey)
-        
-        return publisher
-            .flatMap { [weak self] data -> AnyPublisher<String, Error> in
-                guard let self,
-                      let rawTransactionData = try? txBuilder.buildForSendOld(
-                          transaction: transaction,
-                          signature: data
-                      ) else {
-                    return Fail(error: WalletError.failedToSendTx).eraseToAnyPublisher()
-                }
-                
-                return networkService
-                    .send(data: Data(hex: rawTransactionData))
-                    .mapSendError(tx: rawTransactionData.lowercased())
-                    .map { "" }
-                    .eraseToAnyPublisher()
-            }
-            .withWeakCaptureOf(self)
-            .map { walletManager, transactionHash in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: transactionHash)
-                walletManager.wallet.addPendingTransaction(record)
-                return TransactionSendResult(hash: transactionHash)
-            }
-            .eraseSendError()
+            .handleEvents(receiveOutput: { [weak self] output in
+                // save output for tracking transaction status
+                self?.signingOutput = output
+            })
             .eraseToAnyPublisher()
     }
     
@@ -126,7 +72,6 @@ final class ICPWalletManager: BaseManager, WalletManager {
         _ transaction: Transaction,
         signer: TransactionSigner
     ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-//        sendOld(transaction, signer: signer)
         Just(())
             .receive(on: DispatchQueue.global())
             .tryMap { [txBuilder] _ in
@@ -135,48 +80,77 @@ final class ICPWalletManager: BaseManager, WalletManager {
             .withWeakCaptureOf(self)
             .flatMap { walletManager, input in
                 walletManager.buildTransaction(input: input, with: signer)
-                    .handleEvents(receiveOutput: { [weak self] output in
-                        self?.signingOutput = output
-                    })
                     .withWeakCaptureOf(self)
                     .tryMap { walletManager, output in
                         try walletManager.txBuilder.buildForSend(output: output.callEnvelope)
                     }
-                    .flatMap { signedTransaction in
-                        walletManager.networkService
-                            .send(data: signedTransaction)
-                            .handleEvents(receiveOutput: { [weak self] value in
-                                self?.trackStransactionStatus()
-                            })
-                            .map { TransactionSendResult(hash: "") }
-                            .mapSendError(tx: signedTransaction.hexString.lowercased())
+                    .withWeakCaptureOf(self)
+                    .flatMap { walletManager, signedTransaction in
+                        walletManager.sendSigned(data: signedTransaction)
                     }
             }
             .eraseSendError()
             .eraseToAnyPublisher()
     }
     
-    private func trackStransactionStatus()  {
+    // MARK: - Private implementation
+    
+    private func sendSigned(data: Data) -> AnyPublisher<TransactionSendResult, Error> {
+        networkService
+            .send(data: data)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, _ in
+                walletManager.trackStransactionStatus()
+            }
+            .map { _ in TransactionSendResult(hash: "") }
+            .mapSendError(tx: data.hexString.lowercased())
+            .eraseToAnyPublisher()
+    }
+    
+    private func trackStransactionStatus(attempt: Int = 0) -> AnyPublisher<UInt64, Error>  {
         guard let signingOutput,
-              let signedRequest = try? txBuilder.buildForSend(output: signingOutput.readStateEnvelope) else { return }
-        
-        let paths = ICPStateTreePath.readStateRequestPaths(requestID: signingOutput.requestID)
-        
-        cancellable = networkService.readState(data: signedRequest, paths: paths)
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.signingOutput = nil
-            }, receiveValue: { [weak self] value in
+              let signedRequest = try? txBuilder.buildForSend(output: signingOutput.readStateEnvelope) else {
+            return .anyFail(error: WalletError.empty)
+        }
+                
+        return networkService.readState(data: signedRequest, paths: signingOutput.readStateTreePaths)
+            .delay(for: .milliseconds(Constants.readStateRetryDelayMilliseconds), scheduler: DispatchQueue.main)
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, value in
                 guard let value else {
-                    self?.trackStransactionStatus()
-                    return
+                    throw WalletError.empty
                 }
+                return value
+            }
+            .retry(Constants.readStateRetryCount)
+            .handleEvents(receiveOutput: { [weak self] value in
                 self?.signingOutput = nil
             })
+            .eraseToAnyPublisher()
+    }
+    
+    private func makeBalanceRequestData() throws -> Data {
+        let envelope = ICPRequestEnvelope(
+            content: ICPRequestBuilder.makeCallRequestContent(
+                method: .balance(account: Data(hex: wallet.address)),
+                requestType: .query,
+                nonce: try CryptoUtils.icpNonce()
+            )
+        )
+        return try envelope.cborEncoded()
     }
 }
 
 extension ICPWalletManager {
     enum Constants {
         static let fee = Decimal(stringValue: "0.0001")!
+        static let readStateRetryCount = 3
+        static let readStateRetryDelayMilliseconds = 500
+    }
+}
+
+extension CryptoUtils {
+    static func icpNonce() throws -> Data {
+        try generateRandomBytes(count: 32)
     }
 }
