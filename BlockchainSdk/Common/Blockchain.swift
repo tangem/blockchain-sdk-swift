@@ -173,6 +173,41 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    /// Allows to send to your own address
+    public var supportsCompound: Bool {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash,
+             .litecoin,
+             .dogecoin,
+             .dash,
+             .kaspa,
+             .ravencoin,
+             .ducatus:
+            return true
+        default:
+            return false
+        }
+    }
+
+    /// Just drop the last node to generate XPUB
+    /// https://iancoleman.io/bip39/
+    public var isBip44DerivationStyleXPUB: Bool {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash,
+             .litecoin,
+             .dogecoin,
+             .dash,
+             .kaspa,
+             .ravencoin,
+             .ducatus:
+            return true
+        default:
+            return false
+        }
+    }
+
     public var decimalCount: Int {
         switch self {
         case .bitcoin,
