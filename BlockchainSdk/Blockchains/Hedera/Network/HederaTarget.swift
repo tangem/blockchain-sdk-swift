@@ -20,7 +20,7 @@ extension HederaTarget {
     enum Target {
         case getAccounts(publicKey: String)
         case getAccountBalance(accountId: String)
-        case getTokens(accountId: String)
+        case getTokens(accountId: String, entitiesLimit: Int)
         case getExchangeRate
         case getTransactionInfo(transactionHash: String)
     }
@@ -46,7 +46,7 @@ extension HederaTarget: TargetType {
             return "accounts"
         case .getAccountBalance:
             return "balances"
-        case .getTokens(let accountId):
+        case .getTokens(let accountId, _):
             return "accounts/\(accountId)/tokens"
         case .getExchangeRate:
             return "network/exchangerate"
@@ -79,9 +79,9 @@ extension HederaTarget: TargetType {
                 "account.id": accountId,
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
-        case .getTokens:
+        case .getTokens(_, let entitiesLimit):
             let parameters: [String: Any] = [
-                "limit": UInt8.max,     // 255 unique tokens per account should be enough
+                "limit": entitiesLimit,
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
         case .getExchangeRate,
