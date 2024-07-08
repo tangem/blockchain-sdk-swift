@@ -135,14 +135,21 @@ private extension EthereumTransactionBuilder {
             input.chainID = BigUInt(chainId).serialize()
             input.nonce = nonceValue.serialize()
 
-            // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
-            if let feeParameters = fee.parameters as? EthereumEIP1559FeeParameters {
-                input.txMode = .enveloped
-                input.gasLimit = feeParameters.gasLimit.serialize()
-                input.maxFeePerGas = feeParameters.maxFeePerGas.serialize()
-                input.maxInclusionFeePerGas = feeParameters.priorityFee.serialize()
-            } else {
+            guard let feeParameters = fee.parameters as? EthereumFeeParameters else {
                 throw EthereumTransactionBuilderError.feeParametersNotFound
+            }
+
+            switch feeParameters.parametersType {
+            case .eip1559(let eip1559Parameters):
+                // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
+                input.txMode = .enveloped
+                input.gasLimit = eip1559Parameters.gasLimit.serialize()
+                input.maxFeePerGas = eip1559Parameters.maxFeePerGas.serialize()
+                input.maxInclusionFeePerGas = eip1559Parameters.priorityFee.serialize()
+            case .legacy(let legacyParameters):
+                input.txMode = .legacy
+                input.gasLimit = legacyParameters.gasLimit.serialize()
+                input.gasPrice = legacyParameters.gasPrice.serialize()
             }
 
             input.transaction = .with {
@@ -157,9 +164,19 @@ private extension EthereumTransactionBuilder {
                     }
                 case .contract(let user, let contract, let value):
                     input.toAddress = contract
-                    $0.erc20Transfer = .with {
-                        $0.amount = value.serialize()
-                        $0.to = user
+                    let amount = value.serialize()
+
+                    if let data = parameters?.data {
+                        $0.contractGeneric = .with {
+                            $0.amount = amount
+                            $0.data = data
+                        }
+                    } else {
+                        // Fallback to plain transfer if there is no payload available
+                        $0.erc20Transfer = .with {
+                            $0.amount = amount
+                            $0.to = user
+                        }
                     }
                 }
             }
@@ -230,11 +247,28 @@ extension EthereumTransactionBuilder {
     }
 }
 
-enum EthereumTransactionBuilderError: Error {
+enum EthereumTransactionBuilderError: LocalizedError {
     case feeParametersNotFound
     case invalidSignatureCount
     case invalidAmount
     case invalidNonce
     case transactionEncodingFailed
     case walletCoreError(message: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .feeParametersNotFound:
+            return "feeParametersNotFound"
+        case .invalidAmount:
+            return "invalidAmount"
+        case .invalidNonce:
+            return "invalidNonce"
+        case .invalidSignatureCount:
+            return "invalidSignatureCount"
+        case .transactionEncodingFailed:
+            return "transactionEncodingFailed"
+        case .walletCoreError(let message):
+            return "walletCoreError: \(message)"
+        }
+    }
 }

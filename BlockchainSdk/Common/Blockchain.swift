@@ -176,6 +176,41 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    /// Allows to send to your own address
+    public var supportsCompound: Bool {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash,
+             .litecoin,
+             .dogecoin,
+             .dash,
+             .kaspa,
+             .ravencoin,
+             .ducatus:
+            return true
+        default:
+            return false
+        }
+    }
+
+    /// Just drop the last node to generate XPUB
+    /// https://iancoleman.io/bip39/
+    public var isBip44DerivationStyleXPUB: Bool {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash,
+             .litecoin,
+             .dogecoin,
+             .dash,
+             .kaspa,
+             .ravencoin,
+             .ducatus:
+            return true
+        default:
+            return false
+        }
+    }
+
     public var decimalCount: Int {
         switch self {
         case .bitcoin,
@@ -513,43 +548,34 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum,
-                .stellar,
-                .optimism,
+        case .stellar,
                 .ton,
                 .near,
                 .aptos,
-                .hedera,
-                .areon,
-                .playa3ullGames,
-                .pulsechain,
-                .aurora,
-                .manta,
-                .zkSync,
-                .moonbeam,
-                .polygonZkEVM,
-                .moonriver,
-                .mantle,
-                .flare,
-                .taraxa,
-                .base:
+                .hedera:
             return true
-        case .fantom,
-                .tron,
-                .gnosis,
-                .avalanche,
-                .ethereumPoW,
-                .cronos,
-                .veChain,
-                .xdc:
+        case .tron,
+                .veChain:
             if case .token = amountType {
                 return true
             }
-        default:
-            break
-        }
 
-        return false
+            return false
+        case _ where isEvm:
+            return true
+        default:
+            return false
+        }
+    }
+
+    // TODO: This property only for EVM for now. Refactor all other wallet managers
+    var allowsFeeSelection: Bool {
+        switch self {
+        case .telos:
+            return false
+        default:
+            return true
+        }
     }
 }
 
@@ -594,7 +620,53 @@ extension Blockchain {
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
-        default: return nil
+        default:
+            return nil
+        }
+    }
+
+    // Only for Ethereum compatible blockchains
+    public var supportsEIP1559: Bool {
+        guard isEvm else {
+            return false
+        }
+
+        switch self {
+        case .ethereum: return true
+        case .ethereumClassic: return false // eth_feeHistory all zeroes
+        case .ethereumPoW: return false // eth_feeHistory with zeros
+        case .disChain: return false // eth_feeHistory with zeros
+        case .rsk: return false
+        case .bsc: return true
+        case .polygon: return true
+        case .avalanche: return true
+        case .fantom: return true
+        case .arbitrum: return true
+        case .gnosis: return true
+        case .optimism: return true
+        case .kava: return false // eth_feeHistory zero or null
+        case .cronos: return true
+        case .telos: return false
+        case .octa: return false // eth_feeHistory all zeroes
+        case .decimal: return true
+        case .xdc: return false
+        case .shibarium: return false // wrong base fee in eth_feeHistory. wei instead of gwei
+        case .areon: return true
+        case .playa3ullGames: return true
+        case .pulsechain: return true
+        case .aurora: return false
+        case .manta: return true
+        case .zkSync: return false
+        case .moonbeam: return false
+        case .polygonZkEVM: return false
+        case .moonriver: return false
+        case .mantle: return true
+        case .flare: return true
+        case .taraxa: return false
+        case .base: return true
+        default:
+            assertionFailure("Don't forget about evm here")
+            return false
         }
     }
 }
@@ -704,7 +776,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
-        case .manta: return "manta-network"
+        case .manta: return "manta-pacific"
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
@@ -790,7 +862,7 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
-        case "manta-network": self = .manta(testnet: isTestnet)
+        case "manta-pacific": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
@@ -966,10 +1038,7 @@ private extension Blockchain {
             case .coin: return "aurora-ethereum"
             }
         case .manta:
-            switch type {
-            case .network: return "manta-network"
-            case .coin: return "manta-network-ethereum"
-            }
+            return "manta-pacific"
         case .zkSync:
             switch type {
             case .network: return "zksync"
@@ -1054,7 +1123,10 @@ extension Blockchain {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .decimal,
+                .xdc,
+                .telos:
             return EthereumWalletAssembly()
         case .optimism,
              .manta,
@@ -1090,14 +1162,8 @@ extension Blockchain {
             return ChiaWalletAssembly()
         case .near:
             return NEARWalletAssembly()
-        case .telos:
-            return TelosWalletAssembly()
-        case .decimal:
-            return DecimalWalletAssembly()
         case .veChain:
             return VeChainWalletAssembly()
-        case .xdc:
-            return XDCWalletAssembly()
         case .algorand:
             return AlgorandWalletAssembly()
         case .aptos:

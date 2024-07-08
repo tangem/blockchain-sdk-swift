@@ -166,7 +166,7 @@ public enum EthereumUtils {
             trimmedString = "0" + trimmedString
         }
         
-        guard isValidHex(trimmedString) else {
+        guard trimmedString.isValidHex else {
             return nil
         }
         
@@ -182,18 +182,6 @@ public enum EthereumUtils {
         }
         
         return Data(data)
-    }
-    
-    private static func isValidHex(_ asciiHex: String) -> Bool {
-        let regex = try! NSRegularExpression(pattern: "^[0-9a-f]*$", options: .caseInsensitive)
-        
-        let found = regex.firstMatch(in: asciiHex, options: [], range: NSRange(location: 0, length: asciiHex.count))
-        
-        if found == nil || found?.range.location == NSNotFound || asciiHex.count % 2 != 0 {
-            return false
-        }
-        
-        return true
     }
     
     private static func makeHandler(with decimals: Int16) -> NSDecimalNumberHandler {

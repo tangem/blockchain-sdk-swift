@@ -1,5 +1,5 @@
 //
-//  HederaNetworkResult.TokensInfo.swift
+//  HederaNetworkResult.AccountTokensBalance.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Fedorov on 06.04.2024.
@@ -9,7 +9,8 @@
 import Foundation
 
 extension HederaNetworkResult {
-    struct TokensInfo: Decodable {
+    /// Contains token balances for the account; used by the REST network layer.
+    struct AccountTokensBalance: Decodable {
         struct Token: Decodable {
             /// Contract address - network entity ID in the format of `shard.realm.num`.
             let tokenId: String

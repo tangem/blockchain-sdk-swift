@@ -16,7 +16,7 @@ struct BittensorWalletAssembly: WalletManagerAssembly {
         }
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
-            let blockchain = input.blockchain
+            let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
             let networkConfig = input.networkConfig
             var providers = [PolkadotJsonRpcProvider]()
             
@@ -33,7 +33,12 @@ struct BittensorWalletAssembly: WalletManagerAssembly {
             }
             
             $0.networkService = PolkadotNetworkService(providers: providers, network: network)
-            $0.txBuilder = PolkadotTransactionBuilder(blockchain: input.blockchain, walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
+            $0.txBuilder = PolkadotTransactionBuilder(
+                blockchain: input.blockchain,
+                walletPublicKey: input.wallet.publicKey.blockchainKey,
+                network: network,
+                runtimeVersionProvider: runtimeVersionProvider
+            )
         }
     }
 }

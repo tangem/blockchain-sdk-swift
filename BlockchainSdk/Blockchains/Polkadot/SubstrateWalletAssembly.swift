@@ -10,36 +10,28 @@ import Foundation
 import TangemSdk
 
 struct SubstrateWalletAssembly: WalletManagerAssembly {
-    
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        guard let network = PolkadotNetwork(blockchain: input.blockchain) else {
+        let blockchain = input.blockchain
+
+        guard let network = PolkadotNetwork(blockchain: blockchain) else {
             throw WalletError.empty
         }
-        
-        return PolkadotWalletManager(network: network, wallet: input.wallet).then {
-            let blockchain = input.blockchain
+
+        return PolkadotWalletManager(network: network, wallet: input.wallet).then { walletManager in
+            let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
             let networkConfig = input.networkConfig
-            var providers: [PolkadotJsonRpcProvider] = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
+            let providers: [PolkadotJsonRpcProvider] = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
                 .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
                     PolkadotJsonRpcProvider(node: nodeInfo, configuration: networkConfig)
                 }
-            
-            if case .bittensor = network {
-                let dwellirResolver = DwellirAPIResolver(config: input.blockchainSdkConfig)
-                
-                if let dwellirNodeInfo = dwellirResolver.resolve() {
-                    providers.append(PolkadotJsonRpcProvider(node: dwellirNodeInfo, configuration: networkConfig))
-                }
-                
-                let onfinalityResolver = OnfinalityAPIResolver(config: input.blockchainSdkConfig)
-                
-                if let onfinalityNodeInfo = onfinalityResolver.resolve() {
-                    providers.append(PolkadotJsonRpcProvider(node: onfinalityNodeInfo, configuration: networkConfig))
-                }
-            }
-            
-            $0.networkService = PolkadotNetworkService(providers: providers, network: network)
-            $0.txBuilder = PolkadotTransactionBuilder(blockchain: input.blockchain, walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
+
+            walletManager.networkService = PolkadotNetworkService(providers: providers, network: network)
+            walletManager.txBuilder = PolkadotTransactionBuilder(
+                blockchain: blockchain,
+                walletPublicKey: input.wallet.publicKey.blockchainKey,
+                network: network,
+                runtimeVersionProvider: runtimeVersionProvider
+            )
         }
     }
 }
