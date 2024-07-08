@@ -483,7 +483,7 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     /// Provides a more descriptive display name for the fee currency (ETH) for some Ethereum L2s,
     /// for example: `'Optimistic Ethereum (ETH)'` instead of just `'ETH'`
-    var feeDisplayName: String {
+    public var feeDisplayName: String {
         switch self {
         case .arbitrum,
              .optimism,
@@ -511,7 +511,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     }
 
     /// Should be used to get the actual currency rate.
-    var currencyId: String {
+    public var currencyId: String {
         switch self {
         case .arbitrum(let testnet),
              .optimism(let testnet),
@@ -561,7 +561,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
-    var canHandleCustomTokens: Bool {
+    public var canHandleCustomTokens: Bool {
         switch self {
         // Only one token supported currently
         case .terraV1:
