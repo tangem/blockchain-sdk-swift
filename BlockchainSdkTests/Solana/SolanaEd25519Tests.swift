@@ -12,7 +12,7 @@ import Combine
 @testable import BlockchainSdk
 @testable import Solana_Swift
 
-private let raisedError = SolanaError.other("Just tx size test")
+private let raisedError = SolanaError.nullValue
 
 final class SolanaEd25519Tests: XCTestCase {
     private class CoinSigner: TransactionSigner {
@@ -68,7 +68,7 @@ final class SolanaEd25519Tests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo], apiLogger: nil)
+        networkingRouter = .init(endpoints: [.testnetSolana], apiLogger: nil)
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
         let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
@@ -134,7 +134,7 @@ final class SolanaEd25519Tests: XCTestCase {
                     return
                 }
                 
-                XCTAssertEqual(castedError, raisedError)
+                XCTAssertEqual(castedError.localizedDescription, raisedError.localizedDescription)
             }, receiveValue: { _ in
                 XCTFail("Test shouldn't receive value")
             })

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import BigInt
 
 // MARK: - Params
 
@@ -25,25 +24,7 @@ struct CallParams: Encodable {
 
 // MARK: - Response
 
-/// Final Ethereum response that contain all information about address
-struct EthereumInfoResponse {
-    let balance: Decimal
-    let tokenBalances: [Token: Decimal]
-    let txCount: Int
-    let pendingTxCount: Int
-    var pendingTxs: [PendingTransaction]
-}
-
-struct EthereumFeeResponse {
-    let gasLimit: BigUInt
-    let fees: (low: ETHFee, market: ETHFee, fast: ETHFee)
-
-    struct ETHFee {
-        let max: BigUInt
-        let priority: BigUInt
-    }
-}
-
 struct EthereumFeeHistoryResponse: Decodable {
     let baseFeePerGas: [String]
+    let reward: [[String]]
 }

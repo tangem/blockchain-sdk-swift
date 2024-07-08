@@ -13,7 +13,7 @@ actor WebSocketConnection {
     private let ping: Ping
     private let timeout: TimeInterval
     
-    private var _sessionWebSocketTask: Task<URLSessionWebSocketTaskWrapper, Never>?
+    private var _sessionWebSocketTask: Task<URLSessionWebSocketTaskWrapper, any Error>?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
 
@@ -27,8 +27,8 @@ actor WebSocketConnection {
         self.timeout = timeout
     }
     
-    public func send(_ message: URLSessionWebSocketTask.Message) async throws {
-        let webSocketTask = await setupWebSocketTask()
+    func send(_ message: URLSessionWebSocketTask.Message) async throws {
+        let webSocketTask = try await setupWebSocketTask()
         log("Send: \(message)")
 
         // Send a message
@@ -39,8 +39,8 @@ actor WebSocketConnection {
         startTimeoutTask()
     }
 
-    public func receive() async throws -> Data {
-        guard let webSocket = await _sessionWebSocketTask?.value else {
+    func receive() async throws -> Data {
+        guard let webSocket = try await _sessionWebSocketTask?.value else {
             throw WebSocketConnectionError.webSocketNotFound
         }
         
@@ -79,7 +79,7 @@ private extension WebSocketConnection {
     }
     
     func ping() async throws {
-        guard let webSocket = await _sessionWebSocketTask?.value else {
+        guard let webSocket = try await _sessionWebSocketTask?.value else {
             throw WebSocketConnectionError.webSocketNotFound
         }
         
@@ -96,9 +96,9 @@ private extension WebSocketConnection {
         startPingTask()
     }
     
-    func setupWebSocketTask() async -> URLSessionWebSocketTaskWrapper {
+    func setupWebSocketTask() async throws -> URLSessionWebSocketTaskWrapper {
         if let _sessionWebSocketTask {
-            let socket = await _sessionWebSocketTask.value
+            let socket = try await _sessionWebSocketTask.value
             log("Return existed \(socket)")
             return socket
         }
@@ -107,14 +107,14 @@ private extension WebSocketConnection {
             let socket = URLSessionWebSocketTaskWrapper(url: url)
             
             log("\(socket) start connect")
-            await socket.connect()
+            try await socket.connect()
             log("\(socket) did open")
 
             return socket
         }
         
         _sessionWebSocketTask = connectingTask
-        return await connectingTask.value
+        return try await connectingTask.value
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {

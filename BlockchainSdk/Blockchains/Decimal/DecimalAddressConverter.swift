@@ -1,5 +1,5 @@
 //
-//  DecimalUtils.swift
+//  DecimalAddressConverter.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 15.11.2023.
@@ -14,31 +14,31 @@ import Foundation
  Legacy Address - dx1fv0m65st02p0z93xxarsd6g4ydltg8crm78hkv no use
  */
 
-struct DecimalBlockchainAddressConverter {
-    
+struct DecimalAddressConverter: EthereumAddressConverter {
+
     // MARK: - Private Properties
     
     private let bech32 = Bech32()
     
     // MARK: - Implementation
     
-    func convertDscAddressToDecimalBlockchainAddress(addressHex: String) throws -> String {
-        if addressHex.lowercased().hasPrefix(Constants.addressPrefix) || addressHex.lowercased().hasPrefix(Constants.legacyAddressPrefix) {
-            return addressHex
+    func convertToDecimalAddress(_ address: String) throws -> String {
+        if address.lowercased().hasPrefix(Constants.addressPrefix) || address.lowercased().hasPrefix(Constants.legacyAddressPrefix) {
+            return address
         }
 
-        let addressBytes = Data(hexString: addressHex)
+        let addressBytes = Data(hexString: address)
 
         return bech32.encode(Constants.addressPrefix, values: addressBytes)
     }
 
-    func convertDecimalBlockchainAddressToDscAddress(addressHex: String) throws -> String {
-        if addressHex.hasHexPrefix() {
-            return addressHex
+    func convertToETHAddress(_ address: String) throws -> String {
+        if address.hasHexPrefix() {
+            return address
         }
         
-        let decodeValue = try bech32.decode(addressHex)
-        
+        let decodeValue = try bech32.decode(address)
+
         let convertedAddressBytes = try bech32.convertBits(
             data: decodeValue.checksum.bytes,
             fromBits: 5,
@@ -50,7 +50,7 @@ struct DecimalBlockchainAddressConverter {
     }
 }
 
-extension DecimalBlockchainAddressConverter {
+extension DecimalAddressConverter {
     enum Constants {
         static let addressPrefix = "d0"
         static let legacyAddressPrefix = "dx"
