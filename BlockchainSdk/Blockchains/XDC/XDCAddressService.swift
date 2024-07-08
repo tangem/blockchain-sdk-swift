@@ -36,6 +36,10 @@ extension XDCAddressService: AddressProvider {
 
 extension XDCAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        return ethereumAddressService.validate(converter.convertToETHAddress(address))
+        guard let converted = try? converter.convertToETHAddress(address) else {
+            return false
+        }
+
+        return ethereumAddressService.validate(converted)
     }
 }

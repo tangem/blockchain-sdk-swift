@@ -162,6 +162,8 @@ final class HederaWalletManager: BaseManager {
         return networkService
             .getExchangeRate()
             .map { $0 as HederaExchangeRate? }  // Combine can't implicitly bridge `Publisher<T, Error>` to `Publisher<T?, Error`
+            .replaceError(with: nil)    // Token association fee request is auxiliary and shouldn't cause the entire reactive chain to fail
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 

@@ -10,6 +10,7 @@ import Foundation
 import CryptoKit
 import TangemSdk
 import class WalletCore.DataVector
+import Sodium
 
 extension Data {
     var bytes: Array<UInt8> {
@@ -40,5 +41,27 @@ extension Data {
 
     func asDataVector() -> DataVector {
         return DataVector(data: self)
+    }
+
+    func hashBlake2b(key: Data, outputLength: Int) -> Data? {
+        guard let hash = Sodium().genericHash.hash(
+            message: bytes,
+            key: key.bytes,
+            outputLength: outputLength) else {
+            return nil
+        }
+
+        return Data(hash)
+    }
+
+    func hashBlake2b(outputLength: Int) -> Data? {
+        guard let hash = Sodium().genericHash.hash(
+            message: bytes,
+            key: nil,
+            outputLength: outputLength) else {
+            return nil
+        }
+
+        return Data(hash)
     }
 }

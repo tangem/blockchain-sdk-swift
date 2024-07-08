@@ -980,12 +980,12 @@ class AddressesTests: XCTestCase {
     }
     
     func testDecimalValidateConverterAddressUtils() throws {
-        let converter = DecimalBlockchainAddressConverter()
+        let converter = DecimalAddressConverter()
         
-        let ercAddress = try converter.convertDscAddressToDecimalBlockchainAddress(addressHex: "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
+        let ercAddress = try converter.convertToDecimalAddress("0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
         XCTAssertEqual(ercAddress, "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
         
-        let dscAddress = try converter.convertDecimalBlockchainAddressToDscAddress(addressHex: "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
+        let dscAddress = try converter.convertToETHAddress("d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
         XCTAssertEqual(dscAddress, "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
     }
 
@@ -1035,8 +1035,8 @@ class AddressesTests: XCTestCase {
         let ethAddr = "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
         let xdcAddr = "xdc6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
         let converter = XDCAddressConverter()
-        XCTAssertEqual(converter.convertToETHAddress(ethAddr), ethAddr)
-        XCTAssertEqual(converter.convertToETHAddress(xdcAddr), ethAddr)
+        XCTAssertEqual(try converter.convertToETHAddress(ethAddr), ethAddr)
+        XCTAssertEqual(try converter.convertToETHAddress(xdcAddr), ethAddr)
         XCTAssertEqual(converter.convertToXDCAddress(ethAddr), xdcAddr)
         XCTAssertEqual(converter.convertToXDCAddress(xdcAddr), xdcAddr)
     }
