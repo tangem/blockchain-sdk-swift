@@ -228,9 +228,20 @@ private extension EthereumWalletManager {
         ]
 
         let fees = feeParameters.map { parameters in
+            // This is a workaround for sending a Mantle transaction.
+            // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
+            // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
+            var parameters = parameters
+            if case .mantle = wallet.blockchain {
+                parameters = EthereumEIP1559FeeParameters(
+                    gasLimit: BigUInt(ceil(Double(response.gasLimit) * 1.6)),
+                    maxFeePerGas: parameters.maxFeePerGas,
+                    priorityFee: parameters.priorityFee
+                )
+            }
+            
             let feeValue = parameters.calculateFee(decimalValue: wallet.blockchain.decimalValue)
             let amount = Amount(with: wallet.blockchain, value: feeValue)
-
             return Fee(amount, parameters: parameters)
         }
 
@@ -312,7 +323,14 @@ private extension EthereumWalletManager {
 
 extension EthereumWalletManager: TransactionFeeProvider {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
-        addressConverter.convertToETHAddressPublisher(destination)
+        // This is a workaround for sending a Mantle transaction.
+        // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
+        // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
+        var amount = amount
+        if case .mantle = wallet.blockchain {
+            amount = Amount(with: wallet.blockchain, type: amount.type, value: amount.value - 1 / wallet.blockchain.decimalValue)
+        }
+        return addressConverter.convertToETHAddressPublisher(destination)
             .withWeakCaptureOf(self)
             .flatMap { walletManager, convertedDestination -> AnyPublisher<[Fee],Error> in
                 switch amount.type {

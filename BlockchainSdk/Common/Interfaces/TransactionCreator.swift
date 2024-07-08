@@ -6,6 +6,7 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import Foundation
 
 public protocol TransactionCreator: TransactionValidator {
@@ -71,5 +72,39 @@ public extension TransactionCreator {
         try await validate(transaction: transaction)
         
         return transaction
+    }
+    
+    func createTransaction(
+        amount: Amount,
+        fee: Fee,
+        blockchain: Blockchain,
+        sourceAddress: String? = nil,
+        destinationAddress: String,
+        changeAddress: String? = nil,
+        contractAddress: String? = nil
+    ) throws -> Transaction {
+        // This is a workaround for sending a Mantle transaction.
+        // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
+        // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
+        var fee = fee
+        if case .mantle = blockchain {
+            let parameters = (fee.parameters as? EthereumEIP1559FeeParameters).map { parameters in
+                EthereumEIP1559FeeParameters(
+                    gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * 0.7)),
+                    maxFeePerGas: parameters.maxFeePerGas,
+                    priorityFee: parameters.priorityFee
+                )
+            }
+            fee = Fee(fee.amount, parameters: parameters)
+        }
+        
+        return try createTransaction(
+            amount: amount,
+            fee: fee,
+            sourceAddress: sourceAddress,
+            destinationAddress: destinationAddress,
+            changeAddress: changeAddress,
+            contractAddress: contractAddress
+        )
     }
 }
