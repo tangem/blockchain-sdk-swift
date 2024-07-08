@@ -481,6 +481,23 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    /// Provides a more descriptive display name for the fee currency (ETH) for some Ethereum L2s,
+    /// for example: `'Optimistic Ethereum (ETH)'` instead of just `'ETH'`
+    var feeDisplayName: String {
+        switch self {
+        case .arbitrum,
+             .optimism,
+             .aurora,
+             .manta,
+             .zkSync,
+             .polygonZkEVM,
+             .base:
+            return displayName + " (\(currencySymbol))"
+        default:
+            return currencySymbol
+        }
+    }
+
     /// Should be used as blockchain identifier
     public var coinId: String {
         id(type: .coin)
@@ -491,6 +508,22 @@ public indirect enum Blockchain: Equatable, Hashable {
     /// - Synchronization of user coins on the server
     public var networkId: String {
         id(type: .network)
+    }
+
+    /// Should be used to get the actual currency rate.
+    var currencyId: String {
+        switch self {
+        case .arbitrum(let testnet),
+             .optimism(let testnet),
+             .aurora(let testnet),
+             .manta(let testnet),
+             .zkSync(let testnet),
+             .polygonZkEVM(let testnet),
+             .base(let testnet):
+            return Blockchain.ethereum(testnet: testnet).coinId
+        default:
+            return coinId
+        }
     }
 
     public var tokenTypeName: String? {
@@ -525,6 +558,16 @@ public indirect enum Blockchain: Equatable, Hashable {
             return true
         default:
             return false
+        }
+    }
+
+    var canHandleCustomTokens: Bool {
+        switch self {
+        // Only one token supported currently
+        case .terraV1:
+            return false
+        default:
+            return canHandleTokens
         }
     }
 
