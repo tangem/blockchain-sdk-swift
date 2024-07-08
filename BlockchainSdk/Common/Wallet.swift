@@ -102,7 +102,7 @@ public struct Wallet {
         amounts = [:]
     }
 
-    mutating func remove(token: Token) {
+    mutating func clearAmount(for token: Token) {
         amounts[.token(value: token)] = nil
     }
 
