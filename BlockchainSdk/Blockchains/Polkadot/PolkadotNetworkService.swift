@@ -81,7 +81,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
             
             
             return Publishers.Zip4(
-                provider.blockhash(.genesis), latestBlockPublisher,
+                provider.blockhash(.genesis), 
+                latestBlockPublisher,
                 provider.accountNextIndex(address),
                 provider.runtimeVersion()
             ).map { genesisHash, latestBlockInfo, nextIndex, runtimeVersion in
@@ -121,6 +122,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
         guard
             let address = PolkadotAddress(string: address, network: network),
             let addressBytes = address.bytes(raw: true),
+            // TODO: Use extension from Data+
             let addressHash = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16)
         else {
             throw WalletError.empty
