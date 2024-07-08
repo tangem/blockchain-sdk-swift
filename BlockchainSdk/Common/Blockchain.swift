@@ -77,6 +77,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case radiant(testnet: Bool)
     case base(testnet: Bool)
     case joystream(curve: EllipticCurve)
+    case bittensor(curve: EllipticCurve)
 
     public var isTestnet: Bool {
         switch self {
@@ -132,7 +133,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .disChain,
                 .playa3ullGames,
                 .kaspa,
-                .joystream:
+                .joystream,
+                .bittensor:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -164,7 +166,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .near(let curve, _),
                 .algorand(let curve, _),
                 .aptos(let curve, _),
-                .hedera(let curve, _):
+                .hedera(let curve, _),
+                .bittensor(let curve):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -282,6 +285,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 6
         case .aptos:
             return 8
+        case .bittensor:
+            return 9
         }
     }
 
@@ -404,6 +409,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "RXD"
         case .joystream:
             return "JOY"
+        case .bittensor:
+            return "TAO"
         }
     }
 
@@ -823,6 +830,7 @@ extension Blockchain: Codable {
         case .radiant: return "radiant"
         case .base: return "base"
         case .joystream: return "joystream"
+        case .bittensor: return "bittensor"
         }
     }
 
@@ -908,6 +916,7 @@ extension Blockchain: Codable {
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
+        case "bittensor": self = .bittensor(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1105,6 +1114,8 @@ private extension Blockchain {
             }
         case .joystream:
             return "joystream"
+        case .bittensor:
+            return "bittensor"
         }
     }
 
@@ -1204,6 +1215,8 @@ extension Blockchain {
             return HederaWalletAssembly()
         case .radiant:
             return RadiantWalletAssembly()
+        case .bittensor:
+            return BittensorWalletAssembly()
         }
     }
 }

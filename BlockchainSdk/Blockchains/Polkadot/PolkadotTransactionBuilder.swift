@@ -34,7 +34,7 @@ class PolkadotTransactionBuilder {
      */
     private var balanceTransferCallIndex: Data {
         switch network {
-        case .polkadot, .azero, .joystream:
+        case .polkadot, .azero, .joystream, .bittensor:
             return Data(hexString: "0x0500")
         case .kusama:
             return Data(hexString: "0x0400")
@@ -126,7 +126,7 @@ class PolkadotTransactionBuilder {
             return specVersion < 28
         case .kusama:
             return specVersion < 2028
-        case .westend, .azero:
+        case .westend, .azero, .bittensor:
             return false
         case .joystream:
             // specVersion at the moment of initial implementation is '2003'
