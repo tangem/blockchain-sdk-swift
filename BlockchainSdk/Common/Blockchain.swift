@@ -78,10 +78,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case base(testnet: Bool)
     case joystream(curve: EllipticCurve)
     case bittensor(curve: EllipticCurve)
-<<<<<<< HEAD
     case koinos(testnet: Bool)
-=======
->>>>>>> develop
 
     public var isTestnet: Bool {
         switch self {
@@ -417,11 +414,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "JOY"
         case .bittensor:
             return "TAO"
-<<<<<<< HEAD
         case .koinos:
             return isTestnet ? "tKOIN" : "KOIN"
-=======
->>>>>>> develop
         }
     }
 
@@ -608,12 +602,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ton,
                 .near,
                 .aptos,
-<<<<<<< HEAD
                 .hedera,
                 .koinos:
-=======
-                .hedera:
->>>>>>> develop
             return true
         case .tron,
                 .veChain:
@@ -849,10 +839,7 @@ extension Blockchain: Codable {
         case .base: return "base"
         case .joystream: return "joystream"
         case .bittensor: return "bittensor"
-<<<<<<< HEAD
         case .koinos: return "koinos"
-=======
->>>>>>> develop
         }
     }
 
@@ -939,10 +926,7 @@ extension Blockchain: Codable {
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
         case "bittensor": self = .bittensor(curve: curve)
-<<<<<<< HEAD
         case "koinos": self = .koinos(testnet: isTestnet)
-=======
->>>>>>> develop
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1142,11 +1126,8 @@ private extension Blockchain {
             return "joystream"
         case .bittensor:
             return "bittensor"
-<<<<<<< HEAD
         case .koinos:
             return "koinos"
-=======
->>>>>>> develop
         }
     }
 
@@ -1248,11 +1229,8 @@ extension Blockchain {
             return RadiantWalletAssembly()
         case .bittensor:
             return BittensorWalletAssembly()
-<<<<<<< HEAD
         case .koinos:
             return KoinosWalletAssembly()
-=======
->>>>>>> develop
         }
     }
 }
