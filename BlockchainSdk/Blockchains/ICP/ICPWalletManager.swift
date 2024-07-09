@@ -9,6 +9,8 @@
 import Foundation
 import WalletCore
 import Combine
+import IcpKit
+import TangemSdk
 
 final class ICPWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
@@ -29,7 +31,12 @@ final class ICPWalletManager: BaseManager, WalletManager {
     }
     
     override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
-        cancellable = networkService.getInfo(address: wallet.address)
+        guard let balanceRequestData = try? makeBalanceRequestData() else {
+            completion(.failure(WalletError.empty))
+            return
+        }
+        
+        cancellable = networkService.getBalance(data: balanceRequestData)
             .sink(
                 receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
@@ -45,32 +52,38 @@ final class ICPWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
-        .justWithError(output: [.init(.init(with: .internetComputer(curve: .secp256k1), value: Decimal(stringValue: "0.0001")!))])
-    }
-    
-    func buildTransaction(input: InternetComputerSigningInput, with signer: TransactionSigner? = nil) throws -> InternetComputerSigningOutput {
-        let output: InternetComputerSigningOutput
-        
-        if let signer = signer {
-            guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: CoinType.ton.publicKeyType) else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            let coreSigner = WalletCoreSigner(
-                sdkSigner: signer,
-                blockchainKey: publicKey.data,
-                walletPublicKey: self.wallet.publicKey,
-                curve: wallet.blockchain.curve
-            )
-            output = try AnySigner.signExternally(input: input, coin: .internetComputer, signer: coreSigner)
-        } else {
-            output = AnySigner.sign(input: input, coin: .internetComputer)
-        }
-        
-        return output
+        .justWithError(output: [Fee(Amount(with: wallet.blockchain, value: Constants.fee))])
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         fatalError()
+    }
+    
+    // MARK: - Private implementation
+    
+    private func makeBalanceRequestData() throws -> Data {
+        let envelope = ICPRequestEnvelope(
+            content: ICPRequestBuilder.makeCallRequestContent(
+                method: .balance(account: Data(hex: wallet.address)),
+                requestType: .query,
+                nonce: try CryptoUtils.icpNonce()
+            )
+        )
+        return try envelope.cborEncoded()
+    }
+
+}
+
+private extension ICPWalletManager {
+    enum Constants {
+        static let fee = Decimal(stringValue: "0.0001")!
+        static let readStateRetryCount = 3
+        static let readStateRetryDelayMilliseconds = 500
+    }
+}
+
+extension CryptoUtils {
+    static func icpNonce() throws -> Data {
+        try generateRandomBytes(count: 32)
     }
 }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "09ecb99db3e580b585d5d932184af81c65d50399b08821d46e7de1ac03c0fdd2",
+  "originHash" : "c2b23828552cb88997c63a1edb3ded62ff59dc08d070eb1d53f435c369843e05",
   "pins" : [
     {
       "identity" : "anyasyncsequence",
@@ -11,12 +11,39 @@
       }
     },
     {
+      "identity" : "base32",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jarema/Base32.git",
+      "state" : {
+        "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
+        "version" : "0.10.2"
+      }
+    },
+    {
+      "identity" : "bigint",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/attaswift/BigInt.git",
+      "state" : {
+        "revision" : "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+        "version" : "5.3.0"
+      }
+    },
+    {
       "identity" : "cryptoswift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
       "state" : {
         "revision" : "7892a123f7e8d0fe62f9f03728b17bbd4f94df5c",
         "version" : "1.8.1"
+      }
+    },
+    {
+      "identity" : "float16",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SusanDoggie/Float16.git",
+      "state" : {
+        "revision" : "936ae66adccf1c91bcaeeb9c0cddde78a13695c3",
+        "version" : "1.1.1"
       }
     },
     {
@@ -35,6 +62,32 @@
       "state" : {
         "revision" : "4363eee442377ba3bb4254330bb567bb75780ec1",
         "version" : "0.26.0-tangem3"
+      }
+    },
+    {
+      "identity" : "icpkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tangem/IcpKit",
+      "state" : {
+        "revision" : "9313935307e4a4e5e70ee4caf3614bcd4d3a139c"
+      }
+    },
+    {
+      "identity" : "potentcodables",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/outfoxx/PotentCodables.git",
+      "state" : {
+        "revision" : "660e33e84e00b9bf07bd41dd99ff800600e435e7",
+        "version" : "3.5.0"
+      }
+    },
+    {
+      "identity" : "regex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sharplet/Regex.git",
+      "state" : {
+        "revision" : "76c2b73d4281d77fc3118391877efd1bf972f515",
+        "version" : "2.1.1"
       }
     },
     {
@@ -143,6 +196,15 @@
       "state" : {
         "revision" : "0f9c918dcea73f6ff4ff762b8e83a0991ca668d9",
         "version" : "2.4.2"
+      }
+    },
+    {
+      "identity" : "swift-numerics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-numerics",
+      "state" : {
+        "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
+        "version" : "1.0.2"
       }
     },
     {

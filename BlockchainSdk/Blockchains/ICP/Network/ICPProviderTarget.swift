@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import IcpKit
 import Moya
 
 struct ICPProviderTarget: TargetType {
@@ -39,7 +40,7 @@ struct ICPProviderTarget: TargetType {
     }
     
     var path: String {
-        "api/v2/canister/\(canister)/\(requestType)"
+        "api/v2/canister/\(canister)/\(requestType.rawValue)"
     }
     
     var method: Moya.Method {
