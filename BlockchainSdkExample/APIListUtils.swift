@@ -52,7 +52,9 @@ struct ConfigUtils {
                 quickNodeSolanaCredentials: .init(apiKey: keys.quiknodeApiKey, subdomain: keys.quiknodeSubdomain),
                 quickNodeBscCredentials: .init(apiKey: keys.bscQuiknodeApiKey, subdomain: keys.bscQuiknodeSubdomain),
                 defaultNetworkProviderConfiguration: .init(logger: .verbose, urlSessionConfiguration: .standard),
-                networkProviderConfigurations: [:]
+                networkProviderConfigurations: [:],
+                bittensorDwellirKey: keys.bittensorDwellirKey,
+                bittensorOnfinalityKey: keys.bittensorOnfinalityKey
             )
         } catch {
             return .init(
@@ -70,7 +72,9 @@ struct ConfigUtils {
                 chiaTangemApiKeys: .init(mainnetApiKey: ""),
                 quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                 quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
-                defaultNetworkProviderConfiguration: .init(logger: .verbose)
+                defaultNetworkProviderConfiguration: .init(logger: .verbose),
+                bittensorDwellirKey: "",
+                bittensorOnfinalityKey: ""
             )
         }
     }
@@ -190,6 +194,8 @@ struct Keys: Decodable {
     let bscQuiknodeApiKey: String
     let bscQuiknodeSubdomain: String
     let polygonScanApiKey: String
+    let bittensorDwellirKey: String
+    let bittensorOnfinalityKey: String
 }
 
 

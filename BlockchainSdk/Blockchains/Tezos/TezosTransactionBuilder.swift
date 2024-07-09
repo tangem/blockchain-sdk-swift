@@ -34,6 +34,7 @@ class TezosTransactionBuilder {
     
     func buildToSign(forgedContents: String) -> Data? {
         let message = TezosPrefix.Watermark.genericOperation + Data(hex: forgedContents)
+        // TODO: Use extension from Data+
         return Sodium().genericHash.hash(message: message.bytes, outputLength: 32).map { Data($0) }
     }
 

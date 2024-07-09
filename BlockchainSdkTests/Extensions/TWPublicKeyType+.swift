@@ -103,7 +103,8 @@ extension PublicKeyType {
                 .telos,
                 .octa,
                 .chia,
-                .joystream:
+                .joystream,
+                .bittensor:
             throw NSError.makeUnsupportedBlockchainError(for: blockchain)
         }
     }

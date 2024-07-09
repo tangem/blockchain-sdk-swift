@@ -150,7 +150,7 @@ extension ChiaWalletManager: WithdrawalNotificationProvider {
         )
     }
 
-    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification? {
+    func withdrawalNotification(amount: Amount, fee: Fee) -> WithdrawalNotification? {
         // The 'Mandatory amount change' withdrawal suggestion has been superseded by a validation performed in
         // the 'MaximumAmountRestrictable.validateMaximumAmount(amount:fee:)' method below
         return nil

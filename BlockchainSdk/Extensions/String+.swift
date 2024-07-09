@@ -66,6 +66,18 @@ extension String {
         return Array(v[0 ..< (v.count-1)])
     }
     
+    var isValidHex: Bool {
+        let regex = try! NSRegularExpression(pattern: "^[0-9a-f]*$", options: .caseInsensitive)
+
+        let found = regex.firstMatch(in: self, options: [], range: NSRange(location: 0, length: count))
+
+        if found == nil || found?.range.location == NSNotFound || count % 2 != 0 {
+            return false
+        }
+
+        return true
+    }
+    
     func capitalizingFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()
     }
