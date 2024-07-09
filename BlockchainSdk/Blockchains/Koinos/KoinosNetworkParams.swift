@@ -1,5 +1,5 @@
 //
-//  KoinContractAbi.swift
+//  KoinosNetworkParams.swift
 //  BlockchainSdk
 //
 //  Created by Aleksei Muraveinik on 28.05.24.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class KoinContractAbi {
+struct KoinosNetworkParams {
     let contractID: String
     let chainID: String
     
@@ -23,13 +23,13 @@ final class KoinContractAbi {
     }
 }
 
-extension KoinContractAbi {
+extension KoinosNetworkParams {
     enum BalanceOf {
         static let entryPoint = 0x5c721497
     }
 }
 
-extension KoinContractAbi {
+extension KoinosNetworkParams {
     enum Transfer {
         static let transactionIDPrefix = "0x1220"
         static let entryPoint: UInt32 = 0x27f576ca

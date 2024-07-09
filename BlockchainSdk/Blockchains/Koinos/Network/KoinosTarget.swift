@@ -16,6 +16,7 @@ struct KoinosTarget: TargetType {
         case getNonce(address: String)
         case getResourceLimits
         case submitTransaction(transaction: KoinosProtocol.Transaction)
+        case getTransactions(transactionIDs: [String])
         
         var method: String {
             switch self {
@@ -29,17 +30,19 @@ struct KoinosTarget: TargetType {
                 "chain.get_resource_limits"
             case .submitTransaction:
                 "chain.submit_transaction"
+            case .getTransactions:
+                "transaction_store.get_transactions_by_id"
             }
         }
     }
     
     let node: NodeInfo
     let type: KoinosTargetType
-    let koinContractAbi: KoinContractAbi
+    let koinosNetworkParams: KoinosNetworkParams
     
-    init(node: NodeInfo, koinContractAbi: KoinContractAbi, _ type: KoinosTargetType) {
+    init(node: NodeInfo, koinosNetworkParams: KoinosNetworkParams, _ type: KoinosTargetType) {
         self.node = node
-        self.koinContractAbi = koinContractAbi
+        self.koinosNetworkParams = koinosNetworkParams
         self.type = type
     }
 
@@ -62,8 +65,8 @@ struct KoinosTarget: TargetType {
                 id: Constants.jsonRPCMethodId,
                 method: type.method,
                 params: KoinosMethod.ReadContract.RequestParams(
-                    contractId: koinContractAbi.contractID,
-                    entryPoint: KoinContractAbi.BalanceOf.entryPoint,
+                    contractId: koinosNetworkParams.contractID,
+                    entryPoint: KoinosNetworkParams.BalanceOf.entryPoint,
                     args: args
                 ),
                 encoder: JSONEncoder.withSnakeCaseStrategy
@@ -95,6 +98,13 @@ struct KoinosTarget: TargetType {
                 id: Constants.jsonRPCMethodId,
                 method: type.method,
                 params: KoinosMethod.SubmitTransaction.RequestParams(transaction: transaction, broadcast: true)
+            )
+            
+        case let .getTransactions(transactionIDs):
+            return .requestJSONRPC(
+                id: Constants.jsonRPCMethodId,
+                method: type.method,
+                params: KoinosMethod.GetTransactions.RequestParams(transactionIds: transactionIDs)
             )
         }
     }

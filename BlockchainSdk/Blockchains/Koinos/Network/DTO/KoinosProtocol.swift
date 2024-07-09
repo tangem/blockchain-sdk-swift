@@ -9,6 +9,11 @@
 import Foundation
 
 enum KoinosProtocol {
+    struct TransactionBlock: Decodable {
+        let transaction: Transaction
+        let containingBlocks: [String]
+    }
+    
     struct Transaction: Equatable, Codable {
         let header: TransactionHeader
         let id: String
@@ -18,69 +23,37 @@ enum KoinosProtocol {
 
     struct TransactionHeader: Equatable, Codable {
         let chainId: String
-        let rcLimit: UInt64
+        let rcLimit: String
         let nonce: String
         let operationMerkleRoot: String
         let payer: String
         let payee: String?
-        
-        enum CodingKeys: String, CodingKey {
-            case chainId = "chain_id"
-            case rcLimit = "rc_limit"
-            case nonce
-            case operationMerkleRoot = "operation_merkle_root"
-            case payer
-            case payee
-        }
     }
 
     struct Operation: Equatable, Codable {
         let callContract: CallContractOperation
-        
-        enum CodingKeys: String, CodingKey {
-            case callContract = "call_contract"
-        }
     }
 
     struct CallContractOperation: Equatable, Codable {
-        let contractIdBase58: String
+        let contractId: String
         let entryPoint: Int
-        let argsBase64: String
-        
-        enum CodingKeys: String, CodingKey {
-            case contractIdBase58 = "contract_id"
-            case entryPoint = "entry_point"
-            case argsBase64 = "args"
-        }
+        let args: String
     }
 
-    struct TransactionReceipt: Equatable, Codable {
+    struct TransactionReceipt: Equatable, Decodable {
         let id: String
         let payer: String
-        let maxPayerRc: UInt64
-        let rcLimit: UInt64
-        let rcUsed: UInt64
+        let maxPayerRc: String
+        let rcLimit: String
+        let rcUsed: String
         let diskStorageUsed: String?
         let networkBandwidthUsed: String?
         let computeBandwidthUsed: String?
         let reverted: Bool?
         let events: [EventData]
-        
-        enum CodingKeys: String, CodingKey {
-            case id
-            case payer
-            case maxPayerRc = "max_payer_rc"
-            case rcLimit = "rc_limit"
-            case rcUsed = "rc_used"
-            case diskStorageUsed = "disk_storage_used"
-            case networkBandwidthUsed = "network_bandwidth_used"
-            case computeBandwidthUsed = "compute_bandwidth_used"
-            case reverted
-            case events
-        }
     }
 
-    struct BlockHeader: Equatable, Codable {
+    struct BlockHeader: Equatable, Decodable {
         let previous: String
         let height: UInt64
         let timestamp: UInt64
@@ -88,19 +61,9 @@ enum KoinosProtocol {
         let transactionMerkleRoot: String
         let signer: String
         let approvedProposals: [String]
-        
-        enum CodingKeys: String, CodingKey {
-            case previous
-            case height
-            case timestamp
-            case previousStateMerkleRoot = "previous_state_merkle_root"
-            case transactionMerkleRoot = "transaction_merkle_root"
-            case signer
-            case approvedProposals = "approved_proposals"
-        }
     }
 
-    struct BlockReceipt: Equatable, Codable {
+    struct BlockReceipt: Equatable, Decodable {
         let id: String
         let height: UInt64
         let diskStorageUsed: String
@@ -109,32 +72,22 @@ enum KoinosProtocol {
         let stateMerkleRoot: String
         let events: [EventData]
         let transactionReceipts: [TransactionReceipt]
-        
-        enum CodingKeys: String, CodingKey {
-            case id
-            case height
-            case diskStorageUsed = "disk_storage_used"
-            case networkBandwidthUsed = "network_bandwidth_used"
-            case computeBandwidthUsed = "compute_bandwidth_used"
-            case stateMerkleRoot = "state_merkle_root"
-            case events
-            case transactionReceipts = "transaction_receipts"
-        }
     }
 
-    struct EventData: Equatable, Codable {
+    struct EventData: Equatable, Decodable {
         let sequence: Int?
         let source: String
         let name: String
-        let eventData: String
+        let data: String
         let impacted: [String]
-        
-        enum CodingKeys: String, CodingKey {
-            case sequence
-            case source
-            case name
-            case eventData = "data"
-            case impacted
-        }
+    }
+    
+    struct ResourceLimitData: Decodable {
+        let diskStorageLimit: String
+        let diskStorageCost: String
+        let networkBandwidthLimit: String
+        let networkBandwidthCost: String
+        let computeBandwidthLimit: String
+        let computeBandwidthCost: String
     }
 }

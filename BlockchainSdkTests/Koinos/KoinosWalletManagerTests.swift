@@ -11,26 +11,27 @@ import XCTest
 @testable import BlockchainSdk
 
 final class KoinosWalletManagerTests: XCTestCase {
-    private let walletManager = KoinosWalletManager(
-        wallet: Wallet(
-            blockchain: .koinos(testnet: false),
-            addresses: [
-                .default: PlainAddress(
-                    value: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
-                    publicKey: .init(seedKey: .init(), derivationType: nil),
-                    type: .default
-                )
-            ]
-        ),
-        networkService: KoinosNetworkService(
-            providers: [],
-            decimalCount: 8
-        ), 
-        transactionBuilder: KoinosTransactionBuilder(isTestnet: false)
-    )
+    private var walletManager: KoinosWalletManager!
     
     override func setUp() {
-        walletManager.wallet.clearAmounts()
+        walletManager = KoinosWalletManager(
+            wallet: Wallet(
+                blockchain: .koinos(testnet: false),
+                addresses: [
+                    .default: PlainAddress(
+                        value: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
+                        publicKey: .init(seedKey: .init(), derivationType: nil),
+                        type: .default
+                    )
+                ]
+            ),
+            networkService: KoinosNetworkService(providers: []),
+            transactionBuilder: KoinosTransactionBuilder(koinosNetworkParams: KoinosNetworkParams(isTestnet: false))
+        )
+    }
+    
+    override func tearDown() {
+        walletManager = nil
     }
 
     func testTxValidationSmoke() {
@@ -54,9 +55,16 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 10),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
+            XCTFail("Expected ValidationError.insufficientFeeResource but no error was thrown")
         } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
+            XCTAssertEqual(
+                e,
+                ValidationError.insufficientFeeResource(
+                    type: .mana,
+                    current: 20000000,
+                    max: 10000000000
+                )
+            )
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }
@@ -95,9 +103,9 @@ final class KoinosWalletManagerTests: XCTestCase {
                 amount: .coinAmount(value: 0.2),
                 fee: .manaFee(value: 0.3)
             )
-            XCTFail("Expected ValidationError.feeExceedsBalance but no error was thrown")
+            XCTFail("Expected ValidationError.feeExceedsMaxFeeResource but no error was thrown")
         } catch let e as ValidationError {
-            XCTAssertEqual(e, ValidationError.feeExceedsBalance)
+            XCTAssertEqual(e, ValidationError.feeExceedsMaxFeeResource)
         } catch {
             XCTFail("Unexpected error thrown: \(error)")
         }

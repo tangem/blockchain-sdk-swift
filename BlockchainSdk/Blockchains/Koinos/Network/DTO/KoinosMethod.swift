@@ -33,7 +33,7 @@ extension KoinosMethod {
         }
         
         struct Response: Decodable {
-            let rc: UInt64
+            let rc: String?
         }
     }
 }
@@ -45,22 +45,7 @@ extension KoinosMethod {
         }
         
         struct Response: Decodable {
-            let nonce: UInt64
-            
-            init(from decoder: any Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                let base64EncodedNonce: String = try container.decode(forKey: .nonce)
-                guard let stringNonce = base64EncodedNonce.base64Decoded(),
-                      let nonce = UInt64(stringNonce)
-                else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                self.nonce = nonce
-            }
-            
-            enum CodingKeys: String, CodingKey {
-                case nonce
-            }
+            let nonce: String
         }
     }
 }
@@ -68,7 +53,7 @@ extension KoinosMethod {
 extension KoinosMethod {
     enum GetResourceLimits {
         struct Response: Decodable {
-            let resourceLimitData: KoinosChain.ResourceLimitData
+            let resourceLimitData: KoinosProtocol.ResourceLimitData
         }
     }
 }
@@ -84,5 +69,16 @@ extension KoinosMethod {
             let receipt: KoinosProtocol.TransactionReceipt
         }
     }
-    
+}
+
+extension KoinosMethod {
+    enum GetTransactions {
+        struct RequestParams: Encodable {
+            let transactionIds: [String]
+        }
+        
+        struct Response: Decodable {
+            let transactions: [KoinosProtocol.TransactionBlock]?
+        }
+    }
 }

@@ -6,34 +6,22 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import Combine
-import Foundation
 
 class KoinosNetworkService: MultiNetworkProvider {
     let providers: [KoinosNetworkProvider]
     var currentProviderIndex = 0
-    private let satoshiMultiplier: Decimal
     
-    init(providers: [KoinosNetworkProvider], decimalCount: Int) {
+    init(providers: [KoinosNetworkProvider]) {
         self.providers = providers
-        self.satoshiMultiplier = pow(10, decimalCount)
     }
     
     func getInfo(address: String) -> AnyPublisher<KoinosAccountInfo, Error> {
-        providerPublisher { [satoshiMultiplier] provider in
-            let balanceResult: AnyPublisher<UInt64, Error>
-            let manaResult: AnyPublisher<UInt64, Error>
-            
-            do {
-                balanceResult = try provider.getKoinBalance(address: address)
-                manaResult = provider.getRC(address: address)
-            } catch {
-                return Fail(error: error).eraseToAnyPublisher()
-            }
-            
-            return Publishers.Zip(
-                balanceResult.map { Decimal($0) / satoshiMultiplier },
-                manaResult.map { Decimal($0) / satoshiMultiplier }
+        providerPublisher { provider in
+            Publishers.Zip(
+                provider.getKoinBalance(address: address).tryMap(KoinosDTOMapper.convertKoinBalance),
+                provider.getRC(address: address).map(KoinosDTOMapper.convertAccountRC)
             )
             .map { balance, mana in
                 KoinosAccountInfo(
@@ -45,29 +33,47 @@ class KoinosNetworkService: MultiNetworkProvider {
         }
     }
     
+    func getRCLimit() -> AnyPublisher<BigUInt, Error> {
+        providerPublisher { provider in
+            provider.getResourceLimits()
+                .tryMap(KoinosDTOMapper.convertResourceLimitData)
+                .map { limits in
+                    Constants.maxDiskStorageLimit * limits.diskStorageCost
+                        + Constants.maxNetworkLimit * limits.networkBandwidthCost
+                        + Constants.maxComputeLimit * limits.computeBandwidthCost
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
     func getCurrentNonce(address: String) -> AnyPublisher<KoinosAccountNonce, Error> {
         providerPublisher { provider in
-            provider.getNonce(address: address)
-                .map(KoinosAccountNonce.init)
+            provider
+                .getNonce(address: address)
+                .tryMap(KoinosDTOMapper.convertNonce)
                 .eraseToAnyPublisher()
         }
     }
     
     func submitTransaction(transaction: KoinosProtocol.Transaction) -> AnyPublisher<KoinosTransactionEntry, Error> {
         providerPublisher { provider in
-            provider.submitTransaction(transaction: transaction)
+            provider
+                .submitTransaction(transaction: transaction)
+                .map(\.receipt)
+                .tryMap(KoinosDTOMapper.convertTransactionEntry)
+                .eraseToAnyPublisher()
         }
     }
     
-    func getRCLimit() -> AnyPublisher<Decimal, Error> {
-        providerPublisher { [satoshiMultiplier] provider in
-            provider.getResourceLimits()
-                .map { limits in
-                    let rcLimitSatoshi = Constants.maxDiskStorageLimit * limits.diskStorageCost
-                        + Constants.maxNetworkLimit * limits.networkBandwidthCost
-                        + Constants.maxComputeLimit * limits.computeBandwidthCost
-                    
-                    return Decimal(rcLimitSatoshi) / satoshiMultiplier
+    func getExistingTransactionIDs(transactionIDs: [String]) -> AnyPublisher<Set<String>, Error> {
+        providerPublisher { provider in
+            provider
+                .getTransactions(transactionIDs: transactionIDs)
+                .map { response in
+                    guard let transactions = response.transactions else {
+                        return []
+                    }
+                    return transactions.map(\.transaction.id).toSet()
                 }
                 .eraseToAnyPublisher()
         }
@@ -75,9 +81,10 @@ class KoinosNetworkService: MultiNetworkProvider {
 }
 
 private extension KoinosNetworkService {
+    // These constants were calculated for us by the Koinos developers and provided to us in a Telegram chat.
     enum Constants {
-        static let maxDiskStorageLimit: UInt64 = 118
-        static let maxNetworkLimit: UInt64 = 408
-        static let maxComputeLimit: UInt64 = 1_000_000
+        static let maxDiskStorageLimit: BigUInt = 118
+        static let maxNetworkLimit: BigUInt = 408
+        static let maxComputeLimit: BigUInt = 1_000_000
     }
 }

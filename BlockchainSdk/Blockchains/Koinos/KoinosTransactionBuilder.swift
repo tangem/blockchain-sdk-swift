@@ -7,16 +7,13 @@
 //
 
 import Foundation
-
-enum KoinosTransactionBuilderError: Error {
-    case unableToParseParams
-}
+import TangemSdk
 
 class KoinosTransactionBuilder {
-    private let koinContractAbi: KoinContractAbi
+    private let koinosNetworkParams: KoinosNetworkParams
     
-    init(isTestnet: Bool) {
-        self.koinContractAbi = KoinContractAbi(isTestnet: isTestnet)
+    init(koinosNetworkParams: KoinosNetworkParams) {
+        self.koinosNetworkParams = koinosNetworkParams
     }
     
     func buildForSign(
@@ -41,8 +38,8 @@ class KoinosTransactionBuilder {
 
         let operation = try Koinos_Protocol_operation.with {
             $0.callContract = try Koinos_Protocol_call_contract_operation.with {
-                $0.contractID = koinContractAbi.contractID.base58DecodedData
-                $0.entryPoint = KoinContractAbi.Transfer.entryPoint
+                $0.contractID = koinosNetworkParams.contractID.base58DecodedData
+                $0.entryPoint = KoinosNetworkParams.Transfer.entryPoint
                 $0.args = try Koinos_Contracts_Token_transfer_arguments.with {
                     $0.from = from.base58DecodedData
                     $0.to = to.base58DecodedData
@@ -59,8 +56,8 @@ class KoinosTransactionBuilder {
         }
         .serializedData()
         
-        guard let chainID = koinContractAbi.chainID.base64URLDecodedData() else {
-            throw WalletError.failedToBuildTx
+        guard let chainID = koinosNetworkParams.chainID.base64URLDecodedData() else {
+            throw KoinosTransactionBuilderError.unableToDecodeChainID
         }
         
         let header = Koinos_Protocol_transaction_header.with {
@@ -72,12 +69,12 @@ class KoinosTransactionBuilder {
         }
         
         let hashToSign = try header.serializedData().getSha256()
-        let transactionId = "\(KoinContractAbi.Transfer.transactionIDPrefix)\(hashToSign.hexString.lowercased())"
+        let transactionId = "\(KoinosNetworkParams.Transfer.transactionIDPrefix)\(hashToSign.hexString.lowercased())"
         
         let transactionToSign = KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
-                chainId: koinContractAbi.chainID,
-                rcLimit: manaLimitSatoshi,
+                chainId: koinosNetworkParams.chainID,
+                rcLimit: "\(manaLimitSatoshi)",
                 nonce: encodedNextNonce.base64URLEncodedString(),
                 operationMerkleRoot: operationMerkleRoot.base64URLEncodedString(),
                 payer: from,
@@ -87,9 +84,9 @@ class KoinosTransactionBuilder {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractIdBase58: koinContractAbi.contractID,
-                        entryPoint: Int(KoinContractAbi.Transfer.entryPoint),
-                        argsBase64: operation.callContract.args.base64URLEncodedString()
+                        contractId: koinosNetworkParams.contractID,
+                        entryPoint: Int(KoinosNetworkParams.Transfer.entryPoint),
+                        args: operation.callContract.args.base64URLEncodedString()
                     )
                 )
             ],
@@ -99,14 +96,29 @@ class KoinosTransactionBuilder {
         return (transactionToSign, hashToSign)
     }
     
-    func buildForSend(transaction: KoinosProtocol.Transaction, normalizedSignature: Data) -> KoinosProtocol.Transaction  {
-        KoinosProtocol.Transaction(
+    func buildForSend(
+        transaction: KoinosProtocol.Transaction,
+        signature: SignatureInfo
+    ) throws -> KoinosProtocol.Transaction  {
+        let extendedSignature = try Secp256k1Signature(with: signature.signature)
+            .unmarshal(with: signature.publicKey, hash: signature.hash)
+        
+        let recId = extendedSignature.v.bytes[0] - 27
+        let newV = recId + 31
+        let preparedSignature = Data([newV]) + extendedSignature.r + extendedSignature.s
+        
+        return KoinosProtocol.Transaction(
             header: transaction.header,
             id: transaction.id,
             operations: transaction.operations,
             signatures: [
-                Data([0x20] + normalizedSignature.bytes).base64URLEncodedString()
+                preparedSignature.base64URLEncodedString()
             ]
         )
     }
+}
+
+enum KoinosTransactionBuilderError: Error {
+    case unableToParseParams
+    case unableToDecodeChainID
 }

@@ -7,12 +7,13 @@
 //
 
 import TangemSdk
+import WalletCore
 import XCTest
 @testable import BlockchainSdk
 
 final class KoinosTransactionBuilderTests: XCTestCase {
-    private let transactionBuilder = KoinosTransactionBuilder(isTestnet: false)
-    private let transactionBuilderTestnet = KoinosTransactionBuilder(isTestnet: true)
+    private let transactionBuilder = KoinosTransactionBuilder(koinosNetworkParams: KoinosNetworkParams(isTestnet: false))
+    private let transactionBuilderTestnet = KoinosTransactionBuilder(koinosNetworkParams: KoinosNetworkParams(isTestnet: true))
     
     // MARK: Mainnet
     
@@ -20,7 +21,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
         KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
                 chainId: "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA==",
-                rcLimit: 500000000,
+                rcLimit: "500000000",
                 nonce: "KAs=",
                 operationMerkleRoot: "EiBd86ETLP-Tmmq-Oj6wxfe1o2KzRGf_9LV-9O3_9Qmu8w==",
                 payer: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
@@ -30,9 +31,9 @@ final class KoinosTransactionBuilderTests: XCTestCase {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractIdBase58: "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
+                        contractId: "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
                         entryPoint: 670398154,
-                        argsBase64: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
+                        args: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
                     )
                 )
             ],
@@ -45,7 +46,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
     }
     
     private var expectedSignature: String {
-        "IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        "Hxeh6xzso62xaxeutW30BRJyC3mu_OGEwWJt1n5e8Ugjc0Cfj2cxVzY7JjxgspGu2Nq9MLbr8c0-lY64FKwj_pQ="
     }
     
     
@@ -55,7 +56,7 @@ final class KoinosTransactionBuilderTests: XCTestCase {
         KoinosProtocol.Transaction(
             header: KoinosProtocol.TransactionHeader(
                 chainId: "EiBncD4pKRIQWco_WRqo5Q-xnXR7JuO3PtZv983mKdKHSQ==",
-                rcLimit: 500000000,
+                rcLimit: "500000000",
                 nonce: "KAs=",
                 operationMerkleRoot: "EiCjvMCnYVk5GqAaz7D2e8LCbaJ6448pJMXS4LI_EjtW4Q==",
                 payer: "1AYz8RCnoafLnifMjJbgNb2aeW5CbZj8Tp",
@@ -65,9 +66,9 @@ final class KoinosTransactionBuilderTests: XCTestCase {
             operations: [
                 KoinosProtocol.Operation(
                     callContract: KoinosProtocol.CallContractOperation(
-                        contractIdBase58: "1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju",
+                        contractId: "1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju",
                         entryPoint: 670398154,
-                        argsBase64: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
+                        args: "ChkAaMW2_tO2QuoaSAiMXztphDRhY2m4f6efEhkAaEFbbHucCFnoEOh3RgGrOZ38TNTI9xMWGICYmrwE"
                     )
                 )
             ],
@@ -117,12 +118,17 @@ extension KoinosTransactionBuilderTests {
     }
     
     func testBuildForSend() throws {
-        let signature = Data(Array(repeating: 0x00, count: 64))
-        let normalizedSignature = try Secp256k1Signature(with: signature).normalize()
+        let signature = "17A1EB1CECA3ADB16B17AEB56DF40512720B79AEFCE184C1626DD67E5EF1482373409F8F673157363B263C60B291AED8DABD30B6EBF1CD3E958EB814AC23FE94"
+        let publicKey = "0350413909F40AAE7DD6A084A32017E5A45089FB29E91BBE47D41E29C32355BFCD"
+        let hash = "E5E8126605ECCD2B1AAC084E8D7A6D7C708C9CE9E63AF4D1371EE7E2C2BFB339"
         
-        let signedTransaction = transactionBuilder.buildForSend(
+        let signedTransaction = try transactionBuilder.buildForSend(
             transaction: expectedTransaction,
-            normalizedSignature: normalizedSignature
+            signature: SignatureInfo(
+                signature: XCTUnwrap(signature.data(using: .hexadecimal)),
+                publicKey: XCTUnwrap(publicKey.data(using: .hexadecimal)),
+                hash: XCTUnwrap(hash.data(using: .hexadecimal))
+            )
         )
         
         XCTAssertEqual(signedTransaction.signatures.count, 1)
