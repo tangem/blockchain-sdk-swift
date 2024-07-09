@@ -165,7 +165,7 @@ extension TransactionValidator where Self: DustRestrictable, Self: CardanoTransf
 
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateCardanoTransfer(amount: amount, fee: fee.amount)
+        try validateCardanoTransfer(amount: amount, fee: fee)
         try validateDust(amount: amount, fee: fee.amount)
     }
 }

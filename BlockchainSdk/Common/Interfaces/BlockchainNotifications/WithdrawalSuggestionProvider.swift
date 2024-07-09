@@ -12,7 +12,7 @@ public protocol WithdrawalNotificationProvider {
     @available(*, deprecated, message: "Use WithdrawalNotificationProvider.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning?
     
-    func withdrawalNotification(amount: Amount, fee: Amount) -> WithdrawalNotification?
+    func withdrawalNotification(amount: Amount, fee: Fee) -> WithdrawalNotification?
 }
 
 @available(*, deprecated, message: "Use WithdrawalNotificationProvider.withdrawalSuggestion")
