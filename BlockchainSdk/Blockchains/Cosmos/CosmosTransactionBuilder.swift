@@ -90,8 +90,10 @@ class CosmosTransactionBuilder {
                 decimalValue = transaction.amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
             case .token(let token):
                 decimalValue = token.decimalValue
+            case .feeResource:
+                throw WalletError.empty
             }
-        case .reserve:
+        case .reserve, .feeResource:
             throw WalletError.failedToBuildTx
         }
         
@@ -174,7 +176,7 @@ class CosmosTransactionBuilder {
             }
             
             return tokenDenomination
-        case .reserve:
+        case .reserve, .feeResource:
             throw WalletError.failedToBuildTx
         }
     }
@@ -191,7 +193,7 @@ class CosmosTransactionBuilder {
             }
             
             return tokenDenomination
-        case .reserve:
+        case .reserve, .feeResource:
             throw WalletError.failedToBuildTx
         }
     }

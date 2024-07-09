@@ -37,16 +37,6 @@ public struct Wallet {
         return !pendingTransactions.isEmpty
     }
 
-    public var xpubKey: String? {
-        defaultAddress.publicKey.xpubKey(isTestnet: blockchain.isTestnet)
-    }
-    
-    public var xpubKeys: [String] {
-        walletAddresses
-            .compactMapValues { $0.publicKey.xpubKey(isTestnet: blockchain.isTestnet) }
-            .map { $0.value }
-    }
-
     public init(blockchain: Blockchain, addresses: [AddressType: Address]) {
         self.blockchain = blockchain
         self.walletAddresses = addresses
@@ -112,7 +102,7 @@ public struct Wallet {
         amounts = [:]
     }
 
-    mutating func remove(token: Token) {
+    mutating func clearAmount(for token: Token) {
         amounts[.token(value: token)] = nil
     }
 

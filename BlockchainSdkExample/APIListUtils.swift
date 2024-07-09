@@ -46,13 +46,16 @@ struct ConfigUtils {
                 tronGridApiKey: keys.tronGridApiKey,
                 hederaArkhiaApiKey: keys.hederaArkhiaKey,
                 polygonScanApiKey: keys.polygonScanApiKey,
+                koinosProApiKey: keys.koinosProApiKey,
                 tonCenterApiKeys: .init(mainnetApiKey: keys.tonCenterApiKey.mainnet, testnetApiKey: keys.tonCenterApiKey.testnet),
                 fireAcademyApiKeys: .init(mainnetApiKey: keys.chiaFireAcademyApiKey, testnetApiKey: keys.chiaFireAcademyApiKey),
                 chiaTangemApiKeys: .init(mainnetApiKey: keys.chiaTangemApiKey),
                 quickNodeSolanaCredentials: .init(apiKey: keys.quiknodeApiKey, subdomain: keys.quiknodeSubdomain),
                 quickNodeBscCredentials: .init(apiKey: keys.bscQuiknodeApiKey, subdomain: keys.bscQuiknodeSubdomain),
                 defaultNetworkProviderConfiguration: .init(logger: .verbose, urlSessionConfiguration: .standard),
-                networkProviderConfigurations: [:]
+                networkProviderConfigurations: [:],
+                bittensorDwellirKey: keys.bittensorDwellirKey,
+                bittensorOnfinalityKey: keys.bittensorOnfinalityKey
             )
         } catch {
             return .init(
@@ -65,12 +68,15 @@ struct ConfigUtils {
                 tronGridApiKey: "",
                 hederaArkhiaApiKey: "",
                 polygonScanApiKey: "",
+                koinosProApiKey: "",
                 tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                 fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                 chiaTangemApiKeys: .init(mainnetApiKey: ""),
                 quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                 quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
-                defaultNetworkProviderConfiguration: .init(logger: .verbose)
+                defaultNetworkProviderConfiguration: .init(logger: .verbose),
+                bittensorDwellirKey: "",
+                bittensorOnfinalityKey: ""
             )
         }
     }
@@ -150,6 +156,7 @@ enum APIProvider: String {
     case tangemChia
     case solana
     case kaspa
+    case koinos
 
     var blockchainProvider: NetworkProviderType {
         switch self {
@@ -168,6 +175,7 @@ enum APIProvider: String {
         case .tangemChia: return .tangemChia
         case .solana: return .solana
         case .kaspa: return .kaspa
+        case .koinos: return .koinos
         }
     }
 }
@@ -190,6 +198,9 @@ struct Keys: Decodable {
     let bscQuiknodeApiKey: String
     let bscQuiknodeSubdomain: String
     let polygonScanApiKey: String
+    let koinosProApiKey: String
+    let bittensorDwellirKey: String
+    let bittensorOnfinalityKey: String
 }
 
 

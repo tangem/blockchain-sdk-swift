@@ -18,6 +18,7 @@ public struct BlockchainSdkConfig {
     let tronGridApiKey: String
     let hederaArkhiaApiKey: String
     let polygonScanApiKey: String
+    let koinosProApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
     let fireAcademyApiKeys: FireAcademyApiKeys
     let chiaTangemApiKeys: ChiaTangemApiKeys
@@ -25,6 +26,8 @@ public struct BlockchainSdkConfig {
     let quickNodeBscCredentials: QuickNodeCredentials
     let defaultNetworkProviderConfiguration: NetworkProviderConfiguration
     let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
+    let bittensorDwellirKey: String
+    let bittensorOnfinalityKey: String
 
     public init(
         blockchairApiKeys: [String],
@@ -36,13 +39,16 @@ public struct BlockchainSdkConfig {
         tronGridApiKey: String,
         hederaArkhiaApiKey: String,
         polygonScanApiKey: String,
+        koinosProApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         fireAcademyApiKeys: FireAcademyApiKeys,
         chiaTangemApiKeys: ChiaTangemApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
         defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
-        networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
+        networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:],
+        bittensorDwellirKey: String,
+        bittensorOnfinalityKey: String
     ) {
         self.blockchairApiKeys = blockchairApiKeys
         self.blockcypherTokens = blockcypherTokens
@@ -53,6 +59,7 @@ public struct BlockchainSdkConfig {
         self.tronGridApiKey = tronGridApiKey
         self.hederaArkhiaApiKey = hederaArkhiaApiKey
         self.polygonScanApiKey = polygonScanApiKey
+        self.koinosProApiKey = koinosProApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.fireAcademyApiKeys = fireAcademyApiKeys
         self.chiaTangemApiKeys = chiaTangemApiKeys
@@ -60,6 +67,8 @@ public struct BlockchainSdkConfig {
         self.quickNodeBscCredentials = quickNodeBscCredentials
         self.defaultNetworkProviderConfiguration = defaultNetworkProviderConfiguration
         self.networkProviderConfigurations = networkProviderConfigurations
+        self.bittensorDwellirKey = bittensorDwellirKey
+        self.bittensorOnfinalityKey = bittensorOnfinalityKey
     }
 
     func networkProviderConfiguration(for blockchain: Blockchain) -> NetworkProviderConfiguration {

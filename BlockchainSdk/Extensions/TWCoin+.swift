@@ -109,6 +109,8 @@ extension CoinType {
              .radiant,
              .base,
              .joystream,
+             .bittensor,
+             .koinos,
              .cyber:
             // Blockchains that are not in WalletCore yet
             return nil

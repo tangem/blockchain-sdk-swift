@@ -22,7 +22,7 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
             let networkConfig = input.networkConfig
             let providers: [PolkadotJsonRpcProvider] = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
                 .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
-                    PolkadotJsonRpcProvider(url: nodeInfo.url, configuration: networkConfig)
+                    PolkadotJsonRpcProvider(node: nodeInfo, configuration: networkConfig)
                 }
 
             walletManager.networkService = PolkadotNetworkService(providers: providers, network: network)

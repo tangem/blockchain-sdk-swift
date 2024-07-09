@@ -75,6 +75,8 @@ public extension Blockchain {
         case .radiant: break
         case .base: break
         case .joystream: break
+        case .bittensor: break
+        case .koinos: break
         case .cyber: break
             // READ BELOW:
             //
@@ -144,7 +146,9 @@ public extension Blockchain {
             .radiant(testnet: false),
             .base(testnet: false),
             .joystream(curve: .ed25519_slip0010),
-            .cyber(testnet: false)
+            .bittensor(curve: .ed25519_slip0010),
+            .koinos(testnet: false),
+            .cyber(testnet: false),
         ]
     }
 }

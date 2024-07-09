@@ -77,6 +77,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     case radiant(testnet: Bool)
     case base(testnet: Bool)
     case joystream(curve: EllipticCurve)
+    case bittensor(curve: EllipticCurve)
+    case koinos(testnet: Bool)
     case cyber(testnet: Bool)
 
     public var isTestnet: Bool {
@@ -115,6 +117,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .taraxa(let testnet),
                 .radiant(let testnet),
                 .base(let testnet),
+                .koinos(let testnet),
                 .cyber(let testnet):
             return testnet
         case .litecoin,
@@ -134,7 +137,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .disChain,
                 .playa3ullGames,
                 .kaspa,
-                .joystream:
+                .joystream,
+                .bittensor:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -166,12 +170,48 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .near(let curve, _),
                 .algorand(let curve, _),
                 .aptos(let curve, _),
-                .hedera(let curve, _):
+                .hedera(let curve, _),
+                .bittensor(let curve):
             return curve
         case .chia:
             return .bls12381_G2_AUG
         default:
             return .secp256k1
+        }
+    }
+
+    /// Allows to send to your own address
+    public var supportsCompound: Bool {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash,
+             .litecoin,
+             .dogecoin,
+             .dash,
+             .kaspa,
+             .ravencoin,
+             .ducatus:
+            return true
+        default:
+            return false
+        }
+    }
+
+    /// Just drop the last node to generate XPUB
+    /// https://iancoleman.io/bip39/
+    public var isBip44DerivationStyleXPUB: Bool {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash,
+             .litecoin,
+             .dogecoin,
+             .dash,
+             .kaspa,
+             .ravencoin,
+             .ducatus:
+            return true
+        default:
+            return false
         }
     }
 
@@ -187,7 +227,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .kaspa,
                 .ravencoin,
                 .hedera,
-                .radiant:
+                .radiant,
+                .koinos:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -250,6 +291,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 6
         case .aptos:
             return 8
+        case .bittensor:
+            return 9
         }
     }
 
@@ -373,6 +416,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "RXD"
         case .joystream:
             return "JOY"
+        case .bittensor:
+            return "TAO"
+        case .koinos:
+            return isTestnet ? "tKOIN" : "KOIN"
         }
     }
 
@@ -450,6 +497,23 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    /// Provides a more descriptive display name for the fee currency (ETH) for some Ethereum L2s,
+    /// for example: `'Optimistic Ethereum (ETH)'` instead of just `'ETH'`
+    public var feeDisplayName: String {
+        switch self {
+        case .arbitrum,
+             .optimism,
+             .aurora,
+             .manta,
+             .zkSync,
+             .polygonZkEVM,
+             .base:
+            return displayName + " (\(currencySymbol))"
+        default:
+            return currencySymbol
+        }
+    }
+
     /// Should be used as blockchain identifier
     public var coinId: String {
         id(type: .coin)
@@ -460,6 +524,22 @@ public indirect enum Blockchain: Equatable, Hashable {
     /// - Synchronization of user coins on the server
     public var networkId: String {
         id(type: .network)
+    }
+
+    /// Should be used to get the actual currency rate.
+    public var currencyId: String {
+        switch self {
+        case .arbitrum(let testnet),
+             .optimism(let testnet),
+             .aurora(let testnet),
+             .manta(let testnet),
+             .zkSync(let testnet),
+             .polygonZkEVM(let testnet),
+             .base(let testnet):
+            return Blockchain.ethereum(testnet: testnet).coinId
+        default:
+            return coinId
+        }
     }
 
     public var tokenTypeName: String? {
@@ -497,12 +577,24 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    public var canHandleCustomTokens: Bool {
+        switch self {
+        // Only one token supported currently
+        case .terraV1:
+            return false
+        default:
+            return canHandleTokens
+        }
+    }
+
     public var feePaidCurrency: FeePaidCurrency {
         switch self {
         case .terraV1:
             return .sameCurrency
         case .veChain:
             return .token(value: VeChainWalletManager.Constants.energyToken)
+        case .koinos:
+            return .feeResource(type: .mana)
         default:
             return .coin
         }
@@ -514,7 +606,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ton,
                 .near,
                 .aptos,
-                .hedera:
+                .hedera,
+                .koinos:
             return true
         case .tron,
                 .veChain:
@@ -751,6 +844,8 @@ extension Blockchain: Codable {
         case .radiant: return "radiant"
         case .base: return "base"
         case .joystream: return "joystream"
+        case .bittensor: return "bittensor"
+        case .koinos: return "koinos"
         case .cyber: return "cyber"
         }
     }
@@ -837,6 +932,8 @@ extension Blockchain: Codable {
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
+        case "bittensor": self = .bittensor(curve: curve)
+        case "koinos": self = .koinos(testnet: isTestnet)
         case "cyber": self = .cyber(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -1035,6 +1132,10 @@ private extension Blockchain {
             }
         case .joystream:
             return "joystream"
+        case .bittensor:
+            return "bittensor"
+        case .koinos:
+            return "koinos"
         case .cyber:
             return "cyber"
         }
@@ -1137,6 +1238,10 @@ extension Blockchain {
             return HederaWalletAssembly()
         case .radiant:
             return RadiantWalletAssembly()
+        case .bittensor:
+            return BittensorWalletAssembly()
+        case .koinos:
+            return KoinosWalletAssembly()
         }
     }
 }

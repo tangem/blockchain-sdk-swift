@@ -65,6 +65,8 @@ struct EstimationFeeAddressFactory {
             return "5DaWppqEJPc6BhFKD2NBC1ACXPDMPYfv2AQDB5uH5KT4mpef"
         case .joystream:
             return "j4SXkX46sABwjxeuzicd2e5m8gDu4ieoWHW3aggbBKkh4WvtF"
+        case .bittensor:
+            return "5HLcF8UkyCTK5oszoTxx8LKxEzmtEEfPWeAxCz5NiDjqWH9y"
         // Others
         case .cardano:
             return "addr1q95pg4z9tf26r5dwf72vmh62u3pr9sewq2waahyhpjzm3enz43pvhh0us3z0z5xen2skq200e67eu89s5v2s0sdh3fnsm9lknu"
@@ -89,6 +91,8 @@ struct EstimationFeeAddressFactory {
             return "terra1pfamr0t2daet92grdvxqex235q58qrx6xclldg"
         case .ton:
             return "EQAY92urFDKejoDRdi_EfRKLGB1JkGjD8z1inj_DhgBaD0Xo"
+        case .koinos:
+            return "1C423Vbd44zjghhJR5fKJdLFS3rgVFUc9A"
         }
     }
 }

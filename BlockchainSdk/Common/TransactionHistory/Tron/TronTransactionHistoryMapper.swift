@@ -26,7 +26,7 @@ final class TronTransactionHistoryMapper {
         }
 
         switch amountType {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return transactions
         case .token(let value):
             // Another fix for a horrible Tron Blockbook API: sometimes API returns transaction history 
@@ -196,7 +196,7 @@ final class TronTransactionHistoryMapper {
         switch amountType {
         case .coin where transaction.isContractInteraction:
             return .contractMethodName(name: transaction.contractName ?? "")
-        case .coin, .reserve, .token:
+        case .coin, .reserve, .token, .feeResource:
             // All TRC10 and TRC20 token transactions are considered simple & plain transfers
             return .transfer
         }
@@ -245,7 +245,7 @@ extension TronTransactionHistoryMapper: TransactionHistoryMapper {
                 }
 
                 switch amountType {
-                case .coin, .reserve:
+                case .coin, .reserve, .feeResource:
                     if let transactionInfo = extractTransactionInfo(
                         from: transaction,
                         sourceAddress: sourceAddress,

@@ -136,7 +136,7 @@ extension EthereumWalletManager: EthereumNetworkProvider {
             .eraseToAnyPublisher()
     }
 
-    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Result<Decimal, Error>], Error> {
         addressConverter.convertToETHAddressPublisher(address)
             .withWeakCaptureOf(self)
             .flatMap { walletManager, convertedAddress in
@@ -281,7 +281,12 @@ private extension EthereumWalletManager {
         wallet.add(coinValue: response.balance)
         
         for tokenBalance in response.tokenBalances {
-            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
+            switch tokenBalance.value {
+            case .success(let value):
+                wallet.add(tokenValue: value, for: tokenBalance.key)
+            case .failure:
+                wallet.clearAmount(for: tokenBalance.key)
+            }
         }
 
         txBuilder.update(nonce: response.txCount)
@@ -324,7 +329,7 @@ extension EthereumWalletManager: TransactionFeeProvider {
                     } catch {
                         return .anyFail(error: error)
                     }
-                case .reserve:
+                case .reserve, .feeResource:
                     return .anyFail(error: BlockchainSdkError.notImplemented)
                 }
             }

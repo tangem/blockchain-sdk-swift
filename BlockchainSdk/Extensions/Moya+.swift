@@ -14,14 +14,14 @@ extension Moya.Task {
     static func requestJSONRPC(
         id: Int,
         method: String,
-        params: Encodable,
+        params: Encodable?,
         encoder: JSONEncoder? = nil
     ) -> Self {
         let jsonRPCParams = JSONRPC.Request(
             jsonrpc: .v2,
             id: id,
             method: method,
-            params: AnyEncodable(params)
+            params: params.map(AnyEncodable.init)
         )
 
         if let encoder = encoder {

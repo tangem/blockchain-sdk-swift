@@ -64,4 +64,10 @@ extension Data {
 
         return Data(hash)
     }
+    
+    func base64URLEncodedString() -> String {
+        base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+    }
 }
