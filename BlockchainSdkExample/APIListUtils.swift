@@ -46,6 +46,7 @@ struct ConfigUtils {
                 tronGridApiKey: keys.tronGridApiKey,
                 hederaArkhiaApiKey: keys.hederaArkhiaKey,
                 polygonScanApiKey: keys.polygonScanApiKey,
+                koinosProApiKey: keys.koinosProApiKey,
                 tonCenterApiKeys: .init(mainnetApiKey: keys.tonCenterApiKey.mainnet, testnetApiKey: keys.tonCenterApiKey.testnet),
                 fireAcademyApiKeys: .init(mainnetApiKey: keys.chiaFireAcademyApiKey, testnetApiKey: keys.chiaFireAcademyApiKey),
                 chiaTangemApiKeys: .init(mainnetApiKey: keys.chiaTangemApiKey),
@@ -67,6 +68,7 @@ struct ConfigUtils {
                 tronGridApiKey: "",
                 hederaArkhiaApiKey: "",
                 polygonScanApiKey: "",
+                koinosProApiKey: "",
                 tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                 fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                 chiaTangemApiKeys: .init(mainnetApiKey: ""),
@@ -154,6 +156,7 @@ enum APIProvider: String {
     case tangemChia
     case solana
     case kaspa
+    case koinos
 
     var blockchainProvider: NetworkProviderType {
         switch self {
@@ -172,6 +175,7 @@ enum APIProvider: String {
         case .tangemChia: return .tangemChia
         case .solana: return .solana
         case .kaspa: return .kaspa
+        case .koinos: return .koinos
         }
     }
 }
@@ -194,6 +198,7 @@ struct Keys: Decodable {
     let bscQuiknodeApiKey: String
     let bscQuiknodeSubdomain: String
     let polygonScanApiKey: String
+    let koinosProApiKey: String
     let bittensorDwellirKey: String
     let bittensorOnfinalityKey: String
 }
