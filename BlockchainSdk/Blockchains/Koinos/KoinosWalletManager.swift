@@ -37,22 +37,22 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
     }
     
     override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
-        let isPendingTransactionExist = Just(wallet.pendingTransactions.first?.hash)
-            .flatMap { [networkService] transactionID in
-                if let transactionID {
-                    return networkService
-                        .isTransactionExist(transactionID: transactionID)
-                        .map(Optional.some)
+        let existingTransactionIDs = Just(wallet.pendingTransactions)
+            .flatMap { [networkService] transactions -> AnyPublisher<Set<String>, Error> in
+                if transactions.isEmpty {
+                    return Just<Set<String>>([])
+                        .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 }
-                return Just<Bool?>(nil)
-                    .setFailureType(to: Error.self)
+                
+                return networkService
+                    .getExistingTransactionIDs(transactionIDs: transactions.map(\.hash))
                     .eraseToAnyPublisher()
             }
         
         cancellable = Publishers.CombineLatest(
             networkService.getInfo(address: wallet.address),
-            isPendingTransactionExist
+            existingTransactionIDs
         )
         .sink { [weak self] in
             switch $0 {
@@ -62,7 +62,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
             case .finished:
                 completion(.success(()))
             }
-        } receiveValue: { [weak self] accountInfo, isPendingTransactionExist in
+        } receiveValue: { [weak self] accountInfo, existingTransactionIDs in
             guard let self else { return }
             
             let atomicUnitMultiplier = wallet.blockchain.decimalValue
@@ -84,9 +84,7 @@ class KoinosWalletManager: BaseManager, WalletManager, FeeResourceRestrictable {
                 )
             )
             
-            if isPendingTransactionExist == true {
-                wallet.clearPendingTransaction()
-            }
+            wallet.removePendingTransaction(where: existingTransactionIDs.contains)
         }
     }
     

@@ -72,7 +72,7 @@ extension KoinosMethod {
 }
 
 extension KoinosMethod {
-    enum GetTransaction {
+    enum GetTransactions {
         struct RequestParams: Encodable {
             let transactionIds: [String]
         }

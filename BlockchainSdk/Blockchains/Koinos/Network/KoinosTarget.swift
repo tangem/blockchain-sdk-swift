@@ -16,7 +16,7 @@ struct KoinosTarget: TargetType {
         case getNonce(address: String)
         case getResourceLimits
         case submitTransaction(transaction: KoinosProtocol.Transaction)
-        case getTransaction(transactionID: String)
+        case getTransactions(transactionIDs: [String])
         
         var method: String {
             switch self {
@@ -30,7 +30,7 @@ struct KoinosTarget: TargetType {
                 "chain.get_resource_limits"
             case .submitTransaction:
                 "chain.submit_transaction"
-            case .getTransaction:
+            case .getTransactions:
                 "transaction_store.get_transactions_by_id"
             }
         }
@@ -100,11 +100,11 @@ struct KoinosTarget: TargetType {
                 params: KoinosMethod.SubmitTransaction.RequestParams(transaction: transaction, broadcast: true)
             )
             
-        case let .getTransaction(transactionID):
+        case let .getTransactions(transactionIDs):
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
                 method: type.method,
-                params: KoinosMethod.GetTransaction.RequestParams(transactionIds: [transactionID])
+                params: KoinosMethod.GetTransactions.RequestParams(transactionIds: transactionIDs)
             )
         }
     }

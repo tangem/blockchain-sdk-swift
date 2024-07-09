@@ -79,10 +79,10 @@ class KoinosNetworkProvider: HostProvider {
         .eraseToAnyPublisher()
     }
     
-    func isTransactionExist(transactionID: String) -> AnyPublisher<KoinosMethod.GetTransaction.Response, Error> {
+    func getTransactions(transactionIDs: [String]) -> AnyPublisher<KoinosMethod.GetTransactions.Response, Error> {
         requestPublisher(
-            for: .getTransaction(transactionID: transactionID),
-            withResponseType: KoinosMethod.GetTransaction.Response.self
+            for: .getTransactions(transactionIDs: transactionIDs),
+            withResponseType: KoinosMethod.GetTransactions.Response.self
         )
         .eraseToAnyPublisher()
     }

@@ -65,11 +65,16 @@ class KoinosNetworkService: MultiNetworkProvider {
         }
     }
     
-    func isTransactionExist(transactionID: String) -> AnyPublisher<Bool, Error> {
+    func getExistingTransactionIDs(transactionIDs: [String]) -> AnyPublisher<Set<String>, Error> {
         providerPublisher { provider in
             provider
-                .isTransactionExist(transactionID: transactionID)
-                .map { $0.transactions != nil }
+                .getTransactions(transactionIDs: transactionIDs)
+                .map { response in
+                    guard let transactions = response.transactions else {
+                        return []
+                    }
+                    return transactions.map(\.transaction.id).toSet()
+                }
                 .eraseToAnyPublisher()
         }
     }
