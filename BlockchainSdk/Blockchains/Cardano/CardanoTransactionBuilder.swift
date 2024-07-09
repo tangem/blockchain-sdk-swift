@@ -81,7 +81,7 @@ extension CardanoTransactionBuilder {
             return try getFeeCoin(amount: amount.uint64Amount, destination: destination, source: source)
         case .token(let token):
             return try getFeeToken(.init(token: token, amount: amount.uint64Amount), destination: destination, source: source)
-        case .reserve:
+        case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }
@@ -98,7 +98,7 @@ extension CardanoTransactionBuilder {
             let asset = try self.asset(for: token)
             return try minChange(token: token, uint64Amount: amount.uint64Amount)
 
-        case .reserve:
+        case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }

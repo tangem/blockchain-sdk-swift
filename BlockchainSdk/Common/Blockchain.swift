@@ -78,6 +78,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case base(testnet: Bool)
     case joystream(curve: EllipticCurve)
     case bittensor(curve: EllipticCurve)
+    case koinos(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -114,7 +115,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .flare(let testnet),
                 .taraxa(let testnet),
                 .radiant(let testnet),
-                .base(let testnet):
+                .base(let testnet),
+                .koinos(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -223,7 +225,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .kaspa,
                 .ravencoin,
                 .hedera,
-                .radiant:
+                .radiant,
+                .koinos:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -411,6 +414,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "JOY"
         case .bittensor:
             return "TAO"
+        case .koinos:
+            return isTestnet ? "tKOIN" : "KOIN"
         }
     }
 
@@ -584,6 +589,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return .sameCurrency
         case .veChain:
             return .token(value: VeChainWalletManager.Constants.energyToken)
+        case .koinos:
+            return .feeResource(type: .mana)
         default:
             return .coin
         }
@@ -595,7 +602,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ton,
                 .near,
                 .aptos,
-                .hedera:
+                .hedera,
+                .koinos:
             return true
         case .tron,
                 .veChain:
@@ -831,6 +839,7 @@ extension Blockchain: Codable {
         case .base: return "base"
         case .joystream: return "joystream"
         case .bittensor: return "bittensor"
+        case .koinos: return "koinos"
         }
     }
 
@@ -917,6 +926,7 @@ extension Blockchain: Codable {
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
         case "bittensor": self = .bittensor(curve: curve)
+        case "koinos": self = .koinos(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1116,6 +1126,8 @@ private extension Blockchain {
             return "joystream"
         case .bittensor:
             return "bittensor"
+        case .koinos:
+            return "koinos"
         }
     }
 
@@ -1217,6 +1229,8 @@ extension Blockchain {
             return RadiantWalletAssembly()
         case .bittensor:
             return BittensorWalletAssembly()
+        case .koinos:
+            return KoinosWalletAssembly()
         }
     }
 }

@@ -170,7 +170,7 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
             try validateCardanoCoinWithdrawal(amount: amount, fee: fee)
         case .token:
             try validateCardanoTokenWithdrawal(amount: amount, fee: fee)
-        case .reserve:
+        case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }

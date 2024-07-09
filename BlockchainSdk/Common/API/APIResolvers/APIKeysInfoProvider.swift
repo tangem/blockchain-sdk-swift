@@ -47,6 +47,11 @@ struct APIKeysInfoProvider {
                 headerName: Constants.onfinalityApiKeyHeaderName,
                 headerValue: config.bittensorOnfinalityKey
             )
+        case .koinos:
+            return .init(
+                headerName: "apikey",
+                headerValue: config.koinosProApiKey
+            )
         case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .solana, .kaspa, .dwellir, .none:
             return nil
         }

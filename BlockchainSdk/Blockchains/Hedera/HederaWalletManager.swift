@@ -409,7 +409,7 @@ final class HederaWalletManager: BaseManager {
             transferFeeBase = Constants.cryptoTransferServiceCostInUSD
         case .token:
             transferFeeBase = Constants.tokenTransferServiceCostInUSD
-        case .reserve:
+        case .reserve, .feeResource:
             return .anyFail(error: WalletError.failedToGetFee)
         }
 
@@ -532,7 +532,7 @@ extension HederaWalletManager: WalletManager {
 extension HederaWalletManager: AssetRequirementsManager {
     func hasRequirements(for asset: Asset) -> Bool {
         switch asset {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return false
         case .token(let token):
             return !(associatedTokens ?? []).contains(token.contractAddress)
@@ -545,7 +545,7 @@ extension HederaWalletManager: AssetRequirementsManager {
         }
 
         switch asset {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return nil
         case .token:
             guard let tokenAssociationFeeExchangeRate else {
@@ -565,7 +565,7 @@ extension HederaWalletManager: AssetRequirementsManager {
         }
 
         switch asset {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return .justWithError(output: ())
         case .token(let token):
             return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in

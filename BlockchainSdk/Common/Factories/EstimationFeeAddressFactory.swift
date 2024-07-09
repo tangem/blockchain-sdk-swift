@@ -91,6 +91,8 @@ struct EstimationFeeAddressFactory {
             return "terra1pfamr0t2daet92grdvxqex235q58qrx6xclldg"
         case .ton:
             return "EQAY92urFDKejoDRdi_EfRKLGB1JkGjD8z1inj_DhgBaD0Xo"
+        case .koinos:
+            return "1C423Vbd44zjghhJR5fKJdLFS3rgVFUc9A"
         }
     }
 }

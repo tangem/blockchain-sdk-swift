@@ -18,6 +18,7 @@ public struct BlockchainSdkConfig {
     let tronGridApiKey: String
     let hederaArkhiaApiKey: String
     let polygonScanApiKey: String
+    let koinosProApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
     let fireAcademyApiKeys: FireAcademyApiKeys
     let chiaTangemApiKeys: ChiaTangemApiKeys
@@ -38,6 +39,7 @@ public struct BlockchainSdkConfig {
         tronGridApiKey: String,
         hederaArkhiaApiKey: String,
         polygonScanApiKey: String,
+        koinosProApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         fireAcademyApiKeys: FireAcademyApiKeys,
         chiaTangemApiKeys: ChiaTangemApiKeys,
@@ -57,6 +59,7 @@ public struct BlockchainSdkConfig {
         self.tronGridApiKey = tronGridApiKey
         self.hederaArkhiaApiKey = hederaArkhiaApiKey
         self.polygonScanApiKey = polygonScanApiKey
+        self.koinosProApiKey = koinosProApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.fireAcademyApiKeys = fireAcademyApiKeys
         self.chiaTangemApiKeys = chiaTangemApiKeys

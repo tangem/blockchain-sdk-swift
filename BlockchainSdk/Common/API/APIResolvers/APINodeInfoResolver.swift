@@ -53,6 +53,9 @@ struct APINodeInfoResolver {
         case .dwellir:
             return DwellirAPIResolver(config: config)
                 .resolve()
+        case .koinos:
+            return KoinosAPIResolver(config: config)
+                .resolve(blockchain: blockchain)
         case .blockchair, .blockcypher, .solana:
             return nil
         }

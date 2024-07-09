@@ -78,7 +78,8 @@ struct AddressTypesConfig {
              .radiant,
              .base,
              .joystream,
-             .bittensor:
+             .bittensor,
+             .koinos:
             return [.default]
         }
     }
