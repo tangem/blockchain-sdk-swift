@@ -19,6 +19,7 @@ public struct CardanoAddressService {
         let hexPublicKeyExtended = walletPublicKey + Data(repeating: 0, count: 32) // extendedPublicKey
         let forSha3 = ([0, [0, CBOR.byteString(hexPublicKeyExtended.toBytes)], [:]] as CBOR).encode() // makePubKeyWithAttributes
         let sha = forSha3.sha3(.sha256)
+        // TODO: Use extension from Data+ and refactor to handle optional Data
         let pkHash = Sodium().genericHash.hash(message: sha, outputLength: 28)! // calculate blake 2b
         let addr = ([CBOR.byteString(pkHash), [:], 0] as CBOR).encode() // makeHashWithAttributes
         let checksum = UInt64(addr.crc32()) // getCheckSum
@@ -29,6 +30,7 @@ public struct CardanoAddressService {
     }
     
     private func makeShelleyAddress(from walletPublicKey: Data) -> String {
+        // TODO: Use extension from Data+ and refactor to handle optional Data
         let publicKeyHash = Sodium().genericHash.hash(message: walletPublicKey.toBytes, outputLength: 28)!
         let addressBytes = addressHeaderByte + publicKeyHash
         let bech32 = Bech32()

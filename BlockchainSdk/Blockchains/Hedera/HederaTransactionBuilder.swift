@@ -31,8 +31,8 @@ final class HederaTransactionBuilder {
         validStartDate: UnixTimestamp,
         nodeAccountIds: [Int]?
     ) throws -> CompiledTransaction {
-        let accountId = try AccountId(parsing: tokenAssociation.accountId)
-        let tokenId = try TokenId(parsing: tokenAssociation.contractAddress)
+        let accountId = try AccountId.fromSolidityAddressOrString(tokenAssociation.accountId)
+        let tokenId = try TokenId.fromSolidityAddressOrString(tokenAssociation.contractAddress)
         let transactionId = try makeTransactionId(accountId: accountId, validStartDate: validStartDate)
 
         let nodeAccountIds = nodeAccountIds?
@@ -61,8 +61,8 @@ final class HederaTransactionBuilder {
         let feeRoundedValue = feeValue.rounded(roundingMode: .up)
         let feeAmount = try Hbar(feeRoundedValue, .tinybar)
 
-        let sourceAccountId = try AccountId(parsing: transaction.sourceAddress)
-        let destinationAccountId = try AccountId(parsing: transaction.destinationAddress)
+        let sourceAccountId = try AccountId.fromSolidityAddressOrString(transaction.sourceAddress)
+        let destinationAccountId = try AccountId.fromSolidityAddressOrString(transaction.destinationAddress)
 
         let transactionId = try makeTransactionId(accountId: sourceAccountId, validStartDate: validStartDate)
         let transactionParams = transaction.params as? HederaTransactionParams
@@ -142,12 +142,12 @@ final class HederaTransactionBuilder {
                 .hbarTransfer(sourceAccountId, transactionAmount.negated())
                 .hbarTransfer(destinationAccountId, transactionAmount)
         case .token(let token):
-            let tokenId = try TokenId.fromString(token.contractAddress)
+            let tokenId = try TokenId.fromSolidityAddressOrString(token.contractAddress)
             let transactionAmount = transactionRoundedValue.int64Value
             return TransferTransaction()
                 .tokenTransfer(tokenId, sourceAccountId, -transactionAmount)
                 .tokenTransfer(tokenId, destinationAccountId, transactionAmount)
-        case .reserve:
+        case .reserve, .feeResource:
             throw WalletError.failedToBuildTx
         }
     }
@@ -221,6 +221,15 @@ private extension Hedera.Transaction {
         }
 
         return self
+    }
+}
+
+private extension Hedera.EntityId {
+    /// A dumb convenience factory method for parsing entity IDs in both `<shard>.<realm>.<last>` (Hedera native)
+    /// and `[0x]40*HEXDIG` (Solidity/EVM) forms.
+    static func fromSolidityAddressOrString<S: StringProtocol>(_ input: S) throws -> Self {
+        // Solidity/EVM address parsing rules are stricter, so we're trying to parse Solidity/EVM addresses first
+        return try (try? fromSolidityAddress(input)) ?? fromString(input)
     }
 }
 

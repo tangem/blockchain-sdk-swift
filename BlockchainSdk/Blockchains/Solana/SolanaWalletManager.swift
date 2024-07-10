@@ -18,7 +18,6 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     
     var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
-    private var currentAccountSpace: UInt64?
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
@@ -38,8 +37,6 @@ class SolanaWalletManager: BaseManager, WalletManager {
     }
     
     private func updateWallet(info: SolanaAccountInfoResponse) {
-        // Need stored for use calculation fee creation account for destination account the prototype
-        self.currentAccountSpace = info.mainAccountSpace
         self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
@@ -64,7 +61,7 @@ extension SolanaWalletManager: TransactionSender {
             sendPublisher = sendSol(transaction, signer: signer)
         case .token(let token):
             sendPublisher = sendSplToken(transaction, token: token, signer: signer)
-        case .reserve:
+        case .reserve, .feeResource:
             return .sendTxFail(error: WalletError.empty)
         }
         
@@ -180,34 +177,35 @@ extension SolanaWalletManager: TransactionSender {
 private extension SolanaWalletManager {
     /// Combine `accountCreationFeePublisher`, `accountExistsPublisher` and `minimalBalanceForRentExemption`
     func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
-        let accountCreationFeePublisher = accountCreationFeePublisher(amount: amount)
         let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
         let rentExemptionBalancePublisher = networkService.minimalBalanceForRentExemption()
-
         
-        /*
-         1. we get our account (if not, we return the error if yes, we go further)
-         2. we get the account of the recipient of the token, if it is fee = 0,
-         3. if it is not, then we take the space of our account and receive a fee for creation
-        */
-        
-        return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
-            .map { accountCreationFee, accountExists, rentExemption in
-                let creationFee: Decimal
-                if accountExists {
-                    creationFee = 0
-                } else if amount.type == .coin && amount.value >= rentExemption {
-                    creationFee = 0
+        return Publishers.Zip(accountExistsPublisher, rentExemptionBalancePublisher)
+            .withWeakCaptureOf(self)
+            .flatMap { (manager, values) in
+                let accountExistsInfo = values.0
+                let rentExemption = values.1
+                
+                if accountExistsInfo.isExist || amount.type == .coin && amount.value >= rentExemption {
+                    return Just(DestinationAccountInfo(accountExists: accountExistsInfo.isExist, accountCreationFee: 0))
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
                 } else {
-                    creationFee = accountCreationFee
+                    return manager
+                        .accountCreationFeePublisher(amount: amount, with: accountExistsInfo.space)
+                        .map {
+                            DestinationAccountInfo(
+                                accountExists: accountExistsInfo.isExist,
+                                accountCreationFee: $0
+                            )
+                        }
+                        .eraseToAnyPublisher()
                 }
-
-                return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: creationFee)
             }
             .eraseToAnyPublisher()
     }
 
-    func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<Bool, Error> {
+    func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<AccountExistsInfo, Error> {
         let tokens: [Token] = amountType.token.map { [$0] } ?? []
 
         return networkService
@@ -215,18 +213,18 @@ private extension SolanaWalletManager {
             .map { info in
                 switch amountType {
                 case .coin:
-                    return info.accountExists
+                    return AccountExistsInfo(isExist: info.accountExists, space: nil)
                 case .token(let token):
                     let existingTokenAccount = info.tokensByMint[token.contractAddress]
-                    return existingTokenAccount != nil
-                case .reserve:
-                    return false
+                    return AccountExistsInfo(isExist: existingTokenAccount != nil, space: existingTokenAccount?.space)
+                case .reserve, .feeResource:
+                    return AccountExistsInfo(isExist: false, space: nil)
                 }
             }
             .eraseToAnyPublisher()
     }
 
-    func accountCreationFeePublisher(amount: Amount) -> AnyPublisher<Decimal, Error> {
+    func accountCreationFeePublisher(amount: Amount, with space: UInt64?) -> AnyPublisher<Decimal, Error> {
         switch amount.type {
         case .coin:
             // Include the fee if the amount is less than it
@@ -240,8 +238,8 @@ private extension SolanaWalletManager {
                 }
                 .eraseToAnyPublisher()
         case .token:
-            return networkService.mainAccountCreationFee(dataLength: currentAccountSpace ?? 0)
-        case .reserve:
+            return networkService.mainAccountCreationFee(dataLength: space ?? 0)
+        case .reserve, .feeResource:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
     }
@@ -301,5 +299,10 @@ private extension SolanaWalletManager {
     struct DestinationAccountInfo {
         let accountExists: Bool
         let accountCreationFee: Decimal
+    }
+    
+    struct AccountExistsInfo {
+        let isExist: Bool
+        let space: UInt64?
     }
 }

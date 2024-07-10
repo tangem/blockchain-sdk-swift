@@ -26,6 +26,9 @@ public enum NetworkProviderType {
     case tangemChia
     case solana
     case kaspa
+    case dwellir
+    case onfinality
+    case koinos
 }
 
 struct NodeInfo: HostProvider {

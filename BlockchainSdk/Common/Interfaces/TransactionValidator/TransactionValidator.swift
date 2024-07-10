@@ -165,7 +165,7 @@ extension TransactionValidator where Self: DustRestrictable, Self: CardanoTransf
 
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateCardanoTransfer(amount: amount, fee: fee.amount)
+        try validateCardanoTransfer(amount: amount, fee: fee)
         try validateDust(amount: amount, fee: fee.amount)
     }
 }
@@ -182,5 +182,19 @@ extension TransactionValidator where Self: ReserveAmountRestrictable {
         case .address(let string):
             try await validateReserveAmount(amount: amount, addressType: .address(string))
         }
+    }
+}
+
+// MARK: - FeeResourceRestrictable
+
+extension TransactionValidator where Self: FeeResourceRestrictable {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validate(amount: amount, fee: fee)
+    }
+    
+    func validate(amount: Amount, fee: Fee) throws {
+        try validate(amount: amount)
+        try validateFeeResource(amount: amount, fee: fee.amount)
     }
 }

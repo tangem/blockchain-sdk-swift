@@ -25,7 +25,8 @@ extension PublicKeyType {
                 .cosmos,
                 .terraV1,
                 .terraV2,
-                .radiant:
+                .radiant,
+                .koinos:
             self = PublicKeyType.secp256k1
         case .ethereum,
                 .bsc,
@@ -102,7 +103,8 @@ extension PublicKeyType {
                 .telos,
                 .octa,
                 .chia,
-                .joystream:
+                .joystream,
+                .bittensor:
             throw NSError.makeUnsupportedBlockchainError(for: blockchain)
         }
     }

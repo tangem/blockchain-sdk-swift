@@ -26,3 +26,11 @@ extension Encodable {
         return dictionary as? [String: Any] ?? [:]
     }
 }
+
+extension JSONDecoder {
+    static var withSnakeCaseStrategy: JSONDecoder {
+        let encoder = JSONDecoder()
+        encoder.keyDecodingStrategy = .convertFromSnakeCase
+        return encoder
+    }
+}
