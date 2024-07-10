@@ -108,6 +108,8 @@ final class TONTransactionBuilder {
                 $0.jettonTransfer = transfer
                 $0.privateKey = inputPrivateKey.rawRepresentation
             }
+        case .feeResource:
+            throw BlockchainSdkError.notImplemented
         }
     }
     

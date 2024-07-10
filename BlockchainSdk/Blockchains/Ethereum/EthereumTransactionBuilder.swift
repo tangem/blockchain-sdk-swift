@@ -57,7 +57,7 @@ class EthereumTransactionBuilder {
             )
 
             return try buildTxCompilerPreSigningOutput(input: input).data
-        case .reserve:
+        case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }
@@ -119,7 +119,7 @@ private extension EthereumTransactionBuilder {
                 fee: transaction.fee,
                 parameters: transaction.params as? EthereumTransactionParams
             )
-        case .reserve:
+        case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }
@@ -135,14 +135,21 @@ private extension EthereumTransactionBuilder {
             input.chainID = BigUInt(chainId).serialize()
             input.nonce = nonceValue.serialize()
 
-            // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
-            if let feeParameters = fee.parameters as? EthereumEIP1559FeeParameters {
-                input.txMode = .enveloped
-                input.gasLimit = feeParameters.gasLimit.serialize()
-                input.maxFeePerGas = feeParameters.maxFeePerGas.serialize()
-                input.maxInclusionFeePerGas = feeParameters.priorityFee.serialize()
-            } else {
+            guard let feeParameters = fee.parameters as? EthereumFeeParameters else {
                 throw EthereumTransactionBuilderError.feeParametersNotFound
+            }
+
+            switch feeParameters.parametersType {
+            case .eip1559(let eip1559Parameters):
+                // EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
+                input.txMode = .enveloped
+                input.gasLimit = eip1559Parameters.gasLimit.serialize()
+                input.maxFeePerGas = eip1559Parameters.maxFeePerGas.serialize()
+                input.maxInclusionFeePerGas = eip1559Parameters.priorityFee.serialize()
+            case .legacy(let legacyParameters):
+                input.txMode = .legacy
+                input.gasLimit = legacyParameters.gasLimit.serialize()
+                input.gasPrice = legacyParameters.gasPrice.serialize()
             }
 
             input.transaction = .with {
@@ -240,11 +247,28 @@ extension EthereumTransactionBuilder {
     }
 }
 
-enum EthereumTransactionBuilderError: Error {
+enum EthereumTransactionBuilderError: LocalizedError {
     case feeParametersNotFound
     case invalidSignatureCount
     case invalidAmount
     case invalidNonce
     case transactionEncodingFailed
     case walletCoreError(message: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .feeParametersNotFound:
+            return "feeParametersNotFound"
+        case .invalidAmount:
+            return "invalidAmount"
+        case .invalidNonce:
+            return "invalidNonce"
+        case .invalidSignatureCount:
+            return "invalidSignatureCount"
+        case .transactionEncodingFailed:
+            return "transactionEncodingFailed"
+        case .walletCoreError(let message):
+            return "walletCoreError: \(message)"
+        }
+    }
 }

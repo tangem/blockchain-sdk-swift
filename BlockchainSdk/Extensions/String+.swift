@@ -66,6 +66,18 @@ extension String {
         return Array(v[0 ..< (v.count-1)])
     }
     
+    var isValidHex: Bool {
+        let regex = try! NSRegularExpression(pattern: "^[0-9a-f]*$", options: .caseInsensitive)
+
+        let found = regex.firstMatch(in: self, options: [], range: NSRange(location: 0, length: count))
+
+        if found == nil || found?.range.location == NSNotFound || count % 2 != 0 {
+            return false
+        }
+
+        return true
+    }
+    
     func capitalizingFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()
     }
@@ -94,6 +106,22 @@ extension String {
 
     public static var unknown: String {
         "Unknown"
+    }
+    
+    func base64URLToBase64() -> String {
+        var base64 = self
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        if base64.count % 4 != 0 {
+            base64.append(String(repeating: "=", count: 4 - base64.count % 4))
+        }
+        return base64
+    }
+    
+    /// Decodes a Base64 URL-safe encoded string to Data
+    func base64URLDecodedData() -> Data? {
+        let base64 = self.base64URLToBase64()
+        return Data(base64Encoded: base64)
     }
 }
 

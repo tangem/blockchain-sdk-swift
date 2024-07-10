@@ -547,6 +547,49 @@ final class HederaTests: XCTestCase {
         XCTAssertThrowsError(try converter.convertFromMirrorToConsensus("0.0.3573746-1714034073.123382080"))
     }
 
+    /// Values for https://www.coingecko.com/en/coins/hbarbarian
+    func testContractAddressConversionFromEVMWithPrefixToHederaPositiveCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+        let converted = try converter.convertFromEVMToHedera("0x0000000000000000000000000000000000497fbc")  // Valid EVM address with 0x prefix
+        let expected = "0.0.4816828"
+
+        XCTAssertEqual(converted, expected)
+    }
+
+    /// Values for https://www.coingecko.com/en/coins/usdc
+    func testContractAddressConversionFromEVMWithoutPrefixToHederaPositiveCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+        let converted = try converter.convertFromEVMToHedera("000000000000000000000000000000000006f89a")  // Valid EVM address w/o 0x prefix
+        let expected = "0.0.456858"
+
+        XCTAssertEqual(converted, expected)
+    }
+
+    /// Values for https://www.coingecko.com/en/coins/hbarsuite
+    func testContractAddressConversionFromHederaToEVMPositiveCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+        let converted = try converter.convertFromHederaToEVM("0.0.786931")  // Valid Hedera address
+        let expected = "0x00000000000000000000000000000000000c01f3"
+
+        XCTAssertEqual(converted, expected)
+    }
+
+    func testContractAddressConversionFromEVMToHederaNegativeCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("0.0.786931"))    // Valid Hedera address
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("0.786931"))  // Invalid Hedera address
+        XCTAssertThrowsError(try converter.convertFromEVMToHedera("7677bbb545a"))   // Invalid EVM address
+    }
+
+    func testContractAddressConversionFromHederaToEVMNegativeCase() throws {
+        let converter = HederaTokenContractAddressConverter()
+
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("00000000000000000000000000000000000c01f3"))  // Valid EVM address
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("0.786931"))  // Invalid Hedera address
+        XCTAssertThrowsError(try converter.convertFromHederaToEVM("7677bbb545a"))   // Invalid EVM address
+    }
+
     private func setUp(curve: EllipticCurve) {
         blockchain = .hedera(curve: curve, testnet: true)
         sizeTester = TransactionSizeTesterUtility()

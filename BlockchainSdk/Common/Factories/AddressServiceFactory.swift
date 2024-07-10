@@ -123,6 +123,11 @@ public struct AddressServiceFactory {
             return RadiantAddressService()
         case .joystream(let curve):
             return PolkadotAddressService(network: .joystream(curve: curve))
+        case .bittensor(let curve):
+            return PolkadotAddressService(network: .bittensor(curve: curve))
+        case .koinos:
+            let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
+            return KoinosAddressService(networkParams: network.networkParams)
         }
     }
 }

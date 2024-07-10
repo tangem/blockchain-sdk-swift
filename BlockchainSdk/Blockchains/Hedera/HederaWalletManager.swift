@@ -162,6 +162,8 @@ final class HederaWalletManager: BaseManager {
         return networkService
             .getExchangeRate()
             .map { $0 as HederaExchangeRate? }  // Combine can't implicitly bridge `Publisher<T, Error>` to `Publisher<T?, Error`
+            .replaceError(with: nil)    // Token association fee request is auxiliary and shouldn't cause the entire reactive chain to fail
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 
@@ -407,7 +409,7 @@ final class HederaWalletManager: BaseManager {
             transferFeeBase = Constants.cryptoTransferServiceCostInUSD
         case .token:
             transferFeeBase = Constants.tokenTransferServiceCostInUSD
-        case .reserve:
+        case .reserve, .feeResource:
             return .anyFail(error: WalletError.failedToGetFee)
         }
 
@@ -530,7 +532,7 @@ extension HederaWalletManager: WalletManager {
 extension HederaWalletManager: AssetRequirementsManager {
     func hasRequirements(for asset: Asset) -> Bool {
         switch asset {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return false
         case .token(let token):
             return !(associatedTokens ?? []).contains(token.contractAddress)
@@ -543,7 +545,7 @@ extension HederaWalletManager: AssetRequirementsManager {
         }
 
         switch asset {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return nil
         case .token:
             guard let tokenAssociationFeeExchangeRate else {
@@ -563,7 +565,7 @@ extension HederaWalletManager: AssetRequirementsManager {
         }
 
         switch asset {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return .justWithError(output: ())
         case .token(let token):
             return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in

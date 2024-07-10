@@ -13,7 +13,7 @@ actor JSONRPCWebSocketProvider {
     private let connection: WebSocketConnection
     
     // Internal
-    private var requests: [Int: CheckedContinuation<Data, Error>] = [:]
+    private var requests: [Int: Continuation] = [:]
     private var receiveTask: Task<Void, Never>?
     private var counter: Int = 0
 
@@ -37,7 +37,7 @@ actor JSONRPCWebSocketProvider {
         setupReceiveTask()
          
         let data: Data = try await withCheckedThrowingContinuation { continuation in
-            requests.updateValue(continuation, forKey: request.id)
+            requests.updateValue(.init(continuation: continuation), forKey: request.id)
         }
 
         try Task.checkCancellation()
@@ -52,9 +52,13 @@ actor JSONRPCWebSocketProvider {
         return try response.result.get()
     }
     
-    func cancel() {
+    func cancel() async {
         receiveTask?.cancel()
-        requests.values.forEach { $0.resume(throwing: CancellationError()) }
+
+        for key in requests.keys {
+            await requests[key]?.cancel()
+            requests.removeValue(forKey: key)
+        }
     }
 }
 
@@ -67,8 +71,8 @@ private extension JSONRPCWebSocketProvider {
             
             do {
                 let data = try await connection.receive()
-                async let _ = proceedReceive(data: data)
-                
+                await proceedReceive(data: data)
+
                 // Handle next message
                 await setupReceiveTask()
             } catch {
@@ -83,7 +87,7 @@ private extension JSONRPCWebSocketProvider {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
             if let id = json?["id"] as? Int, let continuation = requests[id] {
-                continuation.resume(returning: data)
+                await continuation.resume(returning: data)
             } else {
                 log("Received json: \(String(describing: json)) is not handled")
             }
@@ -109,5 +113,35 @@ extension JSONRPCWebSocketProvider: HostProvider {
 extension JSONRPCWebSocketProvider: CustomStringConvertible {
     nonisolated var description: String {
         objectDescription(self)
+    }
+}
+
+private actor Continuation {
+    private let continuation: CheckedContinuation<Data, Error>
+    private var isResumed: Bool = false
+
+    init(continuation: CheckedContinuation<Data, Error>) {
+        self.continuation = continuation
+    }
+
+    func resume(returning data: Data) {
+        guard !isResumed else { return }
+
+        continuation.resume(returning: data)
+        isResumed = true
+    }
+
+    func resume(throwing error: any Error) {
+        guard !isResumed else { return }
+
+        continuation.resume(throwing: error)
+        isResumed = true
+    }
+
+    func cancel() {
+        guard !isResumed else { return }
+
+        continuation.resume(throwing: CancellationError())
+        isResumed = true
     }
 }
