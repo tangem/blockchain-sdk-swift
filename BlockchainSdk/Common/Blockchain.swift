@@ -166,7 +166,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .near(let curve, _),
                 .algorand(let curve, _),
                 .aptos(let curve, _),
-                .hedera(let curve, _):
+                .hedera(let curve, _),
+                .internetComputer(let curve):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -442,6 +443,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "zkSync Era" + testnetSuffix
         case .manta:
             return "Manta Pacific" + testnetSuffix
+        case .internetComputer:
+            return "Internet Computer"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -713,7 +716,7 @@ extension Blockchain: Codable {
         case .radiant: return "radiant"
         case .base: return "base"
         case .joystream: return "joystream"
-        case .internetComputer: return "icp"
+        case .internetComputer: return "internet-computer"
         }
     }
 
@@ -799,7 +802,7 @@ extension Blockchain: Codable {
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         case "joystream": self = .joystream(curve: curve)
-        case "icp": self = .internetComputer(curve: curve)
+        case "internet-computer": self = .internetComputer(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1001,7 +1004,7 @@ private extension Blockchain {
         case .joystream:
             return "joystream"
         case .internetComputer:
-            return "icp"
+            return "internet-computer"
         }
     }
 
