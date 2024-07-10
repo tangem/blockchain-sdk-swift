@@ -69,7 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tangem/IcpKit",
       "state" : {
-        "revision" : "9313935307e4a4e5e70ee4caf3614bcd4d3a139c"
+        "revision" : "9c3e3f62b74aaa526a3123a859c867a43074e184",
+        "version" : "0.1.2-tangem1"
       }
     },
     {

@@ -5670,8 +5670,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/IcpKit";
 			requirement = {
-				kind = revision;
-				revision = 9313935307e4a4e5e70ee4caf3614bcd4d3a139c;
+				kind = exactVersion;
+				version = "0.1.2-tangem1";
 			};
 		};
 		B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */ = {
