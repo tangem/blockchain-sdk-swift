@@ -73,6 +73,10 @@ public protocol TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
 }
 
+@available(iOS 13.0, *)
+public protocol StakeKitTransactionSender {
+    func sendStakeKit(transaction: StakeKitTransaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
+}
 
 public protocol TransactionSigner {
     func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error>

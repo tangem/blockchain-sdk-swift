@@ -306,3 +306,34 @@ private extension SolanaWalletManager {
         let space: UInt64?
     }
 }
+
+
+// MARK: - StakeKitTransactionSender
+
+extension SolanaWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        let helper = SolanaStakeKitTransactionHelper()
+
+        return Just(helper.prepareForSign(transaction.unsignedData))
+            .withWeakCaptureOf(self)
+            .flatMap { manager, txToSign in
+                signer.sign(hash: txToSign, walletPublicKey: manager.wallet.publicKey)
+            }
+            .map { signature in
+                helper.prepareForSend(transaction.unsignedData, signature: signature)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { manager, txToSend in
+                manager.networkService.sendRaw(base64serializedTransaction: txToSend)
+            }
+            .withWeakCaptureOf(self)
+            .map { manager, hash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+                manager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: hash)
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
+    }
+}

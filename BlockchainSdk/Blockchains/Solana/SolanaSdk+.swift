@@ -181,6 +181,31 @@ extension Api {
         .share()
         .eraseToAnyPublisher()
     }
+
+    func sendTransaction(
+        serializedTransaction: String,
+        configs: RequestConfiguration = RequestConfiguration(encoding: "base64", maxRetries: 12)!
+    ) -> AnyPublisher<TransactionID, Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+
+                self.sendTransaction(serializedTransaction: serializedTransaction, configs: configs) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let statuses):
+                        promise(.success(statuses))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
 }
 
 extension Action {
