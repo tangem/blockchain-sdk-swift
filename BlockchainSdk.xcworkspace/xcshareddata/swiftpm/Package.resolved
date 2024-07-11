@@ -1,5 +1,5 @@
 {
-  "originHash" : "c2b23828552cb88997c63a1edb3ded62ff59dc08d070eb1d53f435c369843e05",
+  "originHash" : "de1af1fe46575050340d4c1e3bff712b85f35f88e3b4a5357c5bd0afe10705fe",
   "pins" : [
     {
       "identity" : "anyasyncsequence",
@@ -89,6 +89,15 @@
       "state" : {
         "revision" : "76c2b73d4281d77fc3118391877efd1bf972f515",
         "version" : "2.1.1"
+      }
+    },
+    {
+      "identity" : "scalecodec.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tesseract-one/ScaleCodec.swift",
+      "state" : {
+        "revision" : "bd39b2d68d87126a61b62a071ee4c065e2a1fe30",
+        "version" : "0.2.1"
       }
     },
     {
@@ -224,6 +233,24 @@
       "state" : {
         "revision" : "025bcb1165deab2e20d4eaba79967ce73013f496",
         "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "ton-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tangem/ton-swift.git",
+      "state" : {
+        "revision" : "7030234ff239796c5f71f0e65eb4e9ffec5a83cb",
+        "version" : "1.0.10-tangem1"
+      }
+    },
+    {
+      "identity" : "tweetnacl-swiftwrap",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bitmark-inc/tweetnacl-swiftwrap.git",
+      "state" : {
+        "revision" : "f8fd111642bf2336b11ef9ea828510693106e954",
+        "version" : "1.1.0"
       }
     },
     {
