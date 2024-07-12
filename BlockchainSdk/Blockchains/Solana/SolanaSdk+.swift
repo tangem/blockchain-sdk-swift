@@ -31,7 +31,6 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
     
@@ -53,33 +52,9 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
-    
-    func getRecentPrioritizationFees(
-        accounts: [String]
-    ) -> AnyPublisher<[RecentPrioritizationFee], Error> {
-        Deferred {
-            Future { [weak self] promise in
-                guard let self = self else {
-                    promise(.failure(WalletError.empty))
-                    return
-                }
-                
-                self.getRecentPrioritizationFees(accounts: accounts) {
-                    switch $0 {
-                    case .failure(let error):
-                        promise(.failure(error))
-                    case .success(let recentPrioritizationFees):
-                        promise(.success(recentPrioritizationFees))
-                    }
-                }
-            }
-        }
-        .share()
-        .eraseToAnyPublisher()
-    }
+
     
     func getMinimumBalanceForRentExemption(
         dataLength: UInt64,
@@ -105,7 +80,6 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
     
@@ -127,7 +101,6 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
     
@@ -156,7 +129,6 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
     
@@ -178,7 +150,6 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
 
@@ -203,7 +174,6 @@ extension Api {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
 }
@@ -241,29 +211,6 @@ extension Action {
                 }
             }
         }
-        .share()
-        .eraseToAnyPublisher()
-    }
-    
-    func getCreatingTokenAccountFee() -> AnyPublisher<UInt64, Error> {
-        Deferred {
-            Future { [weak self] promise in
-                guard let self = self else {
-                    promise(.failure(WalletError.empty))
-                    return
-                }
-                
-                self.getCreatingTokenAccountFee {
-                    switch $0 {
-                    case .failure(let error):
-                        promise(.failure(error))
-                    case .success(let fee):
-                        promise(.success(fee))
-                    }
-                }
-            }
-        }
-        .share()
         .eraseToAnyPublisher()
     }
     
@@ -299,7 +246,6 @@ extension Action {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
     
@@ -343,7 +289,6 @@ extension Action {
                 }
             }
         }
-        .share()
         .eraseToAnyPublisher()
     }
 }
