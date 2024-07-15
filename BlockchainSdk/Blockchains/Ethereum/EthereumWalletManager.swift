@@ -12,7 +12,7 @@ import Combine
 import TangemSdk
 import Moya
 
-class EthereumWalletManager: BaseManager, WalletManager {
+class EthereumWalletManager: BaseManager, WalletManager, TransactionFeeProvider {
     let txBuilder: EthereumTransactionBuilder
     let networkService: EthereumNetworkService
     let addressConverter: EthereumAddressConverter
@@ -67,6 +67,32 @@ class EthereumWalletManager: BaseManager, WalletManager {
                     return walletManager.getEIP1559Fee(from: from, destination: destination, value: value, data: data)
                 } else {
                     return walletManager.getLegacyFee(from: from, destination: destination, value: value, data: data)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    // It can't be into extension because it will be overridden in the `MantleWalletManager`
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
+        addressConverter.convertToETHAddressPublisher(destination)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, convertedDestination -> AnyPublisher<[Fee],Error> in
+                switch amount.type {
+                case .coin:
+                    guard let hexAmount = amount.encodedForSend else {
+                        return .anyFail(error: BlockchainSdkError.failedToLoadFee)
+                    }
+
+                    return walletManager.getFee(destination: convertedDestination, value: hexAmount, data: nil)
+                case .token(let token):
+                    do {
+                        let transferData = try walletManager.buildForTokenTransfer(destination: convertedDestination, amount: amount)
+                        return walletManager.getFee(destination: token.contractAddress, value: nil, data: transferData)
+                    } catch {
+                        return .anyFail(error: error)
+                    }
+                case .reserve, .feeResource:
+                    return .anyFail(error: BlockchainSdkError.notImplemented)
                 }
             }
             .eraseToAnyPublisher()
@@ -228,20 +254,9 @@ private extension EthereumWalletManager {
         ]
 
         let fees = feeParameters.map { parameters in
-            // This is a workaround for sending a Mantle transaction.
-            // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
-            // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
-            var parameters = parameters
-            if case .mantle = wallet.blockchain {
-                parameters = EthereumEIP1559FeeParameters(
-                    gasLimit: BigUInt(ceil(Double(response.gasLimit) * 1.6)),
-                    maxFeePerGas: parameters.maxFeePerGas,
-                    priorityFee: parameters.priorityFee
-                )
-            }
-            
             let feeValue = parameters.calculateFee(decimalValue: wallet.blockchain.decimalValue)
             let amount = Amount(with: wallet.blockchain, value: feeValue)
+
             return Fee(amount, parameters: parameters)
         }
 
@@ -316,42 +331,6 @@ private extension EthereumWalletManager {
                 wallet.addPendingTransaction(transaction)
             }
         }
-    }
-}
-
-// MARK: - TransactionFeeProvider
-
-extension EthereumWalletManager: TransactionFeeProvider {
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
-        // This is a workaround for sending a Mantle transaction.
-        // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
-        // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
-        var amount = amount
-        if case .mantle = wallet.blockchain {
-            amount = Amount(with: wallet.blockchain, type: amount.type, value: amount.value - 1 / wallet.blockchain.decimalValue)
-        }
-        return addressConverter.convertToETHAddressPublisher(destination)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, convertedDestination -> AnyPublisher<[Fee],Error> in
-                switch amount.type {
-                case .coin:
-                    guard let hexAmount = amount.encodedForSend else {
-                        return .anyFail(error: BlockchainSdkError.failedToLoadFee)
-                    }
-
-                    return walletManager.getFee(destination: convertedDestination, value: hexAmount, data: nil)
-                case .token(let token):
-                    do {
-                        let transferData = try walletManager.buildForTokenTransfer(destination: convertedDestination, amount: amount)
-                        return walletManager.getFee(destination: token.contractAddress, value: nil, data: transferData)
-                    } catch {
-                        return .anyFail(error: error)
-                    }
-                case .reserve, .feeResource:
-                    return .anyFail(error: BlockchainSdkError.notImplemented)
-                }
-            }
-            .eraseToAnyPublisher()
     }
 }
 
