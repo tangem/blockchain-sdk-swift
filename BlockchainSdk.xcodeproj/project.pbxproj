@@ -22,6 +22,10 @@
 		0A7C5BFD2C174E7700B32CA5 /* OnfinalityAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C5BFC2C174E7700B32CA5 /* OnfinalityAPIResolver.swift */; };
 		0A92275F2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
+		0ABC60F02C4101ED00065EBA /* TonSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC60EF2C4101ED00065EBA /* TonSwift */; };
+		0ABC60F32C41021000065EBA /* ScaleCodec in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC60F22C41021000065EBA /* ScaleCodec */; };
+		0ABC61042C41040500065EBA /* TweetNacl in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC61032C41040500065EBA /* TweetNacl */; };
+		0ABC610B2C4107F000065EBA /* TweetNacl in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC610A2C4107F000065EBA /* TweetNacl */; };
 		0AEE1E702C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEE1E6F2C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
 		0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */; };
@@ -1751,10 +1755,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0ABC60F32C41021000065EBA /* ScaleCodec in Frameworks */,
 				B6A2CC432B6C55FE00864CD2 /* secp256k1 in Frameworks */,
+				0ABC60F02C4101ED00065EBA /* TonSwift in Frameworks */,
 				BFF1171432045E1915ABA71F /* Pods_BlockchainSdk.framework in Frameworks */,
 				B66B57662B6C504000320FF9 /* Hedera in Frameworks */,
 				B66B57732B6C532F00320FF9 /* CryptoSwift in Frameworks */,
+				0ABC61042C41040500065EBA /* TweetNacl in Frameworks */,
 				B6A2CC482B6C56D900864CD2 /* SwiftProtobuf in Frameworks */,
 				B63BAA602B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */,
 			);
@@ -1773,6 +1780,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0ABC610B2C4107F000065EBA /* TweetNacl in Frameworks */,
 				B63BAA622B740C9200DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */,
 				DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */,
 				B6A2CC452B6C568E00864CD2 /* secp256k1 in Frameworks */,
@@ -4136,6 +4144,9 @@
 				B66B57652B6C504000320FF9 /* Hedera */,
 				B6A2CC472B6C56D900864CD2 /* SwiftProtobuf */,
 				B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */,
+				0ABC60EF2C4101ED00065EBA /* TonSwift */,
+				0ABC60F22C41021000065EBA /* ScaleCodec */,
+				0ABC61032C41040500065EBA /* TweetNacl */,
 			);
 			productName = BlockchainSdk;
 			productReference = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */;
@@ -4182,6 +4193,7 @@
 			packageProductDependencies = (
 				B6A2CC442B6C568E00864CD2 /* secp256k1 */,
 				B63BAA612B740C9200DA26C9 /* TangemWalletCoreBinariesWrapper */,
+				0ABC610A2C4107F000065EBA /* TweetNacl */,
 			);
 			productName = BlockchainSdkExample;
 			productReference = DA59750827D744A7009F0A1F /* BlockchainSdkExample.app */;
@@ -4230,6 +4242,9 @@
 				B66B57642B6C504000320FF9 /* XCRemoteSwiftPackageReference "hedera-sdk-swift" */,
 				B6A2CC462B6C56D900864CD2 /* XCRemoteSwiftPackageReference "swift-protobuf-binaries" */,
 				B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */,
+				0ABC60EE2C4101ED00065EBA /* XCRemoteSwiftPackageReference "ton-swift" */,
+				0ABC60F12C41021000065EBA /* XCRemoteSwiftPackageReference "ScaleCodec" */,
+				0ABC60FE2C4103A600065EBA /* XCRemoteSwiftPackageReference "tweetnacl-swiftwrap" */,
 			);
 			productRefGroup = 5D14E46F2397B80F00C15FC8 /* Products */;
 			projectDirPath = "";
@@ -5646,6 +5661,30 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0ABC60EE2C4101ED00065EBA /* XCRemoteSwiftPackageReference "ton-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tangem/ton-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = "1.0.10-tangem1";
+			};
+		};
+		0ABC60F12C41021000065EBA /* XCRemoteSwiftPackageReference "ScaleCodec" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tesseract-one/ScaleCodec.swift";
+			requirement = {
+				kind = exactVersion;
+				version = 0.2.1;
+			};
+		};
+		0ABC60FE2C4103A600065EBA /* XCRemoteSwiftPackageReference "tweetnacl-swiftwrap" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bitmark-inc/tweetnacl-swiftwrap.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
 		B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/wallet-core-binaries-ios.git";
@@ -5689,6 +5728,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0ABC60EF2C4101ED00065EBA /* TonSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC60EE2C4101ED00065EBA /* XCRemoteSwiftPackageReference "ton-swift" */;
+			productName = TonSwift;
+		};
+		0ABC60F22C41021000065EBA /* ScaleCodec */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC60F12C41021000065EBA /* XCRemoteSwiftPackageReference "ScaleCodec" */;
+			productName = ScaleCodec;
+		};
+		0ABC61032C41040500065EBA /* TweetNacl */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC60FE2C4103A600065EBA /* XCRemoteSwiftPackageReference "tweetnacl-swiftwrap" */;
+			productName = TweetNacl;
+		};
+		0ABC610A2C4107F000065EBA /* TweetNacl */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC60FE2C4103A600065EBA /* XCRemoteSwiftPackageReference "tweetnacl-swiftwrap" */;
+			productName = TweetNacl;
+		};
 		B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B66B575B2B6C4ECD00320FF9 /* XCRemoteSwiftPackageReference "wallet-core-binaries-ios" */;
