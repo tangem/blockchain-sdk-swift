@@ -347,7 +347,7 @@ extension EthereumWalletManager: TransactionFeeProvider {
                     } catch {
                         return .anyFail(error: error)
                     }
-                case .reserve:
+                case .reserve, .feeResource:
                     return .anyFail(error: BlockchainSdkError.notImplemented)
                 }
             }

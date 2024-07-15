@@ -42,7 +42,17 @@ struct APIKeysInfoProvider {
                 headerName: Constants.xApiKeyHeaderName,
                 headerValue: config.fireAcademyApiKeys.getApiKey(for: blockchain.isTestnet)
             )
-        case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .solana, .kaspa, .none:
+        case .onfinality:
+            return .init(
+                headerName: Constants.onfinalityApiKeyHeaderName,
+                headerValue: config.bittensorOnfinalityKey
+            )
+        case .koinos:
+            return .init(
+                headerName: "apikey",
+                headerValue: config.koinosProApiKey
+            )
+        case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .solana, .kaspa, .dwellir, .none:
             return nil
         }
     }

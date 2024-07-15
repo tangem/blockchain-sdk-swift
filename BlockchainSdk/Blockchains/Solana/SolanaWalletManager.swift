@@ -61,7 +61,7 @@ extension SolanaWalletManager: TransactionSender {
             sendPublisher = sendSol(transaction, signer: signer)
         case .token(let token):
             sendPublisher = sendSplToken(transaction, token: token, signer: signer)
-        case .reserve:
+        case .reserve, .feeResource:
             return .sendTxFail(error: WalletError.empty)
         }
         
@@ -217,7 +217,7 @@ private extension SolanaWalletManager {
                 case .token(let token):
                     let existingTokenAccount = info.tokensByMint[token.contractAddress]
                     return AccountExistsInfo(isExist: existingTokenAccount != nil, space: existingTokenAccount?.space)
-                case .reserve:
+                case .reserve, .feeResource:
                     return AccountExistsInfo(isExist: false, space: nil)
                 }
             }
@@ -239,7 +239,7 @@ private extension SolanaWalletManager {
                 .eraseToAnyPublisher()
         case .token:
             return networkService.mainAccountCreationFee(dataLength: space ?? 0)
-        case .reserve:
+        case .reserve, .feeResource:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
     }
@@ -304,5 +304,36 @@ private extension SolanaWalletManager {
     struct AccountExistsInfo {
         let isExist: Bool
         let space: UInt64?
+    }
+}
+
+
+// MARK: - StakeKitTransactionSender
+
+extension SolanaWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        let helper = SolanaStakeKitTransactionHelper()
+
+        return Just(helper.prepareForSign(transaction.unsignedData))
+            .withWeakCaptureOf(self)
+            .flatMap { manager, txToSign in
+                signer.sign(hash: txToSign, walletPublicKey: manager.wallet.publicKey)
+            }
+            .map { signature in
+                helper.prepareForSend(transaction.unsignedData, signature: signature)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { manager, txToSend in
+                manager.networkService.sendRaw(base64serializedTransaction: txToSend)
+            }
+            .withWeakCaptureOf(self)
+            .map { manager, hash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+                manager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: hash)
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
     }
 }

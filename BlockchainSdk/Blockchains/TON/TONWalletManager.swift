@@ -179,7 +179,7 @@ private extension TONWalletManager {
     ) -> AnyPublisher<String?, Error> {
         let ownerAddress = ownerAddress ?? defaultSourceAddress
         switch transactionType {
-        case .coin, .reserve:
+        case .coin, .reserve, .feeResource:
             return .justWithError(output: nil)
         case .token(let token):
             guard let cachedJettonWalletAddress = jettonWalletAddressCache[token] else {

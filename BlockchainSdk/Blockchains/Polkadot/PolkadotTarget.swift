@@ -25,8 +25,12 @@ struct PolkadotTarget: TargetType {
         case submitExtrinsic(extrinsic: String)
     }
 
-    let baseURL: URL
+    let node: NodeInfo
     let target: Target
+    
+    var baseURL: URL {
+        node.url
+    }
     
     var path: String {
         return ""
@@ -72,7 +76,11 @@ struct PolkadotTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+        var headers = ["Content-Type": "application/json"]
+        if let headersKeyInfo = node.headers {
+            headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
+        }
+        return headers
     }
     
     var rpcMethod: String {
