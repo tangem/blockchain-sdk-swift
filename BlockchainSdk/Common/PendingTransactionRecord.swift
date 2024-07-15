@@ -12,6 +12,7 @@ public struct PendingTransactionRecord {
     public enum TransactionType {
         case transfer
         case operation
+        case stake
     }
 
     public let hash: String
