@@ -12,7 +12,7 @@ import Combine
 import TangemSdk
 import Moya
 
-class EthereumWalletManager: BaseManager, WalletManager, TransactionFeeProvider {
+class EthereumWalletManager: BaseManager, WalletManager, TransactionFeeProvider, EthereumTransactionSigner {
     let txBuilder: EthereumTransactionBuilder
     let networkService: EthereumNetworkService
     let addressConverter: EthereumAddressConverter
@@ -97,11 +97,8 @@ class EthereumWalletManager: BaseManager, WalletManager, TransactionFeeProvider 
             }
             .eraseToAnyPublisher()
     }
-}
-
-// MARK: - EthereumTransactionSigner
-
-extension EthereumWalletManager: EthereumTransactionSigner {
+    
+    // It can't be into extension because it will be overridden in the `MantleWalletManager`
     /// Build and sign transaction
     /// - Parameters:
     /// - Returns: The hex of the raw transaction ready to be sent over the network
