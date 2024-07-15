@@ -51,15 +51,21 @@ final class MantleWalletManager: EthereumWalletManager {
 
 private extension MantleWalletManager {
     func mapMantleFee(_ fee: Fee, gasLimitMultiplier: Double) throws -> Fee {
-        guard var parameters = fee.parameters as? EthereumEIP1559FeeParameters else {
+        let parameters: any EthereumFeeParameters = switch fee.parameters {
+        case let parameters as EthereumEIP1559FeeParameters:
+            EthereumEIP1559FeeParameters(
+                gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
+                maxFeePerGas: parameters.maxFeePerGas,
+                priorityFee: parameters.priorityFee
+            )
+        case let parameters as EthereumLegacyFeeParameters:
+            EthereumLegacyFeeParameters(
+                gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
+                gasPrice: parameters.gasPrice
+            )
+        default:
             throw WalletError.failedToGetFee
         }
-        
-        parameters = EthereumEIP1559FeeParameters(
-            gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
-            maxFeePerGas: parameters.maxFeePerGas,
-            priorityFee: parameters.priorityFee
-        )
         
         let blockchain = wallet.blockchain
         let feeValue = parameters.calculateFee(decimalValue: blockchain.decimalValue)
