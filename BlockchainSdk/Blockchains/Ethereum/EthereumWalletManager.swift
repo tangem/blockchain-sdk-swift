@@ -12,7 +12,7 @@ import Combine
 import TangemSdk
 import Moya
 
-class EthereumWalletManager: BaseManager, WalletManager, TransactionSender {
+class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSigner {
     let txBuilder: EthereumTransactionBuilder
     let networkService: EthereumNetworkService
     let addressConverter: EthereumAddressConverter
@@ -73,33 +73,6 @@ class EthereumWalletManager: BaseManager, WalletManager, TransactionSender {
     }
     
     // It can't be into extension because it will be overridden in the `MantleWalletManager`
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        return addressConverter.convertToETHAddressesPublisher(in: transaction)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, convertedTransaction in
-                walletManager.sign(convertedTransaction, signer: signer)
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, rawTransaction in
-                walletManager.networkService.send(transaction: rawTransaction)
-                    .mapSendError(tx: rawTransaction)
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, hash in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-                walletManager.wallet.addPendingTransaction(record)
-
-                return TransactionSendResult(hash: hash)
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - EthereumTransactionSigner
-
-extension EthereumWalletManager: EthereumTransactionSigner {
     /// Build and sign transaction
     /// - Parameters:
     /// - Returns: The hex of the raw transaction ready to be sent over the network
@@ -357,6 +330,33 @@ extension EthereumWalletManager: TransactionFeeProvider {
                     return .anyFail(error: BlockchainSdkError.notImplemented)
                 }
             }
+            .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - TransactionSender
+
+extension EthereumWalletManager: TransactionSender {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        return addressConverter.convertToETHAddressesPublisher(in: transaction)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, convertedTransaction in
+                walletManager.sign(convertedTransaction, signer: signer)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, rawTransaction in
+                walletManager.networkService.send(transaction: rawTransaction)
+                    .mapSendError(tx: rawTransaction)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, hash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                walletManager.wallet.addPendingTransaction(record)
+
+                return TransactionSendResult(hash: hash)
+            }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }

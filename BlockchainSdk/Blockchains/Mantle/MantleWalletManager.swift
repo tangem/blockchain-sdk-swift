@@ -40,16 +40,15 @@ final class MantleWalletManager: EthereumWalletManager {
             .eraseToAnyPublisher()
     }
     
-    override func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+    override func sign(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<String, any Error> {
         Result {
             var transaction = transaction
             transaction.fee = try mapMantleFee(transaction.fee, gasLimitMultiplier: 0.7)
             return transaction
         }
         .publisher
-        .eraseSendError()
         .flatMap { transaction in
-            super.send(transaction, signer: signer)
+            super.sign(transaction, signer: signer)
         }
         .eraseToAnyPublisher()
     }
