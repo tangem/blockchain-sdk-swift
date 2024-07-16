@@ -544,6 +544,7 @@
 		DAD555292BFB4110000030E5 /* KoinosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD555282BFB4110000030E5 /* KoinosTransactionBuilder.swift */; };
 		DAD555382BFB463C000030E5 /* KoinosAccountNonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD555372BFB463C000030E5 /* KoinosAccountNonce.swift */; };
 		DAD5CDF72C0F3A8900DC4909 /* KoinosWalletManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD5CDF62C0F3A8900DC4909 /* KoinosWalletManagerTests.swift */; };
+		DAD62DE62C467718008509BE /* MantleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD62DE52C467718008509BE /* MantleTests.swift */; };
 		DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */; };
 		DAD746742C16E43800436A59 /* FeeResourceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD746732C16E43800436A59 /* FeeResourceType.swift */; };
 		DADF5F932A1B7C6B00D58DC3 /* TWPublicKey+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADF5F922A1B7C6B00D58DC3 /* TWPublicKey+.swift */; };
@@ -1443,6 +1444,7 @@
 		DAD555282BFB4110000030E5 /* KoinosTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransactionBuilder.swift; sourceTree = "<group>"; };
 		DAD555372BFB463C000030E5 /* KoinosAccountNonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosAccountNonce.swift; sourceTree = "<group>"; };
 		DAD5CDF62C0F3A8900DC4909 /* KoinosWalletManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosWalletManagerTests.swift; sourceTree = "<group>"; };
+		DAD62DE52C467718008509BE /* MantleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleTests.swift; sourceTree = "<group>"; };
 		DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumApiKeys.swift; sourceTree = "<group>"; };
 		DAD746732C16E43800436A59 /* FeeResourceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeResourceType.swift; sourceTree = "<group>"; };
 		DADB5450298BB10000491102 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2138,6 +2140,7 @@
 				B67C5A262B8288F600A33A68 /* Hedera */,
 				2DB613CE2B912CFB007CFA9B /* Radiant */,
 				DAE343C42BF3630A001B3F38 /* Koinos */,
+				DAD62DE42C4676E8008509BE /* Mantle */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -3479,6 +3482,14 @@
 				DA52CBB92C321026008ECB71 /* KoinosResourceLimitData.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		DAD62DE42C4676E8008509BE /* Mantle */ = {
+			isa = PBXGroup;
+			children = (
+				DAD62DE52C467718008509BE /* MantleTests.swift */,
+			);
+			path = Mantle;
 			sourceTree = "<group>";
 		};
 		DAE30DF7279164500056C5A3 /* Solana */ = {
@@ -5227,6 +5238,7 @@
 				0A0C37EA2BDBAC7F00C122F7 /* SS58Tests.swift in Sources */,
 				DA1D3B7B2B57B8FB00247393 /* BigUInt+.swift in Sources */,
 				2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */,
+				DAD62DE62C467718008509BE /* MantleTests.swift in Sources */,
 				B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,

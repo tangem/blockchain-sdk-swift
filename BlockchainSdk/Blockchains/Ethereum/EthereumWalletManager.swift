@@ -12,7 +12,7 @@ import Combine
 import TangemSdk
 import Moya
 
-class EthereumWalletManager: BaseManager, WalletManager, TransactionFeeProvider, EthereumTransactionSigner {
+class EthereumWalletManager: BaseManager, WalletManager, TransactionSender {
     let txBuilder: EthereumTransactionBuilder
     let networkService: EthereumNetworkService
     let addressConverter: EthereumAddressConverter
@@ -73,32 +73,33 @@ class EthereumWalletManager: BaseManager, WalletManager, TransactionFeeProvider,
     }
     
     // It can't be into extension because it will be overridden in the `MantleWalletManager`
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
-        addressConverter.convertToETHAddressPublisher(destination)
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        return addressConverter.convertToETHAddressesPublisher(in: transaction)
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, convertedDestination -> AnyPublisher<[Fee],Error> in
-                switch amount.type {
-                case .coin:
-                    guard let hexAmount = amount.encodedForSend else {
-                        return .anyFail(error: BlockchainSdkError.failedToLoadFee)
-                    }
-
-                    return walletManager.getFee(destination: convertedDestination, value: hexAmount, data: nil)
-                case .token(let token):
-                    do {
-                        let transferData = try walletManager.buildForTokenTransfer(destination: convertedDestination, amount: amount)
-                        return walletManager.getFee(destination: token.contractAddress, value: nil, data: transferData)
-                    } catch {
-                        return .anyFail(error: error)
-                    }
-                case .reserve, .feeResource:
-                    return .anyFail(error: BlockchainSdkError.notImplemented)
-                }
+            .flatMap { walletManager, convertedTransaction in
+                walletManager.sign(convertedTransaction, signer: signer)
             }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, rawTransaction in
+                walletManager.networkService.send(transaction: rawTransaction)
+                    .mapSendError(tx: rawTransaction)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, hash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                walletManager.wallet.addPendingTransaction(record)
+
+                return TransactionSendResult(hash: hash)
+            }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
-    
-    // It can't be into extension because it will be overridden in the `MantleWalletManager`
+}
+
+// MARK: - EthereumTransactionSigner
+
+extension EthereumWalletManager: EthereumTransactionSigner {
     /// Build and sign transaction
     /// - Parameters:
     /// - Returns: The hex of the raw transaction ready to be sent over the network
@@ -331,29 +332,31 @@ private extension EthereumWalletManager {
     }
 }
 
-// MARK: - TransactionSender
+// MARK: - TransactionFeeProvider
 
-extension EthereumWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        return addressConverter.convertToETHAddressesPublisher(in: transaction)
+extension EthereumWalletManager: TransactionFeeProvider {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
+        addressConverter.convertToETHAddressPublisher(destination)
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, convertedTransaction in
-                walletManager.sign(convertedTransaction, signer: signer)
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, rawTransaction in
-                walletManager.networkService.send(transaction: rawTransaction)
-                    .mapSendError(tx: rawTransaction)
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, hash in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-                walletManager.wallet.addPendingTransaction(record)
+            .flatMap { walletManager, convertedDestination -> AnyPublisher<[Fee],Error> in
+                switch amount.type {
+                case .coin:
+                    guard let hexAmount = amount.encodedForSend else {
+                        return .anyFail(error: BlockchainSdkError.failedToLoadFee)
+                    }
 
-                return TransactionSendResult(hash: hash)
+                    return walletManager.getFee(destination: convertedDestination, value: hexAmount, data: nil)
+                case .token(let token):
+                    do {
+                        let transferData = try walletManager.buildForTokenTransfer(destination: convertedDestination, amount: amount)
+                        return walletManager.getFee(destination: token.contractAddress, value: nil, data: transferData)
+                    } catch {
+                        return .anyFail(error: error)
+                    }
+                case .reserve, .feeResource:
+                    return .anyFail(error: BlockchainSdkError.notImplemented)
+                }
             }
-            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }
