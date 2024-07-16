@@ -47,6 +47,7 @@ final class MantleWalletManager: EthereumWalletManager {
             return transaction
         }
         .publisher
+        .eraseSendError()
         .flatMap { transaction in
             super.send(transaction, signer: signer)
         }
