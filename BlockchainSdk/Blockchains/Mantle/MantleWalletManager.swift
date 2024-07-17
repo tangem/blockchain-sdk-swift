@@ -41,16 +41,13 @@ final class MantleWalletManager: EthereumWalletManager {
     }
     
     override func sign(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<String, any Error> {
-        Result {
-            var transaction = transaction
+        var transaction = transaction
+        do {
             transaction.fee = try mapMantleFee(transaction.fee, gasLimitMultiplier: 0.7)
-            return transaction
+        } catch {
+            return Fail(error: error).eraseToAnyPublisher()
         }
-        .publisher
-        .flatMap { transaction in
-            super.sign(transaction, signer: signer)
-        }
-        .eraseToAnyPublisher()
+        return super.sign(transaction, signer: signer)
     }
 }
 
