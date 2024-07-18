@@ -35,6 +35,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
                 receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
                         self?.wallet.clearAmounts()
+                        self?.wallet.clearPendingTransaction()
                         completion(.failure(error))
                     }
                 },
