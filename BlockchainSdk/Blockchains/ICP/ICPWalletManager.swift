@@ -10,7 +10,6 @@ import Foundation
 import WalletCore
 import Combine
 import IcpKit
-import TangemSdk
 
 final class ICPWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
@@ -31,12 +30,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
     }
     
     override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
-        guard let balanceRequestData = try? makeBalanceRequestData() else {
-            completion(.failure(WalletError.empty))
-            return
-        }
-        
-        cancellable = networkService.getBalance(data: balanceRequestData)
+        cancellable = networkService.getBalance(address: wallet.address)
             .sink(
                 receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
@@ -45,7 +39,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
                     }
                 },
                 receiveValue: { [weak self] balance in
-                    self?.wallet.add(coinValue: balance)
+                    self?.updateWallet(with: balance)
                     completion(.success(()))
                 }
             )
@@ -61,17 +55,14 @@ final class ICPWalletManager: BaseManager, WalletManager {
     
     // MARK: - Private implementation
     
-    private func makeBalanceRequestData() throws -> Data {
-        let envelope = ICPRequestEnvelope(
-            content: ICPRequestBuilder.makeCallRequestContent(
-                method: .balance(account: Data(hex: wallet.address)),
-                requestType: .query,
-                nonce: try CryptoUtils.icpNonce()
-            )
-        )
-        return try envelope.cborEncoded()
+    private func updateWallet(with balance: Decimal) {
+        // Reset pending transaction
+        if balance != wallet.amounts[.coin]?.value {
+            wallet.clearPendingTransaction()
+        }
+        
+        wallet.add(coinValue: balance)
     }
-
 }
 
 private extension ICPWalletManager {
@@ -79,11 +70,5 @@ private extension ICPWalletManager {
         static let fee = Decimal(stringValue: "0.0001")!
         static let readStateRetryCount = 3
         static let readStateRetryDelayMilliseconds = 500
-    }
-}
-
-extension CryptoUtils {
-    static func icpNonce() throws -> Data {
-        try generateRandomBytes(count: 32)
     }
 }

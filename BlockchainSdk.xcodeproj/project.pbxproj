@@ -15,10 +15,10 @@
 		0A1399212B637DB900934D7D /* ShibariumExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */; };
 		0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */; };
 		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
+		0A3DC4F02C3FF5C7003827A6 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3DC4EF2C3FF5C7003827A6 /* IcpKit */; };
 		0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */; };
 		0A6272652BD96736003B2F4D /* SS58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6272642BD96736003B2F4D /* SS58.swift */; };
 		0A7084B82BF797E900FD519D /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7084B72BF797E900FD519D /* TONAddressService.swift */; };
-        0A3DC4F02C3FF5C7003827A6 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3DC4EF2C3FF5C7003827A6 /* IcpKit */; };
 		0A7624DB2C2950E8002FA139 /* ICPTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624DA2C2950E8002FA139 /* ICPTransactionBuilder.swift */; };
 		0A7624E32C296969002FA139 /* ICPWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624E22C296969002FA139 /* ICPWalletManager.swift */; };
 		0A7C5BFB2C174E6400B32CA5 /* DwellirAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C5BFA2C174E6400B32CA5 /* DwellirAPIResolver.swift */; };
@@ -31,7 +31,7 @@
 		0ABC610B2C4107F000065EBA /* TweetNacl in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC610A2C4107F000065EBA /* TweetNacl */; };
 		0AEE1E702C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEE1E6F2C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
-		0AEFED0A2C3D5A5200C0F400 /* ICPProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFED092C3D5A5200C0F400 /* ICPProvider.swift */; };
+		0AEFED0A2C3D5A5200C0F400 /* ICPNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFED092C3D5A5200C0F400 /* ICPNetworkProvider.swift */; };
 		0AEFED102C3D5B0E00C0F400 /* ICPProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFED0F2C3D5B0D00C0F400 /* ICPProviderTarget.swift */; };
 		0AEFED122C3D5B5D00C0F400 /* ICPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFED112C3D5B5D00C0F400 /* ICPNetworkService.swift */; };
 		0AF503312C199A6200193358 /* ICPWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF503302C199A6200193358 /* ICPWalletAssembly.swift */; };
@@ -915,7 +915,7 @@
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEE1E6F2C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorWalletAssembly.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
-		0AEFED092C3D5A5200C0F400 /* ICPProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPProvider.swift; sourceTree = "<group>"; };
+		0AEFED092C3D5A5200C0F400 /* ICPNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPNetworkProvider.swift; sourceTree = "<group>"; };
 		0AEFED0F2C3D5B0D00C0F400 /* ICPProviderTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPProviderTarget.swift; sourceTree = "<group>"; };
 		0AEFED112C3D5B5D00C0F400 /* ICPNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPNetworkService.swift; sourceTree = "<group>"; };
 		0AF503302C199A6200193358 /* ICPWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1817,7 +1817,7 @@
 		0AEFED0E2C3D5AF300C0F400 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				0AEFED092C3D5A5200C0F400 /* ICPProvider.swift */,
+				0AEFED092C3D5A5200C0F400 /* ICPNetworkProvider.swift */,
 				0AEFED0F2C3D5B0D00C0F400 /* ICPProviderTarget.swift */,
 				0AEFED112C3D5B5D00C0F400 /* ICPNetworkService.swift */,
 			);
@@ -4169,7 +4169,7 @@
 				B66B57652B6C504000320FF9 /* Hedera */,
 				B6A2CC472B6C56D900864CD2 /* SwiftProtobuf */,
 				B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */,
-                0A3DC4EF2C3FF5C7003827A6 /* IcpKit */,
+				0A3DC4EF2C3FF5C7003827A6 /* IcpKit */,
 				0ABC60EF2C4101ED00065EBA /* TonSwift */,
 				0ABC60F22C41021000065EBA /* ScaleCodec */,
 				0ABC61032C41040500065EBA /* TweetNacl */,
@@ -4947,7 +4947,7 @@
 				DAE657D92BFC71A600D7D63A /* options.proto in Sources */,
 				B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */,
 				B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */,
-				0AEFED0A2C3D5A5200C0F400 /* ICPProvider.swift in Sources */,
+				0AEFED0A2C3D5A5200C0F400 /* ICPNetworkProvider.swift in Sources */,
 				EF193BFE2A77ED9E0048C0C3 /* TransactionHistoryPages.swift in Sources */,
 				EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */,
 				DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */,
@@ -5693,7 +5693,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-        0A02AD8F2C3FD98500D74228 /* XCRemoteSwiftPackageReference "IcpKit" */ = {
+		0A02AD8F2C3FD98500D74228 /* XCRemoteSwiftPackageReference "IcpKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/IcpKit";
 			requirement = {
@@ -5768,7 +5768,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-        0A3DC4EF2C3FF5C7003827A6 /* IcpKit */ = {
+		0A3DC4EF2C3FF5C7003827A6 /* IcpKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A02AD8F2C3FD98500D74228 /* XCRemoteSwiftPackageReference "IcpKit" */;
 			productName = IcpKit;

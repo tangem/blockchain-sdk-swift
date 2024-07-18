@@ -9,27 +9,31 @@
 import Foundation
 import Combine
 import IcpKit
+import TangemSdk
 
 final class ICPNetworkService: MultiNetworkProvider {
     
     // MARK: - Protperties
     
-    let providers: [ICPProvider]
+    let providers: [ICPNetworkProvider]
     var currentProviderIndex: Int = 0
     
     private var blockchain: Blockchain
     
     // MARK: - Init
     
-    init(providers: [ICPProvider], blockchain: Blockchain) {
+    init(providers: [ICPNetworkProvider], blockchain: Blockchain) {
         self.providers = providers
         self.blockchain = blockchain
     }
     
-    func getBalance(data: Data) -> AnyPublisher<Decimal, Error> {
-        providerPublisher { [blockchain] provider in
+    func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
+        guard let balanceRequestData = try? makeBalanceRequestData(address: address) else {
+            return .anyFail(error: WalletError.empty).eraseToAnyPublisher()
+        }
+        return providerPublisher { [blockchain] provider in
             provider
-                .getBalance(data: data)
+                .getBalance(data: balanceRequestData)
                 .map { result in
                     result / blockchain.decimalValue
                 }
@@ -50,5 +54,24 @@ final class ICPNetworkService: MultiNetworkProvider {
                 .readState(data: data, paths: paths)
                 .eraseToAnyPublisher()
         }
+    }
+    
+    // MARK: - Private implementation
+    
+    private func makeBalanceRequestData(address: String) throws -> Data {
+        let envelope = ICPRequestEnvelope(
+            content: ICPRequestBuilder.makeCallRequestContent(
+                method: .balance(account: Data(hex: address)),
+                requestType: .query,
+                nonce: try CryptoUtils.icpNonce()
+            )
+        )
+        return try envelope.cborEncoded()
+    }
+}
+
+extension CryptoUtils {
+    static func icpNonce() throws -> Data {
+        try generateRandomBytes(count: 32)
     }
 }

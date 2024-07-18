@@ -1,5 +1,5 @@
 //
-//  ICPProvider.swift
+//  ICPNetworkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Dmitry Fedorov on 24.06.2024.
@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import IcpKit
 
-struct ICPProvider: HostProvider {
+struct ICPNetworkProvider: HostProvider {
     /// Blockchain API host
     var host: String {
         node.url.hostOrUnknown

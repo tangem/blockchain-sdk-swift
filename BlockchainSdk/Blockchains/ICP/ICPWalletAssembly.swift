@@ -14,9 +14,9 @@ struct ICPWalletAssembly: WalletManagerAssembly {
         let blockchain = input.blockchain
         let config = input.blockchainSdkConfig
         
-        let providers: [ICPProvider] = APIResolver(blockchain: blockchain, config: config)
+        let providers: [ICPNetworkProvider] = APIResolver(blockchain: blockchain, config: config)
             .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
-                ICPProvider(node: nodeInfo, networkConfig: input.networkConfig, responseParser: ICPResponseParser())
+                ICPNetworkProvider(node: nodeInfo, networkConfig: input.networkConfig, responseParser: ICPResponseParser())
             }
         
         return ICPWalletManager(
