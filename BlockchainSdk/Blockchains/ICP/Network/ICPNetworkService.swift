@@ -31,7 +31,7 @@ final class ICPNetworkService: MultiNetworkProvider {
             provider
                 .getBalance(data: data)
                 .map { result in
-                    result/blockchain.decimalValue
+                    result / blockchain.decimalValue
                 }
                 .eraseToAnyPublisher()
         }
