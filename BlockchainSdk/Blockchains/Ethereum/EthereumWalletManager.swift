@@ -81,21 +81,22 @@ extension EthereumWalletManager: EthereumTransactionSigner {
     /// - Returns: The hex of the raw transaction ready to be sent over the network
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         addressConverter.convertToETHAddressesPublisher(in: transaction)
+            .zip(networkService.getPendingTxCount(transaction.sourceAddress))
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, convertedTransaction in
-                try walletManager.txBuilder.buildForSign(transaction: convertedTransaction)
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, hashToSign in
-                signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, signatureInfo -> String in
-                let convertedTransaction = try walletManager.addressConverter.convertToETHAddresses(in: transaction)
-                let tx = try walletManager.txBuilder.buildForSend(transaction: convertedTransaction, signatureInfo: signatureInfo)
+            .tryMap { walletManager, tuple in
+                let (convertedTransaction, nonce) = tuple
+                let hashToSign = try walletManager.txBuilder.buildForSign(transaction: convertedTransaction, nonce: nonce)
+                
+                return signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
+                    .withWeakCaptureOf(walletManager)
+                    .tryMap { walletManager, signatureInfo -> String in
+                        let convertedTransaction = try walletManager.addressConverter.convertToETHAddresses(in: transaction)
+                        let tx = try walletManager.txBuilder.buildForSend(transaction: convertedTransaction, signatureInfo: signatureInfo, nonce: nonce)
 
-                return tx.hexString.lowercased().addHexPrefix()
+                        return tx.hexString.lowercased().addHexPrefix()
+                    }
             }
+            .flatMap { $0 }
             .eraseToAnyPublisher()
     }
 }
@@ -288,8 +289,6 @@ private extension EthereumWalletManager {
                 wallet.clearAmount(for: tokenBalance.key)
             }
         }
-
-        txBuilder.update(nonce: response.txCount)
 
         if response.txCount == response.pendingTxCount {
             wallet.clearPendingTransaction()
