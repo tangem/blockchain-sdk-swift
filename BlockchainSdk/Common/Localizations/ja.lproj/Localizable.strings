@@ -19,6 +19,7 @@
 "send_error_minimum_balance_format" = "最低残高は%@です";
 "send_error_no_target_account" = "対象アカウントは作成されていません。送信金額は、%@ + 手数料またはそれ以上である必要があります。";
 "send_validation_amount_exceeds_balance" = "金額が残高を超えています";
+"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$s/%2$s";
 "send_validation_invalid_amount" = "無効な金額";
 "send_validation_invalid_fee" = "手数料が残高を超えています";
 "send_validation_invalid_total" = "合計金額が残高を超えています";

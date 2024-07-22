@@ -19,6 +19,7 @@
 "send_error_minimum_balance_format" = "最低餘額為 %@";
 "send_error_no_target_account" = "未創建目標帳戶。發送金額應為 %@ + 費用或更多";
 "send_validation_amount_exceeds_balance" = "金額超出餘額";
+"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$s/%2$s";
 "send_validation_invalid_amount" = "無效金額";
 "send_validation_invalid_fee" = "費用超出餘額";
 "send_validation_invalid_total" = "總金額超出餘額";
