@@ -27,7 +27,7 @@ actor WebSocketConnection {
         self.timeout = timeout
     }
     
-    public func send(_ message: URLSessionWebSocketTask.Message) async throws {
+    func send(_ message: URLSessionWebSocketTask.Message) async throws {
         let webSocketTask = try await setupWebSocketTask()
         log("Send: \(message)")
 
@@ -39,7 +39,7 @@ actor WebSocketConnection {
         startTimeoutTask()
     }
 
-    public func receive() async throws -> Data {
+    func receive() async throws -> Data {
         guard let webSocket = try await _sessionWebSocketTask?.value else {
             throw WebSocketConnectionError.webSocketNotFound
         }

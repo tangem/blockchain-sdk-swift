@@ -91,7 +91,7 @@ final class VeChainWalletManager: BaseManager {
         // When the real "VeThor" energy token is being added to the token list,
         // we're trying to migrate the balance from the fallback energy token to the real one
         if token.isEnergyToken, let energyTokenAmount = tokenAmount {
-            wallet.remove(token: Constants.energyToken)
+            wallet.clearAmount(for: Constants.energyToken)
             wallet.add(tokenValue: energyTokenAmount.value, for: token)
         }
     }
@@ -104,7 +104,7 @@ final class VeChainWalletManager: BaseManager {
         // When the real "VeThor" energy token is being deleted from the token list,
         // we're trying to migrate the balance from the real energy token to the fallback one
         if token.isEnergyToken, let energyTokenAmount = tokenAmount {
-            wallet.remove(token: token)
+            wallet.clearAmount(for: token)
             wallet.add(tokenValue: energyTokenAmount.value, for: Constants.energyToken)
         }
     }
@@ -169,7 +169,7 @@ final class VeChainWalletManager: BaseManager {
             return .justWithError(output: .zero)
         case .token(let value):
             return networkService.getVMGas(token: value, amount: amount, source: wallet.address, destination: destination)
-        case .reserve:
+        case .reserve, .feeResource:
             return .anyFail(error: WalletError.failedToGetFee)
         }
     }

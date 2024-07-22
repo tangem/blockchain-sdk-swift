@@ -21,9 +21,13 @@ public enum ValidationError: Hashable, LocalizedError {
     case minimumBalance(minimumBalance: Amount)
     case maximumUTXO(blockchainName: String, newAmount: Amount, maxUtxo: Int)
     case reserve(amount: Amount)
-
+    
     case cardanoHasTokens(minimumAmount: Amount)
     case cardanoInsufficientBalanceToSendToken
+    
+    case insufficientFeeResource(type: FeeResourceType, current: Decimal, max: Decimal)
+    case amountExeedsFeeResourceCapacity(type: FeeResourceType, availableAmount: Decimal)
+    case feeExceedsMaxFeeResource
 
     public var errorDescription: String? {
         switch self {
@@ -37,9 +41,9 @@ public enum ValidationError: Hashable, LocalizedError {
            return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
         case .minimumBalance(let minimumBalance):
             return String(format: "send_error_minimum_balance_format".localized, minimumBalance.string(roundingMode: .plain))
-        case .feeExceedsBalance:
+        case .feeExceedsBalance, .feeExceedsMaxFeeResource:
             return "send_validation_invalid_fee".localized
-        case .invalidAmount:
+        case .invalidAmount, .amountExeedsFeeResourceCapacity:
             return "send_validation_invalid_amount".localized
         case .invalidFee:
             return "send_error_invalid_fee_value".localized
@@ -51,6 +55,8 @@ public enum ValidationError: Hashable, LocalizedError {
             )
         case .reserve(let amount):
             return String(format: "send_error_no_target_account".localized, amount.description)
+        case let .insufficientFeeResource(.mana, current, max):
+            return String(format: "send_validation_insufficient_mana", "\(current)", "\(max)")
         }
     }
 }

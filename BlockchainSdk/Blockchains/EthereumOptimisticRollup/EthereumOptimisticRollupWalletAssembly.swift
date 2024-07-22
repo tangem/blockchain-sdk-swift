@@ -23,6 +23,13 @@ struct EthereumOptimisticRollupWalletAssembly: WalletManagerAssembly {
             abiEncoder: WalletCoreABIEncoder()
         )
 
-        return EthereumOptimisticRollupWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService)
+        let addressConverter = EthereumAddressConverterFactory().makeConverter(for: input.blockchain)
+
+        return EthereumOptimisticRollupWalletManager(
+            wallet: input.wallet,
+            addressConverter: addressConverter,
+            txBuilder: txBuilder,
+            networkService: networkService,
+            allowsFeeSelection: input.blockchain.allowsFeeSelection)
     }
 }

@@ -8,7 +8,36 @@
 
 import BigInt
 
-public struct EthereumFeeParameters: FeeParameters {
+// MARK: - EthereumFeeParameters
+
+public protocol EthereumFeeParameters where Self: FeeParameters {
+    var parametersType: EthereumFeeParametersType { get }
+
+    func changingGasLimit(to value: BigUInt) -> Self
+    func calculateFee(decimalValue: Decimal) -> Decimal
+}
+
+public extension EthereumFeeParameters {
+    var gasLimit: BigUInt {
+        switch parametersType {
+        case .eip1559(let params):
+            return params.gasLimit
+        case .legacy(let params):
+            return params.gasLimit
+        }
+    }
+}
+
+// MARK: - EthereumFeeParametersType
+
+public enum EthereumFeeParametersType {
+    case legacy(EthereumLegacyFeeParameters)
+    case eip1559(EthereumEIP1559FeeParameters)
+}
+
+// MARK: - EthereumLegacyFeeParameters
+
+public struct EthereumLegacyFeeParameters: FeeParameters {
     public let gasLimit: BigUInt
     public let gasPrice: BigUInt
 
@@ -16,8 +45,14 @@ public struct EthereumFeeParameters: FeeParameters {
         self.gasLimit = gasLimit
         self.gasPrice = gasPrice
     }
+}
 
-    public func caclulateFee(decimalValue: Decimal) -> Decimal {
+extension EthereumLegacyFeeParameters: EthereumFeeParameters {
+    public var parametersType: EthereumFeeParametersType {
+        .legacy(self)
+    }
+
+    public func calculateFee(decimalValue: Decimal) -> Decimal {
         let feeWEI = gasLimit * gasPrice
         // TODO: Fix integer overflow. Think about BigInt
         // https://tangem.atlassian.net/browse/IOS-4268
@@ -25,7 +60,18 @@ public struct EthereumFeeParameters: FeeParameters {
         let feeValue = feeWEI.decimal ?? Decimal(UInt64(feeWEI))
         return feeValue / decimalValue
     }
+
+    public func changingGasLimit(to value: BigUInt) -> EthereumLegacyFeeParameters {
+        let feeParameters = EthereumLegacyFeeParameters(
+            gasLimit: value,
+            gasPrice: gasPrice
+        )
+
+        return feeParameters
+    }
 }
+
+// MARK: - EthereumEIP1559FeeParameters
 
 public struct EthereumEIP1559FeeParameters: FeeParameters {
     public let gasLimit: BigUInt
@@ -45,6 +91,12 @@ public struct EthereumEIP1559FeeParameters: FeeParameters {
         self.maxFeePerGas = maxFeePerGas
         self.priorityFee = priorityFee
     }
+}
+
+extension EthereumEIP1559FeeParameters: EthereumFeeParameters {
+    public var parametersType: EthereumFeeParametersType {
+        .eip1559(self)
+    }
 
     public func calculateFee(decimalValue: Decimal) -> Decimal {
         let feeWEI = gasLimit * maxFeePerGas
@@ -53,5 +105,15 @@ public struct EthereumEIP1559FeeParameters: FeeParameters {
         // https://tangem.atlassian.net/browse/IOS-5119
         let feeValue = feeWEI.decimal ?? Decimal(UInt64(feeWEI))
         return feeValue / decimalValue
+    }
+
+    public func changingGasLimit(to value: BigUInt) -> EthereumEIP1559FeeParameters {
+        let feeParameters = EthereumEIP1559FeeParameters(
+            gasLimit: value,
+            maxFeePerGas: maxFeePerGas,
+            priorityFee: priorityFee
+        )
+
+        return feeParameters
     }
 }

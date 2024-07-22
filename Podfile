@@ -18,19 +18,16 @@ target 'BlockchainSdk' do
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'secp256k1.swift' dependency must be added via SPM
 
-  pod 'BigInt', '5.2.0'
   pod 'Moya', '15.0.0'
   pod 'Sodium', '0.9.1'
   pod 'SwiftCBOR', '0.4.5'
   pod 'AnyCodable-FlightSchool', '0.6.7'
   pod 'stellar-ios-mac-sdk', '2.5.4'
-  pod 'ScaleCodec', '0.2.1'
-  pod 'TonSwift', :git => 'https://github.com/tangem/ton-swift.git', :tag => '1.0.10-tangem1'
 
   pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.11'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
 
-  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => '1.2.0-tangem7'
+  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => '1.2.0-tangem10'
   #pod 'Solana.Swift', :path => '../Solana.Swift'
 
   pod 'SwiftyJSON', :git => 'https://github.com/tangem/SwiftyJSON.git', :tag => '5.0.1-tangem1'
@@ -86,6 +83,14 @@ post_install do |installer|
    "https://github.com/GigaBitcoin/secp256k1.swift.git",
    "secp256k1",
    { :kind => "upToNextMinorVersion", :minimumVersion => "0.12.0" }
+  )
+  
+  add_spm_package_to_target(
+   installer.pods_project,
+   "Solana.Swift",
+   "https://github.com/bitmark-inc/tweetnacl-swiftwrap.git",
+   "TweetNacl",
+   { :kind => "exactVersion", :version => "1.1.0" }
   )
 
 end

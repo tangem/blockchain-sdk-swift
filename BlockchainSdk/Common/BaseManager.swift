@@ -75,7 +75,7 @@ class BaseManager: WalletProvider {
 
     func removeToken(_ token: Token) {
         cardTokens.removeAll(where: { $0 == token })
-        wallet.remove(token: token)
+        wallet.clearAmount(for: token)
     }
     
     func addToken(_ token: Token) {

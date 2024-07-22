@@ -109,7 +109,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 let blockchain = self.cosmosChain.blockchain
                 let gasPrices = self.cosmosChain.gasPrices(for: amount.type)
                 
-                return Array(repeating: gas, count: gasPrices.count)
+                return try Array(repeating: gas, count: gasPrices.count)
                     .enumerated()
                     .map { index, estimatedGas in
                         let gasMultiplier = self.cosmosChain.gasMultiplier
@@ -134,6 +134,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         case .token(let token):
                             feeDecimalValue = token.decimalValue
                             feeAmountType = .token(value: token)
+                        case .feeResource:
+                            throw BlockchainSdkError.notImplemented
                         }
                         
                         var feeValue = (Decimal(feeValueInSmallestDenomination) / feeDecimalValue)

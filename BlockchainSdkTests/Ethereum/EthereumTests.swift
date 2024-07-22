@@ -39,7 +39,7 @@ class EthereumTests: XCTestCase {
         let nonce = 15
         let walletAddress = "0xb1123efF798183B7Cb32F62607D3D39E950d9cc3"
         let sendAmount = Amount(with: blockchain, type: .coin, value: 0.1)
-        let feeParameters = EthereumFeeParameters(gasLimit: BigUInt(21000), gasPrice: BigUInt(476190476190))
+        let feeParameters = EthereumLegacyFeeParameters(gasLimit: BigUInt(21000), gasPrice: BigUInt(476190476190))
 
         // feeAmount doesn't matter. The EthereumFeeParameters used to build the transaction
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
@@ -80,7 +80,7 @@ class EthereumTests: XCTestCase {
 
         let nonce = 15
         let sendValue = Amount(with: blockchain, type: .token(value: token), value: 0.1)
-        let feeParameters = EthereumFeeParameters(gasLimit: BigUInt(21000), gasPrice: BigUInt(476190476190))
+        let feeParameters = EthereumLegacyFeeParameters(gasLimit: BigUInt(21000), gasPrice: BigUInt(476190476190))
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
