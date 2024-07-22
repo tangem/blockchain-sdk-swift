@@ -54,10 +54,13 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
-        transactionBuilder.update(nonce: nonce)
-        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(
+            transaction: transaction,
+            signatureInfo: signatureInfo,
+            nonce: nonce
+        )
 
         // then
         let expectedHashToSign = Data(hex: "BDBECF64B443F82D1F9FDA3F2D6BA69AF6D82029B8271339B7E775613AE57761")
@@ -85,7 +88,6 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
             fee: fee,
@@ -98,12 +100,12 @@ class EthereumTests: XCTestCase {
         let expectedHashToSign = Data(hex: "2F47B058A0C4A91EC6E26372FA926ACB899235D7A639565B4FC82C7A9356D6C5")
         let expectedSignedTransaction = Data(hex: "F8A90F856EDF2A079E82520894A0B86991C6218B36C1D19D4A2E9EB0CE3606EB4880B844A9059CBB0000000000000000000000007655B9B19FFAB8B897F836857DAE22A1E7F8D735000000000000000000000000000000000000000000000000016345785D8A000025A0F408C40F8D8B4A40E35502355C87FBBF218EC9ECB036D42DAA6211EAD4498A6FA0437FF17D34D33F054E29702C07176A127CA1118CAA1470EA6CB15D49EC13F3F5")
 
-        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         sizeTester.testTxSize(hashToSign)
         XCTAssertEqual(hashToSign, expectedHashToSign)
 
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo, nonce: nonce)
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
@@ -129,7 +131,6 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 137)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
             fee: fee,
@@ -142,12 +143,12 @@ class EthereumTests: XCTestCase {
         let expectedHashToSign = Data(hex: "7843727fd03b42156222548815759dda5ac888033372157edffdde58fc05eff5")
         let expectedSignedTransaction = Data(hex: "0x02f8b3818981c38506fc23ac008520260d950782b9a594c2132d05d31c914a87c6611c10748aeb04b58e8f80b844a9059cbb00000000000000000000000090e4d59c8583e37426b37d1d7394b6008a987c6700000000000000000000000000000000000000000000000000000000000f4240c080a0b8291b199416b39434f3c3b8cfd273afb41fa25f2ae66f8a4c56b08ad1749a12a02148b8bbbdeb7761031799ffbcbc7c0ee1dd4482f516bd6a33387ea5bce8cb7d")
 
-        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         sizeTester.testTxSize(hashToSign)
         XCTAssertEqual(hashToSign, expectedHashToSign)
 
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo, nonce: nonce)
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
@@ -171,7 +172,6 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 137)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
             fee: fee,
@@ -184,12 +184,12 @@ class EthereumTests: XCTestCase {
         let expectedHashToSign = Data(hex: "925f1debbb96941544aefe6a5532508e51f2b8ae1f3a911abfb24b83af610400")
         let expectedSignedTransaction = Data(hex: "0x02f877818981c485076d635f00860412acbb20518252089490e4d59c8583e37426b37d1d7394b6008a987c67880de0b6b3a764000080c080a056df71ff2a7fe93d2363056fe5ff32c51e5ac71733af23a82f3974cb872537e9a05b60d6a0042cc34724db84e949eec8643761fe9027e9e7b1ed3da23d8ab7c0a4")
 
-        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         sizeTester.testTxSize(hashToSign)
         XCTAssertEqual(hashToSign, expectedHashToSign)
 
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo, nonce: nonce)
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
@@ -216,14 +216,10 @@ class EthereumTests: XCTestCase {
 
         let nonce = 10
 
-        let param = EthereumTransactionParams(
-            data: tokenMethod.data,
-            nonce: nonce
-        )
+        let param = EthereumTransactionParams(data: tokenMethod.data)
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 8453)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: .zeroCoin(for: blockchain),
             fee: fee,
@@ -237,12 +233,12 @@ class EthereumTests: XCTestCase {
         let expectedHashToSign = Data(hex: "0xbbada4215ac1d69b8c30449afd4dae224d32177c5a80877d4220756ad14b9852")
         let expectedSignedTransaction = Data(hex: "0x02f8af8221050a831e8480836ea0bb82b79894940181a94a35a4569e4529a3cdfb74e38fd9863180b844095ea7b3000000000000000000000000111111125421ca6dc452d289314280a0f8842a65ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc001a0cc6163663ccdadf4489e9753b0307c0fb1eed7fe92a7b0a6b3cb0f6d24f9109ea07dd41e4e30c6777b27688527af3c4ec69ed053246ca05d1b3b8c3da127c30eb0")
 
-        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         sizeTester.testTxSize(hashToSign)
         XCTAssertEqual(hashToSign.hexString, expectedHashToSign.hexString)
 
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo, nonce: nonce)
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
@@ -268,14 +264,10 @@ class EthereumTests: XCTestCase {
 
         let nonce = 11
 
-        let param = EthereumTransactionParams(
-            data: payload,
-            nonce: nonce
-        )
+        let param = EthereumTransactionParams(data: payload)
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 8453)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: .zeroCoin(for: blockchain),
             fee: fee,
@@ -289,12 +281,12 @@ class EthereumTests: XCTestCase {
         let expectedHashToSign = Data(hex: "b59deacf74401648c860a4cfc9bee40d0da1502c05efa278d4afdb6dfe4bd8f3")
         let expectedSignedTransaction = Data(hex: "02f903158221050b830f424083568c6e830262c894111111125421ca6dc452d289314280a0f8842a6580b902a807ed2379000000000000000000000000e37e799d5077682fa0a244d46e5649f71457bd09000000000000000000000000940181a94a35a4569e4529a3cdfb74e38fd98631000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee000000000000000000000000e37e799d5077682fa0a244d46e5649f71457bd09000000000000000000000000f686cc42c39e942d5b4a237286c5a55b451bd6f0000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000000002713e3fabbc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000001410000000000000000000000000001230001090000f30000b700006800004e802026678dcd940181a94a35a4569e4529a3cdfb74e38fd98631beec796a4a2a27b687e1d48efad3805d7880052200000000000000000000000000000000000000000000000000002d79883d20000020d6bdbf78940181a94a35a4569e4529a3cdfb74e38fd9863102a0000000000000000000000000000000000000000000000000000002713e3fabbcee63c1e5003d5d143381916280ff91407febeb52f2b60f33cf940181a94a35a4569e4529a3cdfb74e38fd986314101420000000000000000000000000000000000000600042e1a7d4d0000000000000000000000000000000000000000000000000000000000000000c061111111125421ca6dc452d289314280a0f8842a6500206b4be0b9111111125421ca6dc452d289314280a0f8842a65000000000000000000000000000000000000000000000000000000000000002df1ec3ec080a00982b50e820042d00a51ac23029cd66bdd88c6300890120be54a05afedbe9389a043e0e8f475dba0d9cd9d4a38f02e29662ef106c3bede1938230a32a2f23e8106")
 
-        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
+        let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         sizeTester.testTxSize(hashToSign)
         XCTAssertEqual(hashToSign.hexString, expectedHashToSign.hexString)
 
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo, nonce: nonce)
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
@@ -312,14 +304,14 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
-        transactionBuilder.update(nonce: nonce)
 
         // when
         let l1Data = try transactionBuilder.buildDummyTransactionForL1(
             destination: destinationAddress,
             value: sendValue.hexString,
             data: nil,
-            fee: fee
+            fee: fee,
+            nonce: nonce
         )
 
         // then
