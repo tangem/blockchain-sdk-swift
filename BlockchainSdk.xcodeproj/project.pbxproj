@@ -23,6 +23,7 @@
 		0A7624E32C296969002FA139 /* ICPWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624E22C296969002FA139 /* ICPWalletManager.swift */; };
 		0A7C5BFB2C174E6400B32CA5 /* DwellirAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C5BFA2C174E6400B32CA5 /* DwellirAPIResolver.swift */; };
 		0A7C5BFD2C174E7700B32CA5 /* OnfinalityAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C5BFC2C174E7700B32CA5 /* OnfinalityAPIResolver.swift */; };
+		0A7E10B32C4E73A200644977 /* ICPSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E10B22C4E73A200644977 /* ICPSigner.swift */; };
 		0A92275F2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0ABC60F02C4101ED00065EBA /* TonSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC60EF2C4101ED00065EBA /* TonSwift */; };
@@ -911,6 +912,7 @@
 		0A7624E22C296969002FA139 /* ICPWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPWalletManager.swift; sourceTree = "<group>"; };
 		0A7C5BFA2C174E6400B32CA5 /* DwellirAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DwellirAPIResolver.swift; sourceTree = "<group>"; };
 		0A7C5BFC2C174E7700B32CA5 /* OnfinalityAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnfinalityAPIResolver.swift; sourceTree = "<group>"; };
+		0A7E10B22C4E73A200644977 /* ICPSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ICPSigner.swift; sourceTree = "<group>"; };
 		0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEE1E6F2C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1827,6 +1829,7 @@
 		0AF5032F2C199A4200193358 /* ICP */ = {
 			isa = PBXGroup;
 			children = (
+				0A7E10B22C4E73A200644977 /* ICPSigner.swift */,
 				0AF503302C199A6200193358 /* ICPWalletAssembly.swift */,
 				0A7624E22C296969002FA139 /* ICPWalletManager.swift */,
 				0AF503342C199C2A00193358 /* ICPExternalLinkProvider.swift */,
@@ -5128,6 +5131,7 @@
 				B633EA122B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift in Sources */,
 				B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */,
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
+				0A7E10B32C4E73A200644977 /* ICPSigner.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
 				B633EA132B8FC58900F11BFF /* AlgorandIndexProviderTarget.swift in Sources */,
 				2DA13A032A8AD83B00E3C374 /* ChiaProviderTarget.swift in Sources */,

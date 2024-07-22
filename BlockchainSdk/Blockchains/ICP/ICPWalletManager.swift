@@ -21,6 +21,8 @@ final class ICPWalletManager: BaseManager, WalletManager {
     private let txBuilder: ICPTransactionBuilder
     private let networkService: ICPNetworkService
     
+    private var signingOutput: ICPSigningOutput?
+    
     // MARK: - Init
     
     init(wallet: Wallet, networkService: ICPNetworkService) {
@@ -50,8 +52,40 @@ final class ICPWalletManager: BaseManager, WalletManager {
         .justWithError(output: [Fee(Amount(with: wallet.blockchain, value: Constants.fee))])
     }
     
-    func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        fatalError()
+    func send(
+        _ transaction: Transaction,
+        signer: TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .tryMap { [txBuilder] _ in
+                try txBuilder.buildForSign(transaction: transaction)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap {
+                walletManager,
+                input in
+                walletManager.buildTransaction(input: input, with: signer)
+                    .withWeakCaptureOf(self)
+                    .tryMap { walletManager, output in
+                        try walletManager.txBuilder.buildForSend(output: output.callEnvelope)
+                    }
+                    .withWeakCaptureOf(self)
+                    .flatMap { walletManager, signedTransaction in
+                        walletManager.sendSigned(data: signedTransaction)
+                            .handleEvents(receiveOutput: { [weak self] transactionSendResult in
+                                let mapper = PendingTransactionRecordMapper()
+                                let record = mapper.mapToPendingTransactionRecord(
+                                    transaction: transaction,
+                                    hash: transactionSendResult.hash
+                                )
+                                self?.signingOutput = nil
+                                self?.wallet.addPendingTransaction(record)
+                            })
+                    }
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Private implementation
@@ -64,12 +98,59 @@ final class ICPWalletManager: BaseManager, WalletManager {
         
         wallet.add(coinValue: balance)
     }
+
+    func buildTransaction(
+        input: ICPSigningInput,
+        with signer: TransactionSigner
+    ) -> AnyPublisher<ICPSigningOutput, Error> {
+        let icpSigner = ICPSigner(signer: signer, walletPublicKey: wallet.publicKey)
+        return icpSigner.sign(input: input)
+            .handleEvents(receiveOutput: { [weak self] output in
+                // save output for tracking transaction status
+                self?.signingOutput = output
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Private implementation
+    
+    private func sendSigned(data: Data) -> AnyPublisher<TransactionSendResult, Error> {
+        networkService
+            .send(data: data)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, _ in
+                walletManager.trackStransactionStatus()
+            }
+            .map { _ in TransactionSendResult(hash: "") }
+            .mapSendError(tx: data.hexString.lowercased())
+            .eraseToAnyPublisher()
+    }
+    
+    private func trackStransactionStatus() -> AnyPublisher<UInt64, Error>  {
+        guard let signingOutput,
+              let signedRequest = try? txBuilder.buildForSend(output: signingOutput.readStateEnvelope) else {
+            return .anyFail(error: WalletError.empty)
+        }
+        
+        return networkService.readState(data: signedRequest, paths: signingOutput.readStateTreePaths)
+            .delay(for: .milliseconds(Constants.readStateRetryDelayMilliseconds), scheduler: DispatchQueue.main)
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, value in
+                guard let value else {
+                    throw WalletError.empty
+                }
+                return value
+            }
+            .retry(Constants.readStateRetryCount)
+            .eraseToAnyPublisher()
+    }
+    
 }
 
 private extension ICPWalletManager {
     enum Constants {
         static let fee = Decimal(stringValue: "0.0001")!
-        static let readStateRetryCount = 3
-        static let readStateRetryDelayMilliseconds = 500
+        static let readStateRetryCount = 10
+        static let readStateRetryDelayMilliseconds = 750
     }
 }
