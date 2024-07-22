@@ -9,6 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "取引に必要な資金が不足しています。アカウントに入金してください。";
 "generic_error" = "エラーが発生しました";
 "generic_error_code" = "エラーが発生しました。コード: %@ 。";
+"koinos_insufficient_mana_to_send_koin_description" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "no_account_generic" = "%1$@ネットワークを使用するには、アカウント準備金 ( %2$@ %3$@ ) を支払う必要があります。これにより、その金額はロックされ、無期限に非表示になります。";
 "no_account_polkadot" = "送信先アカウントが有効ではありません。%@ 以上を送信してアカウントを有効にしてください。";
 "no_account_send_to_create" = "アカウントを作成するには、このアドレスに資金を送金してください";
@@ -19,7 +20,6 @@
 "send_error_minimum_balance_format" = "最低残高は%@です";
 "send_error_no_target_account" = "対象アカウントは作成されていません。送信金額は、%@ + 手数料またはそれ以上である必要があります。";
 "send_validation_amount_exceeds_balance" = "金額が残高を超えています";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "send_validation_invalid_amount" = "無効な金額";
 "send_validation_invalid_fee" = "手数料が残高を超えています";
 "send_validation_invalid_total" = "合計金額が残高を超えています";

@@ -9,6 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "Nicht genug Geld für die Transaktion. Bitte lade dein  Konto auf.";
 "generic_error" = "Es ist ein Fehler aufgetreten";
 "generic_error_code" = "Es ist ein Fehler aufgetreten. Code: %@.";
+"koinos_insufficient_mana_to_send_koin_description" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "no_account_generic" = "Um das %1$@ -Netzwerk nutzen zu können, must du die Kontoreserve ( %2$@ %3$@ ) bezahlen, die diesen Betrag auf unbestimmte Zeit sperrt und verbirgt";
 "no_account_polkadot" = "Das Zielkonto ist nicht aktiv. Sende %@ oder mehr, um das Konto zu aktivieren.";
 "no_account_send_to_create" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
@@ -19,7 +20,6 @@
 "send_error_minimum_balance_format" = "Mindestguthaben ist %@";
 "send_error_no_target_account" = "Das Zielkonto ist nicht erstellt. Der abzusendende Betrag soll %@ + Gebühr oder mehr sein";
 "send_validation_amount_exceeds_balance" = "Der Betrag geht über die Bilanz hinaus";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "send_validation_invalid_amount" = "Ungültiger Betrag";
 "send_validation_invalid_fee" = "Die Gebühr geht über die Bilanz hinaus";
 "send_validation_invalid_total" = "Der Gesamtbetrag geht über die Bilanz hinaus";

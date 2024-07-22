@@ -9,6 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "Недостатньо коштів для здійснення транзакції. Будь ласка, поповніть свій акаунт.";
 "generic_error" = "Виникла помилка";
 "generic_error_code" = "Виникла помилка. Код: %@.";
+"koinos_insufficient_mana_to_send_koin_description" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "no_account_generic" = "Щоб користуватися мережею %1$@, ви маєте оплатити резерв акаунта (%2$@ %3$@), який блокується і не використовується у вашому балансі";
 "no_account_polkadot" = "Обліковий запис одержувача не активовано. Надішліть %@ або більше, щоб активувати обліковий запис.";
 "no_account_send_to_create" = "Для створення акаунту надішліть кошти на цю адресу";
@@ -19,7 +20,6 @@
 "send_error_minimum_balance_format" = "Мінімальний баланс: %@";
 "send_error_no_target_account" = "Обліковий запис одержувача не створено. Сума для переказу повинна бути %@ + комісія або більше";
 "send_validation_amount_exceeds_balance" = "Сума перевищує залишок";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "send_validation_invalid_amount" = "Недопустима сума";
 "send_validation_invalid_fee" = "Комісія перевищує залишок";
 "send_validation_invalid_total" = "Сума, що відправляється, перевищує залишок";

@@ -9,6 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "Pas assez de fonds pour la transaction. Veuillez recharger votre compte.";
 "generic_error" = "Une erreur s'est produite";
 "generic_error_code" = "Une erreur s'est produite. Code:%@";
+"koinos_insufficient_mana_to_send_koin_description" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "no_account_generic" = "Pour utiliser le réseau %1$@, vous devez payer la réserve de compte (%2$@%3$@), qui bloque et cache ce montant indéfiniment";
 "no_account_polkadot" = "Le compte de destination est inactif. Envoyez %@ ou plus pour activer le compte.";
 "no_account_send_to_create" = "Pour créer un compte, envoyez des fonds à cette adresse";
@@ -19,7 +20,6 @@
 "send_error_minimum_balance_format" = "Le solde minimal est de %@";
 "send_error_no_target_account" = "Le compte cible n'a pas été créé. Le montant à envoyer doit être de %@ + frais de commissions ou plus";
 "send_validation_amount_exceeds_balance" = "Le montant dépasse le solde";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "send_validation_invalid_amount" = "Montant invalide";
 "send_validation_invalid_fee" = "Les frais de commissions dépassent le solde";
 "send_validation_invalid_total" = "Le total dépasse le solde";
