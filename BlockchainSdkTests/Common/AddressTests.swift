@@ -1298,4 +1298,12 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("1BpbpfLdY7oBS9gK7aDXgvMgr1DpvNH3B2"))
     }
     
+    func testICPAddressValidation() throws {
+        let addressService = WalletCoreAddressService(blockchain: .internetComputer(curve: .secp256k1))
+        let expectedAddress = "270b15681e87d9d878ddfcf1aae4c3174295f2182efa0e533e9585c7fb940bdc"
+        
+        XCTAssertEqual(expectedAddress, try addressService.makeAddress(from: secpDecompressedKey).value)
+        
+        XCTAssertTrue(addressService.validate("f7b1299849420e082bbdd9de92cb36e0645e7870513a6eb833d5449a88799699"))
+    }
 }

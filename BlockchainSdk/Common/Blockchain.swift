@@ -79,6 +79,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case joystream(curve: EllipticCurve)
     case bittensor(curve: EllipticCurve)
     case koinos(testnet: Bool)
+    case internetComputer(curve: EllipticCurve)
 
     public var isTestnet: Bool {
         switch self {
@@ -136,6 +137,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .playa3ullGames,
                 .kaspa,
                 .joystream,
+                .internetComputer,
                 .bittensor:
             return false
         case .stellar(_, let testnet),
@@ -169,6 +171,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .algorand(let curve, _),
                 .aptos(let curve, _),
                 .hedera(let curve, _),
+                .internetComputer(let curve),
                 .bittensor(let curve):
             return curve
         case .chia:
@@ -226,6 +229,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ravencoin,
                 .hedera,
                 .radiant,
+                .internetComputer,
                 .koinos:
             return 8
         case .ethereum,
@@ -416,6 +420,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "TAO"
         case .koinos:
             return isTestnet ? "tKOIN" : "KOIN"
+        case .internetComputer:
+            return "ICP"
         }
     }
 
@@ -484,6 +490,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "zkSync Era" + testnetSuffix
         case .manta:
             return "Manta Pacific" + testnetSuffix
+        case .internetComputer:
+            return "Internet Computer"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -840,6 +848,7 @@ extension Blockchain: Codable {
         case .joystream: return "joystream"
         case .bittensor: return "bittensor"
         case .koinos: return "koinos"
+        case .internetComputer: return "internet-computer"
         }
     }
 
@@ -927,6 +936,7 @@ extension Blockchain: Codable {
         case "joystream": self = .joystream(curve: curve)
         case "bittensor": self = .bittensor(curve: curve)
         case "koinos": self = .koinos(testnet: isTestnet)
+        case "internet-computer": self = .internetComputer(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1128,6 +1138,8 @@ private extension Blockchain {
             return "bittensor"
         case .koinos:
             return "koinos"
+        case .internetComputer:
+            return "internet-computer"
         }
     }
 
@@ -1231,6 +1243,8 @@ extension Blockchain {
             return BittensorWalletAssembly()
         case .koinos:
             return KoinosWalletAssembly()
+        case .internetComputer:
+            return ICPWalletAssembly()
         }
     }
 }

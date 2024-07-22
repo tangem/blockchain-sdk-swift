@@ -245,5 +245,11 @@
         "curve": "ed25519_slip0010",
         "shelley": false
     },
+    {
+        "key": "internet-computer",
+        "testnet": false,
+        "curve": "secp256k1",
+        "shelley": false
+    },
 ]
 
