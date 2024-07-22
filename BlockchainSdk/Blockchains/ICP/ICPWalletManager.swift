@@ -62,9 +62,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
                 try txBuilder.buildForSign(transaction: transaction)
             }
             .withWeakCaptureOf(self)
-            .flatMap {
-                walletManager,
-                input in
+            .flatMap { walletManager, input in
                 walletManager.buildTransaction(input: input, with: signer)
                     .withWeakCaptureOf(self)
                     .tryMap { walletManager, output in
@@ -126,6 +124,8 @@ final class ICPWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
+    /// Tracks transaction status
+    /// - Returns: Publisher for for the latest block index
     private func trackStransactionStatus() -> AnyPublisher<UInt64, Error>  {
         guard let signingOutput,
               let signedRequest = try? txBuilder.buildForSend(output: signingOutput.readStateEnvelope) else {

@@ -26,7 +26,7 @@ final class ICPTransactionBuilder {
     
     // MARK: - Implementation
     
-    /// Build input for sign transaction from Parameters
+    /// Build input for sign transaction
     /// - Parameters:
     ///   - transaction: Transaction
     /// - Returns: ICPSigningInput for sign transaction with external signer
@@ -41,8 +41,8 @@ final class ICPTransactionBuilder {
     
     /// Build for send transaction obtain external message output
     /// - Parameters:
-    ///   - input: TW output of message
-    /// - Returns: InternetComputerSigningOutput for ICP blockchain
+    ///   - ouput: IcpKit provided request envelope
+    /// - Returns: cbor-encoded transaction Data
     public func buildForSend<T: ICPRequestContent>(output: ICPRequestEnvelope<T>) throws -> Data {
         try output.cborEncoded()
     }
