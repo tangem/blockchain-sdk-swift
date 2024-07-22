@@ -145,7 +145,7 @@ class EthereumNetworkService: MultiNetworkProvider {
             .setFailureType(to: Error.self)
             .withWeakCaptureOf(self)
             .flatMap { networkService, token in
-                networkService.providerPublisher { provider -> AnyPublisher<(Token, Result<Decimal, Error>), Error> in
+                networkService.providerPublisher { provider -> AnyPublisher<Decimal, Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
 
                     return provider
@@ -158,11 +158,12 @@ class EthereumNetworkService: MultiNetworkProvider {
                             
                             return value
                         }
-                        .mapToResult()
-                        .map { (token, $0) }
-                        .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 }
+                .mapToResult()
+                .setFailureType(to: Error.self)
+                .map { (token, $0) }
+                .eraseToAnyPublisher()
             }
             .collect()
             .map { $0.reduce(into: [Token: Result<Decimal, Error>]()) { $0[$1.0] = $1.1 }}
