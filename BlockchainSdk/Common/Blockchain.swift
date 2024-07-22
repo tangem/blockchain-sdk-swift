@@ -1238,11 +1238,13 @@ extension Blockchain {
 // MARK: - Parallel transactions
 public extension Blockchain {
     var isParallelTransactionAllowed: Bool {
-        let isTron = if case .tron = self {
+        switch self {
+        case _ where isEvm:
             true
-        } else {
+        case .tron:
+            true
+        default:
             false
         }
-        return isEvm || isTron
     }
 }
