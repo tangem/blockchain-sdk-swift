@@ -493,10 +493,11 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
     
-    public var сoinDisplayName: String {
-        if case .ton = self {
+    public var coinDisplayName: String {
+        switch self {
+        case .ton:
             "Toncoin"
-        } else {
+        default:
             displayName
         }
     }
