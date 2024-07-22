@@ -19,7 +19,6 @@
 "send_error_minimum_balance_format" = "Minimum balance is %@";
 "send_error_no_target_account" = "Il conto totale non è stato creato L'importo da inviare deve essere %@ + commissione o maggiore";
 "send_validation_amount_exceeds_balance" = "L'importo supera il saldo";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %@/%@";
 "send_validation_invalid_amount" = "Importo non valido";
 "send_validation_invalid_fee" = "La commissione supera il saldo";
 "send_validation_invalid_total" = "Il totale supera il saldo";
