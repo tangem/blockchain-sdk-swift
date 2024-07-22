@@ -19,7 +19,7 @@
 "send_error_minimum_balance_format" = "Мінімальний баланс: %@";
 "send_error_no_target_account" = "Обліковий запис одержувача не створено. Сума для переказу повинна бути %@ + комісія або більше";
 "send_validation_amount_exceeds_balance" = "Сума перевищує залишок";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$s/%2$s";
+"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "send_validation_invalid_amount" = "Недопустима сума";
 "send_validation_invalid_fee" = "Комісія перевищує залишок";
 "send_validation_invalid_total" = "Сума, що відправляється, перевищує залишок";

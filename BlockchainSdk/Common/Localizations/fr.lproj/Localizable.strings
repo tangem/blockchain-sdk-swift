@@ -19,7 +19,7 @@
 "send_error_minimum_balance_format" = "Le solde minimal est de %@";
 "send_error_no_target_account" = "Le compte cible n'a pas été créé. Le montant à envoyer doit être de %@ + frais de commissions ou plus";
 "send_validation_amount_exceeds_balance" = "Le montant dépasse le solde";
-"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$s/%2$s";
+"send_validation_insufficient_mana" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "send_validation_invalid_amount" = "Montant invalide";
 "send_validation_invalid_fee" = "Les frais de commissions dépassent le solde";
 "send_validation_invalid_total" = "Le total dépasse le solde";

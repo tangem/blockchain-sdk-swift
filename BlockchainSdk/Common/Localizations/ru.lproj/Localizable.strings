@@ -19,7 +19,7 @@
 "send_error_minimum_balance_format" = "Минимальный баланс: %@";
 "send_error_no_target_account" = "Аккаунт получателя не создан. Сумма для отправки должна быть %@ + комиссия или больше";
 "send_validation_amount_exceeds_balance" = "Сумма превышает остаток";
-"send_validation_insufficient_mana" = "У вас недостаточно Маны для этой транзакции. Пожалуйста, подождите, пока Мана восполнится. Ваш баланс маны равен %1$s/%2$s";
+"send_validation_insufficient_mana" = "У вас недостаточно Маны для этой транзакции. Пожалуйста, подождите, пока Мана восполнится. Ваш баланс маны равен %1$@/%2$@";
 "send_validation_invalid_amount" = "Недопустимая сумма";
 "send_validation_invalid_fee" = "Комиссия превышает остаток";
 "send_validation_invalid_total" = "Отправляемая сумма превышает остаток";
