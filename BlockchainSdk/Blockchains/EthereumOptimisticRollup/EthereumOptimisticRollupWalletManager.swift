@@ -63,34 +63,26 @@ private extension EthereumOptimisticRollupWalletManager {
         data: Data?,
         fee: Fee
     ) -> AnyPublisher<Decimal, Error> {
-        networkService.getPendingTxCount(wallet.address)
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, nonce in
-                try walletManager.txBuilder.buildDummyTransactionForL1(
-                    destination: destination,
-                    value: value,
-                    data: data,
-                    fee: fee,
-                    nonce: nonce
-                )
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, hexTransactionData in
-                walletManager.networkService.read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: hexTransactionData))
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, response in
-                guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: walletManager.wallet.blockchain.decimalCount) else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
+        do {
+            let hexTransactionData = try txBuilder.buildDummyTransactionForL1(destination: destination, value: value, data: data, fee: fee)
+            return networkService
+                .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: hexTransactionData))
+                .withWeakCaptureOf(self)
+                .tryMap { walletManager, response in
+                    guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: walletManager.wallet.blockchain.decimalCount) else {
+                        throw BlockchainSdkError.failedToLoadFee
+                    }
 
-                return value
-            }
-            // We can ignore errors so as not to block users
-            // This L1Fee value is only needed to inform users. It will not used in the transaction
-            // Unfortunately L1 fee doesn't work well
-            .replaceError(with: 0)
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+                    return value
+                }
+                // We can ignore errors so as not to block users
+                // This L1Fee value is only needed to inform users. It will not used in the transaction
+                // Unfortunately L1 fee doesn't work well
+                .replaceError(with: 0)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        } catch {
+            return .anyFail(error: error)
+        }
     }
 }

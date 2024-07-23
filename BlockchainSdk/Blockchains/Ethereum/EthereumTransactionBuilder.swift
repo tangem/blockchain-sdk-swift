@@ -32,20 +32,15 @@ class EthereumTransactionBuilder {
         return output.encoded
     }
 
-    func buildDummyTransactionForL1(
-        destination: String,
-        value: String?,
-        data: Data?,
-        fee: Fee,
-        nonce: Int
-    ) throws -> Data {
+    func buildDummyTransactionForL1(destination: String, value: String?, data: Data?, fee: Fee) throws -> Data {
         let valueData = BigUInt(Data(hex: value ?? "0x0"))
         switch fee.amount.type {
         case .coin:
             let input = try buildSigningInput(
                 destination: .user(user: destination, value: valueData),
                 fee: fee,
-                parameters: EthereumTransactionParams(data: data, nonce: nonce)
+                // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
+                parameters: EthereumTransactionParams(data: data, nonce: 1)
             )
             return try buildTxCompilerPreSigningOutput(input: input).data
 
@@ -53,7 +48,8 @@ class EthereumTransactionBuilder {
             let input = try buildSigningInput(
                 destination: .contract(user: destination, contract: token.contractAddress, value: valueData),
                 fee: fee,
-                parameters: EthereumTransactionParams(data: data, nonce: nonce)
+                // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
+                parameters: EthereumTransactionParams(data: data, nonce: 1)
             )
 
             return try buildTxCompilerPreSigningOutput(input: input).data

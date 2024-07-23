@@ -637,6 +637,17 @@ public indirect enum Blockchain: Equatable, Hashable {
             return true
         }
     }
+    
+    var isParallelTransactionAllowed: Bool {
+        switch self {
+        case _ where isEvm:
+            true
+        case .tron:
+            true
+        default:
+            false
+        }
+    }
 }
 
 // MARK: - Ethereum based blockchain definition
@@ -1241,20 +1252,6 @@ extension Blockchain {
             return KoinosWalletAssembly()
         case .mantle:
             return MantleWalletAssembly()
-        }
-    }
-}
-
-// MARK: - Parallel transactions
-public extension Blockchain {
-    var isParallelTransactionAllowed: Bool {
-        switch self {
-        case _ where isEvm:
-            true
-        case .tron:
-            true
-        default:
-            false
         }
     }
 }
