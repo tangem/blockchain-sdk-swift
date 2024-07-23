@@ -16,12 +16,12 @@ import TangemSdk
 final class ICPTransactionBuilder {
     // MARK: - Private Properties
     
-    private let wallet: Wallet
+    private let blockchain: Blockchain
     
     // MARK: - Init
     
-    init(wallet: Wallet) {
-        self.wallet = wallet
+    init(blockchain: Blockchain) {
+        self.blockchain = blockchain
     }
     
     // MARK: - Implementation
@@ -29,13 +29,16 @@ final class ICPTransactionBuilder {
     /// Build input for sign transaction
     /// - Parameters:
     ///   - transaction: Transaction
+    ///   - date: current timestamp
     /// - Returns: ICPSigningInput for sign transaction with external signer
     public func buildForSign(
-        transaction: Transaction
+        transaction: Transaction,
+        date: Date = Date()
     ) throws -> ICPSigningInput {
         ICPSigningInput(
             destination: Data(hex: transaction.destinationAddress),
-            amount: (transaction.amount.value * wallet.blockchain.decimalValue).uint64Value
+            amount: (transaction.amount.value * blockchain.decimalValue).uint64Value,
+            date: date
         )
     }
     

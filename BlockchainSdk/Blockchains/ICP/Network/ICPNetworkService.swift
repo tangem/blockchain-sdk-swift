@@ -63,6 +63,7 @@ final class ICPNetworkService: MultiNetworkProvider {
             content: ICPRequestBuilder.makeCallRequestContent(
                 method: .balance(account: Data(hex: address)),
                 requestType: .query,
+                date: Date(),
                 nonce: try CryptoUtils.icpNonce()
             )
         )

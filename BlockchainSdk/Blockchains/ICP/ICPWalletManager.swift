@@ -26,7 +26,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
     // MARK: - Init
     
     init(wallet: Wallet, networkService: ICPNetworkService) {
-        self.txBuilder = .init(wallet: wallet)
+        self.txBuilder = .init(blockchain: wallet.blockchain)
         self.networkService = networkService
         super.init(wallet: wallet)
     }
