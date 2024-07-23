@@ -627,6 +627,17 @@ public indirect enum Blockchain: Equatable, Hashable {
             return false
         }
     }
+    
+    public var isParallelTransactionAllowed: Bool {
+        switch self {
+        case _ where isEvm:
+            true
+        case .tron:
+            true
+        default:
+            false
+        }
+    }
 
     // TODO: This property only for EVM for now. Refactor all other wallet managers
     var allowsFeeSelection: Bool {
