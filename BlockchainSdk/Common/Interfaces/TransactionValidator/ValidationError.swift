@@ -56,7 +56,7 @@ public enum ValidationError: Hashable, LocalizedError {
         case .reserve(let amount):
             return String(format: "send_error_no_target_account".localized, amount.description)
         case let .insufficientFeeResource(.mana, current, max):
-            return String(format: "send_validation_insufficient_mana", "\(current)", "\(max)")
+            return String(format: "koinos_insufficient_mana_to_send_koin_description", "\(current)", "\(max)")
         }
     }
 }
