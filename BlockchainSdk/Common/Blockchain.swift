@@ -1176,7 +1176,6 @@ extension Blockchain {
                 .moonbeam,
                 .polygonZkEVM,
                 .moonriver,
-                .mantle,
                 .flare,
                 .taraxa,
                 .decimal,
@@ -1231,6 +1230,8 @@ extension Blockchain {
             return BittensorWalletAssembly()
         case .koinos:
             return KoinosWalletAssembly()
+        case .mantle:
+            return MantleWalletAssembly()
         }
     }
 }
