@@ -313,8 +313,7 @@ class EthereumTests: XCTestCase {
             destination: destinationAddress,
             value: sendValue.hexString,
             data: nil,
-            fee: fee,
-            nonce: nonce
+            fee: fee
         )
 
         // then
