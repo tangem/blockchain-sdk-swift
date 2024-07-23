@@ -30,10 +30,16 @@ final class ICPTests: XCTestCase {
         
         let nonce = Data(hex: "5b4210ba3969eff9b64163012d48935cf72bb86e0e444c431d28f64888af41f5")
         
+        let addressService = WalletCoreAddressService(blockchain: blockchain)
+        let sourceAddress = try addressService.makeAddress(
+            for: Wallet.PublicKey(seedKey: publicKey.data, derivationType: nil),
+            with: .default
+        ).value
+        
         let transaction = Transaction(
             amount: amountValue,
             fee: Fee(feeValue),
-            sourceAddress: "8fea60e397b78e3ace6f3f04fd3ba843e6a47cee5dc360fcb061be42c7fc7e2c",
+            sourceAddress: sourceAddress,
             destinationAddress: "865e1568a8928ace72592903813d0a4459c3afbdbf12a5be980371fd02751f1e",
             changeAddress: ""
         )
@@ -42,7 +48,6 @@ final class ICPTests: XCTestCase {
         let input = try txBuilder.buildForSign(transaction: transaction, date: date)
         
         let requestData = try input.makeRequestData(for: publicKey.data, nonce: nonce)
-        
         
         let hashesForSign = try input.hashes(requestData: requestData, domain: ICPDomainSeparator("ic-request"))
         guard let firstHash = hashesForSign[safe: 0], let secondHash = hashesForSign[safe: 1] else {
