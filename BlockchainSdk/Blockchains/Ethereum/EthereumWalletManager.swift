@@ -77,24 +77,39 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
     /// - Parameters:
     /// - Returns: The hex of the raw transaction ready to be sent over the network
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        addressConverter.convertToETHAddressesPublisher(in: transaction)
-            .zip(networkService.getPendingTxCount(transaction.sourceAddress))
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, tuple in
-                let (convertedTransaction, nonce) = tuple
-                let hashToSign = try walletManager.txBuilder.buildForSign(transaction: convertedTransaction, nonce: nonce)
-                
-                return signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
-                    .withWeakCaptureOf(walletManager)
-                    .tryMap { walletManager, signatureInfo -> String in
-                        let convertedTransaction = try walletManager.addressConverter.convertToETHAddresses(in: transaction)
-                        let tx = try walletManager.txBuilder.buildForSend(transaction: convertedTransaction, signatureInfo: signatureInfo, nonce: nonce)
-
-                        return tx.hexString.lowercased().addHexPrefix()
-                    }
+        Publishers.Zip(
+            addressConverter.convertToETHAddressesPublisher(in: transaction),
+            networkService.getPendingTxCount(transaction.sourceAddress)
+        )
+        .map { convertedTransaction, nonce in
+            convertedTransaction.then { convertedTransaction in
+                let ethParams = convertedTransaction.params as? EthereumTransactionParams
+                convertedTransaction.params = ethParams?.with(nonce: nonce) ?? EthereumTransactionParams(nonce: nonce)
             }
-            .flatMap { $0 }
-            .eraseToAnyPublisher()
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, convertedTransaction in
+            Result {
+                try walletManager.txBuilder.buildForSign(transaction: convertedTransaction)
+            }
+            .publisher
+            .withWeakCaptureOf(walletManager)
+            .flatMap { walletManager, hashToSign in
+                signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
+            }
+            .withWeakCaptureOf(walletManager)
+            .tryMap { walletManager, signatureInfo -> String in
+                try walletManager.txBuilder
+                    .buildForSend(
+                        transaction: convertedTransaction,
+                        signatureInfo: signatureInfo
+                    )
+                    .hexString
+                    .lowercased()
+                    .addHexPrefix()
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }
 

@@ -20,14 +20,14 @@ class EthereumTransactionBuilder {
         self.chainId = chainId
     }
 
-    func buildForSign(transaction: Transaction, nonce: Int) throws -> Data {
-        let input = try buildSigningInput(transaction: transaction, nonce: nonce)
+    func buildForSign(transaction: Transaction) throws -> Data {
+        let input = try buildSigningInput(transaction: transaction)
         let preSigningOutput = try buildTxCompilerPreSigningOutput(input: input)
         return preSigningOutput.dataHash
     }
 
-    func buildForSend(transaction: Transaction, signatureInfo: SignatureInfo,  nonce: Int) throws -> Data {
-        let input = try buildSigningInput(transaction: transaction, nonce: nonce)
+    func buildForSend(transaction: Transaction, signatureInfo: SignatureInfo) throws -> Data {
+        let input = try buildSigningInput(transaction: transaction)
         let output = try buildSigningOutput(input: input, signatureInfo: signatureInfo)
         return output.encoded
     }
@@ -45,8 +45,7 @@ class EthereumTransactionBuilder {
             let input = try buildSigningInput(
                 destination: .user(user: destination, value: valueData),
                 fee: fee,
-                parameters: EthereumTransactionParams(data: data),
-                nonce: nonce
+                parameters: EthereumTransactionParams(data: data, nonce: nonce)
             )
             return try buildTxCompilerPreSigningOutput(input: input).data
 
@@ -54,8 +53,7 @@ class EthereumTransactionBuilder {
             let input = try buildSigningInput(
                 destination: .contract(user: destination, contract: token.contractAddress, value: valueData),
                 fee: fee,
-                parameters: EthereumTransactionParams(data: data),
-                nonce: nonce
+                parameters: EthereumTransactionParams(data: data, nonce: nonce)
             )
 
             return try buildTxCompilerPreSigningOutput(input: input).data
@@ -99,7 +97,7 @@ private extension EthereumTransactionBuilder {
         return preSigningOutput
     }
 
-    func buildSigningInput(transaction: Transaction, nonce: Int) throws -> EthereumSigningInput {
+    func buildSigningInput(transaction: Transaction) throws -> EthereumSigningInput {
         guard let amountValue = transaction.amount.bigUIntValue else {
             throw EthereumTransactionBuilderError.invalidAmount
         }
@@ -109,8 +107,7 @@ private extension EthereumTransactionBuilder {
             return try buildSigningInput(
                 destination: .user(user: transaction.destinationAddress, value: amountValue),
                 fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams,
-                nonce: nonce
+                parameters: transaction.params as? EthereumTransactionParams ?? .empty
             )
         case .token(let token):
             return try buildSigningInput(
@@ -120,25 +117,19 @@ private extension EthereumTransactionBuilder {
                     value: amountValue
                 ),
                 fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams,
-                nonce: nonce
+                parameters: transaction.params as? EthereumTransactionParams ?? .empty
             )
         case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }
 
-    func buildSigningInput(
-        destination: DestinationType,
-        fee: Fee,
-        parameters: EthereumTransactionParams?,
-        nonce: Int
-    ) throws -> EthereumSigningInput {
-        let nonceValue = BigUInt(nonce)
-
-        guard nonceValue >= 0 else {
+    func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams) throws -> EthereumSigningInput {
+        guard let nonce = parameters.nonce, nonce >= 0 else {
             throw EthereumTransactionBuilderError.invalidNonce
         }
+        
+        let nonceValue = BigUInt(nonce)
 
         let input = try EthereumSigningInput.with { input in
             input.chainID = BigUInt(chainId).serialize()
@@ -167,7 +158,7 @@ private extension EthereumTransactionBuilder {
                     input.toAddress = user
                     $0.transfer = .with {
                         $0.amount = value.serialize()
-                        if let data = parameters?.data {
+                        if let data = parameters.data {
                             $0.data = data
                         }
                     }
@@ -175,7 +166,7 @@ private extension EthereumTransactionBuilder {
                     input.toAddress = contract
                     let amount = value.serialize()
 
-                    if let data = parameters?.data {
+                    if let data = parameters.data {
                         $0.contractGeneric = .with {
                             $0.amount = amount
                             $0.data = data
