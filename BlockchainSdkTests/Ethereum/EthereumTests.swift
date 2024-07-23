@@ -297,7 +297,6 @@ class EthereumTests: XCTestCase {
         // given
         let destinationAddress = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
 
-        let nonce = 196
         let sendValue = EthereumUtils.mapToBigUInt(1 * blockchain.decimalValue).serialize()
         let feeParameters = EthereumEIP1559FeeParameters(
             gasLimit: BigUInt(21000),
@@ -317,7 +316,7 @@ class EthereumTests: XCTestCase {
         )
 
         // then
-        XCTAssertEqual(l1Data.hexString, "02F30181C485076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C0")
+        XCTAssertEqual(l1Data.hexString, "02F2010185076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C0")
     }
 
     func testParseBalance() {
