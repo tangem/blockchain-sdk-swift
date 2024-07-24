@@ -48,12 +48,20 @@ final class ICPNetworkService: MultiNetworkProvider {
         }
     }
     
-    func readState(data: Data, paths: [ICPStateTreePath]) -> AnyPublisher<UInt64?, Error> {
+    func readState(data: Data, paths: [ICPStateTreePath]) -> AnyPublisher<UInt64, Error> {
         providerPublisher { provider in
             provider
                 .readState(data: data, paths: paths)
-                .eraseToAnyPublisher()
         }
+        .delay(for: .milliseconds(Constants.readStateRetryDelayMilliseconds), scheduler: DispatchQueue.main)
+        .tryMap { value in
+            guard let value else {
+                throw WalletError.empty
+            }
+            return value
+        }
+        .retry(Constants.readStateRetryCount)
+        .eraseToAnyPublisher()
     }
     
     // MARK: - Private implementation
@@ -68,6 +76,13 @@ final class ICPNetworkService: MultiNetworkProvider {
             )
         )
         return try envelope.cborEncoded()
+    }
+}
+
+private extension ICPNetworkService {
+    enum Constants {
+        static let readStateRetryCount = 10
+        static let readStateRetryDelayMilliseconds = 750
     }
 }
 

@@ -26,7 +26,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
     // MARK: - Init
     
     init(wallet: Wallet, networkService: ICPNetworkService) {
-        self.txBuilder = .init(blockchain: wallet.blockchain)
+        self.txBuilder = .init(decimalValue: wallet.blockchain.decimalValue)
         self.networkService = networkService
         super.init(wallet: wallet)
     }
@@ -63,7 +63,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, input in
-                walletManager.buildTransaction(input: input, with: signer)
+                walletManager.signTransaction(input: input, with: signer)
                     .withWeakCaptureOf(self)
                     .tryMap { walletManager, output in
                         try walletManager.txBuilder.buildForSend(output: output.callEnvelope)
@@ -97,7 +97,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
         wallet.add(coinValue: balance)
     }
 
-    func buildTransaction(
+    func signTransaction(
         input: ICPSigningInput,
         with signer: TransactionSigner
     ) -> AnyPublisher<ICPSigningOutput, Error> {
@@ -133,16 +133,6 @@ final class ICPWalletManager: BaseManager, WalletManager {
         }
         
         return networkService.readState(data: signedRequest, paths: signingOutput.readStateTreePaths)
-            .delay(for: .milliseconds(Constants.readStateRetryDelayMilliseconds), scheduler: DispatchQueue.main)
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, value in
-                guard let value else {
-                    throw WalletError.empty
-                }
-                return value
-            }
-            .retry(Constants.readStateRetryCount)
-            .eraseToAnyPublisher()
     }
     
 }
@@ -150,7 +140,5 @@ final class ICPWalletManager: BaseManager, WalletManager {
 private extension ICPWalletManager {
     enum Constants {
         static let fee = Decimal(stringValue: "0.0001")!
-        static let readStateRetryCount = 10
-        static let readStateRetryDelayMilliseconds = 750
     }
 }

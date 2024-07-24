@@ -16,12 +16,12 @@ import TangemSdk
 final class ICPTransactionBuilder {
     // MARK: - Private Properties
     
-    private let blockchain: Blockchain
+    private let decimalValue: Decimal
     
     // MARK: - Init
     
-    init(blockchain: Blockchain) {
-        self.blockchain = blockchain
+    init(decimalValue: Decimal) {
+        self.decimalValue = decimalValue
     }
     
     // MARK: - Implementation
@@ -37,7 +37,7 @@ final class ICPTransactionBuilder {
     ) throws -> ICPSigningInput {
         ICPSigningInput(
             destination: Data(hex: transaction.destinationAddress),
-            amount: (transaction.amount.value * blockchain.decimalValue).uint64Value,
+            amount: (transaction.amount.value * decimalValue).uint64Value,
             date: date
         )
     }

@@ -21,7 +21,7 @@ final class ICPTests: XCTestCase {
     private let sizeTester = TransactionSizeTesterUtility()
     
     func testTransactionBuild() throws {
-        let txBuilder = ICPTransactionBuilder(blockchain: blockchain)
+        let txBuilder = ICPTransactionBuilder(decimalValue: blockchain.decimalValue)
         
         let amounValueDecimal = (Decimal(10000000)) / blockchain.decimalValue
         
