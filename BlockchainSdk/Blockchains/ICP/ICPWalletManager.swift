@@ -110,7 +110,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
             .send(data: data)
             .withWeakCaptureOf(self)
             .flatMap { walletManager, _ in
-                walletManager.trackStransactionStatus(signingOutput: signingOutput)
+                walletManager.trackTransactionStatus(signingOutput: signingOutput)
             }
             .map { _ in TransactionSendResult(hash: "") }
             .mapSendError(tx: data.hexString.lowercased())
@@ -130,7 +130,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
     /// - Parameters:
     ///   - signingOutput: container with readStateEnvelope and readStateTreePaths
     /// - Returns: Publisher for for the latest block index
-    private func trackStransactionStatus(signingOutput: ICPSigningOutput) -> AnyPublisher<UInt64, Error>  {
+    private func trackTransactionStatus(signingOutput: ICPSigningOutput) -> AnyPublisher<UInt64, Error>  {
         guard let signedRequest = try? txBuilder.buildForSend(output: signingOutput.readStateEnvelope) else {
             return .anyFail(error: WalletError.empty)
         }
