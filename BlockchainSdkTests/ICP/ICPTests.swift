@@ -50,10 +50,9 @@ final class ICPTests: XCTestCase {
         let requestData = try input.makeRequestData(for: publicKey.data, nonce: nonce)
         
         let hashesForSign = try input.hashes(requestData: requestData, domain: ICPDomainSeparator("ic-request"))
-        guard let firstHash = hashesForSign[safe: 0], let secondHash = hashesForSign[safe: 1] else {
-            XCTFail()
-            return
-        }
+        
+        let firstHash = try XCTUnwrap(hashesForSign[safe: 0])
+        let secondHash = try XCTUnwrap(hashesForSign[safe: 1])
         
         XCTAssertEqual(firstHash.hex, "81a903f9a92fbda7164a544c6af88bc1197a8c4f56bfd68bc4ca985f9f0c1225")
         XCTAssertEqual(secondHash.hex, "a7369a37fc667fc638d0c9e0c5108287dc9d8c164859ce75c5eb6135b45f89b8")
