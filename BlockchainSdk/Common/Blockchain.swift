@@ -496,6 +496,15 @@ public indirect enum Blockchain: Equatable, Hashable {
             return name + testnetSuffix
         }
     }
+    
+    public var coinDisplayName: String {
+        switch self {
+        case .ton:
+            "Toncoin"
+        default:
+            displayName
+        }
+    }
 
     /// Provides a more descriptive display name for the fee currency (ETH) for some Ethereum L2s,
     /// for example: `'Optimistic Ethereum (ETH)'` instead of just `'ETH'`
@@ -620,6 +629,17 @@ public indirect enum Blockchain: Equatable, Hashable {
             return true
         default:
             return false
+        }
+    }
+    
+    public var isParallelTransactionAllowed: Bool {
+        switch self {
+        case _ where isEvm:
+            true
+        case .tron:
+            true
+        default:
+            false
         }
     }
 
