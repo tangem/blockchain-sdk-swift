@@ -53,14 +53,27 @@ final class ICPNetworkService: MultiNetworkProvider {
             provider
                 .readState(data: data, paths: paths)
         }
-        .delay(for: .milliseconds(Constants.readStateRetryDelayMilliseconds), scheduler: DispatchQueue.main)
-        .tryMap { value in
-            guard let value else {
-                throw WalletError.empty
+        .mapToResult()
+        .flatMap { result -> AnyPublisher<Result<UInt64, Error>, Error> in
+            switch result {
+            case .success(let value):
+                guard let value else {
+                    return Fail(error: WalletError.empty)
+                        .delay(
+                            for: .milliseconds(Constants.readStateRetryDelayMilliseconds),
+                            scheduler: DispatchQueue.main
+                        )
+                        .eraseToAnyPublisher()
+                }
+                return .justWithError(output: .success(value))
+            case .failure(let error):
+                return .justWithError(output: .failure(error))
             }
-            return value
         }
         .retry(Constants.readStateRetryCount)
+        .tryMap { result -> UInt64 in
+            try result.get()
+        }
         .eraseToAnyPublisher()
     }
     
