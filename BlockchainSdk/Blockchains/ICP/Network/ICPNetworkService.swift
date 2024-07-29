@@ -60,18 +60,17 @@ final class ICPNetworkService: MultiNetworkProvider {
         .mapToResult()
         .flatMap { result -> AnyPublisher<Result<UInt64, Error>, Error> in
             switch result {
-            case .success(let value):
-                guard let value else {
-                    return Fail(error: WalletError.empty)
-                        .delay(
-                            for: .milliseconds(Constants.readStateRetryDelayMilliseconds),
-                            scheduler: DispatchQueue.main
-                        )
-                        .eraseToAnyPublisher()
-                }
-                return .justWithError(output: .success(value))
+            case .success(.some(let value)):
+                .justWithError(output: .success(value))
+            case .success(nil):
+                Fail(error: WalletError.empty)
+                    .delay(
+                        for: .milliseconds(Constants.readStateRetryDelayMilliseconds),
+                        scheduler: DispatchQueue.main
+                    )
+                    .eraseToAnyPublisher()
             case .failure(let error):
-                return .justWithError(output: .failure(error))
+                .justWithError(output: .failure(error))
             }
         }
         .retry(Constants.readStateRetryCount)
