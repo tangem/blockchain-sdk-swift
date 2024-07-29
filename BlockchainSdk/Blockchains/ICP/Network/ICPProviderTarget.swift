@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import IcpKit
 import Moya
 
 struct ICPProviderTarget: TargetType {
@@ -15,7 +14,7 @@ struct ICPProviderTarget: TargetType {
     // MARK: - Properties
     
     private let node: NodeInfo
-    private let requestType: ICPRequestType
+    private let requestType: String
     private let canister: String
     private let requestData: Data
     
@@ -23,8 +22,8 @@ struct ICPProviderTarget: TargetType {
     
     init(
         node: NodeInfo,
-        canister: String = ICPSystemCanisters.ledger.string,
-        requestType: ICPRequestType,
+        canister: String,
+        requestType: String,
         requestData: Data
     ) {
         self.node = node
@@ -40,7 +39,7 @@ struct ICPProviderTarget: TargetType {
     }
     
     var path: String {
-        "api/v2/canister/\(canister)/\(requestType.rawValue)"
+        "api/v2/canister/\(canister)/\(requestType)"
     }
     
     var method: Moya.Method {

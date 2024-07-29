@@ -44,34 +44,97 @@ final class ICPTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let transactionParams = ICPTransactionParams(
-            destination: Data(hex: transaction.destinationAddress),
-            amount: (transaction.amount.value * decimalValue).uint64Value,
-            date: date
-        )
-        
         return try ICPSigningInput(
             publicKey: publicKey.data,
             nonce: nonce,
-            domainSeparator: "ic-request",
-            transactionParams: transactionParams
+            decimalValue: decimalValue,
+            date: date,
+            transaction: transaction
         )
     }
     
     /// Build for send transaction obtain external message output
     /// - Parameters:
-    ///   - ouput: IcpKit provided request envelope
-    /// - Returns: cbor-encoded transaction Data
-    public func buildForSend(signedHashes: [Data], requestData: ICPRequestsData) throws -> ICPSigningOutput {
+    ///   - signedHashes: hashes from transaction signer
+    ///   - input: result of buildForSign call
+    /// - Returns: model containing signed envelopes ready for sending to API
+    public func buildForSend(signedHashes: [Data], input: ICPSigningInput) throws -> ICPSigningOutput {
         guard signedHashes.count == 2,
               let callSignature = signedHashes.first,
               let readStateSignature = signedHashes.last else {
             throw WalletError.empty
         }
         return try ICPSigningOutput(
-            data: requestData,
+            data: input.requestData,
             callSignature: callSignature,
             readStateSignature: readStateSignature
         )
     }
+    
+    /// Model for generation hashes to sign
+    /// from transaction parameters
+    public struct ICPSigningInput {
+        /// Wallet public key
+        let publicKey: Data
+        /// Domain separator string for request, e.g. 'ic-request'
+        let domainSeparator: ICPDomainSeparator
+        /// Aggregates data required for requests
+        public let requestData: ICPRequestsData
+        
+        /// Creates instance
+        /// - Parameters:
+        ///   - publicKey: public key data
+        ///   - nonce: random 32-bytes length data provider
+        ///   - decimalValue:
+        ///   - date: current timestamp
+        ///   - transaction: input transaction
+        public init(
+            publicKey: Data,
+            nonce: () throws -> Data,
+            decimalValue: Decimal,
+            date: Date,
+            transaction: Transaction
+        ) throws {
+            self.publicKey = publicKey
+            self.domainSeparator = ICPDomainSeparator(stringLiteral: "ic-request")
+            let transactionParams = ICPTransactionParams(
+                destination: Data(hex: transaction.destinationAddress),
+                amount: (transaction.amount.value * decimalValue).uint64Value,
+                date: date
+            )
+            self.requestData = try ICPSign.makeRequestData(
+                publicKey: publicKey,
+                nonce: nonce,
+                transactionParams: transactionParams
+            )
+        }
+        
+        /// Generates hashes for signing
+        /// - Returns: hashes for signing
+        public func hashes() -> [Data] {
+            requestData.hashes(for: domainSeparator)
+        }
+    }
+
+    /// Aggregates signed envelopes data for sending
+    public struct ICPSigningOutput {
+        public let callEnvelope: Data
+        public let readStateEnvelope: Data
+        public let readStateTreePaths: [ICPStateTreePath]
+        
+        public init(data: ICPRequestsData, callSignature: Data, readStateSignature: Data) throws {
+            callEnvelope = try ICPRequestEnvelope(
+                content: data.callRequestContent,
+                senderPubkey: data.derEncodedPublicKey,
+                senderSig: callSignature
+            ).cborEncoded()
+            readStateEnvelope = try ICPRequestEnvelope(
+                content: data.readStateRequestContent,
+                senderPubkey: data.derEncodedPublicKey,
+                senderSig: readStateSignature
+            ).cborEncoded()
+            readStateTreePaths = data.readStateTreePaths
+        }
+    }
+
 }

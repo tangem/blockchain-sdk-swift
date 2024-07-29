@@ -44,7 +44,7 @@ struct ICPNetworkProvider: HostProvider {
     /// - Parameter data: CBOR-encoded ICPRequestEnvelope
     /// - Returns: account balance
     func getBalance(data: Data) -> AnyPublisher<Decimal, Error> {
-        let target = ICPProviderTarget(node: node, requestType: .query, requestData: data)
+        let target = providerTarget(node: node, requestType: ICPRequestType.query.rawValue, requestData: data)
         return requestPublisher(for: target, map: responseParser.parseAccountBalanceResponse(_:) )
     }
     
@@ -52,21 +52,32 @@ struct ICPNetworkProvider: HostProvider {
     /// - Parameter data: CBOR-encoded ICPRequestEnvelope
     /// - Returns: Publisher signalling completion of operation
     func send(data: Data) -> AnyPublisher<Void, Error> {
-        let target = ICPProviderTarget(node: node, requestType: .call, requestData: data)
+        let target = providerTarget(node: node, requestType: ICPRequestType.call.rawValue, requestData: data)
         return requestPublisher(for: target, map: responseParser.parseTransferResponse(_:) )
     }
     
     /// Check transaction state
-    /// - Parameter data: CBOR-encoded ICPRequestEnvelope
+    /// - Parameters:
+    ///  - data: CBOR-encoded ICPRequestEnvelope
+    ///  - paths: state tree paths for parsing response
     /// - Returns: Publisher for Latest block or none if trasaction is not completed
     func readState(data: Data, paths: [ICPStateTreePath]) -> AnyPublisher<UInt64?, Error> {
-        let target = ICPProviderTarget(node: node, requestType: .readState, requestData: data)
+        let target = providerTarget(node: node, requestType: ICPRequestType.readState.rawValue, requestData: data)
         return requestPublisher(for: target) { [responseParser] data in
             try? responseParser.parseTransferStateResponse(data, paths: paths)
         }
     }
     
     // MARK: - Private Implementation
+    
+    private func providerTarget(node: NodeInfo, requestType: String, requestData: Data) -> ICPProviderTarget {
+        ICPProviderTarget(
+            node: node,
+            canister: ICPSystemCanisters.ledger.string,
+            requestType: requestType,
+            requestData: requestData
+        )
+    }
     
     private func requestPublisher<T>(
         for target: ICPProviderTarget,

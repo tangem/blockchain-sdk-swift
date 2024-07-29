@@ -53,6 +53,10 @@ final class ICPNetworkService: MultiNetworkProvider {
             provider
                 .readState(data: data, paths: paths)
         }
+        // we need custom retry logic here:
+        // if publisher retruns nil result here (which is totally valid response,
+        // because blockchain may not return any data before transaction execution)
+        // we need to retry previous request using the same network provider after delay
         .mapToResult()
         .flatMap { result -> AnyPublisher<Result<UInt64, Error>, Error> in
             switch result {

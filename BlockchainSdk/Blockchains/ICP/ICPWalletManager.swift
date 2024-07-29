@@ -9,7 +9,6 @@
 import Foundation
 import WalletCore
 import Combine
-import IcpKit
 import TangemSdk
 
 final class ICPWalletManager: BaseManager, WalletManager {
@@ -69,7 +68,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
                     .tryMap { signedHashes in
                         try txBuilder.buildForSend(
                             signedHashes: signedHashes,
-                            requestData: input.requestData
+                            input: input
                         )
                     }
             }
@@ -98,14 +97,16 @@ final class ICPWalletManager: BaseManager, WalletManager {
     // MARK: - Private implementation
     
     private func send(
-        signingOutput: ICPSigningOutput,
+        signingOutput: ICPTransactionBuilder.ICPSigningOutput,
         transaction: Transaction
     ) -> AnyPublisher<TransactionSendResult, Error> {
         networkService
             .send(data: signingOutput.callEnvelope)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, _ in
-                walletManager.trackTransactionStatus(signingOutput: signingOutput)
+            .flatMap { [networkService] in
+                networkService.readState(
+                    data: signingOutput.readStateEnvelope,
+                    paths: signingOutput.readStateTreePaths
+                )
             }
             .map { _ in TransactionSendResult(hash: "") }
             .mapSendError(tx: signingOutput.callEnvelope.hexString.lowercased())
@@ -120,15 +121,6 @@ final class ICPWalletManager: BaseManager, WalletManager {
             })
             .eraseToAnyPublisher()
     }
-    
-    /// Tracks transaction status
-    /// - Parameters:
-    ///   - signingOutput: container with readStateEnvelope and readStateTreePaths
-    /// - Returns: Publisher for for the latest block index
-    private func trackTransactionStatus(signingOutput: ICPSigningOutput) -> AnyPublisher<UInt64, Error>  {
-        networkService.readState(data: signingOutput.readStateEnvelope, paths: signingOutput.readStateTreePaths)
-    }
-    
 }
 
 private extension ICPWalletManager {
