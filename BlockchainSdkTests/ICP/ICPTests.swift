@@ -21,14 +21,19 @@ final class ICPTests: XCTestCase {
     private let sizeTester = TransactionSizeTesterUtility()
     
     func testTransactionBuild() throws {
-        let txBuilder = ICPTransactionBuilder(decimalValue: blockchain.decimalValue)
+        let nonce = Data(hex: "5b4210ba3969eff9b64163012d48935cf72bb86e0e444c431d28f64888af41f5")
+        
+        let txBuilder = ICPTransactionBuilder(
+            decimalValue: blockchain.decimalValue,
+            publicKey: publicKey.data,
+            nonce: nonce
+        )
         
         let amounValueDecimal = (Decimal(10000000)) / blockchain.decimalValue
         
         let amountValue = Amount(with: blockchain, value: amounValueDecimal)
         let feeValue = Amount(with: blockchain, value: .init(stringValue: "0.0001")!)
         
-        let nonce = Data(hex: "5b4210ba3969eff9b64163012d48935cf72bb86e0e444c431d28f64888af41f5")
         
         let addressService = WalletCoreAddressService(blockchain: blockchain)
         let sourceAddress = try addressService.makeAddress(
@@ -47,9 +52,7 @@ final class ICPTests: XCTestCase {
         let date = Date(timeIntervalSince1970: 1721658267)
         let input = try txBuilder.buildForSign(transaction: transaction, date: date)
         
-        let requestData = try input.makeRequestData(for: publicKey.data, nonce: nonce)
-        
-        let hashesForSign = try input.hashes(requestData: requestData, domain: ICPDomainSeparator("ic-request"))
+        let hashesForSign = input.hashes()
         
         let firstHash = try XCTUnwrap(hashesForSign[safe: 0])
         let secondHash = try XCTUnwrap(hashesForSign[safe: 1])

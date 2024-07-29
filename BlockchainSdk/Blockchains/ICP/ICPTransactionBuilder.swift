@@ -8,20 +8,22 @@
 
 import Foundation
 import WalletCore
-import CryptoKit
 import IcpKit
 import Combine
-import TangemSdk
 
 final class ICPTransactionBuilder {
     // MARK: - Private Properties
     
     private let decimalValue: Decimal
+    private let publicKey: Data
+    private let nonce: () throws -> Data
     
     // MARK: - Init
     
-    init(decimalValue: Decimal) {
+    init(decimalValue: Decimal, publicKey: Data, nonce: @autoclosure @escaping () throws -> Data) {
         self.decimalValue = decimalValue
+        self.publicKey = publicKey
+        self.nonce = nonce
     }
     
     // MARK: - Implementation
@@ -35,10 +37,24 @@ final class ICPTransactionBuilder {
         transaction: Transaction,
         date: Date = Date()
     ) throws -> ICPSigningInput {
-        ICPSigningInput(
+        guard let publicKey = PublicKey(
+            tangemPublicKey: publicKey,
+            publicKeyType: CoinType.internetComputer.publicKeyType
+        ) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let transactionParams = ICPTransactionParams(
             destination: Data(hex: transaction.destinationAddress),
             amount: (transaction.amount.value * decimalValue).uint64Value,
             date: date
+        )
+        
+        return try ICPSigningInput(
+            publicKey: publicKey.data,
+            nonce: nonce,
+            domainSeparator: "ic-request",
+            transactionParams: transactionParams
         )
     }
     
@@ -46,7 +62,16 @@ final class ICPTransactionBuilder {
     /// - Parameters:
     ///   - ouput: IcpKit provided request envelope
     /// - Returns: cbor-encoded transaction Data
-    public func buildForSend<T: ICPRequestContent>(output: ICPRequestEnvelope<T>) throws -> Data {
-        try output.cborEncoded()
+    public func buildForSend(signedHashes: [Data], requestData: ICPRequestsData) throws -> ICPSigningOutput {
+        guard signedHashes.count == 2,
+              let callSignature = signedHashes.first,
+              let readStateSignature = signedHashes.last else {
+            throw WalletError.empty
+        }
+        return try ICPSigningOutput(
+            data: requestData,
+            callSignature: callSignature,
+            readStateSignature: readStateSignature
+        )
     }
 }

@@ -10,6 +10,7 @@ import Foundation
 import WalletCore
 import Combine
 import IcpKit
+import TangemSdk
 
 final class ICPWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
@@ -24,7 +25,11 @@ final class ICPWalletManager: BaseManager, WalletManager {
     // MARK: - Init
     
     init(wallet: Wallet, networkService: ICPNetworkService) {
-        self.txBuilder = .init(decimalValue: wallet.blockchain.decimalValue)
+        self.txBuilder = .init(
+            decimalValue: wallet.blockchain.decimalValue,
+            publicKey: wallet.publicKey.blockchainKey,
+            nonce: try CryptoUtils.icpNonce()
+        )
         self.networkService = networkService
         super.init(wallet: wallet)
     }
@@ -59,22 +64,21 @@ final class ICPWalletManager: BaseManager, WalletManager {
             .tryMap { [txBuilder] _ in
                 try txBuilder.buildForSign(transaction: transaction)
             }
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, input in
-                walletManager.signTransaction(input: input, with: signer)
-                    .withWeakCaptureOf(walletManager)
-                    .tryMap { walletManager, signingOutput -> (Data, ICPSigningOutput) in
-                        (try walletManager.txBuilder.buildForSend(output: signingOutput.callEnvelope), signingOutput)
-                    }
-                    .withWeakCaptureOf(walletManager)
-                    .flatMap { (walletManager, signingData) in
-                        let (signedTransaction, signingOutput) = signingData
-                        return walletManager.send(
-                            signedTransaction: signedTransaction,
-                            signingOutput: signingOutput,
-                            transaction: transaction
+            .flatMap { [wallet, txBuilder] input in
+                signer.sign(hashes: input.hashes(), walletPublicKey: wallet.publicKey)
+                    .tryMap { signedHashes in
+                        try txBuilder.buildForSend(
+                            signedHashes: signedHashes,
+                            requestData: input.requestData
                         )
                     }
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, signingOutput in
+                walletManager.send(
+                    signingOutput: signingOutput,
+                    transaction: transaction
+                )
             }
             .eraseSendError()
             .eraseToAnyPublisher()
@@ -90,30 +94,21 @@ final class ICPWalletManager: BaseManager, WalletManager {
         
         wallet.add(coinValue: balance)
     }
-
-    func signTransaction(
-        input: ICPSigningInput,
-        with signer: TransactionSigner
-    ) -> AnyPublisher<ICPSigningOutput, Error> {
-        let icpSigner = ICPSigner(signer: signer, walletPublicKey: wallet.publicKey)
-        return icpSigner.sign(input: input)
-    }
     
     // MARK: - Private implementation
     
     private func send(
-        signedTransaction data: Data,
         signingOutput: ICPSigningOutput,
         transaction: Transaction
     ) -> AnyPublisher<TransactionSendResult, Error> {
         networkService
-            .send(data: data)
+            .send(data: signingOutput.callEnvelope)
             .withWeakCaptureOf(self)
             .flatMap { walletManager, _ in
                 walletManager.trackTransactionStatus(signingOutput: signingOutput)
             }
             .map { _ in TransactionSendResult(hash: "") }
-            .mapSendError(tx: data.hexString.lowercased())
+            .mapSendError(tx: signingOutput.callEnvelope.hexString.lowercased())
             .handleEvents(receiveOutput: { [weak self] transactionSendResult in
                 guard let self else { return }
                 let mapper = PendingTransactionRecordMapper()
@@ -131,11 +126,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
     ///   - signingOutput: container with readStateEnvelope and readStateTreePaths
     /// - Returns: Publisher for for the latest block index
     private func trackTransactionStatus(signingOutput: ICPSigningOutput) -> AnyPublisher<UInt64, Error>  {
-        guard let signedRequest = try? txBuilder.buildForSend(output: signingOutput.readStateEnvelope) else {
-            return .anyFail(error: WalletError.empty)
-        }
-        
-        return networkService.readState(data: signedRequest, paths: signingOutput.readStateTreePaths)
+        networkService.readState(data: signingOutput.readStateEnvelope, paths: signingOutput.readStateTreePaths)
     }
     
 }
