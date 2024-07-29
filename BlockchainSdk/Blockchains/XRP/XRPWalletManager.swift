@@ -113,7 +113,7 @@ extension XRPWalletManager: TransactionSender {
                         let mapper = PendingTransactionRecordMapper()
                         let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                         self.wallet.addPendingTransaction(record)
-                        return TransactionSendResult(hash: rawTransactionHash)
+                        return TransactionSendResult(hash: hash)
                     }
                     .mapSendError(tx: rawTransactionHash)
                     .eraseToAnyPublisher() ?? .emptyFail
