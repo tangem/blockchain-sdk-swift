@@ -385,4 +385,83 @@ class EthereumTests: XCTestCase {
             "0xa9059cbb00000000000000000000000075739a5bd4b781cf38c59b9492ef9639e46688bf00000000000000000000000000000000000000000000000000000000000003e8"
         )
     }
+
+    func testFeeHistoryParse() throws {
+        let json =
+        """
+        {
+            "oldestBlock": "0x3906bc3",
+            "reward": [
+                [
+                    "0x861c47fc9",
+                    "0xa7a35bb7a",
+                    "0xba43b17ec"
+                ],
+                [
+                    "0x6fc23ac00",
+                    "0x6fc23ac00",
+                    "0x7aef43037"
+                ],
+                [
+                    "0x6fc23ac00",
+                    "0x7aef43262",
+                    "0x9c765ad41"
+                ],
+                [
+                    "0x737be1dc3",
+                    "0x7558be371",
+                    "0x7aef43358"
+                ],
+                [
+                    "0x6fc23aeec",
+                    "0x7aef41ea5",
+                    "0x9502f38ce"
+                ]
+            ],
+            "baseFeePerGas": [
+                "0x5c14",
+                "0x5a1e",
+                "0x5abc",
+                "0x583d",
+                "0x5732",
+                "0x54f9"
+            ],
+            "gasUsedRatio": [
+                0.3294011263207626,
+                0.55512407750046,
+                0.2798693487006748,
+                0.4054004895571093,
+                0.29574768320265493
+            ]
+        }
+        """
+
+        let decoded = try JSONDecoder().decode(EthereumFeeHistoryResponse.self, from: json.data(using: .utf8)!)
+        let feeHistory = try EthereumMapper.mapFeeHistory(decoded)
+        let response = EthereumMapper.mapToEthereumEIP1559FeeResponse(gasLimit: 21000, feeHistory: feeHistory) 
+
+        let feeParameters = [
+            EthereumEIP1559FeeParameters(
+                gasLimit: response.gasLimit,
+                maxFeePerGas: response.fees.low.max,
+                priorityFee: response.fees.low.priority
+            ),
+            EthereumEIP1559FeeParameters(
+                gasLimit: response.gasLimit,
+                maxFeePerGas: response.fees.market.max,
+                priorityFee: response.fees.market.priority
+            ),
+            EthereumEIP1559FeeParameters(
+                gasLimit: response.gasLimit,
+                maxFeePerGas: response.fees.fast.max,
+                priorityFee: response.fees.fast.priority
+            ),
+        ]
+
+        let fees = feeParameters.map { parameters in
+            parameters.calculateFee(decimalValue: pow(Decimal(10), 18))
+        }
+
+        XCTAssertTrue(fees[0] < fees[1] && fees[1] < fees[2])
+    }
 }

@@ -35,7 +35,7 @@ struct EthereumLegacyFeeResponse {
     let fastGasPrice: BigUInt
 }
 
-public struct EthereumFeeHistory{
+public struct EthereumFeeHistory {
     /// for pending block
     public let baseFee: BigUInt
 
