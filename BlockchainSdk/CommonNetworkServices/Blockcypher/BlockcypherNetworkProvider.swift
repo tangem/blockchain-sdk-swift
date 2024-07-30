@@ -82,9 +82,9 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                       }
                 
                 let kb = Decimal(1024)
-                let min = (Decimal(minKb)/kb).rounded(roundingMode: .down)
-                let normal = (Decimal(normalKb)/kb).rounded(roundingMode: .down)
-                let max = (Decimal(maxKb)/kb).rounded(roundingMode: .down)
+                let min = (Decimal(minKb)/kb).rounded(roundingMode: .up)
+                let normal = (Decimal(normalKb)/kb).rounded(roundingMode: .up)
+                let max = (Decimal(maxKb)/kb).rounded(roundingMode: .up)
                 let fee = BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
                 return fee
             }
