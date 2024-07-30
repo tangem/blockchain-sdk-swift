@@ -8,6 +8,7 @@
 
 import Foundation
 import IcpKit
+import TangemSdk
 
 struct ICPWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> any WalletManager {
@@ -23,8 +24,15 @@ struct ICPWalletAssembly: WalletManagerAssembly {
                 )
             }
         
+        let transactionBuilder = ICPTransactionBuilder(
+            decimalValue: input.wallet.blockchain.decimalValue,
+            publicKey: input.wallet.publicKey.blockchainKey,
+            nonce: try CryptoUtils.icpNonce()
+       )
+        
         return ICPWalletManager(
             wallet: input.wallet,
+            transactionBuilder: transactionBuilder,
             networkService: ICPNetworkService(
                 providers: providers,
                 blockchain: input.blockchain

@@ -9,7 +9,6 @@
 import Foundation
 import WalletCore
 import Combine
-import TangemSdk
 
 final class ICPWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
@@ -18,17 +17,13 @@ final class ICPWalletManager: BaseManager, WalletManager {
     
     // MARK: - Private Properties
     
-    private let txBuilder: ICPTransactionBuilder
+    private let transactionBuilder: ICPTransactionBuilder
     private let networkService: ICPNetworkService
         
     // MARK: - Init
     
-    init(wallet: Wallet, networkService: ICPNetworkService) {
-        self.txBuilder = .init(
-            decimalValue: wallet.blockchain.decimalValue,
-            publicKey: wallet.publicKey.blockchainKey,
-            nonce: try CryptoUtils.icpNonce()
-        )
+    init(wallet: Wallet, transactionBuilder: ICPTransactionBuilder, networkService: ICPNetworkService) {
+        self.transactionBuilder = transactionBuilder
         self.networkService = networkService
         super.init(wallet: wallet)
     }
@@ -60,13 +55,13 @@ final class ICPWalletManager: BaseManager, WalletManager {
     ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         Just(())
             .receive(on: DispatchQueue.global())
-            .tryMap { [txBuilder] _ in
-                try txBuilder.buildForSign(transaction: transaction)
+            .tryMap { [transactionBuilder] _ in
+                try transactionBuilder.buildForSign(transaction: transaction)
             }
-            .flatMap { [wallet, txBuilder] input in
+            .flatMap { [wallet, transactionBuilder] input in
                 signer.sign(hashes: input.hashes(), walletPublicKey: wallet.publicKey)
                     .tryMap { signedHashes in
-                        try txBuilder.buildForSend(
+                        try transactionBuilder.buildForSend(
                             signedHashes: signedHashes,
                             input: input
                         )
