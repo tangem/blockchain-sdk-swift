@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 import WalletCore
 import TangemSdk
-import IcpKit
 @testable import BlockchainSdk
 
 final class ICPTests: XCTestCase {
