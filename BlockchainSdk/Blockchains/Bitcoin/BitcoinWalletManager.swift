@@ -16,7 +16,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
-    var minimalFeePerByte: Decimal { 10 }
+    var minimalFeePerByte: Decimal { 1 }
     var minimalFee: Decimal { 0.00001 }
     var dustValue: Amount {
         Amount(with: wallet.blockchain, value: minimalFee)
