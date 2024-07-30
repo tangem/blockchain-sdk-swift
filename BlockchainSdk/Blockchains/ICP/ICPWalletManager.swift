@@ -108,7 +108,7 @@ final class ICPWalletManager: BaseManager, WalletManager {
                     paths: signingOutput.readStateTreePaths
                 )
             }
-            .map { _ in TransactionSendResult(hash: "") }
+            .map { blockIndex in TransactionSendResult(hash: String(blockIndex)) }
             .mapSendError(tx: signingOutput.callEnvelope.hexString.lowercased())
             .handleEvents(receiveOutput: { [weak self] transactionSendResult in
                 guard let self else { return }
