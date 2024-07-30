@@ -227,7 +227,7 @@ extension EthereumNetworkService: EVMSmartContractInteractor {
 
 // MARK: - EthereumErrorMapper
 
-fileprivate struct EthereumMapper {
+struct EthereumMapper {
     static func mapError(_ error: Error) -> Error {
         if let moyaError = error as? MoyaError,
            let responseData = moyaError.response?.data,
@@ -273,11 +273,9 @@ fileprivate struct EthereumMapper {
         let marketBaseFee = pendingBaseFee * BigUInt(12) / BigUInt(10)
         let fastBaseFee = pendingBaseFee * BigUInt(15) / BigUInt(10)
 
-        guard let lowRewards = response.reward[safe: 0],
-              let marketRewards = response.reward[safe: 1],
-              let fastRewards = response.reward[safe: 2] else {
-            throw ETHError.failedToParseFeeHistory
-        }
+        let lowRewards = response.reward.compactMap{ $0[safe: 0] }
+        let marketRewards = response.reward.compactMap{ $0[safe: 1] }
+        let fastRewards = response.reward.compactMap{ $0[safe: 2] }
 
         let lowAverage = try mapAverageReward(lowRewards)
         let marketAverage = try mapAverageReward(marketRewards)
