@@ -114,7 +114,10 @@ extension CosmosChain {
         case .cosmos, .gaia:
             return 2
         case .terraV1:
-            return 4
+            // Since 2024/07/29, there have been multiple reports of failed Terra Classic transactions due to
+            // an incorrect gas estimation (calculated on the blockchain).
+            // Therefore, we have to raise `gasMultiplier` once again as a workaround.
+            return 5
         case .terraV2:
             return 2
         }
