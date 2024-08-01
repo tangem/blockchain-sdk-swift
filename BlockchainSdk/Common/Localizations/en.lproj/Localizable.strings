@@ -9,6 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "generic_error" = "An error occurred";
 "generic_error_code" = "An error occurred. Code: %@.";
+"koinos_insufficient_mana_to_send_koin_description" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
 "no_account_generic" = "To use the %1$@ network, you must pay the account reserve (%2$@ %3$@), which locks up and hides that amount indefinitely";
 "no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
 "no_account_send_to_create" = "To create account send funds to this address";

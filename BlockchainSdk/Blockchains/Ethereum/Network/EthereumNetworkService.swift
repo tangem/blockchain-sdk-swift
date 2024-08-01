@@ -98,6 +98,19 @@ class EthereumNetworkService: MultiNetworkProvider {
         providerPublisher {
             $0.getFeeHistory()
                 .tryMap { try EthereumMapper.mapFeeHistory($0) }
+                .tryCatch { [weak self] error -> AnyPublisher<EthereumFeeHistory, Error> in
+                    guard let self else {
+                        throw error
+                    }
+
+                    if case ETHError.failedToParseFeeHistory = error {
+                        return self.getGasPrice()
+                            .map { EthereumMapper.mapFeeHistoryFallback(gasPrice: $0) }
+                            .eraseToAnyPublisher()
+                    }
+
+                    throw error
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -132,7 +145,7 @@ class EthereumNetworkService: MultiNetworkProvider {
             .setFailureType(to: Error.self)
             .withWeakCaptureOf(self)
             .flatMap { networkService, token in
-                networkService.providerPublisher { provider -> AnyPublisher<(Token, Result<Decimal, Error>), Error> in
+                networkService.providerPublisher { provider -> AnyPublisher<Decimal, Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
 
                     return provider
@@ -145,11 +158,12 @@ class EthereumNetworkService: MultiNetworkProvider {
                             
                             return value
                         }
-                        .mapToResult()
-                        .map { (token, $0) }
-                        .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 }
+                .mapToResult()
+                .setFailureType(to: Error.self)
+                .map { (token, $0) }
+                .eraseToAnyPublisher()
             }
             .collect()
             .map { $0.reduce(into: [Token: Result<Decimal, Error>]()) { $0[$1.0] = $1.1 }}
@@ -213,7 +227,7 @@ extension EthereumNetworkService: EVMSmartContractInteractor {
 
 // MARK: - EthereumErrorMapper
 
-fileprivate struct EthereumMapper {
+struct EthereumMapper {
     static func mapError(_ error: Error) -> Error {
         if let moyaError = error as? MoyaError,
            let responseData = moyaError.response?.data,
@@ -250,36 +264,22 @@ fileprivate struct EthereumMapper {
         }
 
         // This is an actual baseFee for a pending block
-        guard let pendingBaseFeeString = response.baseFeePerGas.last else {
+        guard let pendingBaseFeeString = response.baseFeePerGas.last,
+              pendingBaseFeeString != "0x0" else {
             throw ETHError.failedToParseFeeHistory
         }
 
         let pendingBaseFee = try mapBigUInt(pendingBaseFeeString)
-
-        var lowSum: Decimal = 0
-        var marketSum: Decimal = 0
-        var fastSum: Decimal = 0
-
-        try response.reward.forEach {
-            guard let lowString = $0[safe: 0],
-                  let marketString  = $0[safe: 1],
-                  let fastString = $0[safe: 2] else {
-                throw ETHError.failedToParseFeeHistory
-            }
-
-            lowSum += try mapDecimal(lowString)
-            marketSum += try mapDecimal(marketString)
-            fastSum += try mapDecimal(fastString)
-        }
-
-        let blocksCount = Decimal(response.reward.count)
-
-        let lowAverage = EthereumUtils.mapToBigUInt((lowSum / blocksCount).rounded(roundingMode: .plain))
-        let marketAverage = EthereumUtils.mapToBigUInt((marketSum / blocksCount).rounded(roundingMode: .plain))
-        let fastAverage = EthereumUtils.mapToBigUInt((fastSum / blocksCount).rounded(roundingMode: .plain))
-
         let marketBaseFee = pendingBaseFee * BigUInt(12) / BigUInt(10)
         let fastBaseFee = pendingBaseFee * BigUInt(15) / BigUInt(10)
+
+        let lowRewards = response.reward.compactMap{ $0[safe: 0] }
+        let marketRewards = response.reward.compactMap{ $0[safe: 1] }
+        let fastRewards = response.reward.compactMap{ $0[safe: 2] }
+
+        let lowAverage = try mapAverageReward(lowRewards)
+        let marketAverage = try mapAverageReward(marketRewards)
+        let fastAverage = try mapAverageReward(fastRewards)
 
         let feeHistory = EthereumFeeHistory(
             baseFee: pendingBaseFee,
@@ -292,6 +292,25 @@ fileprivate struct EthereumMapper {
         )
 
         return feeHistory
+    }
+
+    private static func mapAverageReward(_ rewards: [String]) throws -> BigUInt {
+        let rewards = rewards.filter { $0 != "0x0"}
+
+        guard !rewards.isEmpty else {
+            throw ETHError.failedToParseFeeHistory
+        }
+
+        let sum = try rewards.map { try mapDecimal($0) }.reduce(0, +)
+        let total = Decimal(rewards.count)
+        let averageDecimal = (sum / total).rounded(roundingMode: .plain)
+        
+        guard averageDecimal > 0 else {
+            throw ETHError.failedToParseFeeHistory
+        }
+
+        let average = EthereumUtils.mapToBigUInt(averageDecimal)
+        return average
     }
 
     static func mapToEthereumEIP1559FeeResponse(gasLimit: BigUInt, feeHistory: EthereumFeeHistory) -> EthereumEIP1559FeeResponse {
@@ -317,6 +336,23 @@ fileprivate struct EthereumMapper {
             fastGasPrice: maxGasPrice
         )
     }
+
+    static func mapFeeHistoryFallback(gasPrice: BigUInt) -> EthereumFeeHistory {
+        let legacyResponse = mapToEthereumLegacyFeeResponse(gasPrice: gasPrice, gasLimit: BigUInt(0))
+
+        let feeHistory = EthereumFeeHistory(
+            baseFee: BigUInt(0),
+            lowBaseFee: BigUInt(0),
+            marketBaseFee: BigUInt(0),
+            fastBaseFee: BigUInt(0),
+            lowPriorityFee: legacyResponse.lowGasPrice,
+            marketPriorityFee: legacyResponse.marketGasPrice,
+            fastPriorityFee: legacyResponse.fastGasPrice
+        )
+
+        return feeHistory
+    }
+
 
     private static func mapDecimal(_ response: String) throws -> Decimal {
         guard let value = UInt64(response.removeHexPrefix(), radix: 16) else {

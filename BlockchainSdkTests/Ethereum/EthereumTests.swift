@@ -49,15 +49,18 @@ class EthereumTests: XCTestCase {
             fee: fee,
             sourceAddress: walletAddress,
             destinationAddress: destinationAddress,
-            changeAddress: walletAddress
+            changeAddress: walletAddress,
+            params: EthereumTransactionParams(nonce: nonce)
         )
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
-        transactionBuilder.update(nonce: nonce)
         let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
-        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
+        let signedTransaction = try transactionBuilder.buildForSend(
+            transaction: transaction,
+            signatureInfo: signatureInfo
+        )
 
         // then
         let expectedHashToSign = Data(hex: "BDBECF64B443F82D1F9FDA3F2D6BA69AF6D82029B8271339B7E775613AE57761")
@@ -85,13 +88,13 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
             fee: fee,
             sourceAddress: walletAddress,
             destinationAddress: destinationAddress,
-            changeAddress: walletAddress
+            changeAddress: walletAddress,
+            params: EthereumTransactionParams(nonce: nonce)
         )
 
         // then
@@ -129,13 +132,13 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 137)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
             fee: fee,
             sourceAddress: walletAddress,
             destinationAddress: destinationAddress,
-            changeAddress: walletAddress
+            changeAddress: walletAddress,
+            params: EthereumTransactionParams(nonce: nonce)
         )
 
         // then
@@ -171,13 +174,13 @@ class EthereumTests: XCTestCase {
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 137)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
             fee: fee,
             sourceAddress: walletAddress,
             destinationAddress: destinationAddress,
-            changeAddress: walletAddress
+            changeAddress: walletAddress,
+            params: EthereumTransactionParams(nonce: nonce)
         )
 
         // then
@@ -216,14 +219,10 @@ class EthereumTests: XCTestCase {
 
         let nonce = 10
 
-        let param = EthereumTransactionParams(
-            data: tokenMethod.data,
-            nonce: nonce
-        )
+        let param = EthereumTransactionParams(data: tokenMethod.data, nonce: nonce)
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 8453)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: .zeroCoin(for: blockchain),
             fee: fee,
@@ -268,14 +267,10 @@ class EthereumTests: XCTestCase {
 
         let nonce = 11
 
-        let param = EthereumTransactionParams(
-            data: payload,
-            nonce: nonce
-        )
+        let param = EthereumTransactionParams(data: payload, nonce: nonce)
 
         // when
         let transactionBuilder = EthereumTransactionBuilder(chainId: 8453)
-        transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: .zeroCoin(for: blockchain),
             fee: fee,
@@ -302,7 +297,6 @@ class EthereumTests: XCTestCase {
         // given
         let destinationAddress = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
 
-        let nonce = 196
         let sendValue = EthereumUtils.mapToBigUInt(1 * blockchain.decimalValue).serialize()
         let feeParameters = EthereumEIP1559FeeParameters(
             gasLimit: BigUInt(21000),
@@ -312,7 +306,6 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         let transactionBuilder = EthereumTransactionBuilder(chainId: 1)
-        transactionBuilder.update(nonce: nonce)
 
         // when
         let l1Data = try transactionBuilder.buildDummyTransactionForL1(
@@ -323,7 +316,7 @@ class EthereumTests: XCTestCase {
         )
 
         // then
-        XCTAssertEqual(l1Data.hexString, "02F30181C485076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C0")
+        XCTAssertEqual(l1Data.hexString, "02F2010185076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C0")
     }
 
     func testParseBalance() {
@@ -384,5 +377,84 @@ class EthereumTests: XCTestCase {
             payload.hexString.addHexPrefix().lowercased(),
             "0xa9059cbb00000000000000000000000075739a5bd4b781cf38c59b9492ef9639e46688bf00000000000000000000000000000000000000000000000000000000000003e8"
         )
+    }
+
+    func testFeeHistoryParse() throws {
+        let json =
+        """
+        {
+            "oldestBlock": "0x3906bc3",
+            "reward": [
+                [
+                    "0x861c47fc9",
+                    "0xa7a35bb7a",
+                    "0xba43b17ec"
+                ],
+                [
+                    "0x6fc23ac00",
+                    "0x6fc23ac00",
+                    "0x7aef43037"
+                ],
+                [
+                    "0x6fc23ac00",
+                    "0x7aef43262",
+                    "0x9c765ad41"
+                ],
+                [
+                    "0x737be1dc3",
+                    "0x7558be371",
+                    "0x7aef43358"
+                ],
+                [
+                    "0x6fc23aeec",
+                    "0x7aef41ea5",
+                    "0x9502f38ce"
+                ]
+            ],
+            "baseFeePerGas": [
+                "0x5c14",
+                "0x5a1e",
+                "0x5abc",
+                "0x583d",
+                "0x5732",
+                "0x54f9"
+            ],
+            "gasUsedRatio": [
+                0.3294011263207626,
+                0.55512407750046,
+                0.2798693487006748,
+                0.4054004895571093,
+                0.29574768320265493
+            ]
+        }
+        """
+
+        let decoded = try JSONDecoder().decode(EthereumFeeHistoryResponse.self, from: json.data(using: .utf8)!)
+        let feeHistory = try EthereumMapper.mapFeeHistory(decoded)
+        let response = EthereumMapper.mapToEthereumEIP1559FeeResponse(gasLimit: 21000, feeHistory: feeHistory) 
+
+        let feeParameters = [
+            EthereumEIP1559FeeParameters(
+                gasLimit: response.gasLimit,
+                maxFeePerGas: response.fees.low.max,
+                priorityFee: response.fees.low.priority
+            ),
+            EthereumEIP1559FeeParameters(
+                gasLimit: response.gasLimit,
+                maxFeePerGas: response.fees.market.max,
+                priorityFee: response.fees.market.priority
+            ),
+            EthereumEIP1559FeeParameters(
+                gasLimit: response.gasLimit,
+                maxFeePerGas: response.fees.fast.max,
+                priorityFee: response.fees.fast.priority
+            ),
+        ]
+
+        let fees = feeParameters.map { parameters in
+            parameters.calculateFee(decimalValue: pow(Decimal(10), 18))
+        }
+
+        XCTAssertTrue(fees[0] < fees[1] && fees[1] < fees[2])
     }
 }

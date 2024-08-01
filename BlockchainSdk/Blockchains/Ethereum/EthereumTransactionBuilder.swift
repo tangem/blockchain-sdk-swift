@@ -16,14 +16,8 @@ class EthereumTransactionBuilder {
     private let chainId: Int
     private let coinType: CoinType = .ethereum
 
-    private var nonce: Int = -1
-
     init(chainId: Int) {
         self.chainId = chainId
-    }
-
-    func update(nonce: Int) {
-        self.nonce = nonce
     }
 
     func buildForSign(transaction: Transaction) throws -> Data {
@@ -45,7 +39,8 @@ class EthereumTransactionBuilder {
             let input = try buildSigningInput(
                 destination: .user(user: destination, value: valueData),
                 fee: fee,
-                parameters: EthereumTransactionParams(data: data)
+                // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
+                parameters: EthereumTransactionParams(data: data, nonce: 1)
             )
             return try buildTxCompilerPreSigningOutput(input: input).data
 
@@ -53,7 +48,8 @@ class EthereumTransactionBuilder {
             let input = try buildSigningInput(
                 destination: .contract(user: destination, contract: token.contractAddress, value: valueData),
                 fee: fee,
-                parameters: EthereumTransactionParams(data: data)
+                // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
+                parameters: EthereumTransactionParams(data: data, nonce: 1)
             )
 
             return try buildTxCompilerPreSigningOutput(input: input).data
@@ -107,7 +103,7 @@ private extension EthereumTransactionBuilder {
             return try buildSigningInput(
                 destination: .user(user: transaction.destinationAddress, value: amountValue),
                 fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams
+                parameters: transaction.params as? EthereumTransactionParams ?? .empty
             )
         case .token(let token):
             return try buildSigningInput(
@@ -117,19 +113,19 @@ private extension EthereumTransactionBuilder {
                     value: amountValue
                 ),
                 fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams
+                parameters: transaction.params as? EthereumTransactionParams ?? .empty
             )
         case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
     }
 
-    func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams?) throws -> EthereumSigningInput {
-        let nonceValue = BigUInt(parameters?.nonce ?? nonce)
-
-        guard nonceValue >= 0 else {
+    func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams) throws -> EthereumSigningInput {
+        guard let nonce = parameters.nonce, nonce >= 0 else {
             throw EthereumTransactionBuilderError.invalidNonce
         }
+        
+        let nonceValue = BigUInt(nonce)
 
         let input = try EthereumSigningInput.with { input in
             input.chainID = BigUInt(chainId).serialize()
@@ -158,7 +154,7 @@ private extension EthereumTransactionBuilder {
                     input.toAddress = user
                     $0.transfer = .with {
                         $0.amount = value.serialize()
-                        if let data = parameters?.data {
+                        if let data = parameters.data {
                             $0.data = data
                         }
                     }
@@ -166,7 +162,7 @@ private extension EthereumTransactionBuilder {
                     input.toAddress = contract
                     let amount = value.serialize()
 
-                    if let data = parameters?.data {
+                    if let data = parameters.data {
                         $0.contractGeneric = .with {
                             $0.amount = amount
                             $0.data = data
