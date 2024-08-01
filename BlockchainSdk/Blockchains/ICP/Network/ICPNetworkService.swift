@@ -13,7 +13,7 @@ import TangemSdk
 
 final class ICPNetworkService: MultiNetworkProvider {
     
-    // MARK: - Protperties
+    // MARK: - Properties
     
     let providers: [ICPNetworkProvider]
     var currentProviderIndex: Int = 0
