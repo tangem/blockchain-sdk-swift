@@ -48,6 +48,10 @@ extension MultiNetworkProvider {
                     return .anyFail(error: error)
                 }
                 
+                if case ValidationError.accountNotActivated = error {
+                    return .anyFail(error: error)
+                }
+                
                 Log.network("Switchable publisher catched error: \(error)")
                 
                 let beforeSwitchIfNeededHost = self.host

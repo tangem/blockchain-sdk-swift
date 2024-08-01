@@ -28,10 +28,12 @@ public enum ValidationError: Hashable, LocalizedError {
     case insufficientFeeResource(type: FeeResourceType, current: Decimal, max: Decimal)
     case amountExeedsFeeResourceCapacity(type: FeeResourceType, availableAmount: Decimal)
     case feeExceedsMaxFeeResource
+    
+    case accountNotActivated
 
     public var errorDescription: String? {
         switch self {
-        case .balanceNotFound, .cardanoInsufficientBalanceToSendToken, .cardanoHasTokens:
+        case .balanceNotFound, .cardanoInsufficientBalanceToSendToken, .cardanoHasTokens, .accountNotActivated:
             return WalletError.empty.localizedDescription
         case .amountExceedsBalance:
             return "send_validation_amount_exceeds_balance".localized
