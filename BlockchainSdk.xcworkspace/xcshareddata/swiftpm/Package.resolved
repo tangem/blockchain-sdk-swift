@@ -1,5 +1,5 @@
 {
-  "originHash" : "f6fe1fcc1b31fb7fe08981a482810760a061e88880ed28264f663d3d803f404d",
+  "originHash" : "286c7bfe0dc42b679eba6fff0f1b6303a0169dc9579ffcd26a03370681445978",
   "pins" : [
     {
       "identity" : "anyasyncsequence",
@@ -62,6 +62,15 @@
       "state" : {
         "revision" : "4363eee442377ba3bb4254330bb567bb75780ec1",
         "version" : "0.26.0-tangem3"
+      }
+    },
+    {
+      "identity" : "icpkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tangem/IcpKit",
+      "state" : {
+        "revision" : "02aad763a1ebb0847b1f0eaff755159b3a95707a",
+        "version" : "0.1.2-tangem3"
       }
     },
     {
