@@ -32,7 +32,7 @@ class TronJsonRpcProvider: HostProvider {
     }
     
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
-        requestPublisher(for: .getAccountResource(address: address), checkForEmpty: true)
+        requestPublisher(for: .getAccountResource(address: address))
     }
     
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
@@ -55,48 +55,15 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .getTransactionInfoById(transactionID: id))
     }
     
-    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType, checkForEmpty: Bool = false) -> AnyPublisher<T, Error> {
-        let requestPublisher = provider.requestPublisher(TronTarget(node: node, target))
+    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
+        return provider.requestPublisher(TronTarget(node: node, target))
             .filterSuccessfulStatusAndRedirectCodes()
-            .share()
-            .eraseToAnyPublisher()
-        
-        let isEmptyResponsePublisher = requestPublisher
-            .map { response in
-                guard checkForEmpty, let value = String(data: response.data, encoding: .utf8) else {
-                    return false
-                }
-                return value.trimmingCharacters(in: .whitespacesAndNewlines) == "{}"
-            }
-            .mapToResult()
-            .eraseToAnyPublisher()
-        
-        return requestPublisher
             .map(T.self)
-            .mapError { moyaError -> Error in
+            .mapError { moyaError in
                 if case .objectMapping = moyaError {
                     return WalletError.failedToParseNetworkResponse
                 }
                 return moyaError
-            }
-            .mapToResult()
-            .zip(isEmptyResponsePublisher)
-            .tryMap { value, isEmptyResponse in
-                switch isEmptyResponse {
-                case .success(true):
-                    throw ValidationError.accountNotActivated
-                case let .failure(error):
-                    throw error
-                default:
-                    break
-                }
-                
-                switch value {
-                case let .success(value):
-                    return value
-                case let .failure(error):
-                    throw error
-                }
             }
             .eraseToAnyPublisher()
     }

@@ -48,7 +48,7 @@ extension MultiNetworkProvider {
                     return .anyFail(error: error)
                 }
                 
-                if case ValidationError.accountNotActivated = error {
+                if case WalletError.accountNotActivated = error {
                     return .anyFail(error: error)
                 }
                 

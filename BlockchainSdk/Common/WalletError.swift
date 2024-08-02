@@ -18,6 +18,8 @@ public enum WalletError: Error, LocalizedError {
     case empty
     case blockchainUnavailable(underlyingError: Error)
     
+    case accountNotActivated
+    
     public var errorDescription: String? {
         switch self {
         case .noAccount(let message, _):
@@ -32,7 +34,8 @@ public enum WalletError: Error, LocalizedError {
             return "Empty"
         case .failedToCalculateTxSize,
              .failedToParseNetworkResponse,
-             .blockchainUnavailable:
+             .blockchainUnavailable,
+             .accountNotActivated:
             return "generic_error_code".localized(errorCodeDescription)
         }
     }
@@ -55,6 +58,8 @@ public enum WalletError: Error, LocalizedError {
             return 7
         case .blockchainUnavailable:
             return 8
+        case .accountNotActivated:
+            return 9
         }
     }
     

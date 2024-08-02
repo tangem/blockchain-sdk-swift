@@ -82,6 +82,13 @@ class TronNetworkService: MultiNetworkProvider {
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
         providerPublisher {
             $0.getAccountResource(for: address)
+                .mapError { error in
+                    if case WalletError.failedToParseNetworkResponse = error {
+                        return WalletError.accountNotActivated
+                    }
+                    return error
+                }
+                .eraseToAnyPublisher()
         }
     }
     
