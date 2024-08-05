@@ -37,7 +37,7 @@ class TronNetworkService: MultiNetworkProvider {
                         let dynamicEnergyIncreaseFactorParameter = $0.chainParameter.first(where: { $0.key == "getDynamicEnergyIncreaseFactor" }),
                         let dynamicEnergyIncreaseFactor = dynamicEnergyIncreaseFactorParameter.value
                     else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     return TronChainParameters(
@@ -83,7 +83,11 @@ class TronNetworkService: MultiNetworkProvider {
         providerPublisher {
             $0.getAccountResource(for: address)
                 .mapError { error in
-                    if case WalletError.failedToParseNetworkResponse = error {
+                    if case let WalletError.failedToParseNetworkResponse(response) = error,
+                       let data = response?.data,
+                       let string = String(data: data, encoding: .utf8),
+                       string.trimmingCharacters(in: .whitespacesAndNewlines) == "{}"
+                    {
                         return WalletError.accountNotActivated
                     }
                     return error
@@ -170,7 +174,7 @@ class TronNetworkService: MultiNetworkProvider {
                     )
                     
                     guard let decimalValue = Decimal(stringValue: formatted) else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     return (token, decimalValue)

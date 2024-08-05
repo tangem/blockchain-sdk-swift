@@ -60,17 +60,17 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 let script = address["script_hex"].stringValue
                 
                 guard let decimalSatoshiBalance = Decimal(string: balance) else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 guard let transactionsData = try? addr["transactions"].rawData(),
                       let transactions: [BlockchairTransactionShort] = try? self.jsonDecoder.decode([BlockchairTransactionShort].self, from: transactionsData) else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 guard let utxoData = try? addr["utxo"].rawData(),
                       let utxos: [BlockchairUtxo] = try? self.jsonDecoder.decode([BlockchairUtxo].self, from: utxoData) else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 // Unspents with blockId lower than or equal 1 is not currently available
@@ -174,7 +174,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 let data = json["data"]
                 
                 guard let hash = data["transaction_hash"].string else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 return hash
@@ -213,7 +213,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 let txJson = json["data"]["\(hash)"]
                 
                 guard let tx = self.getTransactionDetails(from: txJson) else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 return tx.toPendingTx(userAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)

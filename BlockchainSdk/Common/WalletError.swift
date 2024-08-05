@@ -7,12 +7,13 @@
 //
 
 import Foundation
+import Moya
 
 public enum WalletError: Error, LocalizedError {
     case noAccount(message: String, amountToCreate: Decimal)
     case failedToGetFee
     case failedToBuildTx
-    case failedToParseNetworkResponse
+    case failedToParseNetworkResponse(Response? = nil)
     case failedToSendTx
     case failedToCalculateTxSize
     case empty

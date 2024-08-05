@@ -36,7 +36,7 @@ class TONNetworkService: MultiNetworkProvider {
         )
         .tryMap { walletInfo, tokensInfo in
             guard let decimalBalance = Decimal(string: walletInfo.balance) else {
-                throw WalletError.failedToParseNetworkResponse
+                throw WalletError.failedToParseNetworkResponse()
             }
             
             return TONWalletInfo(

@@ -34,14 +34,14 @@ class AptosNetworkService: MultiNetworkProvider {
                         let accountJson = response.first(where: { $0.type == Constants.accountKeyPrefix }),
                         let coinJson = response.first(where: { $0.type == Constants.coinStoreKeyPrefix })
                     else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     guard
                         let balanceValue = Decimal(coinJson.data.coin?.value),
                         let sequenceNumber = Decimal(accountJson.data.sequenceNumber)
                     else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: balanceValue)
@@ -98,7 +98,7 @@ class AptosNetworkService: MultiNetworkProvider {
                 .submitTransaction(data: data)
                 .tryMap { response in
                     guard let transactionHash = response.hash else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     return transactionHash
