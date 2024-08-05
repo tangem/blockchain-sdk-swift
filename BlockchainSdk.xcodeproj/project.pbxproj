@@ -2237,7 +2237,6 @@
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 				DACAAB4F2BE8BA8A0039ED3D /* Koinos */,
 				DA1BA9A52C454AEE006F6839 /* Mantle */,
-				DA02C7AA2C6101580086718D /* Blast */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -3335,14 +3334,6 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		DA02C7AA2C6101580086718D /* Blast */ = {
-			isa = PBXGroup;
-			children = (
-				DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */,
-			);
-			path = Blast;
-			sourceTree = "<group>";
-		};
 		DA18C4A7297AC62600EC4C05 /* Implementations */ = {
 			isa = PBXGroup;
 			children = (
@@ -3680,6 +3671,7 @@
 				DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */,
 				DAB9BE712BBD902C00E77545 /* TaraxaExternalLinkProvider.swift */,
 				B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */,
+				DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
 			sourceTree = "<group>";
