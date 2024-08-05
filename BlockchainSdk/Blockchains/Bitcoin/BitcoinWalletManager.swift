@@ -16,6 +16,10 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
+    /*
+     The current default minimum relay fee is 1 sat/vbyte.
+     https://learnmeabitcoin.com/technical/transaction/fee/#:~:text=The%20current%20default%20minimum%20relay,mined%20in%20to%20the%20blockchain.
+     */
     var minimalFeePerByte: Decimal { 1 }
     var minimalFee: Decimal { 0.00001 }
     var dustValue: Amount {
@@ -129,6 +133,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
         var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
         var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
         var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
+        
         
         let minimalFeeRate = (((minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
         let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
