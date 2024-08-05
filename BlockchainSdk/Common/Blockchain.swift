@@ -703,7 +703,7 @@ extension Blockchain {
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
-        case .blast: return isTestnet ? 23888 : 81457
+        case .blast: return isTestnet ? 168587773 : 81457
         default:
             return nil
         }
