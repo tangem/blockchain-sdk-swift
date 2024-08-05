@@ -205,6 +205,12 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://harbinger-api.koinos.io")!)
             ]
+        case .blast:
+            return [
+                .init(url: URL(string: "https://sepolia.blast.io")!),
+                .init(url: URL(string: "https://blast-sepolia.drpc.org")!),
+                .init(url: URL(string: "https://blast-sepolia.blockpi.network/v1/rpc/public")!)
+            ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis, .kaspa,

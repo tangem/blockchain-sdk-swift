@@ -21,9 +21,9 @@
 		0A7624DB2C2950E8002FA139 /* ICPTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624DA2C2950E8002FA139 /* ICPTransactionBuilder.swift */; };
 		0A7624E32C296969002FA139 /* ICPWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624E22C296969002FA139 /* ICPWalletManager.swift */; };
 		0A7973FE2C5B9F7500CE8182 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7973FD2C5B9F7500CE8182 /* IcpKit */; };
-		0A7E10B92C4E8E5700644977 /* ICPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E10B82C4E8E5700644977 /* ICPTests.swift */; };
 		0A7C5BFB2C174E6400B32CA5 /* DwellirAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C5BFA2C174E6400B32CA5 /* DwellirAPIResolver.swift */; };
 		0A7C5BFD2C174E7700B32CA5 /* OnfinalityAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C5BFC2C174E7700B32CA5 /* OnfinalityAPIResolver.swift */; };
+		0A7E10B92C4E8E5700644977 /* ICPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E10B82C4E8E5700644977 /* ICPTests.swift */; };
 		0A92275F2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0ABC60F02C4101ED00065EBA /* TonSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC60EF2C4101ED00065EBA /* TonSwift */; };
@@ -465,6 +465,7 @@
 		B6FC9DC52B62A3AC00448D8A /* HederaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC9DC42B62A3AC00448D8A /* HederaWalletAssembly.swift */; };
 		B6FC9DC82B62A45600448D8A /* HederaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC9DC72B62A45600448D8A /* HederaAddressService.swift */; };
 		BFF1171432045E1915ABA71F /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF8BC4C03E68061ED530292C /* Pods_BlockchainSdk.framework */; };
+		DA02C7AC2C61016A0086718D /* BlastExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */; };
 		DA0B68522C0DFF4800F38AB8 /* KoinosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0B68512C0DFF4800F38AB8 /* KoinosWalletManager.swift */; };
 		DA0E98D22C04708E00C92985 /* KoinosNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D12C04708E00C92985 /* KoinosNetworkProvider.swift */; };
 		DA0E98D42C0472DB00C92985 /* KoinosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */; };
@@ -914,9 +915,9 @@
 		0A7084B72BF797E900FD519D /* TONAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
 		0A7624DA2C2950E8002FA139 /* ICPTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPTransactionBuilder.swift; sourceTree = "<group>"; };
 		0A7624E22C296969002FA139 /* ICPWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPWalletManager.swift; sourceTree = "<group>"; };
-		0A7E10B82C4E8E5700644977 /* ICPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPTests.swift; sourceTree = "<group>"; };
 		0A7C5BFA2C174E6400B32CA5 /* DwellirAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DwellirAPIResolver.swift; sourceTree = "<group>"; };
 		0A7C5BFC2C174E7700B32CA5 /* OnfinalityAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnfinalityAPIResolver.swift; sourceTree = "<group>"; };
+		0A7E10B82C4E8E5700644977 /* ICPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPTests.swift; sourceTree = "<group>"; };
 		0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEE1E6F2C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1370,6 +1371,7 @@
 		B6FC9DC72B62A45600448D8A /* HederaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaAddressService.swift; sourceTree = "<group>"; };
 		BF8BC4C03E68061ED530292C /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlastExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DA07EFEA28191631008712F1 /* TronTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		DA0B68512C0DFF4800F38AB8 /* KoinosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosWalletManager.swift; sourceTree = "<group>"; };
 		DA0E98D12C04708E00C92985 /* KoinosNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosNetworkProvider.swift; sourceTree = "<group>"; };
@@ -1778,7 +1780,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-                0A7973FE2C5B9F7500CE8182 /* IcpKit in Frameworks */,
+				0A7973FE2C5B9F7500CE8182 /* IcpKit in Frameworks */,
 				0ABC60F32C41021000065EBA /* ScaleCodec in Frameworks */,
 				B6A2CC432B6C55FE00864CD2 /* secp256k1 in Frameworks */,
 				0ABC60F02C4101ED00065EBA /* TonSwift in Frameworks */,
@@ -2235,6 +2237,7 @@
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 				DACAAB4F2BE8BA8A0039ED3D /* Koinos */,
 				DA1BA9A52C454AEE006F6839 /* Mantle */,
+				DA02C7AA2C6101580086718D /* Blast */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -3330,6 +3333,14 @@
 				3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		DA02C7AA2C6101580086718D /* Blast */ = {
+			isa = PBXGroup;
+			children = (
+				DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */,
+			);
+			path = Blast;
 			sourceTree = "<group>";
 		};
 		DA18C4A7297AC62600EC4C05 /* Implementations */ = {
@@ -5031,6 +5042,7 @@
 				B675E9612B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift in Sources */,
 				B05144FD2B57F13900EDAD1E /* EVMSmartContractInteractor.swift in Sources */,
 				DC5E65312B1650F400E81AA5 /* OP_VERNOTIF.swift in Sources */,
+				DA02C7AC2C61016A0086718D /* BlastExternalLinkProvider.swift in Sources */,
 				EFD717CC2A25EB0B00E5430D /* ABIEncoder.swift in Sources */,
 				DC5E64F02B1650F400E81AA5 /* OP_SUB.swift in Sources */,
 				DC5E651A2B1650F400E81AA5 /* OP_3DUP.swift in Sources */,
@@ -5743,7 +5755,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-        0A7973FC2C5B9F7500CE8182 /* XCRemoteSwiftPackageReference "IcpKit" */ = {
+		0A7973FC2C5B9F7500CE8182 /* XCRemoteSwiftPackageReference "IcpKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/IcpKit";
 			requirement = {
@@ -5818,7 +5830,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-        0A7973FD2C5B9F7500CE8182 /* IcpKit */ = {
+		0A7973FD2C5B9F7500CE8182 /* IcpKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A7973FC2C5B9F7500CE8182 /* XCRemoteSwiftPackageReference "IcpKit" */;
 			productName = IcpKit;

@@ -145,6 +145,8 @@ public struct ExternalLinkProviderFactory {
             return KoinosExternalLinkProvider(isTestnet: isTestnet)
         case .internetComputer:
             return ICPExternalLinkProvider()
+        case .blast:
+            return BlastExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

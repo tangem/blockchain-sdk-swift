@@ -80,7 +80,8 @@ struct AddressTypesConfig {
              .joystream,
              .bittensor,
              .internetComputer,
-             .koinos:
+             .koinos,
+             .blast:
             return [.default]
         }
     }
