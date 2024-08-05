@@ -24,7 +24,7 @@ struct BlastExternalLinkProvider {
 
 extension BlastExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        nil
+        URL(string: "https://docs.blast.io/tools/faucets")
     }
     
     func url(transaction hash: String) -> URL? {
