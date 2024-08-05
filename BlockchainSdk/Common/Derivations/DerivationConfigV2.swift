@@ -116,6 +116,8 @@ public struct DerivationConfigV2: DerivationConfig {
             return "m/44'/1005'/0'/0'/0'"
         case .koinos:
             return "m/44'/659'/0'/0/0"
+        case .internetComputer:
+            return "m/44'/223'/0'/0/0"
         }
     }
 }

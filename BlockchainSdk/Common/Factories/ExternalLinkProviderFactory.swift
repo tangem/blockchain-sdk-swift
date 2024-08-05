@@ -143,6 +143,8 @@ public struct ExternalLinkProviderFactory {
             return BittensorExternalLinkProvider()
         case .koinos:
             return KoinosExternalLinkProvider(isTestnet: isTestnet)
+        case .internetComputer:
+            return ICPExternalLinkProvider()
         }
     }
 }

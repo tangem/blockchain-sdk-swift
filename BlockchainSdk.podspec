@@ -41,6 +41,9 @@ Use BlockchainSdk for Tangem wallet integration
   # 'CryptoSwift' dependency must be added via SPM
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'TangemWalletCore' dependency must be added via SPM
+  # 'BigInt' dependency must be added via SPM
+  # 'ScaleCodec' dependency must be added via SPM
+  # 'TonSwift' dependency must be added via SPM
 
   s.dependency 'TangemSdk'
   s.dependency 'SwiftyJSON', '5.0.1'

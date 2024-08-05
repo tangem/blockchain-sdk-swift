@@ -79,6 +79,7 @@ struct AddressTypesConfig {
              .base,
              .joystream,
              .bittensor,
+             .internetComputer,
              .koinos:
             return [.default]
         }
