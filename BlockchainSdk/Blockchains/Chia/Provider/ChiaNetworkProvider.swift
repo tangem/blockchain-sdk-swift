@@ -82,7 +82,7 @@ struct ChiaNetworkProvider: HostProvider {
                 return response
             }
             .mapError { error in
-                return WalletError.failedToParseNetworkResponse
+                return WalletError.failedToParseNetworkResponse()
             }
             .eraseToAnyPublisher()
     }

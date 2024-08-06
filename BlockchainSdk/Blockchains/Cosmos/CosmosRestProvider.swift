@@ -70,7 +70,7 @@ class CosmosRestProvider: HostProvider {
                 }
                 
                 if case .objectMapping = moyaError {
-                    return WalletError.failedToParseNetworkResponse
+                    return WalletError.failedToParseNetworkResponse()
                 }
                 return moyaError
             }
