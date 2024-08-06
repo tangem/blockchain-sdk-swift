@@ -54,6 +54,7 @@ extension PublicKeyType {
                 .mantle,
                 .flare,
                 .taraxa,
+                .internetComputer,
                 .base:
             self = PublicKeyType.secp256k1Extended
         case .stellar,

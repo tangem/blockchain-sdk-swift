@@ -100,6 +100,7 @@ public struct AddressServiceFactory {
                 .terraV1,
                 .terraV2,
                 .veChain,
+                .internetComputer,
                 .algorand:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ton:
