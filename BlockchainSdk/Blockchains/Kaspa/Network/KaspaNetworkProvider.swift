@@ -51,7 +51,7 @@ class KaspaNetworkProvider: HostProvider {
             .map(T.self, using: decoder)
             .mapError { moyaError in
                 if case .objectMapping = moyaError {
-                    return WalletError.failedToParseNetworkResponse
+                    return WalletError.failedToParseNetworkResponse()
                 }
                 return moyaError
             }

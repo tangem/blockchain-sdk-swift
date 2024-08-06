@@ -25,7 +25,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
             .tryMap { balance, unspents throws -> BitcoinResponse in
                 guard let confirmed = balance.confirmed,
                     let unconfirmed = balance.unconfirmed else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 let utxs: [BitcoinUnspentOutput] = unspents.compactMap { utxo -> BitcoinUnspentOutput?  in
@@ -52,7 +52,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                 if let id = response.txid {
                     return id
                 } else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
         }.eraseToAnyPublisher()
     }

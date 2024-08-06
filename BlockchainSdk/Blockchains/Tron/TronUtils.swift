@@ -12,7 +12,7 @@ import BigInt
 struct TronUtils {
     func combineBigUIntValueAtBalance(response constantResult: [String]) throws -> BigUInt {
         guard let hexValue = constantResult.first else {
-            throw WalletError.failedToParseNetworkResponse
+            throw WalletError.failedToParseNetworkResponse()
         }
         
         // Need use 32 byte for obtain right value

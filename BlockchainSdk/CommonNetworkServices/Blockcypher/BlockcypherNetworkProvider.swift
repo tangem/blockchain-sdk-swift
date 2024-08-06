@@ -43,7 +43,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                 guard let balance = addressResponse.balance,
                       let uncBalance = addressResponse.unconfirmedBalance
                 else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 let satoshiBalance = balance / self.endpoint.blockchain.decimalValue
@@ -195,7 +195,7 @@ extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
                 guard let self = self else { throw WalletError.empty }
                 
                 guard let balance = response.balance else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 let ethBalance = balance / self.endpoint.blockchain.decimalValue
