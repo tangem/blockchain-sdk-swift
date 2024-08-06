@@ -54,7 +54,7 @@ class StellarNetworkProvider: HostProvider {
                 
                 let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops)
                 guard let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 
                 let sequence = accountResponse.sequenceNumber
@@ -64,7 +64,7 @@ class StellarNetworkProvider: HostProvider {
                         guard let code = assetBalance.assetCode,
                               let issuer = assetBalance.assetIssuer,
                               let balance = Decimal(assetBalance.balance) else {
-                            throw WalletError.failedToParseNetworkResponse
+                            throw WalletError.failedToParseNetworkResponse()
                         }
                         
                         return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
