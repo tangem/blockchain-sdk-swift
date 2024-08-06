@@ -8,6 +8,4 @@
 
 import Foundation
 
-class DashWalletManager: BitcoinWalletManager {
-    override var minimalFeePerByte: Decimal { 1 }
-}
+class DashWalletManager: BitcoinWalletManager {}
