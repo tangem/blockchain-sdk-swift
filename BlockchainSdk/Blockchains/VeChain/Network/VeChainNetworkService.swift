@@ -72,7 +72,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 .callContract(contractCall: contractCall)
                 .tryMap { contractCallResult in
                     guard let resultPayload = contractCallResult.first else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
 
                     return resultPayload
@@ -87,7 +87,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                         return Amount(with: token, value: value)
                     }
 
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse()
                 }
                 .eraseToAnyPublisher()
         }
@@ -118,7 +118,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 .callContract(contractCall: contractCall)
                 .tryMap { contractCallResult in
                     guard let resultPayload = contractCallResult.first else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
 
                     return resultPayload
@@ -143,7 +143,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                         return VeChainTransactionInfo(transactionHash: parsedStatus.id)
                     case .raw:
                         // `raw` output can't be easily parsed and therefore not supported
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     case .notFound:
                         return VeChainTransactionInfo(transactionHash: nil)
                     }
@@ -168,7 +168,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
             let bigUIntValue = BigUInt(balance.removeHexPrefix(), radix: Constants.radix),
             let decimalValue = bigUIntValue.decimal
         else {
-            throw WalletError.failedToParseNetworkResponse
+            throw WalletError.failedToParseNetworkResponse()
         }
 
         return decimalValue
@@ -184,7 +184,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
             rawBlockRef.count == Constants.blockRefSize * 2,
             let blockRef = UInt(rawBlockRef, radix: Constants.radix)
         else {
-            throw WalletError.failedToParseNetworkResponse
+            throw WalletError.failedToParseNetworkResponse()
         }
 
         return VeChainBlockInfo(

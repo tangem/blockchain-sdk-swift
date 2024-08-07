@@ -36,7 +36,7 @@ class CosmosNetworkService: MultiNetworkProvider {
                         let self,
                         let sequenceNumber = UInt64(accountInfo?.account.sequence ?? "0")
                     else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     let accountNumber: UInt64?
@@ -133,7 +133,7 @@ class CosmosNetworkService: MultiNetworkProvider {
     private func cw20TokenBalance(walletAddress: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
         let request = CosmosCW20BalanceRequest(address: walletAddress)
         guard let query = try? JSONEncoder().encode(request) else {
-            return .anyFail(error: WalletError.failedToParseNetworkResponse)
+            return .anyFail(error: WalletError.failedToParseNetworkResponse())
         }
         
         return providerPublisher {
@@ -142,7 +142,7 @@ class CosmosNetworkService: MultiNetworkProvider {
                     (result: CosmosCW20QueryResult<CosmosCW20QueryBalanceData>) -> (Token, Decimal) in
                     
                     guard let balanceInSmallestDenomination = Decimal(string: result.data.balance) else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw WalletError.failedToParseNetworkResponse()
                     }
                     
                     let balance = balanceInSmallestDenomination / token.decimalValue
@@ -195,7 +195,7 @@ class CosmosNetworkService: MultiNetworkProvider {
         }
         
         guard let balanceInSmallestDenomination = Int(balanceAmountString) else {
-            throw WalletError.failedToParseNetworkResponse
+            throw WalletError.failedToParseNetworkResponse()
         }
         
         return Decimal(balanceInSmallestDenomination) / decimalValue

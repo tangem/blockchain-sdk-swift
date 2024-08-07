@@ -60,8 +60,8 @@ class TronJsonRpcProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
             .mapError { moyaError in
-                if case .objectMapping = moyaError {
-                    return WalletError.failedToParseNetworkResponse
+                if case let .objectMapping(_, response) = moyaError {
+                    return WalletError.failedToParseNetworkResponse(response)
                 }
                 return moyaError
             }

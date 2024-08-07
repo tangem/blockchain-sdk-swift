@@ -7,16 +7,19 @@
 //
 
 import Foundation
+import Moya
 
 public enum WalletError: Error, LocalizedError {
     case noAccount(message: String, amountToCreate: Decimal)
     case failedToGetFee
     case failedToBuildTx
-    case failedToParseNetworkResponse
+    case failedToParseNetworkResponse(Response? = nil)
     case failedToSendTx
     case failedToCalculateTxSize
     case empty
     case blockchainUnavailable(underlyingError: Error)
+    
+    case accountNotActivated
     
     public var errorDescription: String? {
         switch self {
@@ -32,7 +35,8 @@ public enum WalletError: Error, LocalizedError {
             return "Empty"
         case .failedToCalculateTxSize,
              .failedToParseNetworkResponse,
-             .blockchainUnavailable:
+             .blockchainUnavailable,
+             .accountNotActivated:
             return "generic_error_code".localized(errorCodeDescription)
         }
     }
@@ -55,6 +59,8 @@ public enum WalletError: Error, LocalizedError {
             return 7
         case .blockchainUnavailable:
             return 8
+        case .accountNotActivated:
+            return 9
         }
     }
     

@@ -80,10 +80,15 @@ class KaspaWalletManager: BaseManager, WalletManager {
                 .eraseToAnyPublisher()
         }
         
-        let feePerUtxo = 10_000
-        let fee = feePerUtxo * numberOfUtxos
+        let feePerUtxo: Decimal = 0.0001
+        let fee = feePerUtxo * Decimal(numberOfUtxos)
         
-        return Just([Fee(Amount(with: wallet.blockchain, value: Decimal(fee) / wallet.blockchain.decimalValue))])
+        let params = KaspaFeeParameters(
+            valuePerUtxo: feePerUtxo,
+            utxoCount: numberOfUtxos
+        )
+        
+        return Just([Fee(Amount(with: wallet.blockchain, value: fee), parameters: params)])
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }

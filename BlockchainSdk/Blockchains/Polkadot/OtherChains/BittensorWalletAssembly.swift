@@ -18,7 +18,14 @@ struct BittensorWalletAssembly: WalletManagerAssembly {
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
             let runtimeVersionProvider = SubstrateRuntimeVersionProvider(network: network)
             let networkConfig = input.networkConfig
-            var providers = [PolkadotJsonRpcProvider]()
+            
+            let blockchain = input.blockchain
+            let config = input.blockchainSdkConfig
+            
+            var providers: [PolkadotJsonRpcProvider] = APIResolver(blockchain: blockchain, config: config)
+                .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                    PolkadotJsonRpcProvider(node: nodeInfo, configuration: input.networkConfig)
+                }
             
             let dwellirResolver = DwellirAPIResolver(config: input.blockchainSdkConfig)
             
