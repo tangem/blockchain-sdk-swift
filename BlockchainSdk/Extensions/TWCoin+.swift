@@ -112,7 +112,6 @@ extension CoinType {
              .base,
              .joystream,
              .bittensor,
-             .internetComputer,
              .koinos:
             // Blockchains that are not in WalletCore yet
             return nil
