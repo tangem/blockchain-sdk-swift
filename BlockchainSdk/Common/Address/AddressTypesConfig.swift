@@ -79,7 +79,6 @@ struct AddressTypesConfig {
              .base,
              .joystream,
              .bittensor,
-             .koinos,
              .internetComputer,
              .koinos,
              .cyber:
