@@ -208,6 +208,7 @@ struct TestnetAPINodeInfoProvider {
         case .cyber:
             return [
                 .init(url: URL(string: "https://cyber-testnet.alt.technology")!)
+            ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis, .kaspa,
