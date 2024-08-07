@@ -34,8 +34,8 @@ Use BlockchainSdk for Tangem wallet integration
   s.exclude_files = 'BlockchainSdk/Blockchains/XRP/XRPKit/README.md',
                     'BlockchainSdk/Blockchains/XRP/XRPKit/LICENSE',
                     'BlockchainSdk/Blockchains/Tron/protobuf/Tron Protobuf.md',
-                    'BlockchainSdk/Blockchains/Tron/protobuf/Contracts.proto',
-                    'BlockchainSdk/Blockchains/Tron/protobuf/Tron.proto'
+                    'BlockchainSdk/Blockchains/Tron/protobuf/*.proto',
+                    'BlockchainSdk/Blockchains/Koinos/protobuf/*.proto'
 
   # 'Hedera SDK' dependency must be added via SPM
   # 'CryptoSwift' dependency must be added via SPM
