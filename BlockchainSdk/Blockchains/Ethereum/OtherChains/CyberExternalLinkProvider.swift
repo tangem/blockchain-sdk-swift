@@ -14,7 +14,7 @@ struct CyberExternalLinkProvider: ExternalLinkProvider {
     private let baseExplorerUrl: String
 
     init(isTestnet: Bool) {
-        baseExplorerUrl = isTestnet ? "https://testnet.cyberscan.co/" : "https://cyberscan.co/"
+        baseExplorerUrl = isTestnet ? "https://testnet.cyberscan.co" : "https://cyberscan.co"
     }
 
     func url(address: String, contractAddress: String?) -> URL? {
