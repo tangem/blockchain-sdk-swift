@@ -552,7 +552,8 @@ public indirect enum Blockchain: Equatable, Hashable {
              .manta(let testnet),
              .zkSync(let testnet),
              .polygonZkEVM(let testnet),
-             .base(let testnet):
+             .base(let testnet),
+             .cyber(let testnet):
             return Blockchain.ethereum(testnet: testnet).coinId
         default:
             return coinId
