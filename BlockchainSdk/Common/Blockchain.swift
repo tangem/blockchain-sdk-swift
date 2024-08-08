@@ -754,7 +754,7 @@ extension Blockchain {
         case .flare: return true
         case .taraxa: return false
         case .base: return true
-        case .cyber: return true
+        case .cyber: return false
         case .blast: return false
         default:
             assertionFailure("Don't forget about evm here")
