@@ -55,7 +55,8 @@ extension PublicKeyType {
                 .flare,
                 .taraxa,
                 .internetComputer,
-                .base:
+                .base,
+                .blast:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
