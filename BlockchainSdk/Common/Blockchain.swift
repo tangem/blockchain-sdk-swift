@@ -1169,7 +1169,10 @@ private extension Blockchain {
         case .internetComputer:
             return "internet-computer"
         case .cyber:
-            return "cyber"
+            switch type {
+            case .network: return "cyber"
+            case .coin: return "cyberconnect"
+            }
         }
     }
 
