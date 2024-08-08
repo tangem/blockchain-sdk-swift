@@ -112,7 +112,6 @@ extension CoinType {
              .base,
              .joystream,
              .bittensor,
-             .internetComputer,
              .cyber,
              .koinos,
              .blast:
