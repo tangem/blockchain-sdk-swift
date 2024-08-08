@@ -79,6 +79,7 @@ public extension Blockchain {
         case .koinos: break
         case .internetComputer: break
         case .cyber: break
+        case .blast: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -151,6 +152,7 @@ public extension Blockchain {
             .koinos(testnet: false),
             .internetComputer(curve: .secp256k1),
             .cyber(testnet: false),
+            .blast(testnet: false),
         ]
     }
 }

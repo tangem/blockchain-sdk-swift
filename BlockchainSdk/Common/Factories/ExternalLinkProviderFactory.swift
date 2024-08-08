@@ -147,6 +147,8 @@ public struct ExternalLinkProviderFactory {
             return ICPExternalLinkProvider()
         case .cyber:
             return CyberExternalLinkProvider(isTestnet: isTestnet)
+        case .blast:
+            return BlastExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

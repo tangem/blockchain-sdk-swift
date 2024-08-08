@@ -14,8 +14,6 @@ import Foundation
 /// Source: https://github.com/raven-community/ravencore-lib/blob/master/docs/transaction.md
 
 class RavencoinWalletManager: BitcoinWalletManager {
-    override var minimalFeePerByte: Decimal { 1 }
-    
     override var dustValue: Amount {
         let value = 642 / wallet.blockchain.decimalValue
         return Amount(with: wallet.blockchain, value: value)
