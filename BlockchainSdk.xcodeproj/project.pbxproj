@@ -187,13 +187,11 @@
 		5D4B33C023F6EA6C00C93A84 /* BlockchairNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33BF23F6EA6C00C93A84 /* BlockchairNetworkProvider.swift */; };
 		5D4B33C223F72C0400C93A84 /* BitcoinCashNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33C123F72C0400C93A84 /* BitcoinCashNetworkService.swift */; };
 		5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33C523F72F1100C93A84 /* BitcoinCashAddressService.swift */; };
-		5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33C723F72F2700C93A84 /* BitcoinCashWalletManager.swift */; };
 		5D4B33CD23F7DC0400C93A84 /* BinanceWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33CC23F7DC0400C93A84 /* BinanceWalletManager.swift */; };
 		5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33D023F7DC7500C93A84 /* BinanceAddressService.swift */; };
 		5D4B33D323F7DF1F00C93A84 /* BinanceNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33D223F7DF1F00C93A84 /* BinanceNetworkService.swift */; };
 		5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33D423F7DFB400C93A84 /* BinanceTransactionBuilder.swift */; };
 		5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D54FE1923E41E5A009FAC2F /* LitecoinNetworkParams.swift */; };
-		5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D54FE1D23E4313A009FAC2F /* LitecoinWalletManager.swift */; };
 		5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CAF23AA888D009B32AF /* Uint64+.swift */; };
 		5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CB423ACCAD2009B32AF /* BlockcypherNetworkProvider.swift */; };
 		5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */; };
@@ -713,7 +711,6 @@
 		EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */; };
 		EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */; };
 		EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */; };
-		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
 		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
 		EF1339B62AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339B52AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift */; };
 		EF1339B82AB4B2C300B78BA3 /* SmartContractMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339B72AB4B2C300B78BA3 /* SmartContractMethod.swift */; };
@@ -1082,13 +1079,11 @@
 		5D4B33BF23F6EA6C00C93A84 /* BlockchairNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchairNetworkProvider.swift; sourceTree = "<group>"; };
 		5D4B33C123F72C0400C93A84 /* BitcoinCashNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinCashNetworkService.swift; sourceTree = "<group>"; };
 		5D4B33C523F72F1100C93A84 /* BitcoinCashAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinCashAddressService.swift; sourceTree = "<group>"; };
-		5D4B33C723F72F2700C93A84 /* BitcoinCashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinCashWalletManager.swift; sourceTree = "<group>"; };
 		5D4B33CC23F7DC0400C93A84 /* BinanceWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceWalletManager.swift; sourceTree = "<group>"; };
 		5D4B33D023F7DC7500C93A84 /* BinanceAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceAddressService.swift; sourceTree = "<group>"; };
 		5D4B33D223F7DF1F00C93A84 /* BinanceNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceNetworkService.swift; sourceTree = "<group>"; };
 		5D4B33D423F7DFB400C93A84 /* BinanceTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D54FE1923E41E5A009FAC2F /* LitecoinNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinNetworkParams.swift; sourceTree = "<group>"; };
-		5D54FE1D23E4313A009FAC2F /* LitecoinWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinWalletManager.swift; sourceTree = "<group>"; };
 		5D557CAF23AA888D009B32AF /* Uint64+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Uint64+.swift"; sourceTree = "<group>"; };
 		5D557CB423ACCAD2009B32AF /* BlockcypherNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockcypherNetworkProvider.swift; sourceTree = "<group>"; };
 		5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrpNetworkProvider.swift; sourceTree = "<group>"; };
@@ -1724,7 +1719,6 @@
 		EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinLegacyAddressService.swift; sourceTree = "<group>"; };
 		EF666C2F2A2F3F200044986F /* BitcoinBech32AddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinBech32AddressService.swift; sourceTree = "<group>"; };
 		EF666C312A2F43370044986F /* PolkadotAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddress.swift; sourceTree = "<group>"; };
-		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionHistory.swift; sourceTree = "<group>"; };
 		EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyedDecodingContainer+.swift"; sourceTree = "<group>"; };
@@ -2361,7 +2355,6 @@
 				5D4B33C123F72C0400C93A84 /* BitcoinCashNetworkService.swift */,
 				0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */,
 				2DDE5B9229C4F8D200A5B708 /* BitcoinCashWalletAssembly.swift */,
-				5D4B33C723F72F2700C93A84 /* BitcoinCashWalletManager.swift */,
 				EF32FEC12A3072B9002ED43F /* CashAddrService.swift */,
 			);
 			path = BitcoinCash;
@@ -2407,7 +2400,6 @@
 			isa = PBXGroup;
 			children = (
 				2DDE5B9729C4F8D200A5B708 /* LitecoinWalletAssembly.swift */,
-				5D54FE1D23E4313A009FAC2F /* LitecoinWalletManager.swift */,
 				5D54FE1923E41E5A009FAC2F /* LitecoinNetworkParams.swift */,
 				B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */,
 			);
@@ -4051,7 +4043,6 @@
 			children = (
 				2DDE5B9D29C4F8D200A5B708 /* DashWalletAssembly.swift */,
 				EF3B19492AA85E7B0084AA1C /* DashExternalLinkProvider.swift */,
-				EF680A72284F524300F6B1BD /* DashWalletManager.swift */,
 				EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */,
 				EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */,
 			);
@@ -4635,7 +4626,6 @@
 				B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */,
 				B633EA222B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift in Sources */,
 				EF2D9E0F2BC43DA80055C485 /* EthereumNetworkProvider.swift in Sources */,
-				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				DC5E65272B1650F400E81AA5 /* OP_0.swift in Sources */,
 				B6BA93732AEA0E9B00F84E36 /* NEARNetworkParams.Transaction.swift in Sources */,
 				EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */,
@@ -4723,7 +4713,6 @@
 				B00B58CE2BCEBC0D007475F7 /* HederaAPIResolver.swift in Sources */,
 				2DDEFBC92B59B39900885675 /* AlgorandExternalLinkProvider.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
-				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
 				0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */,
 				EF3B19642AA85F280084AA1C /* ChiaExternalLinkProvider.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
@@ -4879,7 +4868,6 @@
 				B62344992AF26C0F00B82306 /* BigUInt+.swift in Sources */,
 				DC5E652B2B1650F400E81AA5 /* OP_NOTIF.swift in Sources */,
 				DA1BA9A72C454AFB006F6839 /* MantleWalletManager.swift in Sources */,
-				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				2DDE5BA629C4F8D200A5B708 /* CardanoWalletAssembly.swift in Sources */,
 				B6F89E942BB20C600009A453 /* SubscanAPITarget.swift in Sources */,
 				0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */,
