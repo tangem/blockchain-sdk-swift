@@ -279,10 +279,11 @@ private extension EthereumTransactionHistoryMapper {
     ) -> [TransactionRecord] {
         let hash = transaction.txid
         let fee = Fee(Amount(with: blockchain, value: feeValue / blockchain.decimalValue))
-        let index = transactionIndicesCounter[hash, default: 0]
-        transactionIndicesCounter[hash] = index + 1
 
         return transactionInfos.map { transactionInfo in
+            let index = transactionIndicesCounter[hash, default: 0]
+            transactionIndicesCounter[hash] = index + 1
+
             return TransactionRecord(
                 hash: hash,
                 index: index,

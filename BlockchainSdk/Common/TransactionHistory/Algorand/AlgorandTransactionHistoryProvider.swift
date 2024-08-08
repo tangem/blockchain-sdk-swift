@@ -47,7 +47,12 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
     }
     
     var description: String {
-        return "nextToken: \(page?.next ?? "-")"
+        return objectDescription(
+            self,
+            userInfo: [
+                "nextToken": page?.next ?? "-",
+            ]
+        )
     }
     
     func reset() {
