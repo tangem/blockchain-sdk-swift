@@ -81,6 +81,7 @@ struct AddressTypesConfig {
              .bittensor,
              .internetComputer,
              .koinos,
+             .cyber,
              .blast:
             return [.default]
         }

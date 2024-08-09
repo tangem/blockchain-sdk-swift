@@ -205,6 +205,10 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://harbinger-api.koinos.io")!)
             ]
+        case .cyber:
+            return [
+                .init(url: URL(string: "https://cyber-testnet.alt.technology")!)
+            ]
         case .blast:
             return [
                 .init(url: URL(string: "https://sepolia.blast.io")!),

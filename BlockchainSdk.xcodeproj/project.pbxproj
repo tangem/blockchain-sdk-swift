@@ -41,6 +41,7 @@
 		0AF90CD92B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */; };
 		0AF90CDB2B87657F00772F04 /* PulsechainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */; };
 		0AF90CDD2B87658600772F04 /* AuroraExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CDC2B87658600772F04 /* AuroraExternalLinkProvider.swift */; };
+		1CF315332C39B5B0004EF522 /* CyberExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF315322C39B5B0004EF522 /* CyberExternalLinkProvider.swift */; };
 		2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */; };
 		2D01EC002B05223900DEF1CC /* DecimalExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */; };
 		2D01EC042B05281800DEF1CC /* DecimalAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalAddressConverter.swift */; };
@@ -929,6 +930,7 @@
 		0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsechainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CDC2B87658600772F04 /* AuroraExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuroraExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
+		1CF315322C39B5B0004EF522 /* CyberExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyberExternalLinkProvider.swift; sourceTree = "<group>"; };
 		2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalAddressService.swift; sourceTree = "<group>"; };
 		2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExternalLinkProvider.swift; sourceTree = "<group>"; };
 		2D01EC032B05281800DEF1CC /* DecimalAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalAddressConverter.swift; sourceTree = "<group>"; };
@@ -3664,6 +3666,7 @@
 				DAB9BE712BBD902C00E77545 /* TaraxaExternalLinkProvider.swift */,
 				B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */,
 				DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */,
+				1CF315322C39B5B0004EF522 /* CyberExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
 			sourceTree = "<group>";
@@ -4660,6 +4663,7 @@
 				2D78F4142A5D955700962CCA /* ClvmProgram.swift in Sources */,
 				B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */,
 				DA198B6129E4090C00DB6EEA /* CosmosRestProvider.swift in Sources */,
+				1CF315332C39B5B0004EF522 /* CyberExternalLinkProvider.swift in Sources */,
 				B6F89EAE2BB20DB50009A453 /* SubscanAPIResult.ExtrinsicInfo.swift in Sources */,
 				EF937BE12B90EF0C009B8374 /* MaximumAmountRestrictable.swift in Sources */,
 				2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */,

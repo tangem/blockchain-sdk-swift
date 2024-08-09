@@ -80,6 +80,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case bittensor(curve: EllipticCurve)
     case koinos(testnet: Bool)
     case internetComputer(curve: EllipticCurve)
+    case cyber(testnet: Bool)
     case blast(testnet: Bool)
 
     public var isTestnet: Bool {
@@ -119,6 +120,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .radiant(let testnet),
                 .base(let testnet),
                 .koinos(let testnet),
+                .cyber(let testnet),
                 .blast(let testnet):
             return testnet
         case .litecoin,
@@ -267,6 +269,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .flare,
                 .taraxa,
                 .base,
+                .cyber,
                 .blast:
             return 18
         case .cardano,
@@ -316,6 +319,7 @@ public indirect enum Blockchain: Equatable, Hashable {
              .zkSync,
              .polygonZkEVM,
              .base,
+             .cyber,
              .blast:
             return "ETH"
         case .ethereumClassic:
@@ -552,7 +556,8 @@ public indirect enum Blockchain: Equatable, Hashable {
              .manta(let testnet),
              .zkSync(let testnet),
              .polygonZkEVM(let testnet),
-             .base(let testnet):
+             .base(let testnet),
+             .cyber(let testnet):
             return Blockchain.ethereum(testnet: testnet).coinId
         default:
             return coinId
@@ -703,6 +708,7 @@ extension Blockchain {
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
+        case .cyber: return isTestnet ? 111557560 : 7560
         case .blast: return isTestnet ? 168587773 : 81457
         default:
             return nil
@@ -748,6 +754,7 @@ extension Blockchain {
         case .flare: return true
         case .taraxa: return false
         case .base: return true
+        case .cyber: return false
         case .blast: return false
         default:
             assertionFailure("Don't forget about evm here")
@@ -875,6 +882,7 @@ extension Blockchain: Codable {
         case .bittensor: return "bittensor"
         case .koinos: return "koinos"
         case .internetComputer: return "internet-computer"
+        case .cyber: return "cyber"
         case .blast: return "blast"
         }
     }
@@ -964,6 +972,7 @@ extension Blockchain: Codable {
         case "bittensor": self = .bittensor(curve: curve)
         case "koinos": self = .koinos(testnet: isTestnet)
         case "internet-computer": self = .internetComputer(curve: curve)
+        case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -1168,6 +1177,11 @@ private extension Blockchain {
             return "koinos"
         case .internetComputer:
             return "internet-computer"
+        case .cyber:
+            switch type {
+            case .network: return "cyber"
+            case .coin: return "cyberconnect"
+            }
         case .blast:
             return "blast"
         }
@@ -1227,6 +1241,7 @@ extension Blockchain {
         case .optimism,
              .manta,
              .base,
+             .cyber,
              .blast:
             return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:

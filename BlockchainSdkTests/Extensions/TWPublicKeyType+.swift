@@ -56,7 +56,8 @@ extension PublicKeyType {
                 .taraxa,
                 .internetComputer,
                 .base,
-                .blast:
+                .blast,
+                .cyber:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,

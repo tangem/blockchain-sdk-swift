@@ -63,6 +63,7 @@ public struct DerivationConfigV2: DerivationConfig {
                 .flare,
                 .taraxa,
                 .base,
+                .cyber,
                 .blast:
             return "m/44'/60'/0'/0/0"
         case .binance:
