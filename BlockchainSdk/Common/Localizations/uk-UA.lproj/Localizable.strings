@@ -9,7 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "Недостатньо коштів для здійснення транзакції. Будь ласка, поповніть свій акаунт.";
 "generic_error" = "Виникла помилка";
 "generic_error_code" = "Виникла помилка. Код: %@.";
-"koinos_insufficient_mana_to_send_koin_description" = "You don't have enough Mana for this transaction. Please wait until the Mana is refilled. Your Mana balance is %1$@/%2$@";
+"koinos_insufficient_mana_to_send_koin_description" = "У вас недостатньо Мани для цієї транзакції. Будь ласка, зачекайте, поки Мана поповниться. Ваш баланс мани дорівнює %1$@/%2$@";
 "no_account_generic" = "Щоб користуватися мережею %1$@, ви маєте оплатити резерв акаунта (%2$@ %3$@), який блокується і не використовується у вашому балансі";
 "no_account_polkadot" = "Обліковий запис одержувача не активовано. Надішліть %@ або більше, щоб активувати обліковий запис.";
 "no_account_send_to_create" = "Для створення акаунту надішліть кошти на цю адресу";
