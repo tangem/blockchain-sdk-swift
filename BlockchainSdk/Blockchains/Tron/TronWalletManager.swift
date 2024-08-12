@@ -26,7 +26,9 @@ class TronWalletManager: BaseManager, WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         let encodedAddressPublisher =  Result {
-            try TronUtils().convertAddressToHEX(wallet.address)
+            let bytes = try TronUtils().convertAddressToBytes(wallet.address)
+            let hex = bytes.leadingZeroPadding(toLength: 32).hexString.lowercased()
+            return hex
         }.publisher
 
         cancellable = encodedAddressPublisher

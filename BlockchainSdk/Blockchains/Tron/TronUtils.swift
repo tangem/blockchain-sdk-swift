@@ -30,13 +30,6 @@ struct TronUtils {
 
         return Data(bytes)
     }
-
-    //убрать паддинг и ловеркейс
-    func convertAddressToHEX(_ base58String: String) throws -> String {
-        let data = try convertAddressToBytes(base58String)
-        let hex = data.leadingZeroPadding(toLength: 32).hexString.lowercased()
-        return hex
-    }
 }
 
 enum TronUtilsError: Error {
