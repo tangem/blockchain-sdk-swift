@@ -8,6 +8,7 @@
 
 import Foundation
 import BigInt
+import TangemSdk
 
 struct TronUtils {
     func combineBigUIntValueAtBalance(response constantResult: [String]) throws -> BigUInt {
@@ -21,4 +22,23 @@ struct TronUtils {
         
         return bigIntValue
     }
+
+    func convertAddressToBytes(_ base58String: String) throws -> Data {
+        guard let bytes = base58String.base58CheckDecodedBytes else {
+            throw TronUtilsError.failedToDecodeAddress
+        }
+
+        return Data(bytes)
+    }
+
+    //убрать паддинг и ловеркейс
+    func convertAddressToHEX(_ base58String: String) throws -> String {
+        let data = try convertAddressToBytes(base58String)
+        let hex = data.leadingZeroPadding(toLength: 32).hexString.lowercased()
+        return hex
+    }
+}
+
+enum TronUtilsError: Error {
+    case failedToDecodeAddress
 }

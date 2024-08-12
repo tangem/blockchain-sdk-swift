@@ -11,17 +11,12 @@ import SwiftProtobuf
 import CryptoSwift
 
 class TronTransactionBuilder {
-    private let blockchain: Blockchain
-    private let smartContractFeeLimit: Int64 = 100_000_000
-    
-    init(blockchain: Blockchain) {
-        self.blockchain = blockchain
-    }
-    
-    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Protocol_Transaction.raw {
-        let contract = try self.contract(amount: amount, source: source, destination: destination)
-        let feeLimit = (amount.type == .coin) ? 0 : smartContractFeeLimit
-        
+    private let utils = TronUtils()
+
+    func buildForSign(transaction: Transaction, block: TronBlock) throws -> TronPresignedInput {
+        let contract = try self.contract(transaction: transaction)
+        let feeLimit = (transaction.amount.type == .coin) ? 0 : Constants.smartContractFeeLimit
+
         let blockHeaderRawData = block.block_header.raw_data
         let blockHeader = Protocol_BlockHeader.raw.with {
             $0.timestamp = blockHeaderRawData.timestamp
@@ -31,17 +26,17 @@ class TronTransactionBuilder {
             $0.parentHash = Data(hex: blockHeaderRawData.parentHash)
             $0.witnessAddress = Data(hex: blockHeaderRawData.witness_address)
         }
-        
+
         let blockData = try blockHeader.serializedData()
         let blockHash = blockData.getSha256()
         let refBlockHash = blockHash[8..<16]
-        
+
         let number = blockHeader.number
         let numberData = Data(Data(from: number).reversed())
         let refBlockBytes = numberData[6..<8]
-        
+
         let tenHours: Int64 = 10 * 60 * 60 * 1000 // same as WalletCore
-        
+
         let rawData = Protocol_Transaction.raw.with {
             $0.timestamp = blockHeader.timestamp
             $0.expiration = blockHeader.timestamp + tenHours
@@ -52,73 +47,129 @@ class TronTransactionBuilder {
             ]
             $0.feeLimit = feeLimit
         }
-        
-        return rawData
+
+        let hash = try rawData.serializedData().sha256()
+        return TronPresignedInput(rawData: rawData, hash: hash)
     }
-    
-    func buildForSend(rawData: Protocol_Transaction.raw, signature: Data) -> Protocol_Transaction {
+
+    func buildForSend(rawData: Protocol_Transaction.raw, signature: Data) throws -> Data {
         let transaction = Protocol_Transaction.with {
             $0.rawData = rawData
             $0.signature = [signature]
         }
-        return transaction
+
+        return try transaction.serializedData()
     }
-    
-    private func contract(amount: Amount, source: String, destination: String) throws -> Protocol_Transaction.Contract {
+
+    func buildContractEnergyUsageParameter(amount: Amount, destinationAddress: String) throws -> String {
+        let addressData = try utils.convertAddressToBytes(destinationAddress).leadingZeroPadding(toLength: 32)
+
+        guard let amountData = amount.encoded?.leadingZeroPadding(toLength: 32) else {
+            throw WalletError.failedToGetFee
+        }
+
+        let parameter = (addressData + amountData).hexString.lowercased()
+        return parameter
+    }
+
+    private func contract(transaction: Transaction) throws -> Protocol_Transaction.Contract {
+        let amount = transaction.amount
+        let sourceAddress = transaction.sourceAddress
+        let destinationAddress = transaction.destinationAddress
+
         switch amount.type {
         case .coin:
-            let parameter = Protocol_TransferContract.with {
-                $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
-                $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
-                $0.amount = integerValue(from: amount).int64Value
+            let parameter = try Protocol_TransferContract.with {
+                $0.ownerAddress = try utils.convertAddressToBytes(sourceAddress)
+                $0.toAddress = try utils.convertAddressToBytes(destinationAddress)
+                $0.amount = amount.int64Value
             }
-            
+
             return try Protocol_Transaction.Contract.with {
                 $0.type = .transferContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
         case .token(let token):
-            let functionSelector = "transfer(address,uint256)"
-            let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
-            
-            let addressData = TronAddressService.toByteForm(destination)?.leadingZeroPadding(toLength: 32) ?? Data()
-            
-            guard
-                let bigIntValue = EthereumUtils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
-            else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            let amountData = bigIntValue.serialize().leadingZeroPadding(toLength: 32)
-            let contractData = functionSelectorHash + addressData + amountData
-            
-            let parameter = Protocol_TriggerSmartContract.with {
-                $0.contractAddress = TronAddressService.toByteForm(token.contractAddress) ?? Data()
+            let contractData = try buildContractData(transaction: transaction)
+
+            let parameter = try Protocol_TriggerSmartContract.with {
+                $0.contractAddress = try utils.convertAddressToBytes(token.contractAddress)
                 $0.data = contractData
-                $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
+                $0.ownerAddress = try utils.convertAddressToBytes(sourceAddress)
             }
-            
+
             return try Protocol_Transaction.Contract.with {
                 $0.type = .triggerSmartContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
-        case .reserve, .feeResource:
-            fatalError()
+        default:
+            assertionFailure("Not impkemented")
+            throw BlockchainSdkError.notImplemented
         }
     }
-    
-    private func integerValue(from amount: Amount) -> NSDecimalNumber {
-        let decimalValue: Decimal
-        switch amount.type {
-        case .coin:
-            decimalValue = blockchain.decimalValue
-        case .token(let token):
-            decimalValue = token.decimalValue
-        case .reserve, .feeResource:
-            fatalError()
+
+    private func buildContractData(transaction: Transaction) throws -> Data {
+        let params = try getParams(from: transaction)
+        let transactionType = params?.transactionType ?? .transfer
+
+        switch transactionType {
+        case .transfer:
+            return try buildTransferContractData(amount: transaction.amount, destinationAddress: transaction.destinationAddress)
+        case .approval(let data):
+            return buildApprovalContractData(data: data)
         }
-        
-        let decimalAmount = amount.value * decimalValue
-        return (decimalAmount.rounded() as NSDecimalNumber)
     }
+
+    private func buildTransferContractData(amount: Amount, destinationAddress: String) throws -> Data {
+        guard let amountData = amount.encoded?.leadingZeroPadding(toLength: 32) else {
+            throw WalletError.failedToBuildTx
+        }
+
+        let destinationData = try utils.convertAddressToBytes(destinationAddress).leadingZeroPadding(toLength: 32)
+
+        let contractData = TronFunction.transfer.prefix + destinationData + amountData
+        return contractData
+
+    }
+
+    private func buildApprovalContractData(data: Data) -> Data {
+        let contractData = TronFunction.approve.prefix + data
+        return contractData
+    }
+
+    private func getParams(from transaction: Transaction) throws -> TronTransactionParams? {
+        guard let params = transaction.params else {
+            return nil
+        }
+
+        guard let tronParams = params as? TronTransactionParams else {
+            throw WalletError.failedToBuildTx
+        }
+
+        return tronParams
+    }
+}
+
+// MARK: - Constants
+
+private extension TronTransactionBuilder {
+    enum Constants {
+        static let smartContractFeeLimit: Int64 = 100_000_000
+    }
+}
+
+// MARK: - Amount+
+
+fileprivate extension Amount {
+    var int64Value: Int64 {
+        let decimalAmount = value * pow(Decimal(10), decimals)
+        return (decimalAmount.rounded() as NSDecimalNumber).int64Value
+    }
+}
+
+// MARK: - TronPresignedInput
+
+struct TronPresignedInput {
+    let rawData: Protocol_Transaction.raw
+    let hash: Data
 }
