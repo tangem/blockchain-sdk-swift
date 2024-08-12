@@ -8,7 +8,6 @@
 
 import Foundation
 import BigInt
-import TangemSdk
 
 struct TronUtils {
     func combineBigUIntValueAtBalance(response constantResult: [String]) throws -> BigUInt {
