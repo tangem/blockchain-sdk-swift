@@ -79,7 +79,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case joystream(curve: EllipticCurve)
     case bittensor(curve: EllipticCurve)
     case koinos(testnet: Bool)
-    case internetComputer(curve: EllipticCurve)
+    case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
 
@@ -175,7 +175,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .algorand(let curve, _),
                 .aptos(let curve, _),
                 .hedera(let curve, _),
-                .internetComputer(let curve),
                 .bittensor(let curve):
             return curve
         case .chia:
@@ -971,7 +970,7 @@ extension Blockchain: Codable {
         case "joystream": self = .joystream(curve: curve)
         case "bittensor": self = .bittensor(curve: curve)
         case "koinos": self = .koinos(testnet: isTestnet)
-        case "internet-computer": self = .internetComputer(curve: curve)
+        case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
         default:

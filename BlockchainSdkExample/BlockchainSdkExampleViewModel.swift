@@ -116,7 +116,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             Blockchain.ton(curve: .ed25519, testnet: false),
             Blockchain.xrp(curve: .ed25519),
             Blockchain.tezos(curve: .ed25519),
-            Blockchain.internetComputer(curve: .secp256k1),
         ].map { $0.codingKey }
         
         if let walletsData = UserDefaults.standard.data(forKey: walletsKey) {

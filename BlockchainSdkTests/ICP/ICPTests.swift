@@ -13,7 +13,7 @@ import TangemSdk
 @testable import BlockchainSdk
 
 final class ICPTests: XCTestCase {
-    private let blockchain = Blockchain.internetComputer(curve: .secp256k1)
+    private let blockchain = Blockchain.internetComputer
     
     private let sizeTester = TransactionSizeTesterUtility()
     
