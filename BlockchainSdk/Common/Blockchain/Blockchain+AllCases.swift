@@ -150,7 +150,7 @@ public extension Blockchain {
             .joystream(curve: .ed25519_slip0010),
             .bittensor(curve: .ed25519_slip0010),
             .koinos(testnet: false),
-            .internetComputer(curve: .secp256k1),
+            .internetComputer,
             .cyber(testnet: false),
             .blast(testnet: false),
         ]
