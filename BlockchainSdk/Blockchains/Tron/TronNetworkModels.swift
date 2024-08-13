@@ -96,11 +96,3 @@ struct TronTriggerSmartContractResponse: Decodable {
 struct TronContractEnergyUsageResponse: Decodable {
     let energy_used: Int
 }
-
-// MARK: - Allowance
-
-struct TokenAllowanceRequestData: Encodable {
-    let ownerAddress: String
-    let contractAddress: String
-    let spenderAddress: String
-}
