@@ -173,7 +173,7 @@ class TronWalletManager: BaseManager, WalletManager {
         networkService.getNowBlock()
             .withWeakCaptureOf(self)
             .tryMap { manager, block in
-                try .txBuilder.buildForSign(transaction: transaction, block: block)
+                try manager.txBuilder.buildForSign(transaction: transaction, block: block)
             }
             .flatMap { presignedInput in
                 signer.sign(hash: presignedInput.hash, walletPublicKey: publicKey)
