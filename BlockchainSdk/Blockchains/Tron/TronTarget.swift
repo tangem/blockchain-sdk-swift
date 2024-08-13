@@ -16,7 +16,7 @@ struct TronTarget: TargetType {
         case getAccountResource(address: String)
         case getNowBlock
         case broadcastHex(data: Data)
-        case tokenBalance(address: String, contractAddress: String)
+        case tokenBalance(address: String, contractAddress: String, parameter: String)
         case contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String)
         case getTransactionInfoById(transactionID: String)
     }
@@ -68,14 +68,12 @@ struct TronTarget: TargetType {
         case .broadcastHex(let data):
             let request = TronBroadcastRequest(transaction: data.hexString.lowercased())
             return .requestJSONEncodable(request)
-        case .tokenBalance(let address, let contractAddress):
-            let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
-            
+        case .tokenBalance(let address, let contractAddress, let parameter):
             let request = TronTriggerSmartContractRequest(
                 owner_address: address,
                 contract_address: contractAddress,
-                function_selector: "balanceOf(address)",
-                parameter: hexAddress,
+                function_selector: TronFunction.balanceOf.rawValue,
+                parameter: parameter,
                 visible: true
             )
             return .requestJSONEncodable(request)
@@ -83,7 +81,7 @@ struct TronTarget: TargetType {
             let request = TronTriggerSmartContractRequest(
                 owner_address: sourceAddress,
                 contract_address: contractAddress,
-                function_selector: "transfer(address,uint256)",
+                function_selector: TronFunction.transfer.rawValue,
                 parameter: parameter,
                 visible: true
             )

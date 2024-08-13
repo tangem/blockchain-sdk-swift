@@ -13,29 +13,6 @@ import CryptoSwift
 public struct TronAddressService {
     private let prefix: UInt8 = 0x41
     private let addressLength = 21
-    
-    public init() {}
-    
-    static func toByteForm(_ base58String: String) -> Data? {
-        guard let bytes = base58String.base58CheckDecodedBytes else {
-            return nil
-        }
-        
-        return Data(bytes)
-    }
-    
-    static func toHexForm(_ base58String: String, length: Int?) -> String? {
-        guard let data = toByteForm(base58String) else {
-            return nil
-        }
-        
-        let hex = data.hexString.lowercased()
-        if let length = length {
-            return String(repeating: "0", count: length - hex.count) + hex
-        } else {
-            return hex
-        }
-    }
 }
 
 // MARK: - AddressProvider

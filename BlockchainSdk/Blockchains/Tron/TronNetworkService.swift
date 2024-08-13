@@ -50,10 +50,10 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
+    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String], encodedAddress: String) -> AnyPublisher<TronAccountInfo, Error> {
         Publishers.Zip3(
             getAccount(for: address),
-            tokenBalances(address: address, tokens: tokens),
+            tokenBalances(address: address, tokens: tokens, parameter: encodedAddress),
             confirmedTransactionIDs(ids: transactionIDs)
         )
         .map { [blockchain] (accountInfo, tokenBalances, confirmedTransactionIDs) in
@@ -136,8 +136,8 @@ class TronNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
-    
-    private func tokenBalances(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+
+    private func tokenBalances(address: String, tokens: [Token], parameter: String) -> AnyPublisher<[Token: Decimal], Error> {
         tokens
             .publisher
             .setFailureType(to: Error.self)
@@ -146,7 +146,7 @@ class TronNetworkService: MultiNetworkProvider {
                     return .anyFail(error: WalletError.empty)
                 }
                 return self
-                    .tokenBalance(address: address, token: token)
+                    .tokenBalance(address: address, token: token, parameter: parameter)
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
@@ -159,9 +159,9 @@ class TronNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Never> {
+    private func tokenBalance(address: String, token: Token, parameter: String) -> AnyPublisher<(Token, Decimal), Never> {
         providerPublisher {
-            $0.tokenBalance(address: address, contractAddress: token.contractAddress)
+            $0.tokenBalance(address: address, contractAddress: token.contractAddress, parameter: parameter)
                 .tryMap { response in
                     let bigUIntValue = try TronUtils().combineBigUIntValueAtBalance(response: response.constant_result)
                     
