@@ -45,60 +45,22 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        return Just(())
-            .receive(on: DispatchQueue.global())
-            .setFailureType(to: Error.self)
-            .tryMap { [weak self] Void -> Data in
-                guard let self else {
-                    throw WalletError.empty
-                }
-
-                return try self.txBuilder.buildForSign(transaction: transaction)
-            }
-            .flatMap { [weak self] hash -> AnyPublisher<Data, Error> in
-                guard let self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-
-                return signer
-                    .sign(hash: hash, walletPublicKey: self.wallet.publicKey)
-                    .tryMap { [weak self] signature -> Data in
-                        guard let self else {
-                            throw WalletError.empty
-                        }
- 
-                        let signature = try Secp256k1Signature(with: signature)
-                        return try signature.unmarshal(with: self.wallet.publicKey.blockchainKey, hash: hash).data
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .tryMap { [weak self] signature -> Data in
-                guard let self else {
-                    throw WalletError.empty
-                }
-
-                return try self.txBuilder.buildForSend(transaction: transaction, signature: signature)
-            }
-            .flatMap { [weak self] transaction -> AnyPublisher<String, Error> in
-                guard let self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return self.networkService
-                    .send(transaction: transaction)
-                    .mapSendError(tx: transaction.hexString.lowercased())
-                    .eraseToAnyPublisher()
-            }
-            .handleEvents(receiveOutput: { [weak self] hash in
+        sendGeneric(
+            transaction: transaction,
+            signer: signer,
+            buildForSign: { [weak self] in
+                guard let self else { throw WalletError.empty }
+                return try txBuilder.buildForSign(transaction: transaction)
+            },
+            buildForSend: { [weak self] signature in
+                guard let self else { throw WalletError.empty }
+                return try txBuilder.buildForSend(transaction: transaction, signature: signature)
+            },
+            mapToPending: { hash in
                 let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-                self?.wallet.addPendingTransaction(record)
-            })
-            .map {
-                TransactionSendResult(hash: $0)
+                return mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
             }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+        )
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
@@ -220,3 +182,79 @@ class CosmosWalletManager: BaseManager, WalletManager {
 }
 
 extension CosmosWalletManager: ThenProcessable { }
+
+extension CosmosWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(
+        transaction: StakeKitTransaction,
+        signer: any TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        sendGeneric(
+            transaction: transaction,
+            signer: signer,
+            buildForSign: { [weak self] in
+                guard let self else { throw WalletError.empty }
+                return try txBuilder.buildForSign(stakingTransaction: transaction)
+            },
+            buildForSend: { [weak self] signature in
+                guard let self else { throw WalletError.empty }
+                return try txBuilder.buildForSend(stakingTransaction: transaction, signature: signature)
+            },
+            mapToPending: { hash in
+                let mapper = PendingTransactionRecordMapper()
+                return mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+            }
+        )
+    }
+}
+
+extension CosmosWalletManager {
+    func sendGeneric<T>(
+        transaction: T,
+        signer: any TransactionSigner,
+        buildForSign: @escaping () throws -> Data,
+        buildForSend: @escaping (Data) throws -> Data,
+        mapToPending: @escaping (String) -> PendingTransactionRecord
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .setFailureType(to: Error.self)
+            .tryMap(buildForSign)
+            .flatMap { [weak self] hash -> AnyPublisher<Data, Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+
+                return signer
+                    .sign(hash: hash, walletPublicKey: wallet.publicKey)
+                    .tryMap { [weak self] signature -> Data in
+                        guard let self else {
+                            throw WalletError.empty
+                        }
+ 
+                        let signature = try Secp256k1Signature(with: signature)
+                        return try signature.unmarshal(with: wallet.publicKey.blockchainKey, hash: hash).data
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .tryMap(buildForSend)
+            .flatMap { [weak self] transaction -> AnyPublisher<String, Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService
+                    .send(transaction: transaction)
+                    .mapSendError(tx: transaction.hexString.lowercased())
+                    .eraseToAnyPublisher()
+            }
+            .handleEvents(receiveOutput: { [weak self] hash in
+                let record = mapToPending(hash)
+                self?.wallet.addPendingTransaction(record)
+            })
+            .map {
+                TransactionSendResult(hash: $0)
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
+    }
+}

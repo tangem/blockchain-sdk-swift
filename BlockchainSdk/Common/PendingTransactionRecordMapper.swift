@@ -41,6 +41,25 @@ struct PendingTransactionRecordMapper {
             transactionParams: transaction.params
         )
     }
+    
+    func mapToPendingTransactionRecord(
+        transaction: StakeKitTransaction,
+        hash: String,
+        date: Date = Date(),
+        isIncoming: Bool = false
+    ) -> PendingTransactionRecord {
+        PendingTransactionRecord(
+            hash: hash,
+            source: transaction.sourceAddress,
+            destination: "",
+            amount: transaction.amount,
+            fee: transaction.fee,
+            date: date,
+            isIncoming: isIncoming,
+            transactionType: .stake,
+            transactionParams: nil
+        )
+    }
 
     func mapToPendingTransactionRecord(
         stakeKitTransaction: StakeKitTransaction,
