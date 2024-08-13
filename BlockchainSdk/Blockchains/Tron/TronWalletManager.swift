@@ -25,7 +25,7 @@ class TronWalletManager: BaseManager, WalletManager {
     private let feeSigner = DummySigner()
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let encodedAddressPublisher =  Result {
+        let encodedAddressPublisher = Result {
             let bytes = try TronUtils().convertAddressToBytes(wallet.address)
             let hex = bytes.leadingZeroPadding(toLength: 32).hexString.lowercased()
             return hex
@@ -173,7 +173,7 @@ class TronWalletManager: BaseManager, WalletManager {
         networkService.getNowBlock()
             .withWeakCaptureOf(self)
             .tryMap { manager, block in
-                try self.txBuilder.buildForSign(transaction: transaction, block: block)
+                try .txBuilder.buildForSign(transaction: transaction, block: block)
             }
             .flatMap { presignedInput in
                 signer.sign(hash: presignedInput.hash, walletPublicKey: publicKey)
@@ -225,8 +225,8 @@ fileprivate class DummySigner: TransactionSigner {
     init() {
         let keyPair = try! Secp256k1Utils().generateKeyPair()
         let compressedPublicKey = try! Secp256k1Key(with: keyPair.publicKey).compress()
-        self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivationType: .none)
-        self.privateKey = keyPair.privateKey
+        publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivationType: .none)
+        privateKey = keyPair.privateKey
     }
         
     func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
