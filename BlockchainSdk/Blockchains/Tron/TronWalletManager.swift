@@ -85,9 +85,11 @@ class TronWalletManager: BaseManager, WalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let energyFeePublisher = energyFee(amount: amount, destination: destination)
 
+        let blockchain = wallet.blockchain
+
         let dummyTransaction = Transaction(
             amount: amount,
-            fee: Fee(.zeroCoin(for: .tron(testnet: false))),
+            fee: Fee(.zeroCoin(for: blockchain)),
             sourceAddress: wallet.address,
             destinationAddress: destination,
             changeAddress: wallet.address)
@@ -97,8 +99,6 @@ class TronWalletManager: BaseManager, WalletManager {
             signer: feeSigner,
             publicKey: feeSigner.publicKey
         )
-
-        let blockchain = wallet.blockchain
 
         return Publishers.Zip4(
             energyFeePublisher,
