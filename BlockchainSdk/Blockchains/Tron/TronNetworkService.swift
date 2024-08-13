@@ -50,10 +50,10 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String], encodedAddressData: String) -> AnyPublisher<TronAccountInfo, Error> {
+    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
         Publishers.Zip3(
             getAccount(for: address),
-            tokenBalances(address: address, tokens: tokens, encodedAddressData: encodedAddressData),
+            tokenBalances(address: address, tokens: tokens),
             confirmedTransactionIDs(ids: transactionIDs)
         )
         .map { [blockchain] (accountInfo, tokenBalances, confirmedTransactionIDs) in
@@ -151,15 +151,22 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
 
-    private func tokenBalances(address: String, tokens: [Token], encodedAddressData: String) -> AnyPublisher<[Token: Decimal], Error> {
-        tokens
+    private func tokenBalances(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+        let encodedAddressDataPublisher = Result {
+            try TronUtils().convertAddressToBytesPadded(address).hexString.lowercased()
+        }
+            .publisher
+
+        let tokenPublisher = tokens
             .publisher
             .setFailureType(to: Error.self)
-            .flatMap { [weak self] token -> AnyPublisher<(Token, Decimal), Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                return self
+
+        return encodedAddressDataPublisher.zip(tokenPublisher)
+            .withWeakCaptureOf(self)
+            .flatMap { args -> AnyPublisher<(Token, Decimal), Error> in
+               let (service, (encodedAddressData, token)) = args
+
+                return service
                     .tokenBalance(address: address, token: token, encodedAddressData: encodedAddressData)
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()

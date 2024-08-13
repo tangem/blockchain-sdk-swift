@@ -25,31 +25,22 @@ class TronWalletManager: BaseManager, WalletManager {
     private let feeSigner = DummySigner()
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let encodedAddressDataPublisher = Result {
-            try TronUtils().convertAddressToBytesPadded(wallet.address).hexString.lowercased()
-        }.publisher
-
-        cancellable = encodedAddressDataPublisher
-            .withWeakCaptureOf(self)
-            .flatMap{ manager, encodedAddressData in
-                manager.networkService.accountInfo(
-                    for: manager.wallet.address,
-                    tokens: manager.cardTokens,
-                    transactionIDs: manager.wallet.pendingTransactions.map { $0.hash },
-                    encodedAddressData: encodedAddressData
-                )
+        cancellable = networkService.accountInfo(
+            for: wallet.address,
+            tokens: cardTokens,
+            transactionIDs: wallet.pendingTransactions.map { $0.hash }
+        )
+        .sink { [weak self] in
+            switch $0 {
+            case .failure(let error):
+                self?.wallet.clearAmounts()
+                completion(.failure(error))
+            case .finished:
+                completion(.success(()))
             }
-            .sink { [weak self] in
-                switch $0 {
-                case .failure(let error):
-                    self?.wallet.clearAmounts()
-                    completion(.failure(error))
-                case .finished:
-                    completion(.success(()))
-                }
-            } receiveValue: { [weak self] accountInfo in
-                self?.updateWallet(accountInfo)
-            }
+        } receiveValue: { [weak self] accountInfo in
+            self?.updateWallet(accountInfo)
+        }
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
