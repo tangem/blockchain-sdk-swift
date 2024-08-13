@@ -25,20 +25,18 @@ class TronWalletManager: BaseManager, WalletManager {
     private let feeSigner = DummySigner()
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let encodedAddressPublisher = Result {
-            let bytes = try TronUtils().convertAddressToBytes(wallet.address)
-            let hex = bytes.leadingZeroPadding(toLength: 32).hexString.lowercased()
-            return hex
+        let encodedAddressDataPublisher = Result {
+            try TronUtils().convertAddressToBytesPadded(wallet.address).hexString.lowercased()
         }.publisher
 
-        cancellable = encodedAddressPublisher
+        cancellable = encodedAddressDataPublisher
             .withWeakCaptureOf(self)
-            .flatMap{ manager, encodedAddress in
+            .flatMap{ manager, encodedAddressData in
                 manager.networkService.accountInfo(
                     for: manager.wallet.address,
                     tokens: manager.cardTokens,
                     transactionIDs: manager.wallet.pendingTransactions.map { $0.hash },
-                    encodedAddress: encodedAddress
+                    encodedAddressData: encodedAddressData
                 )
             }
             .sink { [weak self] in
@@ -139,20 +137,20 @@ class TronWalletManager: BaseManager, WalletManager {
             return .justWithError(output: 0)
         }
 
-        let energyUsePublisher = Result {
-            try txBuilder.buildContractEnergyUsageParameter(amount: amount, destinationAddress: destination)
+        let energyUsagePublisher = Result {
+            try txBuilder.buildContractEnergyUsageData(amount: amount, destinationAddress: destination)
         }
             .publisher
             .withWeakCaptureOf(self)
-            .flatMap { manager, parameter in
+            .flatMap { manager, energyUsageData in
                 manager.networkService.contractEnergyUsage(
                     sourceAddress: manager.wallet.address,
                     contractAddress: contractAddress,
-                    parameter: parameter
+                    contractEnergyUsageData: energyUsageData
                 )
             }
 
-        return energyUsePublisher.zip(networkService.chainParameters())
+        return energyUsagePublisher.zip(networkService.chainParameters())
             .map { energyUse, chainParameters in
                 // Contract's energy fee changes every maintenance period (6 hours) and
                 // since we don't know what period the transaction is going to be executed in
@@ -244,3 +242,29 @@ fileprivate class DummySigner: TransactionSigner {
         fatalError()
     }
 }
+
+// MARK: - TronNetworkprovider
+
+extension TronWalletManager: TronNetworkProvider {
+    func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<Decimal, any Error> {
+        let allowanceDataPublisher = Result {
+            try txBuilder.buildForAllowance(owner: owner, spender: spender)
+        }.publisher
+
+        return allowanceDataPublisher
+            .withWeakCaptureOf(self)
+            .flatMap { manager, allowanceData in
+                manager.networkService.getAllowance(owner: owner, contractAddress: contractAddress, allowanceData: allowanceData)
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - TronTransactionDataBuilder
+
+extension TronWalletManager: TronTransactionDataBuilder {
+    func buildForApprove(spender: String, amount: Amount) throws -> Data {
+        return try txBuilder.buildForApprove(spender: spender, amount: amount)
+    }
+}
+

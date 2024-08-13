@@ -132,7 +132,7 @@ class TronTests: XCTestCase {
         
         let utils = TronUtils()
         
-        try XCTAssertEqual(utils.combineBigUIntValueAtBalance(response: [longConstantResult]), "2194760324519687303")
-        try XCTAssertEqual(utils.combineBigUIntValueAtBalance(response: [shortConstantResult]), "31995384")
+        try XCTAssertEqual(utils.parseBalance(response: [longConstantResult], decimals: 0), Decimal(stringValue: "2194760324519687303"))
+        try XCTAssertEqual(utils.parseBalance(response: [shortConstantResult], decimals: 0), Decimal(stringValue: "31995384"))
     }
 }
