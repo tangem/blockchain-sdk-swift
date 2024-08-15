@@ -13,8 +13,6 @@ import TangemSdk
 @testable import BlockchainSdk
 
 final class ICPTests: XCTestCase {
-    private let blockchain = Blockchain.internetComputer(curve: .secp256k1)
-    
     private let sizeTester = TransactionSizeTesterUtility()
     
     func testTransactionBuild() throws {
@@ -26,18 +24,18 @@ final class ICPTests: XCTestCase {
         let nonce = Data(hex: "5b4210ba3969eff9b64163012d48935cf72bb86e0e444c431d28f64888af41f5")
         
         let txBuilder = ICPTransactionBuilder(
-            decimalValue: blockchain.decimalValue,
+            decimalValue: Blockchain.internetComputer.decimalValue,
             publicKey: publicKey.data,
             nonce: nonce
         )
         
         let amounValueDecimal = Decimal(stringValue: "0.0001")!
         
-        let amountValue = Amount(with: blockchain, value: amounValueDecimal)
-        let feeValue = Amount(with: blockchain, value: .init(stringValue: "0.0001")!)
+        let amountValue = Amount(with: .internetComputer, value: amounValueDecimal)
+        let feeValue = Amount(with: .internetComputer, value: .init(stringValue: "0.0001")!)
+
         
-        
-        let addressService = WalletCoreAddressService(blockchain: blockchain)
+        let addressService = WalletCoreAddressService(blockchain: .internetComputer)
         let sourceAddress = try addressService.makeAddress(
             for: Wallet.PublicKey(seedKey: publicKey.data, derivationType: nil),
             with: .default
@@ -65,7 +63,7 @@ final class ICPTests: XCTestCase {
         
         hashesToSign.forEach { sizeTester.testTxSize($0) }
         
-        let curve = try Curve(blockchain: blockchain)
+        let curve = try Curve(blockchain: .internetComputer)
 
         let signatures = try hashesToSign.map { digest in
             let signature = try XCTUnwrap(privateKey.sign(digest: digest, curve: curve))

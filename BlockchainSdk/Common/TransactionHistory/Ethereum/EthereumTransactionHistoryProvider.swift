@@ -37,7 +37,14 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
     }
     
     var description: String {
-        return "number: \(String(describing: page?.number)); \(totalPages); \(totalRecordsCount)"
+        return objectDescription(
+            self,
+            userInfo: [
+                "pageNumber": String(describing: page?.number),
+                "totalPages": totalPages,
+                "totalRecordsCount": totalRecordsCount,
+            ]
+        )
     }
     
     func reset() {

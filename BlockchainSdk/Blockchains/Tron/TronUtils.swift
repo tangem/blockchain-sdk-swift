@@ -21,4 +21,16 @@ struct TronUtils {
         
         return bigIntValue
     }
+
+    func convertAddressToBytes(_ base58String: String) throws -> Data {
+        guard let bytes = base58String.base58CheckDecodedBytes else {
+            throw TronUtilsError.failedToDecodeAddress
+        }
+
+        return Data(bytes)
+    }
+}
+
+enum TronUtilsError: Error {
+    case failedToDecodeAddress
 }

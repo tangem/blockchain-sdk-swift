@@ -57,7 +57,9 @@ public struct AddressServiceFactory {
                 .mantle,
                 .flare,
                 .taraxa,
-                .base:
+                .base,
+                .cyber,
+                .blast:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()

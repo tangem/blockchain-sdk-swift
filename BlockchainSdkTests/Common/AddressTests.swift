@@ -1299,7 +1299,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testICPAddressValidation() throws {
-        let addressService = WalletCoreAddressService(blockchain: .internetComputer(curve: .secp256k1))
+        let addressService = WalletCoreAddressService(blockchain: .internetComputer)
         let expectedAddress = "270b15681e87d9d878ddfcf1aae4c3174295f2182efa0e533e9585c7fb940bdc"
         
         XCTAssertEqual(expectedAddress, try addressService.makeAddress(from: secpDecompressedKey).value)

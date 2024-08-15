@@ -25,9 +25,22 @@ class TronWalletManager: BaseManager, WalletManager {
     private let feeSigner = DummySigner()
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let transactionIDs = wallet.pendingTransactions.map { $0.hash }
-        
-        cancellable = networkService.accountInfo(for: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
+        let encodedAddressPublisher = Result {
+            let bytes = try TronUtils().convertAddressToBytes(wallet.address)
+            let hex = bytes.leadingZeroPadding(toLength: 32).hexString.lowercased()
+            return hex
+        }.publisher
+
+        cancellable = encodedAddressPublisher
+            .withWeakCaptureOf(self)
+            .flatMap{ manager, encodedAddress in
+                manager.networkService.accountInfo(
+                    for: manager.wallet.address,
+                    tokens: manager.cardTokens,
+                    transactionIDs: manager.wallet.pendingTransactions.map { $0.hash },
+                    encodedAddress: encodedAddress
+                )
+            }
             .sink { [weak self] in
                 switch $0 {
                 case .failure(let error):
@@ -43,31 +56,26 @@ class TronWalletManager: BaseManager, WalletManager {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return signedTransactionData(
-            amount: transaction.amount,
-            source: wallet.address,
-            destination: transaction.destinationAddress,
+            transaction: transaction,
             signer: signer,
             publicKey: wallet.publicKey
         )
-        .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
-            guard let self = self else {
-                return .anyFail(error: WalletError.empty)
-            }
-            
-            return self.networkService
+        .withWeakCaptureOf(self)
+        .flatMap { manager, data  in
+            manager.networkService
                 .broadcastHex(data)
                 .mapSendError(tx: data.hexString)
-                .eraseToAnyPublisher()
         }
-        .tryMap { [weak self] broadcastResponse -> TransactionSendResult in
+        .withWeakCaptureOf(self)
+        .tryMap { manager, broadcastResponse -> TransactionSendResult in
             guard broadcastResponse.result == true else {
                 throw WalletError.failedToSendTx
             }
-            
+
             let hash = broadcastResponse.txid
             let mapper = PendingTransactionRecordMapper()
             let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-            self?.wallet.addPendingTransaction(record)
+            manager.wallet.addPendingTransaction(record)
             return TransactionSendResult(hash: hash)
         }
         .eraseSendError()
@@ -76,18 +84,28 @@ class TronWalletManager: BaseManager, WalletManager {
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let energyFeePublisher = energyFee(amount: amount, destination: destination)
-        
-        let transactionDataPublisher = signedTransactionData(
+
+        let blockchain = wallet.blockchain
+
+        let dummyTransaction = Transaction(
             amount: amount,
-            source: wallet.address,
-            destination: destination,
+            fee: Fee(.zeroCoin(for: blockchain)),
+            sourceAddress: wallet.address,
+            destinationAddress: destination,
+            changeAddress: wallet.address)
+
+        let transactionDataPublisher = signedTransactionData(
+            transaction: dummyTransaction,
             signer: feeSigner,
             publicKey: feeSigner.publicKey
         )
 
-        let blockchain = self.wallet.blockchain
-
-        return Publishers.Zip4(energyFeePublisher, networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
+        return Publishers.Zip4(
+            energyFeePublisher,
+            networkService.accountExists(address: destination),
+            transactionDataPublisher,
+            networkService.getAccountResource(for: wallet.address)
+        )
             .map { energyFee, destinationExists, transactionData, resources -> [Fee] in
                 if !destinationExists && amount.type == .coin {
                     let amount = Amount(with: blockchain, value: 1.1)
@@ -115,32 +133,26 @@ class TronWalletManager: BaseManager, WalletManager {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private func energyFee(amount: Amount, destination: String) -> AnyPublisher<Int, Error> {
-        let token: Token
-        switch amount.type {
-        case .reserve, .feeResource:
-            return .anyFail(error: WalletError.failedToGetFee)
-        case .coin:
-            return Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
-        case .token(let amountToken):
-            token = amountToken
+        guard let contractAddress = amount.type.token?.contractAddress else {
+            return .justWithError(output: 0)
         }
-        
-        let addressData = TronAddressService.toByteForm(destination)?.leadingZeroPadding(toLength: 32) ?? Data()
-        guard let amountData = amount.encoded?.leadingZeroPadding(toLength: 32) else {
-            return .anyFail(error: WalletError.failedToGetFee)
+
+        let energyUsePublisher = Result {
+            try txBuilder.buildContractEnergyUsageParameter(amount: amount, destinationAddress: destination)
         }
-        
-        let parameter = (addressData + amountData).hexString.lowercased()
-        
-        let energyUsePublisher = networkService.contractEnergyUsage(
-            sourceAddress: wallet.address,
-            contractAddress: token.contractAddress,
-            parameter: parameter
-        )
-        
-        return Publishers.Zip(energyUsePublisher, networkService.chainParameters())
+            .publisher
+            .withWeakCaptureOf(self)
+            .flatMap { manager, parameter in
+                manager.networkService.contractEnergyUsage(
+                    sourceAddress: manager.wallet.address,
+                    contractAddress: contractAddress,
+                    parameter: parameter
+                )
+            }
+
+        return energyUsePublisher.zip(networkService.chainParameters())
             .map { energyUse, chainParameters in
                 // Contract's energy fee changes every maintenance period (6 hours) and
                 // since we don't know what period the transaction is going to be executed in
@@ -157,76 +169,30 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func signedTransactionData(amount: Amount, source: String, destination: String, signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
-        return networkService.getNowBlock()
-            .tryMap { [weak self] block -> Protocol_Transaction.raw in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                
-                return try self.txBuilder.buildForSign(amount: amount, source: source, destination: destination, block: block)
+    private func signedTransactionData(transaction: Transaction, signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+        networkService.getNowBlock()
+            .withWeakCaptureOf(self)
+            .tryMap { manager, block in
+                try manager.txBuilder.buildForSign(transaction: transaction, block: block)
             }
-            .flatMap { [weak self] transactionRaw -> AnyPublisher<Data, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return Just(())
-                    .setFailureType(to: Error.self)
-                    .flatMap { [weak self] _ -> AnyPublisher<Data, Error> in
-                        guard let self = self else {
-                            return .anyFail(error: WalletError.empty)
-                        }
-                        
-                        return self.sign(transactionRaw, with: signer, publicKey: publicKey)
+            .flatMap { presignedInput in
+                signer.sign(hash: presignedInput.hash, walletPublicKey: publicKey)
+                    .withWeakCaptureOf(self)
+                    .tryMap { manager, signature in
+                        let unmarshalledSignature = manager.unmarshal(signature, hash: presignedInput.hash, publicKey: publicKey)
+                        return try manager.txBuilder.buildForSend(rawData: presignedInput.rawData, signature: unmarshalledSignature)
                     }
-                    .tryMap { [weak self] signature -> Protocol_Transaction in
-                        guard let self = self else {
-                            throw WalletError.empty
-                        }
-                        
-                        return self.txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
-                    }
-                    .tryMap {
-                        try $0.serializedData()
-                    }
-                    .eraseToAnyPublisher()
-            }
-            
-            .eraseToAnyPublisher()
-    }
-    
-    private func sign(_ transactionRaw: Protocol_Transaction.raw, with signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
-        Just(())
-            .setFailureType(to: Error.self)
-            .tryMap {
-                try transactionRaw.serializedData().sha256()
-            }
-            .flatMap { hash -> AnyPublisher<Data, Error> in
-                Just(hash)
-                    .setFailureType(to: Error.self)
-                    .flatMap {
-                        signer.sign(hash: $0, walletPublicKey: publicKey)
-                    }
-                    .tryMap { [weak self] signature -> Data in
-                        guard let self = self else {
-                            throw WalletError.empty
-                        }
-                        
-                        return self.unmarshal(signature, hash: hash, publicKey: publicKey)
-                    }
-                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
-    
+
     private func updateWallet(_ accountInfo: TronAccountInfo) {
         wallet.add(amount: Amount(with: wallet.blockchain, value: accountInfo.balance))
-        
+
         for (token, balance) in accountInfo.tokenBalances {
             wallet.add(tokenValue: balance, for: token)
         }
-        
+
         wallet.removePendingTransaction { hash in
             accountInfo.confirmedTransactionIDs.contains(hash)
         }
@@ -259,8 +225,8 @@ fileprivate class DummySigner: TransactionSigner {
     init() {
         let keyPair = try! Secp256k1Utils().generateKeyPair()
         let compressedPublicKey = try! Secp256k1Key(with: keyPair.publicKey).compress()
-        self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivationType: .none)
-        self.privateKey = keyPair.privateKey
+        publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivationType: .none)
+        privateKey = keyPair.privateKey
     }
         
     func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {

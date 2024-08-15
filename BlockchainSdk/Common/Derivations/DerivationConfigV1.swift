@@ -47,7 +47,9 @@ public struct DerivationConfigV1: DerivationConfig {
              .mantle,
              .flare,
              .taraxa,
-             .base:
+             .base,
+             .cyber,
+             .blast:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"

@@ -22,7 +22,7 @@ struct TronWalletAssembly: WalletManagerAssembly {
                 })
             
             $0.networkService = TronNetworkService(isTestnet: blockchain.isTestnet, providers: providers)
-            $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
+            $0.txBuilder = TronTransactionBuilder()
         }
     }
 }

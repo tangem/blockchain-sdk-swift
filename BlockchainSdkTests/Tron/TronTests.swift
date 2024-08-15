@@ -29,22 +29,28 @@ class TronTests: XCTestCase {
     
     override func setUp() {
         self.blockchain = Blockchain.tron(testnet: true)
-        self.txBuilder = TronTransactionBuilder(blockchain: blockchain)
+        self.txBuilder = TronTransactionBuilder()
     }
     
-    func testTrxTransfer() {
-        let transactionRaw = try! txBuilder.buildForSign(amount: Amount(with: blockchain, value: 1), source: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF", destination: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn", block: tronBlock)
-        
+    func testTrxTransfer() throws {
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, value: 1),
+            fee: Fee(.zeroCoin(for: blockchain)),
+            sourceAddress: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF",
+            destinationAddress: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn",
+            changeAddress: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF"
+        )
+
+        let presignedInput = try txBuilder.buildForSign(transaction: transaction, block: tronBlock)
         let signature = Data(hex: "6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
-        let transaction = txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
-        let transactionData = try! transaction.serializedData()
+        let transactionData = try txBuilder.buildForSend(rawData: presignedInput.rawData, signature: signature)
         
         let expectedTransactionData = Data(hex: "0a85010a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5a67080112630a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412320a1541c5d1c75825b30bb2e2e655798209d56448eb6b5e121541ec8c5a0fcbb28f14418eed9cf582af0d77e4256e18c0843d70d889a4a9e62c12416b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
         
         XCTAssertEqual(transactionData, expectedTransactionData)
     }
     
-    func testTrc20TransferUSDT() {
+    func testTrc20TransferUSDT() throws {
         let token = Token(name: "Tether",
                           symbol: "USDT",
                           contractAddress: "TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj",
@@ -55,13 +61,20 @@ class TronTests: XCTestCase {
             1000000000000000000,
         ]
         
-        let transactionDataList = amountValues.map { amountValue -> Data in
-            let transactionRaw = try! txBuilder.buildForSign(amount: Amount(with: token, value: amountValue), source: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF", destination: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn", block: tronBlock)
-            
+        let transactionDataList = try amountValues.map { amountValue -> Data in
+
+            let transaction = Transaction(
+                amount: Amount(with: token, value: amountValue),
+                fee: Fee(.zeroCoin(for: blockchain)),
+                sourceAddress: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF",
+                destinationAddress: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn",
+                changeAddress: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF"
+            )
+
+            let presignedInput = try txBuilder.buildForSign(transaction: transaction, block: tronBlock)
             let signature = Data(hex: "6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
-            let transaction = txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
-            let transactionData = try! transaction.serializedData()
-            
+            let transactionData = try txBuilder.buildForSend(rawData: presignedInput.rawData, signature: signature)
+
             return transactionData
         }
         
@@ -75,7 +88,7 @@ class TronTests: XCTestCase {
         XCTAssertEqual(transactionDataList, expectedTransactionDataList)
     }
     
-    func testTrc20TransferJST() {
+    func testTrc20TransferJST() throws {
         let token = Token(name: "JST",
                           symbol: "JST",
                           contractAddress: "TF17BgPaZYbz8oxbjhriubPDsA7ArKoLX3",
@@ -87,13 +100,20 @@ class TronTests: XCTestCase {
             Decimal(string: "123456789123456789.123456789")!,
         ]
         
-        let transactionDataList = amountValues.map { amountValue -> Data in
-            let transactionRaw = try! txBuilder.buildForSign(amount: Amount(with: token, value: amountValue), source: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF", destination: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn", block: tronBlock)
-            
+        let transactionDataList = try amountValues.map { amountValue -> Data in
+
+            let transaction = Transaction(
+                amount: Amount(with: token, value: amountValue),
+                fee: Fee(.zeroCoin(for: blockchain)),
+                sourceAddress: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF",
+                destinationAddress: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn",
+                changeAddress: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF"
+            )
+
+            let presignedInput = try txBuilder.buildForSign(transaction: transaction, block: tronBlock)
             let signature = Data(hex: "6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
-            let transaction = txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
-            let transactionData = try! transaction.serializedData()
-            
+            let transactionData = try txBuilder.buildForSend(rawData: presignedInput.rawData, signature: signature)
+
             return transactionData
         }
         

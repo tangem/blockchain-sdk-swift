@@ -157,10 +157,10 @@ final class TronTransactionHistoryMapper {
         let type = transactionType(transaction, amountType: amountType)
         let tokenTransfers = tokenTransfers(transaction)
 
-        let index = transactionIndicesCounter[hash, default: 0]
-        transactionIndicesCounter[hash] = index + 1
-
         return transactionInfos.map { transactionInfo in
+            let index = transactionIndicesCounter[hash, default: 0]
+            transactionIndicesCounter[hash] = index + 1
+
             return TransactionRecord(
                 hash: hash,
                 index: index,
