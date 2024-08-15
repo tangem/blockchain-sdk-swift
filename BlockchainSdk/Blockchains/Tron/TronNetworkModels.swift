@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct TronGetChainParametersResponse: Codable {
-    struct TronChainParameter: Codable {
+struct TronGetChainParametersResponse: Decodable {
+    struct TronChainParameter: Decodable {
         let key: String
         let value: Int?
     }
@@ -29,34 +29,34 @@ struct TronAccountInfo {
     let confirmedTransactionIDs: [String]
 }
 
-struct TronGetAccountRequest: Codable {
+struct TronGetAccountRequest: Encodable {
     let address: String
     let visible: Bool
 }
 
-struct TronGetAccountResponse: Codable {
+struct TronGetAccountResponse: Decodable {
     let balance: UInt64?
     // We don't use this field but we can't have just one optional `balance` field
     // Otherwise an empty JSON will conform to this structure
     let address: String
 }
 
-struct TronGetAccountResourceResponse: Codable {
+struct TronGetAccountResourceResponse: Decodable {
     let freeNetUsed: Int?
     let freeNetLimit: Int
 }
 
-struct TronTransactionInfoRequest: Codable {
+struct TronTransactionInfoRequest: Encodable {
     let value: String
 }
 
-struct TronTransactionInfoResponse: Codable {
+struct TronTransactionInfoResponse: Decodable {
     let id: String
 }
 
-struct TronBlock: Codable {
-    struct BlockHeader: Codable {
-        struct RawData: Codable {
+struct TronBlock: Decodable {
+    struct BlockHeader: Decodable {
+        struct RawData: Decodable {
             let number: Int64
             let txTrieRoot: String
             let witness_address: String
@@ -71,16 +71,16 @@ struct TronBlock: Codable {
     let block_header: BlockHeader
 }
 
-struct TronBroadcastRequest: Codable {
+struct TronBroadcastRequest: Encodable {
     let transaction: String
 }
 
-struct TronBroadcastResponse: Codable {
+struct TronBroadcastResponse: Decodable {
     let result: Bool
     let txid: String
 }
 
-struct TronTriggerSmartContractRequest: Codable {
+struct TronTriggerSmartContractRequest: Encodable {
     let owner_address: String
     let contract_address: String
     let function_selector: String
@@ -89,10 +89,10 @@ struct TronTriggerSmartContractRequest: Codable {
     let visible: Bool
 }
 
-struct TronTriggerSmartContractResponse: Codable {
+struct TronTriggerSmartContractResponse: Decodable {
     let constant_result: [String]
 }
 
-struct TronContractEnergyUsageResponse: Codable {
+struct TronContractEnergyUsageResponse: Decodable {
     let energy_used: Int
 }
