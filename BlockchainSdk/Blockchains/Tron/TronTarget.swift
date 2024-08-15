@@ -19,6 +19,7 @@ struct TronTarget: TargetType {
         case tokenBalance(address: String, contractAddress: String, parameter: String)
         case contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String)
         case getTransactionInfoById(transactionID: String)
+        case getAllowance(sourceAddress: String, contractAddress: String, parameter: String)
     }
     
     let node: NodeInfo
@@ -45,7 +46,7 @@ struct TronTarget: TargetType {
             return "/wallet/getnowblock"
         case .broadcastHex:
             return "/wallet/broadcasthex"
-        case .tokenBalance, .contractEnergyUsage:
+        case .tokenBalance, .contractEnergyUsage, .getAllowance:
             return "/wallet/triggerconstantcontract"
         case .getTransactionInfoById:
             return "/walletsolidity/gettransactioninfobyid"
@@ -89,6 +90,16 @@ struct TronTarget: TargetType {
         case .getTransactionInfoById(let transactionID):
             let request = TronTransactionInfoRequest(value: transactionID)
             return .requestJSONEncodable(request)
+        case .getAllowance(let sourceAddress, let contractAddress, let parameter):
+            let request = TronTriggerSmartContractRequest(
+                owner_address: sourceAddress,
+                contract_address: contractAddress,
+                function_selector: TronFunction.allowance.rawValue,
+                parameter: parameter,
+                visible: true
+            )
+            return .requestJSONEncodable(request)
+
         }
     }
     

@@ -54,8 +54,12 @@ class TronJsonRpcProvider: HostProvider {
     func transactionInfo(id: String) -> AnyPublisher<TronTransactionInfoResponse, Error> {
         requestPublisher(for: .getTransactionInfoById(transactionID: id))
     }
-    
-    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
+
+    func getAllowance(sourceAddress: String, contractAddress: String, parameter: String) -> AnyPublisher<TronTriggerSmartContractResponse, Error> {
+        requestPublisher(for: .getAllowance(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter))
+    }
+
+    private func requestPublisher<T: Decodable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
         return provider.requestPublisher(TronTarget(node: node, target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
