@@ -32,10 +32,45 @@ class CosmosTransactionBuilder {
     func setAccountNumber(_ accountNumber: UInt64) {
         self.accountNumber = accountNumber
     }
+    
+    // MARK: Regular transaction
 
     func buildForSign(transaction: Transaction) throws -> Data {
         let input = try makeInput(transaction: transaction, fee: transaction.fee)
         let txInputData = try input.serializedData()
+        
+        return try buildForSignInternal(txInputData: txInputData)
+    }
+
+    func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
+        let input = try makeInput(transaction: transaction, fee: transaction.fee)
+        let txInputData = try input.serializedData()
+        
+        return try buildForSendInternal(txInputData: txInputData, signature: signature)
+    }
+    
+    // MARK: Staking
+    
+    func buildForSign(stakingTransaction: StakeKitTransaction) throws -> Data {
+        let input = try makeInput(stakingTransaction: stakingTransaction)
+        let txInputData = try input.serializedData()
+        
+        return try buildForSignInternal(txInputData: txInputData)
+    }
+    
+    func buildForSend(
+        stakingTransaction: StakeKitTransaction,
+        signature: Data
+    ) throws -> Data {
+        let input = try makeInput(stakingTransaction: stakingTransaction)
+        let txInputData = try input.serializedData()
+        
+        return try buildForSendInternal(txInputData: txInputData, signature: signature)
+    }
+
+    // MARK: Private
+
+    private func buildForSignInternal(txInputData: Data) throws -> Data {
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: cosmosChain.coin, txInputData: txInputData)
         let output = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
@@ -46,10 +81,7 @@ class CosmosTransactionBuilder {
         return output.dataHash
     }
 
-    func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
-        let input = try makeInput(transaction: transaction, fee: transaction.fee)
-        let txInputData = try input.serializedData()
-
+    private func buildForSendInternal(txInputData: Data, signature: Data) throws -> Data {
         let publicKeys = DataVector()
         publicKeys.add(data: publicKey)
 
@@ -165,6 +197,45 @@ class CosmosTransactionBuilder {
         return input
     }
     
+    private func makeInput(
+        stakingTransaction: StakeKitTransaction
+    ) throws -> CosmosSigningInput {
+        guard let accountNumber, let sequenceNumber else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let stakingProtoMessage = try CosmosProtoMessage(serializedData: Data(hex: stakingTransaction.unsignedData))
+        
+        let feeMessage = stakingProtoMessage.feeAndKeyContainer.feeContainer
+        let feeValue = feeMessage.feeAmount
+        
+        guard let message = CosmosMessage.createStakeMessage(message: stakingProtoMessage.delegateContainer.delegate) else {
+            throw WalletError.failedToBuildTx
+        }
+        let fee = CosmosFee.with { fee in
+            fee.gas = feeMessage.gas
+            fee.amounts = [
+                CosmosAmount.with { amount in
+                    amount.amount = feeValue.amount
+                    amount.denom = feeValue.denomination
+                }
+            ]
+        }
+        
+        let input = CosmosSigningInput.with {
+            $0.mode = .sync
+            $0.signingMode = .protobuf
+            $0.accountNumber = accountNumber
+            $0.chainID = cosmosChain.chainID
+            $0.sequence = sequenceNumber
+            $0.publicKey = publicKey
+            $0.messages = [message]
+            $0.privateKey = Data(repeating: 1, count: 32)
+            $0.fee = fee
+        }
+        return input
+    }
+    
     private func denomination(for amount: Amount) throws -> String {
         switch amount.type {
         case .coin:
@@ -196,5 +267,63 @@ class CosmosTransactionBuilder {
         case .reserve, .feeResource:
             throw WalletError.failedToBuildTx
         }
+    }
+}
+
+extension CosmosMessage {
+    static func createStakeMessage(
+        message: CosmosProtoMessage.CosmosMessageDelegate
+    ) -> Self? {
+        let type = message.messageType
+        guard message.hasDelegateData else {
+            return nil
+        }
+        let delegateData = message.delegateData
+        
+        switch type {
+        case (let string) where string.contains(Constants.delegateMessage.rawValue):
+            let delegateAmount = delegateData.delegateAmount
+            let stakeMessage = CosmosMessage.Delegate.with { delegate in
+                delegate.amount = CosmosAmount.with { amount in
+                    amount.amount = delegateAmount.amount
+                    amount.denom = delegateAmount.denomination
+                }
+                delegate.delegatorAddress = delegateData.delegatorAddress
+                delegate.validatorAddress = delegateData.validatorAddress
+            }
+            return CosmosMessage.with {
+                $0.stakeMessage = stakeMessage
+            }
+        case (let string) where string.contains(Constants.withdrawMessage.rawValue):
+            let withdrawMessage = CosmosMessage.WithdrawDelegationReward.with { reward in
+                reward.delegatorAddress = delegateData.delegatorAddress
+                reward.validatorAddress = delegateData.validatorAddress
+            }
+            return CosmosMessage.with {
+                $0.withdrawStakeRewardMessage = withdrawMessage
+            }
+        case (let string) where string.contains(Constants.undelegateMessage.rawValue):
+            let delegateAmount = delegateData.delegateAmount
+            let unstakeMessage = CosmosMessage.Undelegate.with { delegate in
+                delegate.amount = CosmosAmount.with { amount in
+                    amount.amount = delegateAmount.amount
+                    amount.denom = delegateAmount.denomination
+                }
+                delegate.delegatorAddress = delegateData.delegatorAddress
+                delegate.validatorAddress = delegateData.validatorAddress
+            }
+            return CosmosMessage.with {
+                $0.unstakeMessage = unstakeMessage
+            }
+        default: return nil
+        }
+    }
+}
+
+extension CosmosMessage {
+    enum Constants: String {
+        case delegateMessage = "MsgDelegate"
+        case withdrawMessage = "MsgWithdrawDelegatorReward"
+        case undelegateMessage = "MsgUndelegate"
     }
 }
