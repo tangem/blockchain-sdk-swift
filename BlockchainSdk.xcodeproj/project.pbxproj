@@ -693,6 +693,8 @@
 		DC5E65392B16566100E81AA5 /* OpCodeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E65382B16566100E81AA5 /* OpCodeFactory.swift */; };
 		DC5E653B2B1663C800E81AA5 /* ScriptChunkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E653A2B1663C800E81AA5 /* ScriptChunkHelper.swift */; };
 		DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E653C2B16641300E81AA5 /* BitcoinScriptBuilder.swift */; };
+		DC6336692C6BB9AC0007D167 /* TronNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6336682C6BB9AC0007D167 /* TronNetworkProvider.swift */; };
+		DC63366D2C6BC3820007D167 /* TronTransactionDataBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63366C2C6BC3820007D167 /* TronTransactionDataBuilder.swift */; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC667F062C401B97000842D0 /* StakeKitTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC667F052C401B97000842D0 /* StakeKitTransaction.swift */; };
 		DC667F082C4022CF000842D0 /* SolanaStakeKitTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC667F072C4022CF000842D0 /* SolanaStakeKitTransactionHelper.swift */; };
@@ -1608,6 +1610,8 @@
 		DC5E65382B16566100E81AA5 /* OpCodeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpCodeFactory.swift; sourceTree = "<group>"; };
 		DC5E653A2B1663C800E81AA5 /* ScriptChunkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptChunkHelper.swift; sourceTree = "<group>"; };
 		DC5E653C2B16641300E81AA5 /* BitcoinScriptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinScriptBuilder.swift; sourceTree = "<group>"; };
+		DC6336682C6BB9AC0007D167 /* TronNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronNetworkProvider.swift; sourceTree = "<group>"; };
+		DC63366C2C6BC3820007D167 /* TronTransactionDataBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTransactionDataBuilder.swift; sourceTree = "<group>"; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		DC667F052C401B97000842D0 /* StakeKitTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakeKitTransaction.swift; sourceTree = "<group>"; };
 		DC667F072C4022CF000842D0 /* SolanaStakeKitTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaStakeKitTransactionHelper.swift; sourceTree = "<group>"; };
@@ -3508,6 +3512,8 @@
 				2DFD3AA32BE560BD00FCA7DC /* TronUtils.swift */,
 				2DDE5B9C29C4F8D200A5B708 /* TronWalletAssembly.swift */,
 				DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */,
+				DC6336682C6BB9AC0007D167 /* TronNetworkProvider.swift */,
+				DC63366C2C6BC3820007D167 /* TronTransactionDataBuilder.swift */,
 				DA3081222817AEB800DE41F1 /* protobuf */,
 			);
 			path = Tron;
@@ -5234,6 +5240,7 @@
 				DAC7C04127A3BB17002F7252 /* PolkadotTransactionBuilder.swift in Sources */,
 				B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */,
 				5D88838B27D3BBDA008744E1 /* BaseManager.swift in Sources */,
+				DC63366D2C6BC3820007D167 /* TronTransactionDataBuilder.swift in Sources */,
 				DC5E64E02B1650F400E81AA5 /* OP_CODESEPARATOR.swift in Sources */,
 				EF5C753E2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift in Sources */,
 				B00B58C62BCEB93A007475F7 /* TONAPIResolver.swift in Sources */,
@@ -5285,6 +5292,7 @@
 				EFD717D52A26330F00E5430D /* WalletFactory.swift in Sources */,
 				DC5E65202B1650F400E81AA5 /* OP_DUP.swift in Sources */,
 				DA63B0A429CB402A00AC6E49 /* KaspaWalletAssembly.swift in Sources */,
+				DC6336692C6BB9AC0007D167 /* TronNetworkProvider.swift in Sources */,
 				EF32FEDB2A38C288002ED43F /* BitcoinScriptAddressProvider.swift in Sources */,
 				DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */,
 				EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */,
