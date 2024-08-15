@@ -50,10 +50,10 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String], encodedAddress: String) -> AnyPublisher<TronAccountInfo, Error> {
+    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
         Publishers.Zip3(
             getAccount(for: address),
-            tokenBalances(address: address, tokens: tokens, parameter: encodedAddress),
+            tokenBalances(address: address, tokens: tokens),
             confirmedTransactionIDs(ids: transactionIDs)
         )
         .map { [blockchain] (accountInfo, tokenBalances, confirmedTransactionIDs) in
@@ -112,14 +112,28 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String) -> AnyPublisher<Int, Error> {
+    func contractEnergyUsage(sourceAddress: String, contractAddress: String, contractEnergyUsageData: String) -> AnyPublisher<Int, Error> {
         providerPublisher {
-            $0.contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter)
+            $0.contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: contractEnergyUsageData)
                 .map(\.energy_used)
                 .eraseToAnyPublisher()
         }
     }
-    
+
+    func getAllowance(owner: String, contractAddress: String, allowanceData: String) -> AnyPublisher<Decimal, Error> {
+        providerPublisher {
+            $0.getAllowance(sourceAddress: owner, contractAddress: contractAddress, parameter: allowanceData)
+                .tryMap { response in
+                    // TODO: Use EthereumUtils instead?
+                    try TronUtils().parseBalance(
+                        response: response.constant_result,
+                        decimals: 0
+                    )
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
     // MARK: - Private Implementation
     
     private func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
@@ -137,16 +151,23 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
 
-    private func tokenBalances(address: String, tokens: [Token], parameter: String) -> AnyPublisher<[Token: Decimal], Error> {
-        tokens
+    private func tokenBalances(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+        let encodedAddressDataPublisher = Result {
+            try TronUtils().convertAddressToBytesPadded(address).hexString.lowercased()
+        }
+            .publisher
+
+        let tokenPublisher = tokens
             .publisher
             .setFailureType(to: Error.self)
-            .flatMap { [weak self] token -> AnyPublisher<(Token, Decimal), Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                return self
-                    .tokenBalance(address: address, token: token, parameter: parameter)
+
+        return encodedAddressDataPublisher.zip(tokenPublisher)
+            .withWeakCaptureOf(self)
+            .flatMap { args -> AnyPublisher<(Token, Decimal), Error> in
+               let (service, (encodedAddressData, token)) = args
+
+                return service
+                    .tokenBalance(address: address, token: token, encodedAddressData: encodedAddressData)
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
@@ -159,25 +180,15 @@ class TronNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func tokenBalance(address: String, token: Token, parameter: String) -> AnyPublisher<(Token, Decimal), Never> {
+    private func tokenBalance(address: String, token: Token, encodedAddressData: String) -> AnyPublisher<(Token, Decimal), Never> {
         providerPublisher {
-            $0.tokenBalance(address: address, contractAddress: token.contractAddress, parameter: parameter)
+            $0.tokenBalance(address: address, contractAddress: token.contractAddress, parameter: encodedAddressData)
                 .tryMap { response in
-                    let bigUIntValue = try TronUtils().combineBigUIntValueAtBalance(response: response.constant_result)
-                    
-                    let formatted = EthereumUtils.formatToPrecision(
-                        bigUIntValue,
-                        numberDecimals: token.decimalCount,
-                        formattingDecimals: token.decimalCount,
-                        decimalSeparator: ".",
-                        fallbackToScientific: false
+                    let value = try TronUtils().parseBalance(
+                        response: response.constant_result,
+                        decimals: token.decimalCount
                     )
-                    
-                    guard let decimalValue = Decimal(stringValue: formatted) else {
-                        throw WalletError.failedToParseNetworkResponse()
-                    }
-                    
-                    return (token, decimalValue)
+                    return (token, value)
                 }
                 .eraseToAnyPublisher()
         }
