@@ -19,25 +19,19 @@ public protocol TransactionHistoryProvider: CustomStringConvertible {
 }
 
 public extension TransactionHistoryProvider {
-    func loadTransactionHistoryExcludingZeroTransactions(
-        request: TransactionHistory.Request
-    ) -> AnyPublisher<TransactionHistory.Response, Error> {
-        loadTransactionHistory(request: request)
-            .map { response in
-                guard case .token = request.amountType else {
-                    return response
-                }
-                
-                let records = response.records.filter { record in
-                    switch record.destination {
-                    case .single(let destination):
-                        destination.amount != 0
-                    case .multiple(let destinations):
-                        destinations.contains { $0.amount != 0 }
-                    }
-                }
-                return TransactionHistory.Response(records: records)
-            }
-            .eraseToAnyPublisher()
+    func shouldBeIncludedInHistory(amountType: Amount.AmountType, record: TransactionRecord) -> Bool {
+        switch amountType {
+        case .coin, .reserve, .feeResource:
+            return true
+        case .token:
+            break
+        }
+        
+        switch record.destination {
+        case .single(let destination):
+            return destination.amount != 0
+        case .multiple(let destinations):
+            return destinations.contains { $0.amount != 0 }
+        }
     }
 }

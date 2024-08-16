@@ -78,6 +78,12 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
                     walletAddress: request.address,
                     amountType: .coin
                 )
+                .filter { record in
+                    provider.shouldBeIncludedInHistory(
+                        amountType: request.amountType,
+                        record: record
+                    )
+                }
                 
                 provider.page = .init(next: response.nextToken)
                 

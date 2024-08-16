@@ -109,6 +109,12 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
                 walletAddress: request.address,
                 amountType: request.amountType
             )
+            .filter { record in
+                historyProvider.shouldBeIncludedInHistory(
+                    amountType: request.amountType,
+                    record: record
+                )
+            }
 
             return TransactionHistory.Response(records: records)
         }

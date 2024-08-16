@@ -103,6 +103,12 @@ final class PolygonTransactionHistoryProvider<Mapper> where
                     let transactionRecords = try historyProvider
                         .mapper
                         .mapToTransactionRecords(result, walletAddress: request.address, amountType: request.amountType)
+                        .filter { record in
+                            historyProvider.shouldBeIncludedInHistory(
+                                amountType: request.amountType,
+                                record: record
+                            )
+                        }
                     return TransactionHistory.Response(records: transactionRecords)
                 }
                 .tryCatch { [weak historyProvider] error in
