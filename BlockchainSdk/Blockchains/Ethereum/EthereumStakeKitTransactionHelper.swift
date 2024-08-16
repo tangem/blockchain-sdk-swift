@@ -11,13 +11,17 @@ import WalletCore
 import BigInt
 
 struct EthereumStakeKitTransactionHelper {
+    private let transactionBuilder: EthereumTransactionBuilder
+    
+    init(transactionBuilder: EthereumTransactionBuilder) {
+        self.transactionBuilder = transactionBuilder
+    }
+    
     func prepareForSign(
-        _ stakingTransaction: StakeKitTransaction,
-        transactionBuilder: EthereumTransactionBuilder
+        _ stakingTransaction: StakeKitTransaction
     ) throws -> Data {
         let input = try buildSigningInput(
-            stakingTransaction: stakingTransaction,
-            transactionBuilder: transactionBuilder
+            stakingTransaction: stakingTransaction
         )
         let preSigningOutput = try transactionBuilder.buildTxCompilerPreSigningOutput(input: input)
         return preSigningOutput.dataHash
@@ -25,20 +29,17 @@ struct EthereumStakeKitTransactionHelper {
     
     func prepareForSend(
         stakingTransaction: StakeKitTransaction,
-        transactionBuilder: EthereumTransactionBuilder,
         signatureInfo: SignatureInfo
     ) throws -> Data {
         let input = try buildSigningInput(
-            stakingTransaction: stakingTransaction,
-            transactionBuilder: transactionBuilder
+            stakingTransaction: stakingTransaction
         )
         let output = try transactionBuilder.buildSigningOutput(input: input, signatureInfo: signatureInfo)
         return output.encoded
     }
     
     private func buildSigningInput(
-        stakingTransaction: StakeKitTransaction,
-        transactionBuilder: EthereumTransactionBuilder
+        stakingTransaction: StakeKitTransaction
     ) throws -> EthereumSigningInput {
         let compiledTransactionData = Data(hex: stakingTransaction.unsignedData)
         let compiledTransaction = try JSONDecoder().decode(

@@ -30,7 +30,7 @@ class EthereumTransactionBuilder {
         let input = try buildSigningInput(transaction: transaction)
         let output = try buildSigningOutput(input: input, signatureInfo: signatureInfo)
         return output.encoded
-    }    
+    }
 
     func buildDummyTransactionForL1(destination: String, value: String?, data: Data?, fee: Fee) throws -> Data {
         let valueData = BigUInt(Data(hex: value ?? "0x0"))
