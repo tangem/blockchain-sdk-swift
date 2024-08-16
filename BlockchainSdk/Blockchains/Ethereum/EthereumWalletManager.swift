@@ -404,3 +404,45 @@ extension EthereumWalletManager: EthereumTransactionDataBuilder {
         return try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
     }
 }
+
+extension EthereumWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(
+        transaction: StakeKitTransaction,
+        signer: any TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        let helper = EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder)
+        return Result {
+            try helper.prepareForSign(transaction)
+        }
+        .publisher
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, hashToSign in
+            signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, signatureInfo -> String in
+            try helper.prepareForSend(
+                stakingTransaction: transaction,
+                signatureInfo: signatureInfo
+            )
+            .hexString
+            .lowercased()
+            .addHexPrefix()
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, rawTransaction in
+            walletManager.networkService.send(transaction: rawTransaction)
+                .mapSendError(tx: rawTransaction)
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, hash in
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+            walletManager.wallet.addPendingTransaction(record)
+            
+            return TransactionSendResult(hash: hash)
+        }
+        .eraseSendError()
+        .eraseToAnyPublisher()
+    }
+}
