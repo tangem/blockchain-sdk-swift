@@ -13,7 +13,6 @@ import Combine
 public protocol TransactionHistoryProvider: CustomStringConvertible {
     var canFetchHistory: Bool { get }
 
-    /// Please use `loadTransactionHistoryExcludingZeroTransactions(request:)` instead
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error>
     func reset()
 }
