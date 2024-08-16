@@ -429,8 +429,9 @@ extension EthereumWalletManager: StakeKitTransactionSender {
     }
     
     func signStakeKit(_ transaction: StakeKitTransaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        Result {
-            try txBuilder.buildForSign(stakingTransaction: transaction)
+        let helper = EthereumStakeKitTransactionHelper()
+        return Result {
+            try helper.prepareForSign(transaction, transactionBuilder: txBuilder)
         }
         .publisher
         .withWeakCaptureOf(self)
@@ -439,14 +440,14 @@ extension EthereumWalletManager: StakeKitTransactionSender {
         }
         .withWeakCaptureOf(self)
         .tryMap { walletManager, signatureInfo -> String in
-            try walletManager.txBuilder
-                .buildForSend(
-                    stakingTransaction: transaction,
-                    signatureInfo: signatureInfo
-                )
-                .hexString
-                .lowercased()
-                .addHexPrefix()
+            try helper.prepareForSend(
+                stakingTransaction: transaction,
+                transactionBuilder: walletManager.txBuilder,
+                signatureInfo: signatureInfo
+            )
+            .hexString
+            .lowercased()
+            .addHexPrefix()
         }
         .eraseToAnyPublisher()
     }
