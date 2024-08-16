@@ -61,16 +61,30 @@ class TronTransactionBuilder {
         return try transaction.serializedData()
     }
 
-    func buildContractEnergyUsageParameter(amount: Amount, destinationAddress: String) throws -> String {
-        let addressData = try utils.convertAddressToBytes(destinationAddress).leadingZeroPadding(toLength: 32)
+    func buildContractEnergyUsageData(amount: Amount, destinationAddress: String) throws -> String {
+        let addressData = try utils.convertAddressToBytesPadded(destinationAddress)
+        let amountData = try utils.convertAmountPadded(amount)
 
-        guard let amountData = amount.encoded?.leadingZeroPadding(toLength: 32) else {
-            throw WalletError.failedToGetFee
-        }
-
-        let parameter = (addressData + amountData).hexString.lowercased()
-        return parameter
+        let data = (addressData + amountData).hexString.lowercased()
+        return data
     }
+
+    // MARK: - Transaction data builder
+
+    func buildForApprove(spender: String, amount: Amount) throws -> Data {
+        let spenderData = try utils.convertAddressToBytesPadded(spender)
+        let amountData = try utils.convertAmountPadded(amount)
+
+        return spenderData + amountData
+    }
+
+    func buildForAllowance(owner: String, spender: String) throws -> String {
+        let ownerAddress = try TronUtils().convertAddressToBytesPadded(owner)
+        let spenderAddress = try TronUtils().convertAddressToBytesPadded(spender)
+        return (ownerAddress + spenderAddress).hexString.lowercased()
+    }
+
+    // MARK: - Private
 
     private func contract(transaction: Transaction) throws -> Protocol_Transaction.Contract {
         let amount = transaction.amount
@@ -121,11 +135,8 @@ class TronTransactionBuilder {
     }
 
     private func buildTransferContractData(amount: Amount, destinationAddress: String) throws -> Data {
-        guard let amountData = amount.encoded?.leadingZeroPadding(toLength: 32) else {
-            throw WalletError.failedToBuildTx
-        }
-
-        let destinationData = try utils.convertAddressToBytes(destinationAddress).leadingZeroPadding(toLength: 32)
+        let amountData = try utils.convertAmountPadded(amount)
+        let destinationData = try utils.convertAddressToBytesPadded(destinationAddress)
 
         let contractData = TronFunction.transfer.prefix + destinationData + amountData
         return contractData

@@ -66,6 +66,8 @@ struct NowNodesAPIResolver {
             link = "https://sol.nownodes.io"
         case .base:
             link = "https://base.nownodes.io/\(apiKey)"
+        case .blast:
+            link = "https://blast.nownodes.io/\(apiKey)"
         default:
             return nil
         }
