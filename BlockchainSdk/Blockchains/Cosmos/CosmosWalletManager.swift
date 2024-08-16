@@ -203,8 +203,10 @@ extension CosmosWalletManager: StakeKitTransactionSender {
         transaction: StakeKitTransaction,
         signer: any TransactionSigner
     ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Result {
-            try txBuilder.buildForSign(stakingTransaction: transaction)
+        let helper = CosmosStakeKitTransactionHelper(builder: txBuilder)
+
+        return Result {
+            try helper.prepareForSign(stakingTransaction: transaction)
         }
         .publisher
         .withWeakCaptureOf(self)
@@ -216,9 +218,8 @@ extension CosmosWalletManager: StakeKitTransactionSender {
                     return try signature.unmarshal(with: manager.wallet.publicKey.blockchainKey, hash: hash).data
                 }
         }
-        .withWeakCaptureOf(self)
-        .tryMap { manager, signature -> Data in
-            try manager.txBuilder.buildForSend(stakingTransaction: transaction, signature: signature)
+        .tryMap { signature -> Data in
+            try helper.buildForSend(stakingTransaction: transaction, signature: signature)
         }
         .withWeakCaptureOf(self)
         .flatMap { manager, transaction in

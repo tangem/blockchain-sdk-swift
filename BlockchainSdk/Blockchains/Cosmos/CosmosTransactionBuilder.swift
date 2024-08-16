@@ -36,41 +36,16 @@ class CosmosTransactionBuilder {
     // MARK: Regular transaction
 
     func buildForSign(transaction: Transaction) throws -> Data {
-        let input = try makeInput(transaction: transaction, fee: transaction.fee)
-        let txInputData = try input.serializedData()
-        
-        return try buildForSignInternal(txInputData: txInputData)
+        let txInputData = try makeInput(transaction: transaction, fee: transaction.fee)
+        return try buildForSignRaw(txInputData: txInputData)
     }
 
     func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
-        let input = try makeInput(transaction: transaction, fee: transaction.fee)
-        let txInputData = try input.serializedData()
-        
-        return try buildForSendInternal(txInputData: txInputData, signature: signature)
-    }
-    
-    // MARK: Staking
-    
-    func buildForSign(stakingTransaction: StakeKitTransaction) throws -> Data {
-        let input = try makeInput(stakingTransaction: stakingTransaction)
-        let txInputData = try input.serializedData()
-        
-        return try buildForSignInternal(txInputData: txInputData)
-    }
-    
-    func buildForSend(
-        stakingTransaction: StakeKitTransaction,
-        signature: Data
-    ) throws -> Data {
-        let input = try makeInput(stakingTransaction: stakingTransaction)
-        let txInputData = try input.serializedData()
-        
-        return try buildForSendInternal(txInputData: txInputData, signature: signature)
+        let txInputData = try makeInput(transaction: transaction, fee: transaction.fee)
+        return try buildForSendRaw(txInputData: txInputData, signature: signature)
     }
 
-    // MARK: Private
-
-    private func buildForSignInternal(txInputData: Data) throws -> Data {
+    func buildForSignRaw(txInputData: Data) throws -> Data {
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: cosmosChain.coin, txInputData: txInputData)
         let output = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
@@ -81,7 +56,7 @@ class CosmosTransactionBuilder {
         return output.dataHash
     }
 
-    private func buildForSendInternal(txInputData: Data, signature: Data) throws -> Data {
+    func buildForSendRaw(txInputData: Data, signature: Data) throws -> Data {
         let publicKeys = DataVector()
         publicKeys.add(data: publicKey)
 
@@ -109,7 +84,47 @@ class CosmosTransactionBuilder {
         return outputData
     }
 
-    private func makeInput(transaction: Transaction, fee: Fee?) throws -> CosmosSigningInput {
+    func serializeInput(
+        gas: UInt64,
+        feeAmount: String,
+        feeDenomiation: String,
+        messages: [WalletCore.TW_Cosmos_Proto_Message],
+        memo: String?
+    ) throws -> Data {
+        guard let accountNumber, let sequenceNumber else {
+            throw WalletError.failedToBuildTx
+        }
+
+        let fee = CosmosFee.with { fee in
+            fee.gas = gas
+            fee.amounts = [
+                CosmosAmount.with { amount in
+                    amount.amount = feeAmount
+                    amount.denom = feeDenomiation
+                }
+            ]
+        }
+
+        let input = CosmosSigningInput.with {
+            $0.mode = .sync
+            $0.signingMode = .protobuf
+            $0.accountNumber = accountNumber
+            $0.chainID = cosmosChain.chainID
+            $0.sequence = sequenceNumber
+            $0.publicKey = publicKey
+            $0.messages = messages
+            $0.privateKey = Data(repeating: 1, count: 32)
+            $0.fee = fee
+            $0.memo = memo ?? ""
+        }
+
+        let serialized = try input.serializedData()
+        return serialized
+    }
+
+    // MARK: Private
+
+    private func makeInput(transaction: Transaction, fee: Fee?) throws -> Data {
         let decimalValue: Decimal
         switch transaction.amount.type {
         case .coin:
@@ -161,81 +176,26 @@ class CosmosTransactionBuilder {
                 $0.sendCoinsMessage = sendCoinsMessage
             }
         }
-        
-        guard
-            let accountNumber = self.accountNumber,
-            let sequenceNumber = self.sequenceNumber
-        else {
+
+        guard let fee, let parameters = fee.parameters as? CosmosFeeParameters else {
             throw WalletError.failedToBuildTx
         }
-        
-        let params = transaction.params as? CosmosTransactionParams
+
+        let feeAmountInSmallestDenomination = (fee.amount.value * decimalValue).uint64Value
         let feeDenomination = try feeDenomination(for: transaction.amount)
-        let input = CosmosSigningInput.with {
-            $0.mode = .sync
-            $0.signingMode = .protobuf;
-            $0.accountNumber = accountNumber
-            $0.chainID = cosmosChain.chainID
-            $0.memo = params?.memo ?? ""
-            $0.sequence = sequenceNumber
-            $0.messages = [message]
-            $0.publicKey = publicKey
+        let params = transaction.params as? CosmosTransactionParams
 
-            if let fee, let parameters = fee.parameters as? CosmosFeeParameters {
-                let feeAmountInSmallestDenomination = (fee.amount.value * decimalValue).uint64Value
+        let serializedInput = try serializeInput(
+            gas: parameters.gas,
+            feeAmount: "\(feeAmountInSmallestDenomination)",
+            feeDenomiation: feeDenomination,
+            messages: [message],
+            memo: params?.memo
+        )
 
-                $0.fee = CosmosFee.with {
-                    $0.gas = parameters.gas
-                    $0.amounts = [CosmosAmount.with {
-                        $0.amount = "\(feeAmountInSmallestDenomination)"
-                        $0.denom = feeDenomination
-                    }]
-                }
-            }
-        }
-        
-        return input
+        return serializedInput
     }
-    
-    private func makeInput(
-        stakingTransaction: StakeKitTransaction
-    ) throws -> CosmosSigningInput {
-        guard let accountNumber, let sequenceNumber else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        let stakingProtoMessage = try CosmosProtoMessage(serializedData: Data(hex: stakingTransaction.unsignedData))
-        
-        let feeMessage = stakingProtoMessage.feeAndKeyContainer.feeContainer
-        let feeValue = feeMessage.feeAmount
-        
-        guard let message = CosmosMessage.createStakeMessage(message: stakingProtoMessage.delegateContainer.delegate) else {
-            throw WalletError.failedToBuildTx
-        }
-        let fee = CosmosFee.with { fee in
-            fee.gas = feeMessage.gas
-            fee.amounts = [
-                CosmosAmount.with { amount in
-                    amount.amount = feeValue.amount
-                    amount.denom = feeValue.denomination
-                }
-            ]
-        }
-        
-        let input = CosmosSigningInput.with {
-            $0.mode = .sync
-            $0.signingMode = .protobuf
-            $0.accountNumber = accountNumber
-            $0.chainID = cosmosChain.chainID
-            $0.sequence = sequenceNumber
-            $0.publicKey = publicKey
-            $0.messages = [message]
-            $0.privateKey = Data(repeating: 1, count: 32)
-            $0.fee = fee
-        }
-        return input
-    }
-    
+
     private func denomination(for amount: Amount) throws -> String {
         switch amount.type {
         case .coin:
@@ -251,7 +211,6 @@ class CosmosTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
     }
-    
     
     private func feeDenomination(for amount: Amount) throws -> String {
         switch amount.type {

@@ -697,6 +697,7 @@
 		DC667F062C401B97000842D0 /* StakeKitTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC667F052C401B97000842D0 /* StakeKitTransaction.swift */; };
 		DC667F082C4022CF000842D0 /* SolanaStakeKitTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC667F072C4022CF000842D0 /* SolanaStakeKitTransactionHelper.swift */; };
 		DC667F0C2C40341C000842D0 /* SolanaStakeKitTransactionHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC667F0B2C40341C000842D0 /* SolanaStakeKitTransactionHelperTests.swift */; };
+		DC6CB9E82C6FB11200C21B67 /* CosmosStakeKitTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6CB9E72C6FB11200C21B67 /* CosmosStakeKitTransactionHelper.swift */; };
 		DC87B9EF2B8F4D9700C61C5A /* BitcoreProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC87B9EC2B8F4D9700C61C5A /* BitcoreProvider.swift */; };
 		DC87B9F02B8F4D9700C61C5A /* BitcoreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC87B9ED2B8F4D9700C61C5A /* BitcoreResponse.swift */; };
 		DC87B9F12B8F4D9700C61C5A /* BitcoreTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC87B9EE2B8F4D9700C61C5A /* BitcoreTarget.swift */; };
@@ -1625,6 +1626,7 @@
 		DC667F052C401B97000842D0 /* StakeKitTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakeKitTransaction.swift; sourceTree = "<group>"; };
 		DC667F072C4022CF000842D0 /* SolanaStakeKitTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaStakeKitTransactionHelper.swift; sourceTree = "<group>"; };
 		DC667F0B2C40341C000842D0 /* SolanaStakeKitTransactionHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaStakeKitTransactionHelperTests.swift; sourceTree = "<group>"; };
+		DC6CB9E72C6FB11200C21B67 /* CosmosStakeKitTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosStakeKitTransactionHelper.swift; sourceTree = "<group>"; };
 		DC87B9EC2B8F4D9700C61C5A /* BitcoreProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreProvider.swift; sourceTree = "<group>"; };
 		DC87B9ED2B8F4D9700C61C5A /* BitcoreResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreResponse.swift; sourceTree = "<group>"; };
 		DC87B9EE2B8F4D9700C61C5A /* BitcoreTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreTarget.swift; sourceTree = "<group>"; };
@@ -3388,6 +3390,7 @@
 				DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */,
 				DC0468FB2B87CC6C00C785D1 /* OtherChains */,
 				0A3BF8E92C69F5D900163492 /* CosmosProtoMessage.swift */,
+				DC6CB9E72C6FB11200C21B67 /* CosmosStakeKitTransactionHelper.swift */,
 			);
 			path = Cosmos;
 			sourceTree = "<group>";
@@ -4689,6 +4692,7 @@
 				2DDEFBE82B59B44700885675 /* AlgorandProviderTarget.swift in Sources */,
 				B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */,
 				B633EA222B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift in Sources */,
+				DC6CB9E82C6FB11200C21B67 /* CosmosStakeKitTransactionHelper.swift in Sources */,
 				EF2D9E0F2BC43DA80055C485 /* EthereumNetworkProvider.swift in Sources */,
 				DC5E65272B1650F400E81AA5 /* OP_0.swift in Sources */,
 				B6BA93732AEA0E9B00F84E36 /* NEARNetworkParams.Transaction.swift in Sources */,
