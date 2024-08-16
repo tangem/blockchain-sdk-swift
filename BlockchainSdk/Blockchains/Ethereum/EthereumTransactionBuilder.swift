@@ -145,7 +145,7 @@ private extension EthereumTransactionBuilder {
         
         guard let gasLimit = BigUInt(compiledTransaction.gasLimit, radix: 16),
               let baseFee = BigUInt(compiledTransaction.maxFeePerGas, radix: 16),
-              let priorityFee = BigUInt(compiledTransaction.maxFeePerGas, radix: 16) else {
+              let priorityFee = BigUInt(compiledTransaction.maxPriorityFeePerGas, radix: 16) else {
             throw EthereumTransactionBuilderError.feeParametersNotFound
         }
                 
