@@ -19,7 +19,6 @@
 		0A3FDED52C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3FDED42C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift */; };
 		0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */; };
 		0A6272652BD96736003B2F4D /* SS58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6272642BD96736003B2F4D /* SS58.swift */; };
-		0A6CCDB62C6E54B600018D42 /* EthereumCompiledTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CCDB52C6E54B600018D42 /* EthereumCompiledTransaction.swift */; };
 		0A7084B82BF797E900FD519D /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7084B72BF797E900FD519D /* TONAddressService.swift */; };
 		0A7624DB2C2950E8002FA139 /* ICPTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624DA2C2950E8002FA139 /* ICPTransactionBuilder.swift */; };
 		0A7624E32C296969002FA139 /* ICPWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7624E22C296969002FA139 /* ICPWalletManager.swift */; };
@@ -933,7 +932,6 @@
 		0A3FDED42C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumStakeKitTransactionHelper.swift; sourceTree = "<group>"; };
 		0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TangemNetworkLoggerPlugin.swift; sourceTree = "<group>"; };
 		0A6272642BD96736003B2F4D /* SS58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SS58.swift; sourceTree = "<group>"; };
-		0A6CCDB52C6E54B600018D42 /* EthereumCompiledTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumCompiledTransaction.swift; sourceTree = "<group>"; };
 		0A7084B72BF797E900FD519D /* TONAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
 		0A7624DA2C2950E8002FA139 /* ICPTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPTransactionBuilder.swift; sourceTree = "<group>"; };
 		0A7624E22C296969002FA139 /* ICPWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPWalletManager.swift; sourceTree = "<group>"; };
@@ -4035,7 +4033,6 @@
 		EF2D9D982BC3F6770055C485 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				0A6CCDB52C6E54B600018D42 /* EthereumCompiledTransaction.swift */,
 				EF2D9D992BC3F6770055C485 /* EthereumFeeParameters.swift */,
 				EF2D9D9A2BC3F6770055C485 /* EthereumResponse.swift */,
 				EF2D9D9B2BC3F6770055C485 /* EthereumTransactionParams.swift */,
@@ -4946,7 +4943,6 @@
 				DA1BA9A72C454AFB006F6839 /* MantleWalletManager.swift in Sources */,
 				2DDE5BA629C4F8D200A5B708 /* CardanoWalletAssembly.swift in Sources */,
 				B6F89E942BB20C600009A453 /* SubscanAPITarget.swift in Sources */,
-				0A6CCDB62C6E54B600018D42 /* EthereumCompiledTransaction.swift in Sources */,
 				0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */,
 				DA9F76FE27ECA78800F0665C /* TronNetworkModels.swift in Sources */,
 				DC5E65092B1650F400E81AA5 /* OP_0NOTEQUAL.swift in Sources */,

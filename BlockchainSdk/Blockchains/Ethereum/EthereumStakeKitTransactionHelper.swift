@@ -71,3 +71,15 @@ struct EthereumStakeKitTransactionHelper {
         )
     }
 }
+
+fileprivate struct EthereumCompiledTransaction: Decodable {
+    let from: String
+    let gasLimit: String
+    let to: String
+    let data: String
+    let nonce: Int
+    let type: Int
+    let maxFeePerGas: String
+    let maxPriorityFeePerGas: String
+    let chainId: Int
+}
