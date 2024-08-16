@@ -259,3 +259,41 @@ extension TronWalletManager: TronTransactionDataBuilder {
     }
 }
 
+// MARK: - StakeKitTransactionSender
+
+extension TronWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        Result {
+            try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData)
+        }
+        .publisher
+        .withWeakCaptureOf(self)
+        .flatMap { manager, input in
+            signer
+                .sign(hash: input.hash, walletPublicKey: manager.wallet.publicKey)
+                .tryMap { signature in
+                    try manager.txBuilder.buildForSend(rawData: input.rawData, signature: signature)
+                }
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { manager, data in
+            manager.networkService
+                .broadcastHex(data)
+                .mapSendError(tx: data.hexString)
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { manager, broadcastResponse in
+            guard broadcastResponse.result == true else {
+                throw WalletError.failedToSendTx
+            }
+
+            let hash = broadcastResponse.txid
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+            manager.wallet.addPendingTransaction(record)
+            return TransactionSendResult(hash: hash)
+        }
+        .eraseSendError()
+        .eraseToAnyPublisher()
+    }
+}
