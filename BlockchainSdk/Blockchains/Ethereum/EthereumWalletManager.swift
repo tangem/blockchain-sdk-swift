@@ -404,3 +404,50 @@ extension EthereumWalletManager: EthereumTransactionDataBuilder {
         return try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
     }
 }
+
+extension EthereumWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(
+        transaction: StakeKitTransaction,
+        signer: any TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        signStakeKit(transaction, signer: signer)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, rawTransaction in
+                walletManager.networkService.send(transaction: rawTransaction)
+                    .mapSendError(tx: rawTransaction)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, hash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+                walletManager.wallet.addPendingTransaction(record)
+                
+                return TransactionSendResult(hash: hash)
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
+    }
+    
+    func signStakeKit(_ transaction: StakeKitTransaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
+        Result {
+            try txBuilder.buildForSign(stakingTransaction: transaction)
+        }
+        .publisher
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, hashToSign in
+            signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, signatureInfo -> String in
+            try walletManager.txBuilder
+                .buildForSend(
+                    stakingTransaction: transaction,
+                    signatureInfo: signatureInfo
+                )
+                .hexString
+                .lowercased()
+                .addHexPrefix()
+        }
+        .eraseToAnyPublisher()
+    }
+}

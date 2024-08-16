@@ -25,9 +25,21 @@ class EthereumTransactionBuilder {
         let preSigningOutput = try buildTxCompilerPreSigningOutput(input: input)
         return preSigningOutput.dataHash
     }
+    
+    func buildForSign(stakingTransaction: StakeKitTransaction) throws -> Data {
+        let input = try buildSigningInput(stakingTransaction: stakingTransaction)
+        let preSigningOutput = try buildTxCompilerPreSigningOutput(input: input)
+        return preSigningOutput.dataHash
+    }
 
     func buildForSend(transaction: Transaction, signatureInfo: SignatureInfo) throws -> Data {
         let input = try buildSigningInput(transaction: transaction)
+        let output = try buildSigningOutput(input: input, signatureInfo: signatureInfo)
+        return output.encoded
+    }
+    
+    func buildForSend(stakingTransaction: StakeKitTransaction, signatureInfo: SignatureInfo) throws -> Data {
+        let input = try buildSigningInput(stakingTransaction: stakingTransaction)
         let output = try buildSigningOutput(input: input, signatureInfo: signatureInfo)
         return output.encoded
     }
@@ -118,6 +130,33 @@ private extension EthereumTransactionBuilder {
         case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
+    }
+    
+    func buildSigningInput(stakingTransaction: StakeKitTransaction) throws -> EthereumSigningInput {
+        let compiledTransactionData = Data(hex: stakingTransaction.unsignedData)
+        let compiledTransaction = try JSONDecoder().decode(
+            EthereumCompiledTransaction.self,
+            from: compiledTransactionData
+        )
+        
+        guard let amountValue = stakingTransaction.amount.bigUIntValue else {
+            throw EthereumTransactionBuilderError.invalidAmount
+        }
+        
+        guard let gasLimit = BigUInt(compiledTransaction.gasLimit, radix: 16),
+              let baseFee = BigUInt(compiledTransaction.maxFeePerGas, radix: 16),
+              let priorityFee = BigUInt(compiledTransaction.maxFeePerGas, radix: 16) else {
+            throw EthereumTransactionBuilderError.feeParametersNotFound
+        }
+                
+        return try buildSigningInput(
+            destination: .user(user: compiledTransaction.to, value: amountValue),
+            fee: Fee(
+                stakingTransaction.fee.amount,
+                parameters: EthereumEIP1559FeeParameters(gasLimit: gasLimit, baseFee: baseFee, priorityFee: priorityFee)
+            ),
+            parameters: EthereumTransactionParams(data: nil, nonce: compiledTransaction.nonce)
+        )
     }
 
     func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams) throws -> EthereumSigningInput {
