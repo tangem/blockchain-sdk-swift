@@ -16,6 +16,7 @@
 		0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */; };
 		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
 		0A3BF8EA2C69F5D900163492 /* CosmosProtoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BF8E92C69F5D900163492 /* CosmosProtoMessage.swift */; };
+		0A3FDED52C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3FDED42C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift */; };
 		0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */; };
 		0A6272652BD96736003B2F4D /* SS58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6272642BD96736003B2F4D /* SS58.swift */; };
 		0A7084B82BF797E900FD519D /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7084B72BF797E900FD519D /* TONAddressService.swift */; };
@@ -928,6 +929,7 @@
 		0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
 		0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinCashNowNodesNetworkProvider.swift; sourceTree = "<group>"; };
 		0A3BF8E92C69F5D900163492 /* CosmosProtoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosProtoMessage.swift; sourceTree = "<group>"; };
+		0A3FDED42C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumStakeKitTransactionHelper.swift; sourceTree = "<group>"; };
 		0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TangemNetworkLoggerPlugin.swift; sourceTree = "<group>"; };
 		0A6272642BD96736003B2F4D /* SS58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SS58.swift; sourceTree = "<group>"; };
 		0A7084B72BF797E900FD519D /* TONAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
@@ -2559,6 +2561,7 @@
 				2DDE5B9B29C4F8D200A5B708 /* EthereumWalletAssembly.swift */,
 				EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */,
 				EFF607C62BD000D000C37210 /* EthereumAddressService.swift */,
+				0A3FDED42C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift */,
 				EF2D9D952BC3F6770055C485 /* Interfaces */,
 				EF2D9D982BC3F6770055C485 /* Models */,
 				EF2D9D912BC3F6770055C485 /* Network */,
@@ -5355,6 +5358,7 @@
 				DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */,
 				EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */,
 				EF1339BA2AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift in Sources */,
+				0A3FDED52C6F6A5A0023B717 /* EthereumStakeKitTransactionHelper.swift in Sources */,
 				B6DC28482B62BB580070F1D2 /* HederaRESTNetworkProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
