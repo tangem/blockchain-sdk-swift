@@ -77,49 +77,7 @@ class EthereumTransactionBuilder {
         let method = TransferERC20TokenMethod(destination: destination, amount: bigUInt)
         return method.data
     }
-}
-
-private extension EthereumTransactionBuilder {
-    func buildTxCompilerPreSigningOutput(input: EthereumSigningInput) throws -> TxCompilerPreSigningOutput {
-        let txInputData = try input.serializedData()
-        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
-        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
-
-        if preSigningOutput.error != .ok {
-            Log.debug("EthereumPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
-            throw EthereumTransactionBuilderError.walletCoreError(message: preSigningOutput.errorMessage)
-        }
-
-        return preSigningOutput
-    }
-
-    func buildSigningInput(transaction: Transaction) throws -> EthereumSigningInput {
-        guard let amountValue = transaction.amount.bigUIntValue else {
-            throw EthereumTransactionBuilderError.invalidAmount
-        }
-
-        switch transaction.amount.type {
-        case .coin:
-            return try buildSigningInput(
-                destination: .user(user: transaction.destinationAddress, value: amountValue),
-                fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams ?? .empty
-            )
-        case .token(let token):
-            return try buildSigningInput(
-                destination: .contract(
-                    user: transaction.destinationAddress,
-                    contract: transaction.contractAddress ?? token.contractAddress,
-                    value: amountValue
-                ),
-                fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams ?? .empty
-            )
-        case .reserve, .feeResource:
-            throw BlockchainSdkError.notImplemented
-        }
-    }
-
+    
     func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams) throws -> EthereumSigningInput {
         guard let nonce = parameters.nonce, nonce >= 0 else {
             throw EthereumTransactionBuilderError.invalidNonce
@@ -180,7 +138,20 @@ private extension EthereumTransactionBuilder {
 
         return input
     }
+    
+    func buildTxCompilerPreSigningOutput(input: EthereumSigningInput) throws -> TxCompilerPreSigningOutput {
+        let txInputData = try input.serializedData()
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
+        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
+        if preSigningOutput.error != .ok {
+            Log.debug("EthereumPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
+            throw EthereumTransactionBuilderError.walletCoreError(message: preSigningOutput.errorMessage)
+        }
+
+        return preSigningOutput
+    }
+    
     func buildSigningOutput(input: EthereumSigningInput, signatureInfo: SignatureInfo) throws -> EthereumSigningOutput {
         guard signatureInfo.signature.count == Constants.signatureSize else {
             throw EthereumTransactionBuilderError.invalidSignatureCount
@@ -229,6 +200,35 @@ private extension EthereumTransactionBuilder {
         }
 
         return output
+    }
+}
+
+private extension EthereumTransactionBuilder {
+    func buildSigningInput(transaction: Transaction) throws -> EthereumSigningInput {
+        guard let amountValue = transaction.amount.bigUIntValue else {
+            throw EthereumTransactionBuilderError.invalidAmount
+        }
+
+        switch transaction.amount.type {
+        case .coin:
+            return try buildSigningInput(
+                destination: .user(user: transaction.destinationAddress, value: amountValue),
+                fee: transaction.fee,
+                parameters: transaction.params as? EthereumTransactionParams ?? .empty
+            )
+        case .token(let token):
+            return try buildSigningInput(
+                destination: .contract(
+                    user: transaction.destinationAddress,
+                    contract: transaction.contractAddress ?? token.contractAddress,
+                    value: amountValue
+                ),
+                fee: transaction.fee,
+                parameters: transaction.params as? EthereumTransactionParams ?? .empty
+            )
+        case .reserve, .feeResource:
+            throw BlockchainSdkError.notImplemented
+        }
     }
 }
 

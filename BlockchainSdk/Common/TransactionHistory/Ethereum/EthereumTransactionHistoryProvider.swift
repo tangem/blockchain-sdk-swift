@@ -82,6 +82,12 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
                     walletAddress: request.address,
                     amountType: request.amountType
                 )
+                .filter { record in
+                    self.shouldBeIncludedInHistory(
+                        amountType: request.amountType,
+                        record: record
+                    )
+                }
 
                 self.page = TransactionHistoryIndexPage(number: response.page ?? 0)
                 self.totalPages = response.totalPages ?? 0

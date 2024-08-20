@@ -527,7 +527,9 @@ public indirect enum Blockchain: Equatable, Hashable {
              .manta,
              .zkSync,
              .polygonZkEVM,
-             .base:
+             .base,
+             .cyber,
+             .blast:
             return displayName + " (\(currencySymbol))"
         default:
             return currencySymbol
@@ -556,7 +558,8 @@ public indirect enum Blockchain: Equatable, Hashable {
              .zkSync(let testnet),
              .polygonZkEVM(let testnet),
              .base(let testnet),
-             .cyber(let testnet):
+             .cyber(let testnet),
+             .blast(let testnet):
             return Blockchain.ethereum(testnet: testnet).coinId
         default:
             return coinId
@@ -1179,10 +1182,13 @@ private extension Blockchain {
         case .cyber:
             switch type {
             case .network: return "cyber"
-            case .coin: return "cyberconnect"
+            case .coin: return "cyber-ethereum"
             }
         case .blast:
-            return "blast"
+            switch type {
+            case .network: return "blast"
+            case .coin: return "blast-ethereum"
+            }
         }
     }
 
