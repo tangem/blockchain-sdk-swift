@@ -49,6 +49,14 @@ final class MantleWalletManager: EthereumWalletManager {
         }
         return super.sign(transaction, signer: signer)
     }
+    
+    override func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, any Error> {
+        super.getGasLimit(to: to, from: from, value: value, data: data)
+            .map { gasLimit in
+                BigUInt(ceil(Double(gasLimit) * 1.6))
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - Private
