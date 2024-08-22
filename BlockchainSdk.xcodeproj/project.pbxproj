@@ -472,6 +472,7 @@
 		DA0E98D42C0472DB00C92985 /* KoinosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */; };
 		DA0E98D62C04755C00C92985 /* KoinosMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E98D52C04755C00C92985 /* KoinosMethod.swift */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
+		DA15D1EA2C77830E00FD733B /* FilecoinExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA15D1E92C77830E00FD733B /* FilecoinExternalLinkProvider.swift */; };
 		DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */; };
 		DA198B5629E3F6D300DB6EEA /* CosmosModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */; };
 		DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */; };
@@ -1398,6 +1399,7 @@
 		DA0E98D32C0472DB00C92985 /* KoinosTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTarget.swift; sourceTree = "<group>"; };
 		DA0E98D52C04755C00C92985 /* KoinosMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosMethod.swift; sourceTree = "<group>"; };
 		DA11507627DB217200CDC879 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		DA15D1E92C77830E00FD733B /* FilecoinExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesBlockBookConfig.swift; sourceTree = "<group>"; };
 		DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosModels.swift; sourceTree = "<group>"; };
 		DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTests.swift; sourceTree = "<group>"; };
@@ -2272,6 +2274,7 @@
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 				DACAAB4F2BE8BA8A0039ED3D /* Koinos */,
 				DA1BA9A52C454AEE006F6839 /* Mantle */,
+				DA15D1E82C7782F300FD733B /* Filecoin */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -3366,6 +3369,14 @@
 				3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		DA15D1E82C7782F300FD733B /* Filecoin */ = {
+			isa = PBXGroup;
+			children = (
+				DA15D1E92C77830E00FD733B /* FilecoinExternalLinkProvider.swift */,
+			);
+			path = Filecoin;
 			sourceTree = "<group>";
 		};
 		DA18C4A7297AC62600EC4C05 /* Implementations */ = {
@@ -5179,6 +5190,7 @@
 				DC5E652A2B1650F400E81AA5 /* OP_VER.swift in Sources */,
 				DC5E65322B1650F400E81AA5 /* OP_VERIF.swift in Sources */,
 				B6C5A60C2BF627B3008586B3 /* HederaNetworkResult.TransactionsInfo.swift in Sources */,
+				DA15D1EA2C77830E00FD733B /* FilecoinExternalLinkProvider.swift in Sources */,
 				2D24F5C82B6D2C7100D502A0 /* AptosProviderTarget.swift in Sources */,
 				B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
