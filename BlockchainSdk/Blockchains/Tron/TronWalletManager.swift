@@ -262,38 +262,75 @@ extension TronWalletManager: TronTransactionDataBuilder {
 // MARK: - StakeKitTransactionSender
 
 extension TronWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Result {
-            try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData)
-        }
-        .publisher
-        .withWeakCaptureOf(self)
-        .flatMap { manager, input in
-            signer
-                .sign(hash: input.hash, walletPublicKey: manager.wallet.publicKey)
-                .tryMap { signature in
-                    try manager.txBuilder.buildForSend(rawData: input.rawData, signature: signature)
-                }
-        }
-        .withWeakCaptureOf(self)
-        .flatMap { manager, data in
-            manager.networkService
-                .broadcastHex(data)
-                .mapSendError(tx: data.hexString)
-        }
-        .withWeakCaptureOf(self)
-        .tryMap { manager, broadcastResponse in
-            guard broadcastResponse.result == true else {
-                throw WalletError.failedToSendTx
+    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<MultipleTransactionsSendResult, SendTxError> {
+
+        let presignedInputsPublisher = Result {
+            try transactions.map {
+                try TronStakeKitTransactionHelper().prepareForSign($0.unsignedData)
+            }
+        }.publisher
+
+        let readyToSendTransactionsPublisher = presignedInputsPublisher
+            .withWeakCaptureOf(self)
+            .flatMap { manager, inputs -> AnyPublisher<[Data], Error> in
+                signer
+                    .sign(hashes: inputs.map { $0.hash }, walletPublicKey: manager.wallet.publicKey)
+                    .tryMap { signatures -> [Data] in
+                        try zip(inputs, signatures).map { (input, signature) in
+                            try manager.txBuilder.buildForSend(rawData: input.rawData, signature: signature)
+                        }
+                    }
+                    .eraseToAnyPublisher()
             }
 
-            let hash = broadcastResponse.txid
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-            manager.wallet.addPendingTransaction(record)
-            return TransactionSendResult(hash: hash)
-        }
-        .eraseSendError()
-        .eraseToAnyPublisher()
+        let sentTransactionsPublisher = readyToSendTransactionsPublisher
+            .flatMap { [weak self] transactionsData -> AnyPublisher<[TronBroadcastResponse], Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+
+                let sendPublishers = transactionsData
+                    .map { data in
+                        self.networkService
+                            .broadcastHex(data)
+                            .mapSendError(tx: data.hexString)
+                            .eraseToAnyPublisher()
+                    }
+
+                return Publishers.Sequence(sequence: sendPublishers)
+                    .flatMap(maxPublishers: .max(1)) { $0 }
+                    .collect()
+                    .eraseToAnyPublisher()
+            }
+
+        return sentTransactionsPublisher
+            .withWeakCaptureOf(self)
+            .tryMap { manager, broadcastResponses -> MultipleTransactionsSendResult in
+                guard broadcastResponses.allSatisfy({ $0.result == true }) else {
+                    throw WalletError.failedToSendTx
+                }
+
+                let records = zip(transactions, broadcastResponses)
+                    .map { (transaction, broadcastResponse) in
+                        let hash = broadcastResponse.txid
+                        let mapper = PendingTransactionRecordMapper()
+                        let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
+                        return record
+                    }
+
+                records.forEach { record in
+                    manager.wallet.addPendingTransaction(record)
+                }
+
+                let hashes = records.map { $0.hash }
+
+                return MultipleTransactionsSendResult(hashes: hashes)
+            }
+            .eraseSendError()
+            .eraseToAnyPublisher()
+    }
+
+    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        return .anyFail(error: .init(error: BlockchainSdkError.notImplemented))
     }
 }

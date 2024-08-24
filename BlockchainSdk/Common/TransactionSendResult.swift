@@ -16,6 +16,14 @@ public struct TransactionSendResult {
     }
 }
 
+public struct MultipleTransactionsSendResult {
+    public let hashes: [String]
+
+    public init(hashes: [String]) {
+        self.hashes = hashes
+    }
+}
+
 public struct SendTxError: LocalizedError {
     public let error: Error
     public let tx: String?
