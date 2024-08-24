@@ -262,7 +262,7 @@ extension TronWalletManager: TronTransactionDataBuilder {
 // MARK: - StakeKitTransactionSender
 
 extension TronWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<MultipleTransactionsSendResult, SendTxError> {
+    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError> {
 
         let presignedInputsPublisher = Result {
             try transactions.map {
@@ -305,26 +305,22 @@ extension TronWalletManager: StakeKitTransactionSender {
 
         return sentTransactionsPublisher
             .withWeakCaptureOf(self)
-            .tryMap { manager, broadcastResponses -> MultipleTransactionsSendResult in
+            .tryMap { manager, broadcastResponses -> [TransactionSendResult] in
                 guard broadcastResponses.allSatisfy({ $0.result == true }) else {
                     throw WalletError.failedToSendTx
                 }
 
-                let records = zip(transactions, broadcastResponses)
-                    .map { (transaction, broadcastResponse) in
-                        let hash = broadcastResponse.txid
-                        let mapper = PendingTransactionRecordMapper()
-                        let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-                        return record
-                    }
+                var results: [TransactionSendResult] = []
 
-                records.forEach { record in
+                for (transaction, broadcastResponse) in zip(transactions, broadcastResponses) {
+                    let hash = broadcastResponse.txid
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
                     manager.wallet.addPendingTransaction(record)
+                    results.append(TransactionSendResult(hash: hash))
                 }
 
-                let hashes = records.map { $0.hash }
-
-                return MultipleTransactionsSendResult(hashes: hashes)
+                return results
             }
             .eraseSendError()
             .eraseToAnyPublisher()
