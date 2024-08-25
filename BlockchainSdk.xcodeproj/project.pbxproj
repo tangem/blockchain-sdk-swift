@@ -485,6 +485,7 @@
 		DA1BA9A92C454C53006F6839 /* MantleWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1BA9A82C454C53006F6839 /* MantleWalletAssembly.swift */; };
 		DA1D3B7B2B57B8FB00247393 /* BigUInt+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */; };
 		DA20BD6A2C7BC5E9000F02DF /* FilecoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */; };
+		DA20BD6D2C7BC7AF000F02DF /* FilecoinAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA20BD6C2C7BC7AF000F02DF /* FilecoinAddressTests.swift */; };
 		DA2309D52C123510002A930C /* FeeResourceRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */; };
@@ -1413,6 +1414,7 @@
 		DA1BA9A82C454C53006F6839 /* MantleWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleWalletAssembly.swift; sourceTree = "<group>"; };
 		DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BigUInt+.swift"; sourceTree = "<group>"; };
 		DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinWalletAssembly.swift; sourceTree = "<group>"; };
+		DA20BD6C2C7BC7AF000F02DF /* FilecoinAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinAddressTests.swift; sourceTree = "<group>"; };
 		DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeResourceRestrictable.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -2235,6 +2237,7 @@
 				DAE343C42BF3630A001B3F38 /* Koinos */,
 				DAD62DE42C4676E8008509BE /* Mantle */,
 				0A7E10B72C4E8DEC00644977 /* ICP */,
+				DA20BD6B2C7BC79D000F02DF /* Filecoin */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -3427,6 +3430,14 @@
 				DA1BA9A62C454AFB006F6839 /* MantleWalletManager.swift */,
 			);
 			path = Mantle;
+			sourceTree = "<group>";
+		};
+		DA20BD6B2C7BC79D000F02DF /* Filecoin */ = {
+			isa = PBXGroup;
+			children = (
+				DA20BD6C2C7BC7AF000F02DF /* FilecoinAddressTests.swift */,
+			);
+			path = Filecoin;
 			sourceTree = "<group>";
 		};
 		DA3081222817AEB800DE41F1 /* protobuf */ = {
@@ -5414,6 +5425,7 @@
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				DA46E6992C05DD1A002BCE7F /* KoinosMethodResponseDecodingTests.swift in Sources */,
+				DA20BD6D2C7BC7AF000F02DF /* FilecoinAddressTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				B626D11F2AF02C40003A8929 /* TWPublicKeyType+.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,

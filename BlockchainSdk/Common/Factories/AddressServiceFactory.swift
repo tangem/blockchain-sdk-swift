@@ -131,8 +131,7 @@ public struct AddressServiceFactory {
             let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
             return KoinosAddressService(networkParams: network.networkParams)
         case .filecoin:
-            // TODO: [FILECOIN] Implement
-            fatalError("Not implemented")
+            return WalletCoreAddressService(blockchain: .filecoin)
         }
     }
 }
