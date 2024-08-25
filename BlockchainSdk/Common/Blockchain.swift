@@ -1307,8 +1307,7 @@ extension Blockchain {
         case .internetComputer:
             return ICPWalletAssembly()
         case .filecoin:
-            // TODO: [FILECOIN]
-            fatalError("Not implemented")
+            return FilecoinWalletAssembly()
         }
     }
 }

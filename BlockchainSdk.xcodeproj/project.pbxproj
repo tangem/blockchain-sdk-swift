@@ -484,6 +484,7 @@
 		DA1BA9A72C454AFB006F6839 /* MantleWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1BA9A62C454AFB006F6839 /* MantleWalletManager.swift */; };
 		DA1BA9A92C454C53006F6839 /* MantleWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1BA9A82C454C53006F6839 /* MantleWalletAssembly.swift */; };
 		DA1D3B7B2B57B8FB00247393 /* BigUInt+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */; };
+		DA20BD6A2C7BC5E9000F02DF /* FilecoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */; };
 		DA2309D52C123510002A930C /* FeeResourceRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */; };
@@ -1411,6 +1412,7 @@
 		DA1BA9A62C454AFB006F6839 /* MantleWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleWalletManager.swift; sourceTree = "<group>"; };
 		DA1BA9A82C454C53006F6839 /* MantleWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleWalletAssembly.swift; sourceTree = "<group>"; };
 		DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BigUInt+.swift"; sourceTree = "<group>"; };
+		DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinWalletAssembly.swift; sourceTree = "<group>"; };
 		DA2309D42C123510002A930C /* FeeResourceRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeResourceRestrictable.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -3375,6 +3377,7 @@
 			isa = PBXGroup;
 			children = (
 				DA15D1E92C77830E00FD733B /* FilecoinExternalLinkProvider.swift */,
+				DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */,
 			);
 			path = Filecoin;
 			sourceTree = "<group>";
@@ -5161,6 +5164,7 @@
 				EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */,
 				2D9E28042B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift in Sources */,
 				EF3B19162AA5C9530084AA1C /* ExternalLinkProvider.swift in Sources */,
+				DA20BD6A2C7BC5E9000F02DF /* FilecoinWalletAssembly.swift in Sources */,
 				0AF90CDD2B87658600772F04 /* AuroraExternalLinkProvider.swift in Sources */,
 				0A0E225D2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift in Sources */,
 				B6F3AA722ADD925D0059C99A /* NEARTarget.swift in Sources */,
