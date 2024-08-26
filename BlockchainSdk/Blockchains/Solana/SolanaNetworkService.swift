@@ -100,7 +100,7 @@ class SolanaNetworkService {
             amount: amount,
             computeUnitLimit: computeUnitLimit,
             computeUnitPrice: computeUnitPrice,
-            allowUnfundedRecipient: ,
+            allowUnfundedRecipient: true,
             fromPublicKey: fromPublicKey
         )
         .flatMap { [solanaSdk] (message, _) -> AnyPublisher<FeeForMessageResult, Error> in
