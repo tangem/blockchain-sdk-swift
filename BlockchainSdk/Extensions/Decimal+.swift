@@ -84,7 +84,7 @@ extension Decimal {
         rounded(roundingMode: .up) as NSDecimalNumber
     }
     
-    func isEqual(to value: Decimal, delta: Decimal) -> Bool {
+    public func isEqual(to value: Decimal, delta: Decimal) -> Bool {
         abs(self - value) <= delta
     }
 }

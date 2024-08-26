@@ -10,49 +10,42 @@ import BigInt
 import Combine
 import Foundation
 
+public enum MantleUtils {
+    public static let feeGasLimitMultiplier = 1.6
+    static let signGasLimitMultiplier = 0.7
+    
+    public static func multiplyGasLimit(_ gasLimit: Int, with multiplier: Double) -> BigUInt {
+        multiplyGasLimit(BigUInt(gasLimit), with: multiplier)
+    }
+    
+    static func multiplyGasLimit(_ gasLimit: BigUInt, with multiplier: Double) -> BigUInt {
+        BigUInt(ceil(Double(gasLimit) * multiplier))
+    }
+}
+
 // This is a workaround for sending a Mantle transaction.
 // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
 // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
 final class MantleWalletManager: EthereumWalletManager {
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], any Error> {
-        let blockchain = wallet.blockchain
-        let currentBalance = wallet.amounts[.coin]?.value
-        let delta = 1 / blockchain.decimalValue
-        
-        let adjustedValue = value
-            .flatMap { value in
-                EthereumUtils.parseEthereumDecimal(value, decimalsCount: blockchain.decimalCount)
+        super.getFee(
+            destination: destination,
+            value: prepareAdjustedValue(value: value),
+            data: data
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, fees in
+            try fees.map { fee in
+                try walletManager.mapMantleFee(fee, gasLimitMultiplier: MantleUtils.feeGasLimitMultiplier)
             }
-            .flatMap { (parsedValue: Decimal) in
-                if currentBalance?.isEqual(to: parsedValue, delta: delta) == true {
-                    parsedValue - delta
-                } else {
-                    parsedValue
-                }
-            }
-            .flatMap { value in
-                Amount(
-                    with: blockchain,
-                    type: .coin,
-                    value: value
-                )
-                .encodedForSend
-            }
-        
-        return super.getFee(destination: destination, value: adjustedValue, data: data)
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, fees in
-                try fees.map { fee in
-                    try walletManager.mapMantleFee(fee, gasLimitMultiplier: 1.6)
-                }
-            }
-            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
     
     override func sign(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<String, any Error> {
         var transaction = transaction
         do {
-            transaction.fee = try mapMantleFee(transaction.fee, gasLimitMultiplier: 0.7)
+            transaction.fee = try mapMantleFee(transaction.fee, gasLimitMultiplier: MantleUtils.signGasLimitMultiplier)
         } catch {
             return Fail(error: error).eraseToAnyPublisher()
         }
@@ -62,7 +55,7 @@ final class MantleWalletManager: EthereumWalletManager {
     override func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, any Error> {
         super.getGasLimit(to: to, from: from, value: value, data: data)
             .map { gasLimit in
-                BigUInt(ceil(Double(gasLimit) * 1.6))
+                MantleUtils.multiplyGasLimit(gasLimit, with: MantleUtils.feeGasLimitMultiplier)
             }
             .eraseToAnyPublisher()
     }
@@ -75,13 +68,13 @@ private extension MantleWalletManager {
         let parameters: any EthereumFeeParameters = switch fee.parameters {
         case let parameters as EthereumEIP1559FeeParameters:
             EthereumEIP1559FeeParameters(
-                gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
+                gasLimit: MantleUtils.multiplyGasLimit(parameters.gasLimit, with: gasLimitMultiplier),
                 maxFeePerGas: parameters.maxFeePerGas,
                 priorityFee: parameters.priorityFee
             )
         case let parameters as EthereumLegacyFeeParameters:
             EthereumLegacyFeeParameters(
-                gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
+                gasLimit: MantleUtils.multiplyGasLimit(parameters.gasLimit, with: gasLimitMultiplier),
                 gasPrice: parameters.gasPrice
             )
         default:
@@ -93,5 +86,35 @@ private extension MantleWalletManager {
         let amount = Amount(with: blockchain, value: feeValue)
 
         return Fee(amount, parameters: parameters)
+    }
+    
+    func prepareAdjustedValue(value: String?) -> String? {
+        guard let value else {
+            return nil
+        }
+        
+        let parsedValue = EthereumUtils.parseEthereumDecimal(
+            value,
+            decimalsCount: wallet.blockchain.decimalCount
+        )
+        
+        guard let parsedValue else {
+            return nil
+        }
+        
+        let blockchain = wallet.blockchain
+        let delta = blockchain.minimumValue
+        
+        let currentBalance = wallet.amounts[.coin]?.value
+        let shouldSubtractPenny = currentBalance?.isEqual(to: parsedValue, delta: delta) == true
+
+        let valueToSubtract = shouldSubtractPenny ? delta : 0
+        
+        return Amount(
+            with: blockchain,
+            type: .coin,
+            value: parsedValue - valueToSubtract
+        )
+        .encodedForSend
     }
 }
