@@ -16,16 +16,25 @@ import Foundation
 final class MantleWalletManager: EthereumWalletManager {
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], any Error> {
         let blockchain = wallet.blockchain
+        let currentBalance = wallet.amounts[.coin]?.value
+        let delta = 1 / blockchain.decimalValue
         
         let adjustedValue = value
             .flatMap { value in
                 EthereumUtils.parseEthereumDecimal(value, decimalsCount: blockchain.decimalCount)
             }
-            .flatMap { parsedValue in
+            .flatMap { (parsedValue: Decimal) in
+                if currentBalance?.isEqual(to: parsedValue, delta: delta) == true {
+                    parsedValue - delta
+                } else {
+                    parsedValue
+                }
+            }
+            .flatMap { value in
                 Amount(
                     with: blockchain,
                     type: .coin,
-                    value: parsedValue - (1 / blockchain.decimalValue)
+                    value: value
                 )
                 .encodedForSend
             }
