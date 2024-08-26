@@ -8,20 +8,6 @@
 
 import BigInt
 import Combine
-import Foundation
-
-public enum MantleUtils {
-    public static let feeGasLimitMultiplier = 1.6
-    static let signGasLimitMultiplier = 0.7
-    
-    public static func multiplyGasLimit(_ gasLimit: Int, with multiplier: Double) -> BigUInt {
-        multiplyGasLimit(BigUInt(gasLimit), with: multiplier)
-    }
-    
-    static func multiplyGasLimit(_ gasLimit: BigUInt, with multiplier: Double) -> BigUInt {
-        BigUInt(ceil(Double(gasLimit) * multiplier))
-    }
-}
 
 // This is a workaround for sending a Mantle transaction.
 // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
@@ -89,7 +75,7 @@ private extension MantleWalletManager {
     }
     
     func prepareAdjustedValue(value: String?) -> String? {
-        guard let value else {
+        guard let value, let currentBalance = wallet.amounts[.coin]?.value else {
             return nil
         }
         
@@ -105,9 +91,7 @@ private extension MantleWalletManager {
         let blockchain = wallet.blockchain
         let delta = blockchain.minimumValue
         
-        let currentBalance = wallet.amounts[.coin]?.value
-        let shouldSubtractPenny = currentBalance?.isEqual(to: parsedValue, delta: delta) == true
-
+        let shouldSubtractPenny = currentBalance.isEqual(to: parsedValue, delta: delta)
         let valueToSubtract = shouldSubtractPenny ? delta : 0
         
         return Amount(
