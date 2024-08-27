@@ -34,7 +34,7 @@ DEPENDENCIES:
   - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.20`)
   - Moya (= 15.0.0)
   - Sodium (= 0.9.1)
-  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `1.2.0-tangem10`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `1.2.0-tangem11`)
   - stellar-ios-mac-sdk (= 2.5.4)
   - SwiftCBOR (= 0.4.5)
   - SwiftyJSON (from `https://github.com/tangem/SwiftyJSON.git`, tag `5.0.1-tangem1`)
@@ -60,7 +60,7 @@ EXTERNAL SOURCES:
     :tag: 0.0.20
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: 1.2.0-tangem10
+    :tag: 1.2.0-tangem11
   SwiftyJSON:
     :git: https://github.com/tangem/SwiftyJSON.git
     :tag: 5.0.1-tangem1
@@ -77,7 +77,7 @@ CHECKOUT OPTIONS:
     :tag: 0.0.20
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: 1.2.0-tangem10
+    :tag: 1.2.0-tangem11
   SwiftyJSON:
     :git: https://github.com/tangem/SwiftyJSON.git
     :tag: 5.0.1-tangem1
@@ -100,6 +100,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: c0bd75b5969785b3d9ae41d5709fe75bc5de4002
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
 
-PODFILE CHECKSUM: 52792b492481e3a4e4dcf8ac0ecb1cffe929ad2c
+PODFILE CHECKSUM: c3bf95e55c682fb33df4ea9627e21a434869279d
 
 COCOAPODS: 1.15.2

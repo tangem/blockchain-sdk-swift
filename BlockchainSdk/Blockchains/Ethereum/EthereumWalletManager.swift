@@ -111,6 +111,22 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         }
         .eraseToAnyPublisher()
     }
+    
+    // It can't be into extension because it will be overridden in the `MantleWalletManager`
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        let toPublisher = addressConverter.convertToETHAddressPublisher(to)
+        let fromPublisher = addressConverter.convertToETHAddressPublisher(from)
+
+        return toPublisher
+            .zip(fromPublisher)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, convertedAddresses in
+                let (to, from) = convertedAddresses
+                return walletManager.networkService
+                    .getGasLimit(to: to, from: from, value: value, data: data)
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - EthereumNetworkProvider
@@ -179,21 +195,6 @@ extension EthereumWalletManager: EthereumNetworkProvider {
     }
 
     // Fee
-
-    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
-        let toPublisher = addressConverter.convertToETHAddressPublisher(to)
-        let fromPublisher = addressConverter.convertToETHAddressPublisher(from)
-
-        return toPublisher
-            .zip(fromPublisher)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, convertedAddresses in
-                let (to, from) = convertedAddresses
-                return walletManager.networkService
-                    .getGasLimit(to: to, from: from, value: value, data: data)
-            }
-            .eraseToAnyPublisher()
-    }
 
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         networkService.getGasPrice()

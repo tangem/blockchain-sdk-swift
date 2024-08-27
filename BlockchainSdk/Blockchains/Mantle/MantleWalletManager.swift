@@ -8,46 +8,42 @@
 
 import BigInt
 import Combine
-import Foundation
 
 // This is a workaround for sending a Mantle transaction.
 // Unfortunately, Mantle's current implementation does not conform to our existing fee calculation rules.
 // https://tangem.slack.com/archives/GMXC6PP71/p1719591856597299?thread_ts=1714215815.690169&cid=GMXC6PP71
 final class MantleWalletManager: EthereumWalletManager {
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], any Error> {
-        let blockchain = wallet.blockchain
-        
-        let adjustedValue = value
-            .flatMap { value in
-                EthereumUtils.parseEthereumDecimal(value, decimalsCount: blockchain.decimalCount)
+        super.getFee(
+            destination: destination,
+            value: prepareAdjustedValue(value: value),
+            data: data
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, fees in
+            try fees.map { fee in
+                try walletManager.mapMantleFee(fee, gasLimitMultiplier: MantleUtils.feeGasLimitMultiplier)
             }
-            .flatMap { parsedValue in
-                Amount(
-                    with: blockchain,
-                    type: .coin,
-                    value: parsedValue - (1 / blockchain.decimalValue)
-                )
-                .encodedForSend
-            }
-        
-        return super.getFee(destination: destination, value: adjustedValue, data: data)
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, fees in
-                try fees.map { fee in
-                    try walletManager.mapMantleFee(fee, gasLimitMultiplier: 1.6)
-                }
-            }
-            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
     
     override func sign(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<String, any Error> {
         var transaction = transaction
         do {
-            transaction.fee = try mapMantleFee(transaction.fee, gasLimitMultiplier: 0.7)
+            transaction.fee = try mapMantleFee(transaction.fee, gasLimitMultiplier: MantleUtils.signGasLimitMultiplier)
         } catch {
             return Fail(error: error).eraseToAnyPublisher()
         }
         return super.sign(transaction, signer: signer)
+    }
+    
+    override func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, any Error> {
+        super.getGasLimit(to: to, from: from, value: value, data: data)
+            .map { gasLimit in
+                MantleUtils.multiplyGasLimit(gasLimit, with: MantleUtils.feeGasLimitMultiplier)
+            }
+            .eraseToAnyPublisher()
     }
 }
 
@@ -58,13 +54,13 @@ private extension MantleWalletManager {
         let parameters: any EthereumFeeParameters = switch fee.parameters {
         case let parameters as EthereumEIP1559FeeParameters:
             EthereumEIP1559FeeParameters(
-                gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
+                gasLimit: MantleUtils.multiplyGasLimit(parameters.gasLimit, with: gasLimitMultiplier),
                 maxFeePerGas: parameters.maxFeePerGas,
                 priorityFee: parameters.priorityFee
             )
         case let parameters as EthereumLegacyFeeParameters:
             EthereumLegacyFeeParameters(
-                gasLimit: BigUInt(ceil(Double(parameters.gasLimit) * gasLimitMultiplier)),
+                gasLimit: MantleUtils.multiplyGasLimit(parameters.gasLimit, with: gasLimitMultiplier),
                 gasPrice: parameters.gasPrice
             )
         default:
@@ -76,5 +72,33 @@ private extension MantleWalletManager {
         let amount = Amount(with: blockchain, value: feeValue)
 
         return Fee(amount, parameters: parameters)
+    }
+    
+    func prepareAdjustedValue(value: String?) -> String? {
+        guard let value, let currentBalance = wallet.amounts[.coin]?.value else {
+            return nil
+        }
+        
+        let parsedValue = EthereumUtils.parseEthereumDecimal(
+            value,
+            decimalsCount: wallet.blockchain.decimalCount
+        )
+        
+        guard let parsedValue else {
+            return nil
+        }
+        
+        let blockchain = wallet.blockchain
+        let delta = blockchain.minimumValue
+        
+        let shouldSubtractPenny = currentBalance.isEqual(to: parsedValue, delta: delta)
+        let valueToSubtract = shouldSubtractPenny ? delta : 0
+        
+        return Amount(
+            with: blockchain,
+            type: .coin,
+            value: parsedValue - valueToSubtract
+        )
+        .encodedForSend
     }
 }

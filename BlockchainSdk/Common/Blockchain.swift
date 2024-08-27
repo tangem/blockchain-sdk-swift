@@ -999,6 +999,10 @@ extension Blockchain {
     public var decimalValue: Decimal {
         return pow(Decimal(10), decimalCount)
     }
+    
+    public var minimumValue: Decimal {
+        1 / decimalValue
+    }
 }
 
 // MARK: - Card's factory
