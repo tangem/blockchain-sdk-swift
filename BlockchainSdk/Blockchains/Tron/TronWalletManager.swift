@@ -306,7 +306,8 @@ extension TronWalletManager: StakeKitTransactionSender {
         return sentTransactionsPublisher
             .withWeakCaptureOf(self)
             .tryMap { manager, broadcastResponses -> [TransactionSendResult] in
-                guard broadcastResponses.allSatisfy({ $0.result == true }) else {
+                guard broadcastResponses.count == transactions.count,
+                      broadcastResponses.allSatisfy({ $0.result }) else {
                     throw WalletError.failedToSendTx
                 }
 
