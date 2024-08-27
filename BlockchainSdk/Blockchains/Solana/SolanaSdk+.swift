@@ -58,7 +58,7 @@ extension Api {
     
     func getMinimumBalanceForRentExemption(
         dataLength: UInt64,
-        commitment: Commitment? = "recent"
+        commitment: Commitment? = nil
     ) -> AnyPublisher<UInt64, Error> {
         Deferred {
             Future { [weak self] promise in
@@ -164,7 +164,7 @@ extension Api {
                     return
                 }
 
-                self.sendTransaction(serializedTransaction: serializedTransaction, configs: configs) {
+                self.sendTransaction(serializedTransaction: serializedTransaction, configs: configs, startSendingTimestamp: Date()) {
                     switch $0 {
                     case .failure(let error):
                         promise(.failure(error))
@@ -186,7 +186,7 @@ extension Action {
         computeUnitPrice: UInt64?,
         allowUnfundedRecipient: Bool = false,
         fromPublicKey: PublicKey
-    ) -> AnyPublisher<String, Error> {
+    ) -> AnyPublisher<(String, Date), Error> {
         Deferred {
             Future { [weak self] promise in
                 guard let self else {
