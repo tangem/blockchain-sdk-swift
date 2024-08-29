@@ -539,6 +539,8 @@
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
 		DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */; };
 		DA9EA73F29EE958500CAE6F2 /* CosmosTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */; };
+		DA9F15F22C80B3B800EA7FAF /* FilecoinTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F15F12C80B3B800EA7FAF /* FilecoinTransactionBuilder.swift */; };
+		DA9F15F42C80BDC700EA7FAF /* FilecoinTransactionBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F15F32C80BDC700EA7FAF /* FilecoinTransactionBuilderTests.swift */; };
 		DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */; };
 		DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */; };
 		DA9F76EF27EC9BCD00F0665C /* TronNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */; };
@@ -1478,6 +1480,8 @@
 		DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTarget.swift; sourceTree = "<group>"; };
 		DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotResponse.swift; sourceTree = "<group>"; };
 		DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosTransactionParams.swift; sourceTree = "<group>"; };
+		DA9F15F12C80B3B800EA7FAF /* FilecoinTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinTransactionBuilder.swift; sourceTree = "<group>"; };
+		DA9F15F32C80BDC700EA7FAF /* FilecoinTransactionBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinTransactionBuilderTests.swift; sourceTree = "<group>"; };
 		DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronAddressService.swift; sourceTree = "<group>"; };
 		DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronWalletManager.swift; sourceTree = "<group>"; };
 		DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronNetworkService.swift; sourceTree = "<group>"; };
@@ -3402,6 +3406,7 @@
 				DAD1565A2C7DCFAD00DE52B3 /* Network */,
 				DA15D1E92C77830E00FD733B /* FilecoinExternalLinkProvider.swift */,
 				DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */,
+				DA9F15F12C80B3B800EA7FAF /* FilecoinTransactionBuilder.swift */,
 			);
 			path = Filecoin;
 			sourceTree = "<group>";
@@ -3457,6 +3462,7 @@
 			isa = PBXGroup;
 			children = (
 				DA20BD6C2C7BC7AF000F02DF /* FilecoinAddressTests.swift */,
+				DA9F15F32C80BDC700EA7FAF /* FilecoinTransactionBuilderTests.swift */,
 			);
 			path = Filecoin;
 			sourceTree = "<group>";
@@ -4890,6 +4896,7 @@
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				B69824772B7175EA00E1333D /* HederaTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
+				DA9F15F22C80B3B800EA7FAF /* FilecoinTransactionBuilder.swift in Sources */,
 				B64A680D2BCE9E82009ED960 /* EthereumOptimisticRollupWalletAssembly.swift in Sources */,
 				EF72577E2A8D42A100EA8CB2 /* TransactionHistory.swift in Sources */,
 				DA4B80252BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift in Sources */,
@@ -5471,6 +5478,7 @@
 				DA1D3B7B2B57B8FB00247393 /* BigUInt+.swift in Sources */,
 				2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */,
 				DAD62DE62C467718008509BE /* MantleTests.swift in Sources */,
+				DA9F15F42C80BDC700EA7FAF /* FilecoinTransactionBuilderTests.swift in Sources */,
 				B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
