@@ -198,42 +198,37 @@ class CosmosWalletManager: BaseManager, WalletManager {
 
 extension CosmosWalletManager: ThenProcessable { }
 
-extension CosmosWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(
-        transaction: StakeKitTransaction,
-        signer: any TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        let helper = CosmosStakeKitTransactionHelper(builder: txBuilder)
+// MARK: - StakeKitTransactionSender
 
-        return Result {
-            try helper.prepareForSign(stakingTransaction: transaction)
+extension CosmosWalletManager: StakeKitTransactionSender {
+    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
+        guard case .single(let transaction) = action else {
+            throw BlockchainSdkError.notImplemented
         }
-        .publisher
-        .withWeakCaptureOf(self)
-        .flatMap { manager, hash in
-            signer
-                .sign(hash: hash, walletPublicKey: self.wallet.publicKey)
-                .tryMap { signature -> Data in
-                    let signature = try Secp256k1Signature(with: signature)
-                    return try signature.unmarshal(with: manager.wallet.publicKey.blockchainKey, hash: hash).data
-                }
-        }
-        .tryMap { signature -> Data in
-            try helper.buildForSend(stakingTransaction: transaction, signature: signature)
-        }
-        .withWeakCaptureOf(self)
-        .flatMap { manager, transaction in
-            manager.networkService
-                .send(transaction: transaction)
-                .mapSendError(tx: transaction.hexString.lowercased())
-        }
-        .handleEvents(receiveOutput: { [weak self] hash in
+
+        let helper = CosmosStakeKitTransactionHelper(builder: txBuilder)
+        let dataToSign = try helper.prepareForSign(stakingTransaction: transaction)
+        let signature = try await signer.sign(hash: dataToSign, walletPublicKey: wallet.publicKey).async()
+
+        let unmarshal = try Secp256k1Signature(with: signature)
+            .unmarshal(with: wallet.publicKey.blockchainKey, hash: dataToSign)
+            .data
+
+        let dataToSend = try helper.buildForSend(stakingTransaction: transaction, signature: signature)
+
+        do {
+            let hash = try await networkService.send(transaction: dataToSend).async()
             let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-            self?.wallet.addPendingTransaction(record)
-        })
-        .map { TransactionSendResult(hash: $0) }
-        .eraseSendError()
-        .eraseToAnyPublisher()
+            let record = mapper.mapToPendingTransactionRecord(
+                stakeKitTransaction: transaction,
+                source: wallet.defaultAddress.value,
+                destination: .unknown,
+                hash: hash
+            )
+            wallet.addPendingTransaction(record)
+            return [TransactionSendResult(hash: hash)]
+        } catch {
+            throw SendTxErrorFactory().make(error: error, with: dataToSend.hexString.lowercased())
+        }
     }
 }

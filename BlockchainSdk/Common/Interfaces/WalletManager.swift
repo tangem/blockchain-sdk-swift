@@ -74,8 +74,7 @@ public protocol TransactionSender {
 }
 
 public protocol StakeKitTransactionSender {
-    func sendStakeKit(transaction: StakeKitTransaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError>
+    func sendStakeKit(_ action: StakeKitTransactionAction, signer: TransactionSigner) async throws -> [TransactionSendResult]
 }
 
 extension StakeKitTransactionSender {

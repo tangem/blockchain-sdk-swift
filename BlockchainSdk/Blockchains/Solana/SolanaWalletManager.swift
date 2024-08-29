@@ -311,29 +311,28 @@ private extension SolanaWalletManager {
 // MARK: - StakeKitTransactionSender
 
 extension SolanaWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        let helper = SolanaStakeKitTransactionHelper()
+    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
+        guard case .single(let transaction) = action else {
+            throw BlockchainSdkError.notImplemented
+        }
 
-        return Just(helper.prepareForSign(transaction.unsignedData))
-            .withWeakCaptureOf(self)
-            .flatMap { manager, txToSign in
-                signer.sign(hash: txToSign, walletPublicKey: manager.wallet.publicKey)
-            }
-            .map { signature in
-                helper.prepareForSend(transaction.unsignedData, signature: signature)
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { manager, txToSend in
-                manager.networkService.sendRaw(base64serializedTransaction: txToSend)
-            }
-            .withWeakCaptureOf(self)
-            .map { manager, hash in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-                manager.wallet.addPendingTransaction(record)
-                return TransactionSendResult(hash: hash)
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+        let helper = SolanaStakeKitTransactionHelper()
+        let txToSign = helper.prepareForSign(transaction.unsignedData)
+        let signature = try await signer.sign(hash: txToSign, walletPublicKey: wallet.publicKey).async()
+        let txToSend = helper.prepareForSend(transaction.unsignedData, signature: signature)
+
+        do {
+            let hash = try await networkService.sendRaw(base64serializedTransaction: txToSend).async()
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(
+                stakeKitTransaction: transaction,
+                source: wallet.defaultAddress.value,
+                hash: hash
+            )
+            wallet.addPendingTransaction(record)
+            return [TransactionSendResult(hash: hash)]
+        } catch {
+            throw SendTxErrorFactory().make(error: error, with: txToSend)
+        }
     }
 }
