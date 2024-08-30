@@ -6,18 +6,10 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
-import BigInt
-import Foundation
 import TangemSdk
 import WalletCore
 
-struct FilecoinFeeParameters: FeeParameters {
-    let gasUnitPrice: BigUInt
-    let gasLimit: Int64
-    let gasPremium: BigUInt
-}
-
-class FilecoinTransactionBuilder {
+final class FilecoinTransactionBuilder {
     private let wallet: Wallet
     
     init(wallet: Wallet) {
@@ -34,12 +26,6 @@ class FilecoinTransactionBuilder {
         
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: .filecoin, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
-
-        if preSigningOutput.error != .ok {
-            Log.debug("FilecoinPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
-            // TODO: [FILECOIN] Make FilecoinTransactionBuilderError
-            throw EthereumTransactionBuilderError.walletCoreError(message: preSigningOutput.errorMessage)
-        }
         
         return preSigningOutput.dataHash
     }
@@ -54,7 +40,7 @@ class FilecoinTransactionBuilder {
         }
         
         let signatures = DataVector()
-        signatures.add(data: signatureInfo.signature) // Should be already unmarshalled
+        signatures.add(data: signatureInfo.signature)
 
         let publicKeys = DataVector()
         publicKeys.add(data: try Secp256k1Key(with: signatureInfo.publicKey).decompress())
@@ -71,7 +57,11 @@ class FilecoinTransactionBuilder {
         
         let signingOutput = try FilecoinSigningOutput(serializedData: compiledWithSignatures)
                 
-        return try JSONDecoder().decode(FilecoinSignedTransactionBody.self, from: signingOutput.json.data(using: .utf8)!)
+        guard let jsonData = signingOutput.json.data(using: .utf8) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        return try JSONDecoder().decode(FilecoinSignedTransactionBody.self, from: jsonData)
     }
     
     private func makeSigningInput(
@@ -79,11 +69,15 @@ class FilecoinTransactionBuilder {
         nonce: UInt64,
         feeParameters: FilecoinFeeParameters
     ) throws -> FilecoinSigningInput {
-        try FilecoinSigningInput.with { input in
+        guard let value = transaction.amount.bigUIntValue else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        return try FilecoinSigningInput.with { input in
             input.to = transaction.destinationAddress
             input.nonce = nonce
             
-            input.value = transaction.amount.bigUIntValue!.serialize()
+            input.value = value.serialize()
             
             input.gasFeeCap = feeParameters.gasUnitPrice.serialize()
             input.gasLimit = feeParameters.gasLimit

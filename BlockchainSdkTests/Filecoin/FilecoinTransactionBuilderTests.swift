@@ -7,16 +7,27 @@
 //
 
 import XCTest
-import WalletCore
 @testable import BlockchainSdk
 
 final class FilecoinTransactionBuilderTests: XCTestCase {
-    private enum Constants {
-        static let publicKey = Data(hex: "0374D0F81F42DDFE34114D533E95E6AE5FE6EA271C96F1FA505199FDC365AE9720")
-        static let signature = Data(hex: "06881E97DA3DCEF5D44FEB02FA75697221B21DF071586E95E3EC4E6B03FA62B014D4E21B89FBC41E9453FC495A92FD97EA6" +
-                                    "7D491B433A5AAEF7361F22416D74701")
-                
-        static let transaction = Transaction(
+    private let transactionBuilder = FilecoinTransactionBuilder(
+        wallet: Wallet(
+            blockchain: .filecoin,
+            addresses: [
+                .default: PlainAddress(
+                    value: Constants.sourceAddress,
+                    publicKey: Wallet.PublicKey(
+                        seedKey: Constants.publicKey,
+                        derivationType: nil
+                    ),
+                    type: .default
+                )
+            ]
+        )
+    )
+    
+    private var transaction: Transaction {
+        Transaction(
             amount: Amount(
                 with: .filecoin,
                 type: .coin,
@@ -34,48 +45,27 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
                     gasPremium: 50612
                 )
             ),
-            sourceAddress: "f1hbyibpq4mea6l3no7aag24hxpwgf4zwp6msepwi",
-            destinationAddress: "f1rluskhwvv5b3z36skltu4noszbc5stfihevbf2i",
-            changeAddress: "f1hbyibpq4mea6l3no7aag24hxpwgf4zwp6msepwi"
+            sourceAddress: Constants.sourceAddress,
+            destinationAddress: Constants.destinationAddress,
+            changeAddress: Constants.sourceAddress
         )
     }
     
-    private let transactionBuilder = FilecoinTransactionBuilder(
-        wallet: Wallet(
-            blockchain: .filecoin,
-            addresses: [
-                .default: PlainAddress(
-                    value: "f1hbyibpq4mea6l3no7aag24hxpwgf4zwp6msepwi",
-                    publicKey: Wallet.PublicKey(
-                        seedKey: Constants.publicKey,
-                        derivationType: nil
-                    ),
-                    type: .default
-                )
-            ]
-        )
-    )
-    
     func testBuildForSign() throws {
         let expected = Data(hex: "BEB93CCF5C85273B327AC5DCDD58CBF3066F57FC84B87CD20DC67DF69EC2D0A9")
-
-        let nonce: UInt64 = 2
-        let actual = try transactionBuilder.buildForSign(
-            transaction: Constants.transaction,
-            nonce: nonce
-        )
+        let actual = try transactionBuilder.buildForSign(transaction: transaction, nonce: 2)
         
         XCTAssertEqual(expected, actual)
     }
     
     func testBuildForSend() throws {
+        let nonce: UInt64 = 2
         let expected = FilecoinSignedTransactionBody(
             transactionBody: FilecoinTransactionBody(
-                // Why this source address differs from the one from transaction
-                sourceAddress: "f1flbddhx4vwox3y3ux5bwgsgq2frzeiuvvdrjo7i",
-                destinationAddress: "f1rluskhwvv5b3z36skltu4noszbc5stfihevbf2i",
+                sourceAddress: Constants.sourceAddress,
+                destinationAddress: Constants.destinationAddress,
                 amount: "10000000000000000",
-                nonce: 2,
+                nonce: nonce,
                 gasUnitPrice: "101225",
                 gasLimit: 1526328,
                 gasPremium: "50612"
@@ -85,9 +75,6 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
                 signature: "Bogel9o9zvXUT+sC+nVpciGyHfBxWG6V4+xOawP6YrAU1OIbifvEHpRT/Elakv2X6mfUkbQzparvc2HyJBbXRwE="
             )
         )
-        
-        let nonce: UInt64 = 2
-        let transaction = Constants.transaction
         
         let hashToSign = try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
         
@@ -102,5 +89,15 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
         )
         
         XCTAssertEqual(expected, actual)
+    }
+}
+
+private extension FilecoinTransactionBuilderTests {
+    enum Constants {
+        static let publicKey = Data(hex: "0374D0F81F42DDFE34114D533E95E6AE5FE6EA271C96F1FA505199FDC365AE9720")
+        static let signature = Data(hex: "06881E97DA3DCEF5D44FEB02FA75697221B21DF071586E95E3EC4E6B03FA62B014D4E21B89FBC41E9453FC495A92FD97EA67D491B433A5AAEF7361F22416D74701")
+                
+        static let sourceAddress = "f1flbddhx4vwox3y3ux5bwgsgq2frzeiuvvdrjo7i"
+        static let destinationAddress = "f1rluskhwvv5b3z36skltu4noszbc5stfihevbf2i"
     }
 }
