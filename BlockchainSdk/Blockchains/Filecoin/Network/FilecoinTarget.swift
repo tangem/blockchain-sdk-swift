@@ -12,18 +12,15 @@ import Moya
 struct FilecoinTarget: TargetType {
     enum FilecoinTargetType {
         case getActorInfo(address: String)
-        case getGasUnitPrice(transactionInfo: FilecoinTxInfo)
-        case getGasLimit(transactionInfo: FilecoinTxInfo)
+        case getMessageGas(transactionInfo: FilecoinTxInfo)
         case submitTransaction(signedTransactionBody: FilecoinSignedTransactionBody)
         
         var method: String {
             switch self {
             case .getActorInfo:
                 "Filecoin.StateGetActor"
-            case .getGasUnitPrice:
-                "Filecoin.GasEstimateFeeCap"
-            case .getGasLimit:
-                "Filecoin.GasEstimateGasLimit"
+            case .getMessageGas:
+                "Filecoin.GasEstimateMessageGas"
             case .submitTransaction:
                 "Filecoin.MpoolPush"
             }
@@ -62,23 +59,13 @@ struct FilecoinTarget: TargetType {
                     ]
                 )
             
-        case .getGasUnitPrice(let transactionInfo):
+        case .getMessageGas(let transactionInfo):
                 .requestJSONRPC(
                     id: Constants.jsonRPCMethodId,
                     method: type.method,
                     params: [
                         FilecoinDTOMapper.convertTransactionBody(from: transactionInfo),
                         nil,
-                        nil
-                    ]
-                )
-            
-        case .getGasLimit(let transactionInfo):
-                .requestJSONRPC(
-                    id: Constants.jsonRPCMethodId,
-                    method: type.method,
-                    params: [
-                        FilecoinDTOMapper.convertTransactionBody(from: transactionInfo),
                         nil
                     ]
                 )

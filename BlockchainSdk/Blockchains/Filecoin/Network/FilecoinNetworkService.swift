@@ -34,24 +34,9 @@ class FilecoinNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getGasUnitPrice(transactionInfo: FilecoinTxInfo) -> AnyPublisher<UInt64, Error> {
+    func getMessageGas(transactionInfo: FilecoinTxInfo) -> AnyPublisher<FilecoinTxGasInfo, Error> {
         providerPublisher { provider in
-            provider
-                .getGasUnitPrice(transactionInfo: transactionInfo)
-                .tryMap { response in
-                    guard let price = UInt64(response) else {
-                        throw WalletError.failedToParseNetworkResponse()
-                    }
-                    return price
-                }
-                .eraseToAnyPublisher()
-        }
-    }
-    
-    func getGasLimit(transactionInfo: FilecoinTxInfo) -> AnyPublisher<UInt64, Error> {
-        providerPublisher { provider in
-            provider
-                .getGasLimit(transactionInfo: transactionInfo)
+            provider.getMessageGas(transactionInfo: transactionInfo)
         }
     }
     

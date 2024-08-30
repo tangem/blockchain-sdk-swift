@@ -29,12 +29,8 @@ final class FilecoinNetworkProvider: HostProvider {
         requestPublisher(for: .getActorInfo(address: address))
     }
     
-    func getGasUnitPrice(transactionInfo: FilecoinTxInfo) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .getGasUnitPrice(transactionInfo: transactionInfo))
-    }
-    
-    func getGasLimit(transactionInfo: FilecoinTxInfo) -> AnyPublisher<UInt64, Error> {
-        requestPublisher(for: .getGasLimit(transactionInfo: transactionInfo))
+    func getMessageGas(transactionInfo: FilecoinTxInfo) -> AnyPublisher<FilecoinTxGasInfo, Error> {
+        requestPublisher(for: .getMessageGas(transactionInfo: transactionInfo))
     }
     
     func submitTransaction(signedTransactionBody: FilecoinSignedTransactionBody) -> AnyPublisher<FilecoinResponse.SubmitTransaction, Error> {

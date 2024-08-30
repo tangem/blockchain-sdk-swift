@@ -6,10 +6,10 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
-import Foundation
+import BigInt
 
-struct FilecoinTxGasInfo {
-    let gasUnitPrice: UInt64
-    let gasLimit: UInt64
-    let gasPremium: UInt64
+struct FilecoinTxGasInfo: Decodable {
+    let gasUnitPrice: BigUInt
+    let gasLimit: BigUInt
+    let gasPremium: BigUInt
 }
