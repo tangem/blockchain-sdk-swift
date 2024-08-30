@@ -563,10 +563,6 @@
 		DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
 		DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
 		DAE343C62BF36329001B3F38 /* KoinosAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE343C52BF36329001B3F38 /* KoinosAddressTests.swift */; };
-		DAE657D92BFC71A600D7D63A /* options.proto in Sources */ = {isa = PBXBuildFile; fileRef = DAE657D82BFC71A600D7D63A /* options.proto */; };
-		DAE657DB2BFC71B800D7D63A /* protocol.proto in Sources */ = {isa = PBXBuildFile; fileRef = DAE657DA2BFC71B800D7D63A /* protocol.proto */; };
-		DAE657DD2BFC71DD00D7D63A /* token.proto in Sources */ = {isa = PBXBuildFile; fileRef = DAE657DC2BFC71DD00D7D63A /* token.proto */; };
-		DAE657DF2BFC71E700D7D63A /* value.proto in Sources */ = {isa = PBXBuildFile; fileRef = DAE657DE2BFC71E700D7D63A /* value.proto */; };
 		DAE657E42BFC732400D7D63A /* options.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE657E02BFC732400D7D63A /* options.pb.swift */; };
 		DAE657E52BFC732400D7D63A /* protocol.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE657E12BFC732400D7D63A /* protocol.pb.swift */; };
 		DAE657E62BFC732400D7D63A /* value.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE657E22BFC732400D7D63A /* value.pb.swift */; };
@@ -4929,7 +4925,6 @@
 				B6B083572AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift in Sources */,
 				B68CACCB2BF4428400E4ECFE /* HederaNetworkResult.AccountHbarBalance.swift in Sources */,
 				DC5E65142B1650F400E81AA5 /* OP_2DROP.swift in Sources */,
-				DAE657DD2BFC71DD00D7D63A /* token.proto in Sources */,
 				EF1339B62AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift in Sources */,
 				B61569042B7569E1001C66DE /* HederaAccountInfo.swift in Sources */,
 				EF2BC62529DAD53B003D3F18 /* RavencoinWalletInfo.swift in Sources */,
@@ -5062,7 +5057,6 @@
 				EF3B19482AA85E6F0084AA1C /* ArbitrumExternalLinkProvider.swift in Sources */,
 				DAFE0D0A2BB1840E005CBD9C /* MantleExternalLinkProvider.swift in Sources */,
 				EF2D9BCF2BBAC2CA0055C485 /* TransactionFeeProvider.swift in Sources */,
-				DAE657D92BFC71A600D7D63A /* options.proto in Sources */,
 				B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */,
 				B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */,
 				0AEFED0A2C3D5A5200C0F400 /* ICPNetworkProvider.swift in Sources */,
@@ -5146,7 +5140,6 @@
 				2D9A919529BB8BFF00476EA6 /* TONWalletManager.swift in Sources */,
 				DC5E64E92B1650F400E81AA5 /* OP_OR.swift in Sources */,
 				DC5E64F52B1650F400E81AA5 /* OP_ADD.swift in Sources */,
-				DAE657DF2BFC71E700D7D63A /* value.proto in Sources */,
 				5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */,
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				2DDEFBDD2B59B44700885675 /* AlgorandResponse+Account.swift in Sources */,
@@ -5352,7 +5345,6 @@
 				DC5E65182B1650F400E81AA5 /* OP_FROMALTSTACK.swift in Sources */,
 				2DDEFBE02B59B44700885675 /* AlgorandResponse+Transaction.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
-				DAE657DB2BFC71B800D7D63A /* protocol.proto in Sources */,
 				DC5E64EB2B1650F400E81AA5 /* OP_RESERVED1.swift in Sources */,
 				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				B6F2621E2B6D91F800B2E47B /* HederaConsensusNetworkProvider.swift in Sources */,
