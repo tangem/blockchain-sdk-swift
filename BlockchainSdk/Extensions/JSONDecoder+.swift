@@ -34,3 +34,30 @@ extension JSONDecoder {
         return encoder
     }
 }
+
+extension JSONDecoder {
+    static var withUpperCamelToLowerCamelCaseStrategy: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .custom { keys in
+            let lastKey = keys.last!.stringValue
+            let lowerCamelCaseKey = lastKey.prefix(1).lowercased() + lastKey.dropFirst()
+            return AnyKey(stringValue: lowerCamelCaseKey)!
+        }
+        return decoder
+    }
+}
+
+private struct AnyKey: CodingKey {
+    let stringValue: String
+    let intValue: Int?
+
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+        self.intValue = nil
+    }
+
+    init?(intValue: Int) {
+        self.stringValue = "\(intValue)"
+        self.intValue = intValue
+    }
+}

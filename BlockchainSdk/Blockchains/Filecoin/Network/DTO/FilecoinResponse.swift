@@ -6,6 +6,7 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import Foundation
 
 enum FilecoinResponse {
@@ -16,6 +17,18 @@ enum FilecoinResponse {
         enum CodingKeys: String, CodingKey {
             case balance = "Balance"
             case nonce = "Nonce"
+        }
+    }
+    
+    struct GasEstimateMessageGas: Decodable {
+        let gasLimit: Int64
+        let gasFeeCap: String
+        let gasPremium: String
+        
+        enum CodingKeys: String, CodingKey {
+            case gasLimit = "GasLimit"
+            case gasFeeCap = "GasFeeCap"
+            case gasPremium = "GasPremium"
         }
     }
     

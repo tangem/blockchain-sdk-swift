@@ -9,7 +9,7 @@
 import BigInt
 
 struct FilecoinFeeParameters: FeeParameters {
-    let gasUnitPrice: BigUInt
     let gasLimit: Int64
+    let gasFeeCap: BigUInt
     let gasPremium: BigUInt
 }

@@ -40,8 +40,8 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
                     value: (101225 * 1526328) / Blockchain.filecoin.decimalValue
                 ),
                 parameters: FilecoinFeeParameters(
-                    gasUnitPrice: 101225,
                     gasLimit: 1526328,
+                    gasFeeCap: 101225,
                     gasPremium: 50612
                 )
             ),
@@ -60,19 +60,19 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
     
     func testBuildForSend() throws {
         let nonce: UInt64 = 2
-        let expected = FilecoinSignedTransactionBody(
-            transactionBody: FilecoinTransactionBody(
-                sourceAddress: Constants.sourceAddress,
-                destinationAddress: Constants.destinationAddress,
-                amount: "10000000000000000",
+        let expected = FilecoinSignedMessage(
+            message: FilecoinMessage(
+                from: Constants.sourceAddress,
+                to: Constants.destinationAddress,
+                value: "10000000000000000",
                 nonce: nonce,
-                gasUnitPrice: "101225",
                 gasLimit: 1526328,
+                gasFeeCap: "101225",
                 gasPremium: "50612"
             ),
-            signature: FilecoinSignedTransactionBody.Signature(
+            signature: FilecoinSignedMessage.Signature(
                 type: 1,
-                signature: "Bogel9o9zvXUT+sC+nVpciGyHfBxWG6V4+xOawP6YrAU1OIbifvEHpRT/Elakv2X6mfUkbQzparvc2HyJBbXRwE="
+                data: "Bogel9o9zvXUT+sC+nVpciGyHfBxWG6V4+xOawP6YrAU1OIbifvEHpRT/Elakv2X6mfUkbQzparvc2HyJBbXRwE="
             )
         )
         

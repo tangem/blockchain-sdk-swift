@@ -8,22 +8,22 @@
 
 import Foundation
 
-struct FilecoinTransactionBody: Codable, Equatable {
-    let sourceAddress: String
-    let destinationAddress: String
-    let amount: String
+struct FilecoinMessage: Codable, Equatable {
+    let from: String
+    let to: String
+    let value: String
     let nonce: UInt64
-    let gasUnitPrice: String?
     let gasLimit: UInt64?
+    let gasFeeCap: String?
     let gasPremium: String?
     
     enum CodingKeys: String, CodingKey {
-        case sourceAddress = "From"
-        case destinationAddress = "To"
-        case amount = "Value"
+        case from = "From"
+        case to = "To"
+        case value = "Value"
         case nonce = "Nonce"
-        case gasUnitPrice = "GasFeeCap"
         case gasLimit = "GasLimit"
+        case gasFeeCap = "GasFeeCap"
         case gasPremium = "GasPremium"
     }
 }

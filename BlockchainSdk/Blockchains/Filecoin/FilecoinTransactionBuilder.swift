@@ -40,7 +40,7 @@ final class FilecoinTransactionBuilder {
         transaction: Transaction,
         nonce: UInt64,
         signatureInfo: SignatureInfo
-    ) throws -> FilecoinSignedTransactionBody {
+    ) throws -> FilecoinSignedMessage {
         guard let feeParameters = transaction.fee.parameters as? FilecoinFeeParameters else {
             throw FilecoinTransactionBuilderError.filecoinFeeParametersNotFound
         }
@@ -67,7 +67,7 @@ final class FilecoinTransactionBuilder {
             throw FilecoinTransactionBuilderError.failedToGetDataFromJSON
         }
         
-        return try JSONDecoder().decode(FilecoinSignedTransactionBody.self, from: jsonData)
+        return try JSONDecoder().decode(FilecoinSignedMessage.self, from: jsonData)
     }
     
     private func makeSigningInput(
@@ -85,8 +85,8 @@ final class FilecoinTransactionBuilder {
             
             input.value = value.serialize()
             
-            input.gasFeeCap = feeParameters.gasUnitPrice.serialize()
             input.gasLimit = feeParameters.gasLimit
+            input.gasFeeCap = feeParameters.gasFeeCap.serialize()
             input.gasPremium = feeParameters.gasPremium.serialize()
             
             input.publicKey = try Secp256k1Key(with: wallet.publicKey.blockchainKey).decompress()

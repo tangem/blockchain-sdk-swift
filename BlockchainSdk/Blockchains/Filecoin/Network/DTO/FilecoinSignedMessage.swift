@@ -8,22 +8,22 @@
 
 import Foundation
 
-struct FilecoinSignedTransactionBody: Codable, Equatable {
+struct FilecoinSignedMessage: Codable, Equatable {
     struct Signature: Codable, Equatable {
         let type: Int
-        let signature: String
+        let data: String
         
         enum CodingKeys: String, CodingKey {
             case type = "Type"
-            case signature = "Data"
+            case data = "Data"
         }
     }
     
-    let transactionBody: FilecoinTransactionBody
+    let message: FilecoinMessage
     let signature: Signature
     
     enum CodingKeys: String, CodingKey {
-        case transactionBody = "Message"
+        case message = "Message"
         case signature = "Signature"
     }
 }

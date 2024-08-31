@@ -29,18 +29,18 @@ final class FilecoinNetworkProvider: HostProvider {
         requestPublisher(for: .getActorInfo(address: address))
     }
     
-    func getMessageGas(transactionInfo: FilecoinTxInfo) -> AnyPublisher<FilecoinTxGasInfo, Error> {
-        requestPublisher(for: .getMessageGas(transactionInfo: transactionInfo))
+    func getEstimateMessageGas(message: FilecoinMessage) -> AnyPublisher<FilecoinResponse.GasEstimateMessageGas, Error> {
+        requestPublisher(for: .getEstimateMessageGas(message: message))
     }
     
-    func submitTransaction(signedTransactionBody: FilecoinSignedTransactionBody) -> AnyPublisher<FilecoinResponse.SubmitTransaction, Error> {
-        requestPublisher(for: .submitTransaction(signedTransactionBody: signedTransactionBody))
+    func submitTransaction(signedMessage: FilecoinSignedMessage) -> AnyPublisher<FilecoinResponse.SubmitTransaction, Error> {
+        requestPublisher(for: .submitTransaction(signedMessage: signedMessage))
     }
     
     private func requestPublisher<T: Decodable>(for target: FilecoinTarget.FilecoinTargetType) -> AnyPublisher<T, Error> {
         provider.requestPublisher(FilecoinTarget(node: node, target))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(JSONRPC.Response<T, JSONRPC.APIError>.self, using: .withSnakeCaseStrategy)
+            .map(JSONRPC.Response<T, JSONRPC.APIError>.self)
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
     }

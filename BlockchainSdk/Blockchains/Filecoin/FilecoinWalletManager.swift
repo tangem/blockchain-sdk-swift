@@ -65,34 +65,37 @@ class FilecoinWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
-        let transactionInfo = FilecoinTxInfo(
-            sourceAddress: wallet.address,
-            destinationAddress: destination,
-            amount: amount.value.uint64Value,
-            nonce: nonce
+        let message = FilecoinMessage(
+            from: wallet.address,
+            to: destination,
+            value: amount.description,
+            nonce: nonce,
+            gasLimit: nil,
+            gasFeeCap: nil,
+            gasPremium: nil
         )
         
         return networkService
-            .getMessageGas(transactionInfo: transactionInfo)
+            .getEstimateMessageGas(message: message)
             .withWeakCaptureOf(self)
             .tryMap { (walletManager: FilecoinWalletManager, gasInfo) -> [Fee] in
-                guard let gasLimitDecimal = gasInfo.gasLimit.decimal,
-                      let gasUnitPriceDecimal = gasInfo.gasUnitPrice.decimal
-                else {
+                guard let gasFeeCapDecimal = Decimal(stringValue: gasInfo.gasFeeCap) else {
                     throw WalletError.failedToGetFee
                 }
+                
+                let gasLimitDecimal = Decimal(gasInfo.gasLimit)
                 
                 return [
                     Fee(
                         Amount(
                             with: .filecoin,
                             type: .coin,
-                            value: (gasLimitDecimal * gasUnitPriceDecimal) / walletManager.wallet.blockchain.decimalValue
+                            value: gasLimitDecimal * gasFeeCapDecimal / walletManager.wallet.blockchain.decimalValue
                         ),
                         parameters: FilecoinFeeParameters(
-                            gasUnitPrice: gasInfo.gasUnitPrice,
-                            gasLimit: gasLimitDecimal.int64Value,
-                            gasPremium: gasInfo.gasPremium
+                            gasLimit: gasInfo.gasLimit,
+                            gasFeeCap: BigUInt(stringLiteral: gasInfo.gasFeeCap),
+                            gasPremium: BigUInt(stringLiteral: gasInfo.gasPremium)
                         )
                     )
                 ]
@@ -123,8 +126,8 @@ class FilecoinWalletManager: BaseManager, WalletManager {
                 }
         }
         .withWeakCaptureOf(self)
-        .flatMap { walletManager, body in
-            walletManager.networkService.submitTransaction(signedTransactionBody: body)
+        .flatMap { walletManager, message in
+            walletManager.networkService.submitTransaction(signedMessage: message)
         }
         .withWeakCaptureOf(self)
         .map { walletManager, txId in

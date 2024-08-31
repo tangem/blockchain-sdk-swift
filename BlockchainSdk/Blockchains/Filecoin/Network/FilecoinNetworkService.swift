@@ -16,7 +16,9 @@ class FilecoinNetworkService: MultiNetworkProvider {
         self.providers = providers
     }
     
-    func getAccountInfo(address: String) -> AnyPublisher<FilecoinAccountInfo, Error> {
+    func getAccountInfo(
+        address: String
+    ) -> AnyPublisher<FilecoinAccountInfo, Error> {
         providerPublisher { provider in
             provider
                 .getActorInfo(address: address)
@@ -34,16 +36,20 @@ class FilecoinNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getMessageGas(transactionInfo: FilecoinTxInfo) -> AnyPublisher<FilecoinTxGasInfo, Error> {
+    func getEstimateMessageGas(
+        message: FilecoinMessage
+    ) -> AnyPublisher<FilecoinResponse.GasEstimateMessageGas, Error> {
         providerPublisher { provider in
-            provider.getMessageGas(transactionInfo: transactionInfo)
+            provider.getEstimateMessageGas(message: message)
         }
     }
     
-    func submitTransaction(signedTransactionBody: FilecoinSignedTransactionBody) -> AnyPublisher<String, Error> {
+    func submitTransaction(
+        signedMessage: FilecoinSignedMessage
+    ) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
             provider
-                .submitTransaction(signedTransactionBody: signedTransactionBody)
+                .submitTransaction(signedMessage: signedMessage)
                 .map(\.hash)
                 .eraseToAnyPublisher()
         }
