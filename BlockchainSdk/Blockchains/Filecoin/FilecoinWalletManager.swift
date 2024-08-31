@@ -38,9 +38,13 @@ class FilecoinWalletManager: BaseManager, WalletManager {
             .getAccountInfo(address: wallet.address)
             .withWeakCaptureOf(self)
             .sink(
-                receiveCompletion: {
-                    _ in
-                    
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("FINISHED")
+                    case .failure(let failure):
+                        print(failure)
+                    }
                 },
                 receiveValue: { walletManager, accountInfo in
                     if accountInfo.nonce != walletManager.nonce {
