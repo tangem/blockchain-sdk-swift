@@ -342,7 +342,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .bsc:
             return "BNB"
         case .polygon:
-            return "MATIC"
+            return "POL"
         case .avalanche:
             return "AVAX"
         case .solana:
