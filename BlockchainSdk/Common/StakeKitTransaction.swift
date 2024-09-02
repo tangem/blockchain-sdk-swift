@@ -8,11 +8,6 @@
 
 import Foundation
 
-public enum StakeKitTransactionAction: Hashable {
-    case single(StakeKitTransaction)
-    case multiple([StakeKitTransaction])
-}
-
 public struct StakeKitTransaction: Hashable {
     public let id: String
     public let amount: Amount
@@ -30,4 +25,9 @@ public struct StakeKitTransaction: Hashable {
         self.fee = fee
         self.unsignedData = unsignedData
     }
+}
+
+public struct StakeKitTransactionSendResult: Hashable {
+    let transaction: StakeKitTransaction
+    let result: TransactionSendResult
 }
