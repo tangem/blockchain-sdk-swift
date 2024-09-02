@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import TangemSdk
 
 public protocol StakeKitTransactionSender {
     /// Return stream with tx which was sent one by one
     /// If catch error stream will be stopped
     /// In case when manager already implemented the `StakeKitTransactionSenderProvider` method will be not required
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error>
+    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner, delay second: UInt64?) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error>
 }
 
 protocol StakeKitTransactionSenderProvider {
@@ -22,15 +23,10 @@ protocol StakeKitTransactionSenderProvider {
     func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String
 }
 
-public enum StakeKitTransactionSenderDelayOption: Hashable {
-    case noDelay
-    case delay(second: TimeInterval)
-}
-
 // MARK: - Common implementation for StakeKitTransactionSenderProvider
 
 extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvider, Self: WalletProvider, RawTransaction: CustomStringConvertible {
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error> {
+    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner, delay second: UInt64?) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error> {
         .init { continuation in
             let task = Task {
                 do {
@@ -42,16 +38,24 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
                     for (transaction, signature) in zip(transactions, signatures) {
                         try Task.checkCancellation()
                         let rawTransaction = try prepareDataForSend(transaction: transaction, signature: signature)
-                        let result: TransactionSendResult = try await broadcast(transaction: transaction, rawTransaction: rawTransaction)
-                        continuation.yield(.init(transaction: transaction, result: result))
 
-                        print("Start 5 sec ->> ")
-                        try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+                        do {
+                            let result: TransactionSendResult = try await broadcast(transaction: transaction, rawTransaction: rawTransaction)
+                            continuation.yield(.init(transaction: transaction, result: result))
+                        } catch {
+                            throw StakeKitTransactionSendError(transaction: transaction, error: error)
+                        }
+
+                        if transactions.count > 1, let second {
+                            Log.log("\(self) start \(second) second delay between the transactions sending")
+                            try await Task.sleep(nanoseconds: second * NSEC_PER_SEC)
+                        }
                     }
 
                     continuation.finish()
 
                 } catch {
+                    Log.log("\(self) catch \(error) when sent staking transaction")
                     continuation.finish(throwing: error)
                 }
             }

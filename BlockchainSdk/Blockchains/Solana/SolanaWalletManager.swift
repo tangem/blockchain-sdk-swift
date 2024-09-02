@@ -323,31 +323,4 @@ extension SolanaWalletManager: StakeKitTransactionSender, StakeKitTransactionSen
     func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
         try await networkService.sendRaw(base64serializedTransaction: rawTransaction).async()
     }
-
-    /*
-    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
-        guard case .single(let transaction) = action else {
-            throw BlockchainSdkError.notImplemented
-        }
-
-        let helper = SolanaStakeKitTransactionHelper()
-        let txToSign = helper.prepareForSign(transaction.unsignedData)
-        let signature = try await signer.sign(hash: txToSign, walletPublicKey: wallet.publicKey).async()
-        let txToSend = helper.prepareForSend(transaction.unsignedData, signature: signature)
-
-        do {
-            let hash = try await networkService.sendRaw(base64serializedTransaction: txToSend).async()
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(
-                stakeKitTransaction: transaction,
-                source: wallet.defaultAddress.value,
-                hash: hash
-            )
-            wallet.addPendingTransaction(record)
-            return [TransactionSendResult(hash: hash)]
-        } catch {
-            throw SendTxErrorFactory().make(error: error, with: txToSend)
-        }
-    }
-     */
 }
