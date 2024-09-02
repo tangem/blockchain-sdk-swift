@@ -11,18 +11,9 @@ import XCTest
 
 final class FilecoinTransactionBuilderTests: XCTestCase {
     private let transactionBuilder = FilecoinTransactionBuilder(
-        wallet: Wallet(
-            blockchain: .filecoin,
-            addresses: [
-                .default: PlainAddress(
-                    value: Constants.sourceAddress,
-                    publicKey: Wallet.PublicKey(
-                        seedKey: Constants.publicKey,
-                        derivationType: nil
-                    ),
-                    type: .default
-                )
-            ]
+        publicKey: Wallet.PublicKey(
+            seedKey: Constants.publicKey,
+            derivationType: nil
         )
     )
     

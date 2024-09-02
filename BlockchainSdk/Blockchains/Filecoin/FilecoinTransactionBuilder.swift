@@ -17,10 +17,10 @@ enum FilecoinTransactionBuilderError: Error {
 }
 
 final class FilecoinTransactionBuilder {
-    private let wallet: Wallet
+    private let publicKey: Wallet.PublicKey
     
-    init(wallet: Wallet) {
-        self.wallet = wallet
+    init(publicKey: Wallet.PublicKey) {
+        self.publicKey = publicKey
     }
     
     func buildForSign(transaction: Transaction, nonce: UInt64) throws -> Data {
@@ -107,7 +107,7 @@ final class FilecoinTransactionBuilder {
             input.gasFeeCap = feeParameters.gasFeeCap.serialize()
             input.gasPremium = feeParameters.gasPremium.serialize()
             
-            input.publicKey = try Secp256k1Key(with: wallet.publicKey.blockchainKey).decompress()
+            input.publicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
         }
     }
 }

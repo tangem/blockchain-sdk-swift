@@ -21,7 +21,7 @@ struct FilecoinWalletAssembly: WalletManagerAssembly {
                         )
                     }
             ),
-            transactionBuilder: FilecoinTransactionBuilder(wallet: input.wallet)
+            transactionBuilder: FilecoinTransactionBuilder(publicKey: input.wallet.publicKey)
         )
     }
 }
