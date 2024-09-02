@@ -259,49 +259,67 @@ extension TronWalletManager: TronTransactionDataBuilder {
     }
 }
 
-// MARK: - StakeKitTransactionSender
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-extension TronWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
-        guard case .multiple(let transactions) = action else {
-            throw BlockchainSdkError.notImplemented
-        }
+extension TronWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = Data
 
-        let prepared = try transactions.map {
-            try TronStakeKitTransactionHelper().prepareForSign($0.unsignedData)
-        }
-
-        let hashes = prepared.map { $0.hash }
-        let signatures = try await signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey).async()
-
-        let readyToSend = try zip(prepared, signatures).map { (input, signature) in
-            let unmarshalledSignature = unmarshal(signature, hash: input.hash, publicKey: wallet.publicKey)
-            return try txBuilder.buildForSend(rawData: input.rawData, signature: unmarshalledSignature)
-        }
-
-        var results: [TransactionSendResult] = []
-
-        for (transaction, data) in zip(transactions, readyToSend) {
-            do {
-                let result = try await networkService.broadcastHex(data).async()
-                try await Task.sleep(1 * NSEC_PER_SEC)
-
-                let hash = result.txid
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(
-                    stakeKitTransaction: transaction,
-                    source: wallet.defaultAddress.value,
-                    hash: hash
-                )
-                wallet.addPendingTransaction(record)
-                results.append(TransactionSendResult(hash: hash))
-            } catch {
-                throw SendTxErrorFactory().make(error: error, with: data.hexString)
-            }
-        }
-
-        return results
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).hash
     }
+
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        let rawData = try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).rawData
+        let unmarshalled = unmarshal(signature.signature, hash: signature.hash, publicKey: wallet.publicKey)
+        return try txBuilder.buildForSend(rawData: rawData, signature: unmarshalled)
+    }
+
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.broadcastHex(rawTransaction).async().txid
+    }
+}
+//
+//extension TronWalletManager: StakeKitTransactionSender {
+//    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
+//        guard case .multiple(let transactions) = action else {
+//            throw BlockchainSdkError.notImplemented
+//        }
+//
+//        let prepared = try transactions.map {
+//            try TronStakeKitTransactionHelper().prepareForSign($0.unsignedData)
+//        }
+//
+//        let hashes = prepared.map { $0.hash }
+//        let signatures = try await signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey).async()
+//
+//        let readyToSend = try zip(prepared, signatures).map { (input, signature) in
+//            let unmarshalledSignature = unmarshal(signature, hash: input.hash, publicKey: wallet.publicKey)
+//            return try txBuilder.buildForSend(rawData: input.rawData, signature: unmarshalledSignature)
+//        }
+//
+//        var results: [TransactionSendResult] = []
+//
+//        for (transaction, data) in zip(transactions, readyToSend) {
+//            do {
+//                let result = try await networkService.broadcastHex(data).async()
+//                try await Task.sleep(1 * NSEC_PER_SEC)
+//
+//                let hash = result.txid
+//                let mapper = PendingTransactionRecordMapper()
+//                let record = mapper.mapToPendingTransactionRecord(
+//                    stakeKitTransaction: transaction,
+//                    source: wallet.defaultAddress.value,
+//                    hash: hash
+//                )
+//                wallet.addPendingTransaction(record)
+//                results.append(TransactionSendResult(hash: hash))
+//            } catch {
+//                throw SendTxErrorFactory().make(error: error, with: data.hexString)
+//            }
+//        }
+//
+//        return results
+//    }
 
 //    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError> {
 //
@@ -380,4 +398,5 @@ extension TronWalletManager: StakeKitTransactionSender {
 //    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
 //        return .anyFail(error: .init(error: BlockchainSdkError.notImplemented))
 //    }
-}
+//}
+

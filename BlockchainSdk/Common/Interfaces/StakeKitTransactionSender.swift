@@ -10,19 +10,27 @@ import Foundation
 public protocol StakeKitTransactionSender {
     /// Return stream with tx which was sent one by one
     /// If catch error stream will be stopped
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) async throws -> AsyncThrowingStream<StakeKitTransactionSendResult, Error>
+    /// In case when manager already implemented the `StakeKitTransactionSenderProvider` method will be not required
+    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error>
 }
 
 protocol StakeKitTransactionSenderProvider {
+    associatedtype RawTransaction
+
     func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data
-    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> Data
-    func broadcast(rawTransaction: Data) throws -> TransactionSendResult
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String
+}
+
+public enum StakeKitTransactionSenderDelayOption: Hashable {
+    case noDelay
+    case delay(second: TimeInterval)
 }
 
 // MARK: - Common implementation for StakeKitTransactionSenderProvider
 
-extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvider, Self: WalletProvider {
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) async throws -> AsyncThrowingStream<StakeKitTransactionSendResult, Error> {
+extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvider, Self: WalletProvider, RawTransaction: CustomStringConvertible {
+    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error> {
         .init { continuation in
             let task = Task {
                 do {
@@ -33,8 +41,8 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
 
                     for (transaction, signature) in zip(transactions, signatures) {
                         try Task.checkCancellation()
-                        let dataToSend = try prepareDataForSend(transaction: transaction, signature: signature)
-                        let result = try await broadcast(rawTransaction: dataToSend)
+                        let rawTransaction = try prepareDataForSend(transaction: transaction, signature: signature)
+                        let result: TransactionSendResult = try await broadcast(transaction: transaction, rawTransaction: rawTransaction)
                         continuation.yield(.init(transaction: transaction, result: result))
 
                         print("Start 5 sec ->> ")
@@ -45,24 +53,36 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
 
                 } catch {
                     continuation.finish(throwing: error)
-                    return
                 }
             }
 
             continuation.onTermination = { termination in
-                print("termination ->>", termination)
-
                 switch termination {
                 case .cancelled:
                     task.cancel()
-                case .finished(let error as CancellationError):
-                    task.cancel() // Check it
                 case .finished(let error):
-                    break
-                @unknown default:
+                    task.cancel()
+                case .finished(.none):
                     break
                 }
             }
+        }
+    }
+
+    /// Convenience method with adding the `PendingTransaction` to the wallet  and `SendTxError` mapping
+    private func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> TransactionSendResult {
+        do {
+            let hash: String = try await broadcast(transaction: transaction, rawTransaction: rawTransaction)
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(
+                stakeKitTransaction: transaction,
+                source: wallet.defaultAddress.value,
+                hash: hash
+            )
+            wallet.addPendingTransaction(record)
+            return TransactionSendResult(hash: hash)
+        } catch {
+            throw SendTxErrorFactory().make(error: error, with: rawTransaction.description)
         }
     }
 }

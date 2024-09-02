@@ -406,43 +406,63 @@ extension EthereumWalletManager: EthereumTransactionDataBuilder {
     }
 }
 
-// MARK: - StakeKitTransactionSender
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-extension EthereumWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
-        guard case .single(let transaction) = action else {
-            throw BlockchainSdkError.notImplemented
-        }
+extension EthereumWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = String
 
-        let helper = EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder)
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder).prepareForSign(transaction)
+    }
 
-        let hashToSign = try helper
-            .prepareForSign(transaction)
-        let signatureInfo: SignatureInfo = try await signer
-            .sign(hash: hashToSign, walletPublicKey: wallet.publicKey)
-            .async()
-
-        let rawTransaction = try helper
-            .prepareForSend(stakingTransaction: transaction, signatureInfo: signatureInfo)
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        try EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder)
+            .prepareForSend(stakingTransaction: transaction, signatureInfo: signature)
             .hexString
             .lowercased()
             .addHexPrefix()
+    }
 
-        do {
-            let hash = try await networkService.send(transaction: rawTransaction).async()
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(
-                stakeKitTransaction: transaction,
-                source: wallet.defaultAddress.value,
-                destination: .unknown,
-                hash: hash
-            )
-            wallet.addPendingTransaction(record)
-
-            return [TransactionSendResult(hash: hash)]
-
-        } catch {
-            throw SendTxErrorFactory().make(error: error, with: rawTransaction)
-        }
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.send(transaction: rawTransaction).async()
     }
 }
+
+//extension EthereumWalletManager: StakeKitTransactionSender {
+//    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
+//        guard case .single(let transaction) = action else {
+//            throw BlockchainSdkError.notImplemented
+//        }
+//
+//        let helper = EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder)
+//
+//        let hashToSign = try helper
+//            .prepareForSign(transaction)
+//        let signatureInfo: SignatureInfo = try await signer
+//            .sign(hash: hashToSign, walletPublicKey: wallet.publicKey)
+//            .async()
+//
+//        let rawTransaction = try helper
+//            .prepareForSend(stakingTransaction: transaction, signatureInfo: signatureInfo)
+//            .hexString
+//            .lowercased()
+//            .addHexPrefix()
+//
+//        do {
+//            let hash = try await networkService.send(transaction: rawTransaction).async()
+//            let mapper = PendingTransactionRecordMapper()
+//            let record = mapper.mapToPendingTransactionRecord(
+//                stakeKitTransaction: transaction,
+//                source: wallet.defaultAddress.value,
+//                destination: .unknown,
+//                hash: hash
+//            )
+//            wallet.addPendingTransaction(record)
+//
+//            return [TransactionSendResult(hash: hash)]
+//
+//        } catch {
+//            throw SendTxErrorFactory().make(error: error, with: rawTransaction)
+//        }
+//    }
+//}

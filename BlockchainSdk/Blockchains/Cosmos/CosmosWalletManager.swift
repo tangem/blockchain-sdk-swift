@@ -198,37 +198,59 @@ class CosmosWalletManager: BaseManager, WalletManager {
 
 extension CosmosWalletManager: ThenProcessable { }
 
-// MARK: - StakeKitTransactionSender
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-extension CosmosWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
-        guard case .single(let transaction) = action else {
-            throw BlockchainSdkError.notImplemented
-        }
+extension CosmosWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = Data
 
-        let helper = CosmosStakeKitTransactionHelper(builder: txBuilder)
-        let dataToSign = try helper.prepareForSign(stakingTransaction: transaction)
-        let signature = try await signer.sign(hash: dataToSign, walletPublicKey: wallet.publicKey).async()
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try CosmosStakeKitTransactionHelper(builder: txBuilder)
+            .prepareForSign(stakingTransaction: transaction)
+    }
 
-        let unmarshal = try Secp256k1Signature(with: signature)
-            .unmarshal(with: wallet.publicKey.blockchainKey, hash: dataToSign)
-            .data
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        let rawData = try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).rawData
+        let unmarshal = try signature.unmarshal(publicKey: wallet.publicKey.blockchainKey)
 
-        let dataToSend = try helper.buildForSend(stakingTransaction: transaction, signature: signature)
+        return try CosmosStakeKitTransactionHelper(builder: txBuilder)
+            .buildForSend(stakingTransaction: transaction, signature: unmarshal)
+    }
 
-        do {
-            let hash = try await networkService.send(transaction: dataToSend).async()
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(
-                stakeKitTransaction: transaction,
-                source: wallet.defaultAddress.value,
-                destination: .unknown,
-                hash: hash
-            )
-            wallet.addPendingTransaction(record)
-            return [TransactionSendResult(hash: hash)]
-        } catch {
-            throw SendTxErrorFactory().make(error: error, with: dataToSend.hexString.lowercased())
-        }
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.send(transaction: rawTransaction).async()
     }
 }
+
+//
+//extension CosmosWalletManager: StakeKitTransactionSender {
+//    func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
+//        guard case .single(let transaction) = action else {
+//            throw BlockchainSdkError.notImplemented
+//        }
+//
+//        let helper = CosmosStakeKitTransactionHelper(builder: txBuilder)
+//        let dataToSign = try helper.prepareForSign(stakingTransaction: transaction)
+//        let signature = try await signer.sign(hash: dataToSign, walletPublicKey: wallet.publicKey).async()
+//
+//        let unmarshal = try Secp256k1Signature(with: signature)
+//            .unmarshal(with: wallet.publicKey.blockchainKey, hash: dataToSign)
+//            .data
+//
+//        let dataToSend = try helper.buildForSend(stakingTransaction: transaction, signature: signature)
+//
+//        do {
+//            let hash = try await networkService.send(transaction: dataToSend).async()
+//            let mapper = PendingTransactionRecordMapper()
+//            let record = mapper.mapToPendingTransactionRecord(
+//                stakeKitTransaction: transaction,
+//                source: wallet.defaultAddress.value,
+//                destination: .unknown,
+//                hash: hash
+//            )
+//            wallet.addPendingTransaction(record)
+//            return [TransactionSendResult(hash: hash)]
+//        } catch {
+//            throw SendTxErrorFactory().make(error: error, with: dataToSend.hexString.lowercased())
+//        }
+//    }
+//}

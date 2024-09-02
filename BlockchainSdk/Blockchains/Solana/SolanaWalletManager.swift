@@ -307,10 +307,24 @@ private extension SolanaWalletManager {
     }
 }
 
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-// MARK: - StakeKitTransactionSender
+extension SolanaWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = String
 
-extension SolanaWalletManager: StakeKitTransactionSender {
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        SolanaStakeKitTransactionHelper().prepareForSign(transaction.unsignedData)
+    }
+    
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        SolanaStakeKitTransactionHelper().prepareForSend(transaction.unsignedData, signature: signature.signature)
+    }
+
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.sendRaw(base64serializedTransaction: rawTransaction).async()
+    }
+
+    /*
     func sendStakeKit(_ action: StakeKitTransactionAction, signer: any TransactionSigner) async throws -> [TransactionSendResult] {
         guard case .single(let transaction) = action else {
             throw BlockchainSdkError.notImplemented
@@ -335,4 +349,5 @@ extension SolanaWalletManager: StakeKitTransactionSender {
             throw SendTxErrorFactory().make(error: error, with: txToSend)
         }
     }
+     */
 }

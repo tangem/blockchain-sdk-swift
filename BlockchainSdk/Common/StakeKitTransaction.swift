@@ -28,6 +28,11 @@ public struct StakeKitTransaction: Hashable {
 }
 
 public struct StakeKitTransactionSendResult: Hashable {
-    let transaction: StakeKitTransaction
-    let result: TransactionSendResult
+    public let transaction: StakeKitTransaction
+    public let result: TransactionSendResult
+}
+
+public struct StakeKitTransactionSendError: Error {
+    public let transaction: StakeKitTransaction
+    public let error: Error
 }
