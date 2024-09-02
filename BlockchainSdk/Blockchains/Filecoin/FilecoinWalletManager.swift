@@ -38,12 +38,13 @@ class FilecoinWalletManager: BaseManager, WalletManager {
             .getAccountInfo(address: wallet.address)
             .withWeakCaptureOf(self)
             .sink(
-                receiveCompletion: { completion in
-                    switch completion {
+                receiveCompletion: { [weak self] result in
+                    switch result {
+                    case .failure(let error):
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
                     case .finished:
-                        print("FINISHED")
-                    case .failure(let failure):
-                        print(failure)
+                        completion(.success(()))
                     }
                 },
                 receiveValue: { walletManager, accountInfo in
@@ -65,10 +66,14 @@ class FilecoinWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
+        guard let bigUIntValue = amount.bigUIntValue else {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+        
         let message = FilecoinMessage(
             from: wallet.address,
             to: destination,
-            value: amount.description,
+            value: bigUIntValue.description,
             nonce: nonce,
             gasLimit: nil,
             gasFeeCap: nil,
