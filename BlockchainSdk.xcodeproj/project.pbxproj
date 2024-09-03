@@ -538,6 +538,7 @@
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
 		DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */; };
+		DA95AE092C7CB1DE0055740F /* MantleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA95AE082C7CB1DE0055740F /* MantleUtils.swift */; };
 		DA9EA73F29EE958500CAE6F2 /* CosmosTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */; };
 		DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */; };
 		DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */; };
@@ -1477,6 +1478,7 @@
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
 		DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTarget.swift; sourceTree = "<group>"; };
 		DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotResponse.swift; sourceTree = "<group>"; };
+		DA95AE082C7CB1DE0055740F /* MantleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleUtils.swift; sourceTree = "<group>"; };
 		DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosTransactionParams.swift; sourceTree = "<group>"; };
 		DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronAddressService.swift; sourceTree = "<group>"; };
 		DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronWalletManager.swift; sourceTree = "<group>"; };
@@ -3449,6 +3451,7 @@
 			children = (
 				DA1BA9A82C454C53006F6839 /* MantleWalletAssembly.swift */,
 				DA1BA9A62C454AFB006F6839 /* MantleWalletManager.swift */,
+				DA95AE082C7CB1DE0055740F /* MantleUtils.swift */,
 			);
 			path = Mantle;
 			sourceTree = "<group>";
@@ -5265,6 +5268,7 @@
 				B69824812B71A8F800E1333D /* HederaNetworkResult.ExchangeRate.swift in Sources */,
 				B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */,
 				B00DF9A02BBEACA2004397CB /* QuickNodeAPIResolver.swift in Sources */,
+				DA95AE092C7CB1DE0055740F /* MantleUtils.swift in Sources */,
 				EF2D9DCF2BC40E280055C485 /* Result+.swift in Sources */,
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
 				B6A71D982B553E7900039991 /* FeePaidCurrency.swift in Sources */,

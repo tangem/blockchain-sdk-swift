@@ -83,6 +83,10 @@ extension Decimal {
     var roundedDecimalNumber: NSDecimalNumber {
         rounded(roundingMode: .up) as NSDecimalNumber
     }
+    
+    public func isEqual(to value: Decimal, delta: Decimal) -> Bool {
+        abs(self - value) <= delta
+    }
 }
 
 // MARK: - Point moving

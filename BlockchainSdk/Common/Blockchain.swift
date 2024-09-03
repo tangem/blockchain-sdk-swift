@@ -345,7 +345,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .bsc:
             return "BNB"
         case .polygon:
-            return "MATIC"
+            return "POL"
         case .avalanche:
             return "AVAX"
         case .solana:
@@ -1005,6 +1005,10 @@ extension Blockchain: Codable {
 extension Blockchain {
     public var decimalValue: Decimal {
         return pow(Decimal(10), decimalCount)
+    }
+    
+    public var minimumValue: Decimal {
+        1 / decimalValue
     }
 }
 
