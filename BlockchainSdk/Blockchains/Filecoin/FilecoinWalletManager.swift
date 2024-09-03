@@ -111,10 +111,9 @@ class FilecoinWalletManager: BaseManager, WalletManager {
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         networkService
             .getAccountInfo(address: wallet.address)
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, accountInfo in
-                walletManager.nonce = accountInfo.nonce
-                return try walletManager.transactionBuilder.buildForSign(
+            .withWeakCaptureOf(transactionBuilder)
+            .tryMap { transactionBuilder, accountInfo in
+                try transactionBuilder.buildForSign(
                     transaction: transaction,
                     nonce: accountInfo.nonce
                 )
