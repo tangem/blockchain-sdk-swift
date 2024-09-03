@@ -29,7 +29,7 @@ final class FilecoinNetworkProvider: HostProvider {
         requestPublisher(for: .getActorInfo(address: address))
     }
     
-    func getEstimateMessageGas(message: FilecoinMessage) -> AnyPublisher<FilecoinResponse.GasEstimateMessageGas, Error> {
+    func getEstimateMessageGas(message: FilecoinMessage) -> AnyPublisher<FilecoinResponse.GetEstimateMessageGas, Error> {
         requestPublisher(for: .getEstimateMessageGas(message: message))
     }
     

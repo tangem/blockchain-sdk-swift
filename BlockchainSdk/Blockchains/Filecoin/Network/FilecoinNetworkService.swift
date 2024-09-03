@@ -38,7 +38,7 @@ class FilecoinNetworkService: MultiNetworkProvider {
     
     func getEstimateMessageGas(
         message: FilecoinMessage
-    ) -> AnyPublisher<FilecoinResponse.GasEstimateMessageGas, Error> {
+    ) -> AnyPublisher<FilecoinResponse.GetEstimateMessageGas, Error> {
         providerPublisher { provider in
             provider.getEstimateMessageGas(message: message)
         }

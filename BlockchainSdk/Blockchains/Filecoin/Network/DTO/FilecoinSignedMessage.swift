@@ -1,5 +1,5 @@
 //
-//  FilecoinSignedTransactionBody.swift
+//  FilecoinSignedMessage.swift
 //  BlockchainSdk
 //
 //  Created by Aleksei Muraveinik on 27.08.24.
