@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct FilecoinTransactionBody: Encodable {
+struct FilecoinTransactionBody: Codable, Equatable {
     let sourceAddress: String
     let destinationAddress: String
     let amount: String

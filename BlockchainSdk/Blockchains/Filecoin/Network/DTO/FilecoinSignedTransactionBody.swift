@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct FilecoinSignedTransactionBody: Encodable {
-    struct Signature: Encodable {
+struct FilecoinSignedTransactionBody: Codable, Equatable {
+    struct Signature: Codable, Equatable {
         let type: Int
         let signature: String
         
