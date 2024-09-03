@@ -28,12 +28,15 @@ protocol StakeKitTransactionSenderProvider {
 extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvider, Self: WalletProvider, RawTransaction: CustomStringConvertible {
     func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner, delay second: UInt64?) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error> {
         .init { continuation in
-            let task = Task {
+            let task = Task { [weak self] in
+                guard let self else {
+                    continuation.finish()
+                    return
+                }
+
                 do {
                     let preparedHashes = try transactions.map { try prepareDataForSign(transaction: $0) }
                     let signatures: [SignatureInfo] = try await signer.sign(hashes: preparedHashes, walletPublicKey: wallet.publicKey).async()
-
-                    assert(transactions.count == signatures.count, "Signatures count don't equal to initial transactions count")
 
                     for (transaction, signature) in zip(transactions, signatures) {
                         try Task.checkCancellation()

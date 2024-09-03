@@ -21,7 +21,7 @@ struct SignatureInfo: CustomStringConvertible {
 }
 
 extension SignatureInfo {
-    func unmarshal(publicKey: Data) throws -> Data {
+    func unmarshal() throws -> Data {
         try Secp256k1Signature(with: signature).unmarshal(with: publicKey, hash: hash).data
     }
 }

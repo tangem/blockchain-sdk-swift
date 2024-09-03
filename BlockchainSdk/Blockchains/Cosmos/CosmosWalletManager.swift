@@ -210,7 +210,7 @@ extension CosmosWalletManager: StakeKitTransactionSender, StakeKitTransactionSen
 
     func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
         let rawData = try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).rawData
-        let unmarshal = try signature.unmarshal(publicKey: wallet.publicKey.blockchainKey)
+        let unmarshal = try signature.unmarshal()
 
         return try CosmosStakeKitTransactionHelper(builder: txBuilder)
             .buildForSend(stakingTransaction: transaction, signature: unmarshal)
