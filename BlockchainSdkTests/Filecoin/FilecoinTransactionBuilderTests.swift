@@ -10,12 +10,13 @@ import XCTest
 @testable import BlockchainSdk
 
 final class FilecoinTransactionBuilderTests: XCTestCase {
-    private let transactionBuilder = FilecoinTransactionBuilder(
+    private let transactionBuilder: FilecoinTransactionBuilder = try! FilecoinTransactionBuilder(
         publicKey: Wallet.PublicKey(
             seedKey: Constants.publicKey,
             derivationType: nil
         )
     )
+    private let sizeTester = TransactionSizeTesterUtility()
     
     private var transaction: Transaction {
         Transaction(
@@ -45,7 +46,8 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
     func testBuildForSign() throws {
         let expected = Data(hex: "0beac3427b81d6fa6e93a05a0b64fcc3c7ce4af9d05af31ee343bcc527ae8b18")
         let actual = try transactionBuilder.buildForSign(transaction: transaction, nonce: 1)
-        
+    
+        sizeTester.testTxSize(actual)
         XCTAssertEqual(expected, actual)
     }
     

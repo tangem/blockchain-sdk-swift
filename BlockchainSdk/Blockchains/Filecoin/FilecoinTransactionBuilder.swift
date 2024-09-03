@@ -17,10 +17,10 @@ enum FilecoinTransactionBuilderError: Error {
 }
 
 final class FilecoinTransactionBuilder {
-    private let publicKey: Wallet.PublicKey
+    private let decompressedPublicKey: Data
     
-    init(publicKey: Wallet.PublicKey) {
-        self.publicKey = publicKey
+    init(publicKey: Wallet.PublicKey) throws {
+        self.decompressedPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
     }
     
     func buildForSign(transaction: Transaction, nonce: UInt64) throws -> Data {
@@ -46,9 +46,8 @@ final class FilecoinTransactionBuilder {
             throw FilecoinTransactionBuilderError.filecoinFeeParametersNotFound
         }
         
-        let decompressed = try Secp256k1Key(with: signatureInfo.publicKey).decompress()
         let secp256k1Signature = try Secp256k1Signature(with: signatureInfo.signature)
-        let unmarshal = try secp256k1Signature.unmarshal(with: decompressed, hash: signatureInfo.hash)
+        let unmarshal = try secp256k1Signature.unmarshal(with: decompressedPublicKey, hash: signatureInfo.hash)
 
         // As we use the chainID in the transaction according to EIP-155
         // WalletCore will use formula to calculate `V`.
@@ -67,7 +66,7 @@ final class FilecoinTransactionBuilder {
         signatures.add(data: signature)
 
         let publicKeys = DataVector()
-        publicKeys.add(data: decompressed)
+        publicKeys.add(data: decompressedPublicKey)
         
         let input = try makeSigningInput(transaction: transaction, nonce: nonce, feeParameters: feeParameters)
         let txInputData = try input.serializedData()
@@ -97,7 +96,7 @@ final class FilecoinTransactionBuilder {
             throw FilecoinTransactionBuilderError.failedToConvertAmountToBigUInt
         }
         
-        return try FilecoinSigningInput.with { input in
+        return FilecoinSigningInput.with { input in
             input.to = transaction.destinationAddress
             input.nonce = nonce
             
@@ -107,7 +106,7 @@ final class FilecoinTransactionBuilder {
             input.gasFeeCap = feeParameters.gasFeeCap.serialize()
             input.gasPremium = feeParameters.gasPremium.serialize()
             
-            input.publicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
+            input.publicKey = decompressedPublicKey
         }
     }
 }
