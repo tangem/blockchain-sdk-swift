@@ -146,7 +146,7 @@ class FilecoinWalletManager: BaseManager, WalletManager {
             .flatMap { walletManager, message in
                 walletManager.networkService
                     .submitTransaction(signedMessage: message)
-                    .mapSendError(tx: try? JSONEncoder().encode(message).hexString.lowercased())
+                    .mapSendError(tx: try? JSONEncoder().encode(message).utf8String)
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId in
