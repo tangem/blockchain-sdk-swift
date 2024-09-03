@@ -68,6 +68,11 @@ struct NowNodesAPIResolver {
             link = "https://base.nownodes.io/\(apiKey)"
         case .blast:
             link = "https://blast.nownodes.io/\(apiKey)"
+<<<<<<< Updated upstream
+=======
+        case .filecoin:
+            link = "https://fil.nownodes.io/\(apiKey)/rpc/v1"
+>>>>>>> Stashed changes
         default:
             return nil
         }

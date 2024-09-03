@@ -45,6 +45,8 @@ struct GetBlockAPIResolver {
         switch blockchain {
         case .avalanche:
             return link + "/ext/bc/C/rpc"
+        case .filecoin:
+            return link + "/rpc/v1"
         default:
             return link
         }
