@@ -589,6 +589,7 @@
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
 		DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */; };
+		DAF81A762C873CA600B83CB0 /* SignatureUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF81A752C873CA600B83CB0 /* SignatureUtils.swift */; };
 		DAFE0D082BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */; };
 		DAFE0D0A2BB1840E005CBD9C /* MantleExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */; };
 		DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */; };
@@ -1530,6 +1531,7 @@
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
 		DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosFeeParameters.swift; sourceTree = "<group>"; };
+		DAF81A752C873CA600B83CB0 /* SignatureUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureUtils.swift; sourceTree = "<group>"; };
 		DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonriverExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlareExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -2908,6 +2910,7 @@
 				B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */,
 				B64B728B2AEC9C7B005C8C7C /* Lock.swift */,
 				EF74D63F2BA3526D000550F3 /* ObjectDescription.swift */,
+				DAF81A752C873CA600B83CB0 /* SignatureUtils.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -4875,6 +4878,7 @@
 				0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */,
 				EF3B19642AA85F280084AA1C /* ChiaExternalLinkProvider.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
+				DAF81A762C873CA600B83CB0 /* SignatureUtils.swift in Sources */,
 				EF34FCF72A41CA8700E18670 /* CardanoTransactionBuilder.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				B6BA93712AEA0E8000F84E36 /* NEARNetworkParams.ViewAccessKey.swift in Sources */,

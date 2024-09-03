@@ -70,18 +70,23 @@ class FilecoinWalletManager: BaseManager, WalletManager {
             return .anyFail(error: WalletError.failedToGetFee)
         }
         
-        let message = FilecoinMessage(
-            from: wallet.address,
-            to: destination,
-            value: bigUIntValue.description,
-            nonce: nonce,
-            gasLimit: nil,
-            gasFeeCap: nil,
-            gasPremium: nil
-        )
-        
         return networkService
-            .getEstimateMessageGas(message: message)
+            .getAccountInfo(address: wallet.address)
+            .map { [address = wallet.address] accountInfo in
+                FilecoinMessage(
+                    from: address,
+                    to: destination,
+                    value: bigUIntValue.description,
+                    nonce: accountInfo.nonce,
+                    gasLimit: nil,
+                    gasFeeCap: nil,
+                    gasPremium: nil
+                )
+            }
+            .withWeakCaptureOf(networkService)
+            .flatMap { networkService, message in
+                networkService.getEstimateMessageGas(message: message)
+            }
             .withWeakCaptureOf(self)
             .tryMap { (walletManager: FilecoinWalletManager, gasInfo) -> [Fee] in
                 guard let gasFeeCapDecimal = Decimal(stringValue: gasInfo.gasFeeCap) else {
@@ -113,20 +118,22 @@ class FilecoinWalletManager: BaseManager, WalletManager {
             .getAccountInfo(address: wallet.address)
             .withWeakCaptureOf(transactionBuilder)
             .tryMap { transactionBuilder, accountInfo in
-                try transactionBuilder.buildForSign(
+                let hashToSign = try transactionBuilder.buildForSign(
                     transaction: transaction,
                     nonce: accountInfo.nonce
                 )
+                return (hashToSign, accountInfo.nonce)
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, hashToSign in
-                signer
+            .flatMap { walletManager, args in
+                let (hashToSign, nonce) = args
+                return signer
                     .sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
                     .withWeakCaptureOf(walletManager)
                     .tryMap { walletManager, signature in
                         try walletManager.transactionBuilder.buildForSend(
                             transaction: transaction,
-                            nonce: walletManager.nonce,
+                            nonce: nonce,
                             signatureInfo: SignatureInfo(
                                 signature: signature,
                                 publicKey: walletManager.wallet.publicKey.blockchainKey,
@@ -146,7 +153,7 @@ class FilecoinWalletManager: BaseManager, WalletManager {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: txId)
             }
-            .mapError { SendTxError(error: $0) }
+            .eraseSendError()
             .eraseToAnyPublisher()
     }
 }
