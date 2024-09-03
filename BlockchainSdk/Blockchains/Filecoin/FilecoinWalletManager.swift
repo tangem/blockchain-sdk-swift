@@ -109,39 +109,45 @@ class FilecoinWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Result {
-            try transactionBuilder.buildForSign(transaction: transaction, nonce: nonce)
-        }
-        .publisher
-        .withWeakCaptureOf(self)
-        .flatMap { walletManager, hashToSign in
-            signer
-                .sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
-                .withWeakCaptureOf(walletManager)
-                .tryMap { walletManager, signature in
-                    try walletManager.transactionBuilder.buildForSend(
-                        transaction: transaction,
-                        nonce: walletManager.nonce,
-                        signatureInfo: SignatureInfo(
-                            signature: signature,
-                            publicKey: walletManager.wallet.publicKey.blockchainKey,
-                            hash: hashToSign
+        networkService
+            .getAccountInfo(address: wallet.address)
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, accountInfo in
+                walletManager.nonce = accountInfo.nonce
+                return try walletManager.transactionBuilder.buildForSign(
+                    transaction: transaction,
+                    nonce: accountInfo.nonce
+                )
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, hashToSign in
+                signer
+                    .sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
+                    .withWeakCaptureOf(walletManager)
+                    .tryMap { walletManager, signature in
+                        try walletManager.transactionBuilder.buildForSend(
+                            transaction: transaction,
+                            nonce: walletManager.nonce,
+                            signatureInfo: SignatureInfo(
+                                signature: signature,
+                                publicKey: walletManager.wallet.publicKey.blockchainKey,
+                                hash: hashToSign
+                            )
                         )
-                    )
-                }
-        }
-        .withWeakCaptureOf(self)
-        .flatMap { walletManager, message in
-            walletManager.networkService.submitTransaction(signedMessage: message)
-        }
-        .withWeakCaptureOf(self)
-        .map { walletManager, txId in
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
-            walletManager.wallet.addPendingTransaction(record)
-            return TransactionSendResult(hash: txId)
-        }
-        .mapError { SendTxError(error: $0) }
-        .eraseToAnyPublisher()
+                    }
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, message in
+                walletManager.networkService.submitTransaction(signedMessage: message)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, txId in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: txId)
+            }
+            .mapError { SendTxError(error: $0) }
+            .eraseToAnyPublisher()
     }
 }
