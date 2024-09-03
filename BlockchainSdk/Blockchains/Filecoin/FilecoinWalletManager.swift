@@ -76,7 +76,7 @@ class FilecoinWalletManager: BaseManager, WalletManager {
                 FilecoinMessage(
                     from: address,
                     to: destination,
-                    value: bigUIntValue.description,
+                    value: String(bigUIntValue, radix: 10),
                     nonce: accountInfo.nonce,
                     gasLimit: nil,
                     gasFeeCap: nil,
@@ -144,7 +144,9 @@ class FilecoinWalletManager: BaseManager, WalletManager {
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, message in
-                walletManager.networkService.submitTransaction(signedMessage: message)
+                walletManager.networkService
+                    .submitTransaction(signedMessage: message)
+                    .mapSendError(tx: try? JSONEncoder().encode(message).hexString.lowercased())
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId in

@@ -60,8 +60,6 @@ final class VeChainTransactionBuilder {
         }
 
         let publicKey = try Secp256k1Key(with: transactionParams.publicKey.blockchainKey).decompress()
-        /// VeChain is a fork of `Geth Classic`, so it expects the secp256k1's `recid` to have values in the 0...3 range.
-        /// Therefore we have to convert value of the standard secp256k1's `recid` to match this expectation.
         let unmarshalledSignature = try SignatureUtils.unmarshalledSignature(
             from: signature,
             publicKey: publicKey,
