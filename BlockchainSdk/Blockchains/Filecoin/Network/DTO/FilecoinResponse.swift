@@ -1,5 +1,5 @@
 //
-//  FilecoinRpcResponseResult.swift
+//  FilecoinResponse.swift
 //  BlockchainSdk
 //
 //  Created by Aleksei Muraveinik on 27.08.24.
@@ -16,6 +16,18 @@ enum FilecoinResponse {
         enum CodingKeys: String, CodingKey {
             case balance = "Balance"
             case nonce = "Nonce"
+        }
+    }
+    
+    struct GetEstimateMessageGas: Decodable {
+        let gasLimit: Int64
+        let gasFeeCap: String
+        let gasPremium: String
+        
+        enum CodingKeys: String, CodingKey {
+            case gasLimit = "GasLimit"
+            case gasFeeCap = "GasFeeCap"
+            case gasPremium = "GasPremium"
         }
     }
     
