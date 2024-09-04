@@ -27,7 +27,7 @@ protocol StakeKitTransactionSenderProvider {
 
 extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvider, Self: WalletProvider, RawTransaction: CustomStringConvertible {
     func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner, delay second: UInt64?) -> AsyncThrowingStream<StakeKitTransactionSendResult, Error> {
-        .init { continuation in
+        .init { [weak self] continuation in
             let task = Task { [weak self] in
                 guard let self else {
                     continuation.finish()
@@ -35,7 +35,7 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
                 }
 
                 do {
-                    let preparedHashes = try transactions.map { try prepareDataForSign(transaction: $0) }
+                    let preparedHashes = try transactions.map { try self.prepareDataForSign(transaction: $0) }
                     let signatures: [SignatureInfo] = try await signer.sign(hashes: preparedHashes, walletPublicKey: wallet.publicKey).async()
 
                     for (transaction, signature) in zip(transactions, signatures) {
@@ -44,6 +44,7 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
 
                         do {
                             let result: TransactionSendResult = try await broadcast(transaction: transaction, rawTransaction: rawTransaction)
+                            try Task.checkCancellation()
                             continuation.yield(.init(transaction: transaction, result: result))
                         } catch {
                             throw StakeKitTransactionSendError(transaction: transaction, error: error)
@@ -64,14 +65,7 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
             }
 
             continuation.onTermination = { termination in
-                switch termination {
-                case .cancelled:
-                    task.cancel()
-                case .finished(let error):
-                    task.cancel()
-                case .finished(.none):
-                    break
-                }
+                task.cancel()
             }
         }
     }
@@ -86,10 +80,17 @@ extension StakeKitTransactionSender where Self: StakeKitTransactionSenderProvide
                 source: wallet.defaultAddress.value,
                 hash: hash
             )
-            wallet.addPendingTransaction(record)
+
+            await addPendingTransaction(record)
+
             return TransactionSendResult(hash: hash)
         } catch {
             throw SendTxErrorFactory().make(error: error, with: rawTransaction.description)
         }
+    }
+
+    @MainActor
+    private func addPendingTransaction(_ record: PendingTransactionRecord) {
+        wallet.addPendingTransaction(record)
     }
 }
