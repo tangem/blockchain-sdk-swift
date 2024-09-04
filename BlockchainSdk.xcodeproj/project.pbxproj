@@ -559,12 +559,9 @@
 		DAD156592C7DCF6600DE52B3 /* FilecoinNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD156582C7DCF6600DE52B3 /* FilecoinNetworkProvider.swift */; };
 		DAD1565C2C7DCFBD00DE52B3 /* FilecoinTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD1565B2C7DCFBD00DE52B3 /* FilecoinTarget.swift */; };
 		DAD1565F2C7DD16B00DE52B3 /* FilecoinResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD1565E2C7DD16B00DE52B3 /* FilecoinResponse.swift */; };
-		DAD156632C7DD21B00DE52B3 /* FilecoinTransactionBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD156622C7DD21B00DE52B3 /* FilecoinTransactionBody.swift */; };
-		DAD156652C7DD25800DE52B3 /* FilecoinSignedTransactionBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD156642C7DD25800DE52B3 /* FilecoinSignedTransactionBody.swift */; };
+		DAD156632C7DD21B00DE52B3 /* FilecoinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD156622C7DD21B00DE52B3 /* FilecoinMessage.swift */; };
+		DAD156652C7DD25800DE52B3 /* FilecoinSignedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD156642C7DD25800DE52B3 /* FilecoinSignedMessage.swift */; };
 		DAD156692C7DD65400DE52B3 /* FilecoinAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD156682C7DD65400DE52B3 /* FilecoinAccountInfo.swift */; };
-		DAD1566B2C7DD67F00DE52B3 /* FilecoinTxGasInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD1566A2C7DD67F00DE52B3 /* FilecoinTxGasInfo.swift */; };
-		DAD1566E2C7DD6AC00DE52B3 /* FilecoinTxInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD1566D2C7DD6AC00DE52B3 /* FilecoinTxInfo.swift */; };
-		DAD156702C7DE0D000DE52B3 /* FilecoinDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD1566F2C7DE0D000DE52B3 /* FilecoinDTOMapper.swift */; };
 		DAD555292BFB4110000030E5 /* KoinosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD555282BFB4110000030E5 /* KoinosTransactionBuilder.swift */; };
 		DAD555382BFB463C000030E5 /* KoinosAccountNonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD555372BFB463C000030E5 /* KoinosAccountNonce.swift */; };
 		DAD5CDF72C0F3A8900DC4909 /* KoinosWalletManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD5CDF62C0F3A8900DC4909 /* KoinosWalletManagerTests.swift */; };
@@ -586,11 +583,13 @@
 		DAE657E72BFC732400D7D63A /* token.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE657E32BFC732400D7D63A /* token.pb.swift */; };
 		DAE657E92BFCA3E400D7D63A /* KoinosTransactionBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE657E82BFCA3E400D7D63A /* KoinosTransactionBuilderTests.swift */; };
 		DAE864BB2C81CF1700A2D51A /* FilecoinFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE864BA2C81CF1700A2D51A /* FilecoinFeeParameters.swift */; };
+		DAE864BD2C81D13F00A2D51A /* FilecoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE864BC2C81D13F00A2D51A /* FilecoinWalletManager.swift */; };
 		DAED18A22C7DF3D900522056 /* FilecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED18A12C7DF3D900522056 /* FilecoinNetworkService.swift */; };
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
 		DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */; };
+		DAF81A762C873CA600B83CB0 /* SignatureUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF81A752C873CA600B83CB0 /* SignatureUtils.swift */; };
 		DAFE0D082BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */; };
 		DAFE0D0A2BB1840E005CBD9C /* MantleExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */; };
 		DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */; };
@@ -1501,12 +1500,9 @@
 		DAD156582C7DCF6600DE52B3 /* FilecoinNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FilecoinNetworkProvider.swift; path = ../FilecoinNetworkProvider.swift; sourceTree = "<group>"; };
 		DAD1565B2C7DCFBD00DE52B3 /* FilecoinTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinTarget.swift; sourceTree = "<group>"; };
 		DAD1565E2C7DD16B00DE52B3 /* FilecoinResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinResponse.swift; sourceTree = "<group>"; };
-		DAD156622C7DD21B00DE52B3 /* FilecoinTransactionBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinTransactionBody.swift; sourceTree = "<group>"; };
-		DAD156642C7DD25800DE52B3 /* FilecoinSignedTransactionBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinSignedTransactionBody.swift; sourceTree = "<group>"; };
-		DAD156682C7DD65400DE52B3 /* FilecoinAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinAccountInfo.swift; sourceTree = "<group>"; };
-		DAD1566A2C7DD67F00DE52B3 /* FilecoinTxGasInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinTxGasInfo.swift; sourceTree = "<group>"; };
-		DAD1566D2C7DD6AC00DE52B3 /* FilecoinTxInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinTxInfo.swift; sourceTree = "<group>"; };
-		DAD1566F2C7DE0D000DE52B3 /* FilecoinDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FilecoinDTOMapper.swift; path = DTO/FilecoinDTOMapper.swift; sourceTree = "<group>"; };
+		DAD156622C7DD21B00DE52B3 /* FilecoinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinMessage.swift; sourceTree = "<group>"; };
+		DAD156642C7DD25800DE52B3 /* FilecoinSignedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinSignedMessage.swift; sourceTree = "<group>"; };
+		DAD156682C7DD65400DE52B3 /* FilecoinAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FilecoinAccountInfo.swift; path = ../Network/DTO/FilecoinAccountInfo.swift; sourceTree = "<group>"; };
 		DAD555282BFB4110000030E5 /* KoinosTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransactionBuilder.swift; sourceTree = "<group>"; };
 		DAD555372BFB463C000030E5 /* KoinosAccountNonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosAccountNonce.swift; sourceTree = "<group>"; };
 		DAD5CDF62C0F3A8900DC4909 /* KoinosWalletManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosWalletManagerTests.swift; sourceTree = "<group>"; };
@@ -1529,11 +1525,13 @@
 		DAE657E32BFC732400D7D63A /* token.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = token.pb.swift; sourceTree = "<group>"; };
 		DAE657E82BFCA3E400D7D63A /* KoinosTransactionBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosTransactionBuilderTests.swift; sourceTree = "<group>"; };
 		DAE864BA2C81CF1700A2D51A /* FilecoinFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinFeeParameters.swift; sourceTree = "<group>"; };
+		DAE864BC2C81D13F00A2D51A /* FilecoinWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinWalletManager.swift; sourceTree = "<group>"; };
 		DAED18A12C7DF3D900522056 /* FilecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilecoinNetworkService.swift; sourceTree = "<group>"; };
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
 		DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosFeeParameters.swift; sourceTree = "<group>"; };
+		DAF81A752C873CA600B83CB0 /* SignatureUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureUtils.swift; sourceTree = "<group>"; };
 		DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonriverExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlareExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -2912,6 +2910,7 @@
 				B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */,
 				B64B728B2AEC9C7B005C8C7C /* Lock.swift */,
 				EF74D63F2BA3526D000550F3 /* ObjectDescription.swift */,
+				DAF81A752C873CA600B83CB0 /* SignatureUtils.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -3405,9 +3404,11 @@
 		DA15D1E82C7782F300FD733B /* Filecoin */ = {
 			isa = PBXGroup;
 			children = (
+				DA63E5FE2C836ADF007690B9 /* Model */,
 				DAD1565A2C7DCFAD00DE52B3 /* Network */,
 				DA15D1E92C77830E00FD733B /* FilecoinExternalLinkProvider.swift */,
 				DA20BD692C7BC5E9000F02DF /* FilecoinWalletAssembly.swift */,
+				DAE864BC2C81D13F00A2D51A /* FilecoinWalletManager.swift */,
 				DA9F15F12C80B3B800EA7FAF /* FilecoinTransactionBuilder.swift */,
 				DAE864BA2C81CF1700A2D51A /* FilecoinFeeParameters.swift */,
 			);
@@ -3581,6 +3582,14 @@
 			path = Address;
 			sourceTree = "<group>";
 		};
+		DA63E5FE2C836ADF007690B9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DAD156682C7DD65400DE52B3 /* FilecoinAccountInfo.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
 			isa = PBXGroup;
 			children = (
@@ -3626,10 +3635,9 @@
 			isa = PBXGroup;
 			children = (
 				DAD1565D2C7DD15E00DE52B3 /* DTO */,
-				DAD1565B2C7DCFBD00DE52B3 /* FilecoinTarget.swift */,
-				DAD1566F2C7DE0D000DE52B3 /* FilecoinDTOMapper.swift */,
-				DAD156582C7DCF6600DE52B3 /* FilecoinNetworkProvider.swift */,
 				DAED18A12C7DF3D900522056 /* FilecoinNetworkService.swift */,
+				DAD156582C7DCF6600DE52B3 /* FilecoinNetworkProvider.swift */,
+				DAD1565B2C7DCFBD00DE52B3 /* FilecoinTarget.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -3638,11 +3646,8 @@
 			isa = PBXGroup;
 			children = (
 				DAD1565E2C7DD16B00DE52B3 /* FilecoinResponse.swift */,
-				DAD156622C7DD21B00DE52B3 /* FilecoinTransactionBody.swift */,
-				DAD156642C7DD25800DE52B3 /* FilecoinSignedTransactionBody.swift */,
-				DAD156682C7DD65400DE52B3 /* FilecoinAccountInfo.swift */,
-				DAD1566A2C7DD67F00DE52B3 /* FilecoinTxGasInfo.swift */,
-				DAD1566D2C7DD6AC00DE52B3 /* FilecoinTxInfo.swift */,
+				DAD156622C7DD21B00DE52B3 /* FilecoinMessage.swift */,
+				DAD156642C7DD25800DE52B3 /* FilecoinSignedMessage.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -4832,6 +4837,7 @@
 				DC5E65072B1650F400E81AA5 /* OP_2DIV.swift in Sources */,
 				2DA4A4422BB5431700E55526 /* RadiantTransactionBuilder.swift in Sources */,
 				0A3BF8EA2C69F5D900163492 /* CosmosProtoMessage.swift in Sources */,
+				DAE864BD2C81D13F00A2D51A /* FilecoinWalletManager.swift in Sources */,
 				EF3B19342AA85CE90084AA1C /* DogecoinExternalLinkProvider.swift in Sources */,
 				EF2D9DA52BC3F6770055C485 /* EthereumTransactionParams.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
@@ -4872,6 +4878,7 @@
 				0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */,
 				EF3B19642AA85F280084AA1C /* ChiaExternalLinkProvider.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
+				DAF81A762C873CA600B83CB0 /* SignatureUtils.swift in Sources */,
 				EF34FCF72A41CA8700E18670 /* CardanoTransactionBuilder.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				B6BA93712AEA0E8000F84E36 /* NEARNetworkParams.ViewAccessKey.swift in Sources */,
@@ -4977,7 +4984,7 @@
 				EF3B194A2AA85E7B0084AA1C /* DashExternalLinkProvider.swift in Sources */,
 				2DDE5BA229C4F8D200A5B708 /* BinanceWalletAssembly.swift in Sources */,
 				B00DF9912BBEA9DA004397CB /* APIModels.swift in Sources */,
-				DAD156632C7DD21B00DE52B3 /* FilecoinTransactionBody.swift in Sources */,
+				DAD156632C7DD21B00DE52B3 /* FilecoinMessage.swift in Sources */,
 				DC5E64F62B1650F400E81AA5 /* OP_LESSTHAN.swift in Sources */,
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
 				5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */,
@@ -5169,7 +5176,6 @@
 				EF2D9DA22BC3F6770055C485 /* EthereumAdditionalInfoProvider.swift in Sources */,
 				EF2D9DA12BC3F6770055C485 /* EthereumTransactionDataBuilder.swift in Sources */,
 				B6F89EAD2BB20DB50009A453 /* SubscanAPIResult.Error.swift in Sources */,
-				DAD156702C7DE0D000DE52B3 /* FilecoinDTOMapper.swift in Sources */,
 				2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */,
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
@@ -5256,7 +5262,7 @@
 				0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */,
 				DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */,
 				EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */,
-				DAD156652C7DD25800DE52B3 /* FilecoinSignedTransactionBody.swift in Sources */,
+				DAD156652C7DD25800DE52B3 /* FilecoinSignedMessage.swift in Sources */,
 				DA5339A52BFCBE8600BA3D80 /* KoinosProtocol.swift in Sources */,
 				DC5E65012B1650F400E81AA5 /* OP_NEGATE.swift in Sources */,
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,
@@ -5355,9 +5361,7 @@
 				DAE657E72BFC732400D7D63A /* token.pb.swift in Sources */,
 				B6417DDC2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift in Sources */,
 				DAE657E52BFC732400D7D63A /* protocol.pb.swift in Sources */,
-				DAD1566B2C7DD67F00DE52B3 /* FilecoinTxGasInfo.swift in Sources */,
 				B6BA93792AEA0F0C00F84E36 /* NEARNetworkResult.GasPrice.swift in Sources */,
-				DAD1566E2C7DD6AC00DE52B3 /* FilecoinTxInfo.swift in Sources */,
 				B6B2EB6D2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift in Sources */,
 				EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */,
 				DA0E98D62C04755C00C92985 /* KoinosMethod.swift in Sources */,

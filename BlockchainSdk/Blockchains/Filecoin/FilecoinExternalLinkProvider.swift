@@ -16,11 +16,7 @@ struct FilecoinExternalLinkProvider: ExternalLinkProvider {
     }
     
     func url(transaction hash: String) -> URL? {
-        /// This method returns `nil` because Filecoin does not use transaction hashes as message identifiers.
-        /// In other blockchains, a transaction hash can be directly used to generate a URL to explore the transaction details.
-        /// However, in Filecoin, message IDs (which are used to identify transactions) are not derived from transaction hashes.
-        /// Therefore, constructing a URL in the format `"\(baseExplorerUrl)/message/\(hash)"` is not applicable.
-        nil
+        URL(string: "\(baseExplorerUrl)/message/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {

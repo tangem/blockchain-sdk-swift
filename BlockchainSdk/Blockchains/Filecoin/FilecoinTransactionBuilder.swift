@@ -6,6 +6,7 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
+import BigInt
 import TangemSdk
 import WalletCore
 
@@ -16,10 +17,10 @@ enum FilecoinTransactionBuilderError: Error {
 }
 
 final class FilecoinTransactionBuilder {
-    private let wallet: Wallet
+    private let decompressedPublicKey: Data
     
-    init(wallet: Wallet) {
-        self.wallet = wallet
+    init(publicKey: Wallet.PublicKey) throws {
+        self.decompressedPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
     }
     
     func buildForSign(transaction: Transaction, nonce: UInt64) throws -> Data {
@@ -40,16 +41,22 @@ final class FilecoinTransactionBuilder {
         transaction: Transaction,
         nonce: UInt64,
         signatureInfo: SignatureInfo
-    ) throws -> FilecoinSignedTransactionBody {
+    ) throws -> FilecoinSignedMessage {
         guard let feeParameters = transaction.fee.parameters as? FilecoinFeeParameters else {
             throw FilecoinTransactionBuilderError.filecoinFeeParametersNotFound
         }
         
+        let unmarshalledSignature = try SignatureUtils.unmarshalledSignature(
+            from: signatureInfo.signature,
+            publicKey: decompressedPublicKey,
+            hash: signatureInfo.hash
+        )
+        
         let signatures = DataVector()
-        signatures.add(data: signatureInfo.signature)
+        signatures.add(data: unmarshalledSignature)
 
         let publicKeys = DataVector()
-        publicKeys.add(data: try Secp256k1Key(with: signatureInfo.publicKey).decompress())
+        publicKeys.add(data: decompressedPublicKey)
         
         let input = try makeSigningInput(transaction: transaction, nonce: nonce, feeParameters: feeParameters)
         let txInputData = try input.serializedData()
@@ -67,7 +74,7 @@ final class FilecoinTransactionBuilder {
             throw FilecoinTransactionBuilderError.failedToGetDataFromJSON
         }
         
-        return try JSONDecoder().decode(FilecoinSignedTransactionBody.self, from: jsonData)
+        return try JSONDecoder().decode(FilecoinSignedMessage.self, from: jsonData)
     }
     
     private func makeSigningInput(
@@ -79,17 +86,17 @@ final class FilecoinTransactionBuilder {
             throw FilecoinTransactionBuilderError.failedToConvertAmountToBigUInt
         }
         
-        return try FilecoinSigningInput.with { input in
+        return FilecoinSigningInput.with { input in
             input.to = transaction.destinationAddress
             input.nonce = nonce
             
             input.value = value.serialize()
             
-            input.gasFeeCap = feeParameters.gasUnitPrice.serialize()
             input.gasLimit = feeParameters.gasLimit
+            input.gasFeeCap = feeParameters.gasFeeCap.serialize()
             input.gasPremium = feeParameters.gasPremium.serialize()
             
-            input.publicKey = try Secp256k1Key(with: wallet.publicKey.blockchainKey).decompress()
+            input.publicKey = decompressedPublicKey
         }
     }
 }

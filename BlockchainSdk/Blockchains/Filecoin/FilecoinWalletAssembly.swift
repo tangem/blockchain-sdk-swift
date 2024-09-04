@@ -10,7 +10,18 @@ import Foundation
 
 struct FilecoinWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        // TODO: [FILECOIN] https://tangem.atlassian.net/browse/IOS-7738
-        fatalError("Not implemented")
+        FilecoinWalletManager(
+            wallet: input.wallet,
+            networkService: FilecoinNetworkService(
+                providers: APIResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+                    .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                        FilecoinNetworkProvider(
+                            node: nodeInfo,
+                            configuration: input.networkConfig
+                        )
+                    }
+            ),
+            transactionBuilder: try FilecoinTransactionBuilder(publicKey: input.wallet.publicKey)
+        )
     }
 }

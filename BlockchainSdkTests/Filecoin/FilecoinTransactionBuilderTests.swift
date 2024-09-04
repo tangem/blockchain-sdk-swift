@@ -10,39 +10,31 @@ import XCTest
 @testable import BlockchainSdk
 
 final class FilecoinTransactionBuilderTests: XCTestCase {
-    private let transactionBuilder = FilecoinTransactionBuilder(
-        wallet: Wallet(
-            blockchain: .filecoin,
-            addresses: [
-                .default: PlainAddress(
-                    value: Constants.sourceAddress,
-                    publicKey: Wallet.PublicKey(
-                        seedKey: Constants.publicKey,
-                        derivationType: nil
-                    ),
-                    type: .default
-                )
-            ]
+    private let transactionBuilder: FilecoinTransactionBuilder = try! FilecoinTransactionBuilder(
+        publicKey: Wallet.PublicKey(
+            seedKey: Constants.publicKey,
+            derivationType: nil
         )
     )
+    private let sizeTester = TransactionSizeTesterUtility()
     
     private var transaction: Transaction {
         Transaction(
             amount: Amount(
                 with: .filecoin,
                 type: .coin,
-                value: 0.01
+                value: 1
             ),
             fee: Fee(
                 Amount(
                     with: .filecoin,
                     type: .coin,
-                    value: (101225 * 1526328) / Blockchain.filecoin.decimalValue
+                    value: (100704 * 1527953) / Blockchain.filecoin.decimalValue
                 ),
                 parameters: FilecoinFeeParameters(
-                    gasUnitPrice: 101225,
-                    gasLimit: 1526328,
-                    gasPremium: 50612
+                    gasLimit: 1527953,
+                    gasFeeCap: 100704,
+                    gasPremium: 99503
                 )
             ),
             sourceAddress: Constants.sourceAddress,
@@ -52,27 +44,28 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
     }
     
     func testBuildForSign() throws {
-        let expected = Data(hex: "BEB93CCF5C85273B327AC5DCDD58CBF3066F57FC84B87CD20DC67DF69EC2D0A9")
-        let actual = try transactionBuilder.buildForSign(transaction: transaction, nonce: 2)
-        
+        let expected = Data(hex: "0beac3427b81d6fa6e93a05a0b64fcc3c7ce4af9d05af31ee343bcc527ae8b18")
+        let actual = try transactionBuilder.buildForSign(transaction: transaction, nonce: 1)
+    
+        sizeTester.testTxSize(actual)
         XCTAssertEqual(expected, actual)
     }
     
     func testBuildForSend() throws {
-        let nonce: UInt64 = 2
-        let expected = FilecoinSignedTransactionBody(
-            transactionBody: FilecoinTransactionBody(
-                sourceAddress: Constants.sourceAddress,
-                destinationAddress: Constants.destinationAddress,
-                amount: "10000000000000000",
+        let nonce: UInt64 = 1
+        let expected = FilecoinSignedMessage(
+            message: FilecoinMessage(
+                from: Constants.sourceAddress,
+                to: Constants.destinationAddress,
+                value: "1000000000000000000",
                 nonce: nonce,
-                gasUnitPrice: "101225",
-                gasLimit: 1526328,
-                gasPremium: "50612"
+                gasLimit: 1527953,
+                gasFeeCap: "100704",
+                gasPremium: "99503"
             ),
-            signature: FilecoinSignedTransactionBody.Signature(
+            signature: FilecoinSignedMessage.Signature(
                 type: 1,
-                signature: "Bogel9o9zvXUT+sC+nVpciGyHfBxWG6V4+xOawP6YrAU1OIbifvEHpRT/Elakv2X6mfUkbQzparvc2HyJBbXRwE="
+                data: "weMNBBonfukL/wkGAb6z8ZM8c5Op5BuFPMvQAVZvdJkU0/HdRX+DEPV+A4x5sWKmWbZzyIgNyGhxpbD2yO3vkgA="
             )
         )
         
@@ -94,10 +87,10 @@ final class FilecoinTransactionBuilderTests: XCTestCase {
 
 private extension FilecoinTransactionBuilderTests {
     enum Constants {
-        static let publicKey = Data(hex: "0374D0F81F42DDFE34114D533E95E6AE5FE6EA271C96F1FA505199FDC365AE9720")
-        static let signature = Data(hex: "06881E97DA3DCEF5D44FEB02FA75697221B21DF071586E95E3EC4E6B03FA62B014D4E21B89FBC41E9453FC495A92FD97EA67D491B433A5AAEF7361F22416D74701")
+        static let publicKey = Data(hex: "02a1f09e4d91756b9f1d4f96c2c71d09178e3850a70703c3d089dad84f3870b3c6")
+        static let signature = Data(hex: "c1e30d041a277ee90bff090601beb3f1933c7393a9e41b853ccbd001566f749914d3f1dd457f8310f57e038c79b162a659b673c8880dc86871a5b0f6c8edef92")
                 
-        static let sourceAddress = "f1flbddhx4vwox3y3ux5bwgsgq2frzeiuvvdrjo7i"
-        static let destinationAddress = "f1rluskhwvv5b3z36skltu4noszbc5stfihevbf2i"
+        static let sourceAddress = "f1kub5b7ekrwn7vykavn7owjuff7kqcoa4g4fgriq"
+        static let destinationAddress = "f1ufoxbvz637fkjbrk2d4cktqsgjwsqwm4woa7pda"
     }
 }

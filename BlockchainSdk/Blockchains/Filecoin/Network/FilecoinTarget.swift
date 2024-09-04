@@ -12,18 +12,15 @@ import Moya
 struct FilecoinTarget: TargetType {
     enum FilecoinTargetType {
         case getActorInfo(address: String)
-        case getGasUnitPrice(transactionInfo: FilecoinTxInfo)
-        case getGasLimit(transactionInfo: FilecoinTxInfo)
-        case submitTransaction(signedTransactionBody: FilecoinSignedTransactionBody)
+        case getEstimateMessageGas(message: FilecoinMessage)
+        case submitTransaction(signedMessage: FilecoinSignedMessage)
         
         var method: String {
             switch self {
             case .getActorInfo:
                 "Filecoin.StateGetActor"
-            case .getGasUnitPrice:
-                "Filecoin.GasEstimateFeeCap"
-            case .getGasLimit:
-                "Filecoin.GasEstimateGasLimit"
+            case .getEstimateMessageGas:
+                "Filecoin.GasEstimateMessageGas"
             case .submitTransaction:
                 "Filecoin.MpoolPush"
             }
@@ -62,33 +59,23 @@ struct FilecoinTarget: TargetType {
                     ]
                 )
             
-        case .getGasUnitPrice(let transactionInfo):
+        case .getEstimateMessageGas(let message):
                 .requestJSONRPC(
                     id: Constants.jsonRPCMethodId,
                     method: type.method,
                     params: [
-                        FilecoinDTOMapper.convertTransactionBody(from: transactionInfo),
+                        message,
                         nil,
                         nil
                     ]
                 )
             
-        case .getGasLimit(let transactionInfo):
+        case .submitTransaction(let signedMessage):
                 .requestJSONRPC(
                     id: Constants.jsonRPCMethodId,
                     method: type.method,
                     params: [
-                        FilecoinDTOMapper.convertTransactionBody(from: transactionInfo),
-                        nil
-                    ]
-                )
-            
-        case .submitTransaction(let signedTransactionBody):
-                .requestJSONRPC(
-                    id: Constants.jsonRPCMethodId,
-                    method: type.method,
-                    params: [
-                        signedTransactionBody
+                        signedMessage
                     ]
                 )
         }
