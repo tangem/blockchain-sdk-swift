@@ -1636,6 +1636,7 @@
 		DC87B9ED2B8F4D9700C61C5A /* BitcoreResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreResponse.swift; sourceTree = "<group>"; };
 		DC87B9EE2B8F4D9700C61C5A /* BitcoreTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreTarget.swift; sourceTree = "<group>"; };
 		DC886FCC2AF5637D0098669C /* CommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTests.swift; sourceTree = "<group>"; };
+		DCDECB932C88D3E200E10564 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DCDF56B32C6F4F9800028424 /* account_contract.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = account_contract.pb.swift; sourceTree = "<group>"; };
 		DCDF56B42C6F4F9800028424 /* asset_issue_contract.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = asset_issue_contract.pb.swift; sourceTree = "<group>"; };
 		DCDF56B52C6F4F9800028424 /* balance_contract.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = balance_contract.pb.swift; sourceTree = "<group>"; };
@@ -4371,6 +4372,7 @@
 				"zh-Hant",
 				ja,
 				"uk-UA",
+				es,
 			);
 			mainGroup = 5D14E4642397B80F00C15FC8;
 			packageReferences = (
@@ -5473,6 +5475,7 @@
 				DADB5450298BB10000491102 /* zh-Hant */,
 				DC4772892C2B0BDB00D2459D /* ja */,
 				DC47728B2C2B0C0500D2459D /* uk-UA */,
+				DCDECB932C88D3E200E10564 /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
