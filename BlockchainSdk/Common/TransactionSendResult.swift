@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct TransactionSendResult {
+public struct TransactionSendResult: Hashable {
     public let hash: String
     
     public init(hash: String) {

@@ -198,42 +198,24 @@ class CosmosWalletManager: BaseManager, WalletManager {
 
 extension CosmosWalletManager: ThenProcessable { }
 
-extension CosmosWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(
-        transaction: StakeKitTransaction,
-        signer: any TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        let helper = CosmosStakeKitTransactionHelper(builder: txBuilder)
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-        return Result {
-            try helper.prepareForSign(stakingTransaction: transaction)
-        }
-        .publisher
-        .withWeakCaptureOf(self)
-        .flatMap { manager, hash in
-            signer
-                .sign(hash: hash, walletPublicKey: self.wallet.publicKey)
-                .tryMap { signature -> Data in
-                    let signature = try Secp256k1Signature(with: signature)
-                    return try signature.unmarshal(with: manager.wallet.publicKey.blockchainKey, hash: hash).data
-                }
-        }
-        .tryMap { signature -> Data in
-            try helper.buildForSend(stakingTransaction: transaction, signature: signature)
-        }
-        .withWeakCaptureOf(self)
-        .flatMap { manager, transaction in
-            manager.networkService
-                .send(transaction: transaction)
-                .mapSendError(tx: transaction.hexString.lowercased())
-        }
-        .handleEvents(receiveOutput: { [weak self] hash in
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-            self?.wallet.addPendingTransaction(record)
-        })
-        .map { TransactionSendResult(hash: $0) }
-        .eraseSendError()
-        .eraseToAnyPublisher()
+extension CosmosWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = Data
+
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try CosmosStakeKitTransactionHelper(builder: txBuilder)
+            .prepareForSign(stakingTransaction: transaction)
+    }
+
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        let unmarshal = try signature.unmarshal()
+
+        return try CosmosStakeKitTransactionHelper(builder: txBuilder)
+            .buildForSend(stakingTransaction: transaction, signature: unmarshal)
+    }
+
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.send(transaction: rawTransaction).async()
     }
 }
