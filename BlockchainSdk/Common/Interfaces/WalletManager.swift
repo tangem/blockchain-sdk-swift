@@ -73,17 +73,6 @@ public protocol TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
 }
 
-public protocol StakeKitTransactionSender {
-    func sendStakeKit(transaction: StakeKitTransaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError>
-}
-
-extension StakeKitTransactionSender {
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError> {
-        return .anyFail(error: .init(error: BlockchainSdkError.notImplemented))
-    }
-}
-
 public protocol TransactionSigner {
     func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error>
     func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error>
@@ -94,6 +83,16 @@ extension TransactionSigner {
         sign(hash: hash, walletPublicKey: walletPublicKey)
             .map { signature in
                 SignatureInfo(signature: signature, publicKey: walletPublicKey.blockchainKey, hash: hash)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[SignatureInfo], Error> {
+        sign(hashes: hashes, walletPublicKey: walletPublicKey)
+            .map { signatures in
+                zip(hashes, signatures).map { hash, signature in
+                    SignatureInfo(signature: signature, publicKey: walletPublicKey.blockchainKey, hash: hash)
+                }
             }
             .eraseToAnyPublisher()
     }

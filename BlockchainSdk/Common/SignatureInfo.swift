@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import TangemSdk
 
 struct SignatureInfo: CustomStringConvertible {
     let signature: Data
@@ -16,5 +17,11 @@ struct SignatureInfo: CustomStringConvertible {
 
     var description: String {
         "signature: \(signature.hexString)\npublicKey: \(publicKey.hexString)\nhash: \(hash)"
+    }
+}
+
+extension SignatureInfo {
+    func unmarshal() throws -> Data {
+        try Secp256k1Signature(with: signature).unmarshal(with: publicKey, hash: hash).data
     }
 }

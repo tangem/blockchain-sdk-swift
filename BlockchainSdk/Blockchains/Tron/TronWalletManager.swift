@@ -259,75 +259,23 @@ extension TronWalletManager: TronTransactionDataBuilder {
     }
 }
 
-// MARK: - StakeKitTransactionSender
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-extension TronWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError> {
+extension TronWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = Data
 
-        let presignedInputsPublisher = Result {
-            try transactions.map {
-                try TronStakeKitTransactionHelper().prepareForSign($0.unsignedData)
-            }
-        }.publisher
-
-        let readyToSendTransactionsPublisher = presignedInputsPublisher
-            .withWeakCaptureOf(self)
-            .flatMap { manager, inputs -> AnyPublisher<[Data], Error> in
-                signer
-                    .sign(hashes: inputs.map { $0.hash }, walletPublicKey: manager.wallet.publicKey)
-                    .tryMap { signatures -> [Data] in
-                        try zip(inputs, signatures).map { (input, signature) in
-                            try manager.txBuilder.buildForSend(rawData: input.rawData, signature: signature)
-                        }
-                    }
-                    .eraseToAnyPublisher()
-            }
-
-        let sentTransactionsPublisher = readyToSendTransactionsPublisher
-            .flatMap { [weak self] transactionsData -> AnyPublisher<[TronBroadcastResponse], Error> in
-                guard let self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-
-                let sendPublishers = transactionsData
-                    .map { data in
-                        self.networkService
-                            .broadcastHex(data)
-                            .mapSendError(tx: data.hexString)
-                            .eraseToAnyPublisher()
-                    }
-
-                return Publishers.Sequence(sequence: sendPublishers)
-                    .flatMap(maxPublishers: .max(1)) { $0 }
-                    .collect()
-                    .eraseToAnyPublisher()
-            }
-
-        return sentTransactionsPublisher
-            .withWeakCaptureOf(self)
-            .tryMap { manager, broadcastResponses -> [TransactionSendResult] in
-                guard broadcastResponses.count == transactions.count,
-                      broadcastResponses.allSatisfy({ $0.result }) else {
-                    throw WalletError.failedToSendTx
-                }
-
-                var results: [TransactionSendResult] = []
-
-                for (transaction, broadcastResponse) in zip(transactions, broadcastResponses) {
-                    let hash = broadcastResponse.txid
-                    let mapper = PendingTransactionRecordMapper()
-                    let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-                    manager.wallet.addPendingTransaction(record)
-                    results.append(TransactionSendResult(hash: hash))
-                }
-
-                return results
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).hash
     }
 
-    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        return .anyFail(error: .init(error: BlockchainSdkError.notImplemented))
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        let rawData = try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).rawData
+        let unmarshalled = unmarshal(signature.signature, hash: signature.hash, publicKey: wallet.publicKey)
+        return try txBuilder.buildForSend(rawData: rawData, signature: unmarshalled)
+    }
+
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.broadcastHex(rawTransaction).async().txid
     }
 }
+

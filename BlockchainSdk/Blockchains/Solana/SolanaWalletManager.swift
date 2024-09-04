@@ -307,33 +307,20 @@ private extension SolanaWalletManager {
     }
 }
 
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-// MARK: - StakeKitTransactionSender
+extension SolanaWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = String
 
-extension SolanaWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        let helper = SolanaStakeKitTransactionHelper()
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        SolanaStakeKitTransactionHelper().prepareForSign(transaction.unsignedData)
+    }
+    
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        SolanaStakeKitTransactionHelper().prepareForSend(transaction.unsignedData, signature: signature.signature)
+    }
 
-        return Just(helper.prepareForSign(transaction.unsignedData))
-            .withWeakCaptureOf(self)
-            .flatMap { manager, txToSign in
-                signer.sign(hash: txToSign, walletPublicKey: manager.wallet.publicKey)
-            }
-            .map { signature in
-                helper.prepareForSend(transaction.unsignedData, signature: signature)
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { manager, txToSend in
-                manager.networkService.sendRaw(base64serializedTransaction: txToSend)
-            }
-            .withWeakCaptureOf(self)
-            .map { manager, hash in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-                manager.wallet.addPendingTransaction(record)
-                return TransactionSendResult(hash: hash)
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.sendRaw(base64serializedTransaction: rawTransaction).async()
     }
 }

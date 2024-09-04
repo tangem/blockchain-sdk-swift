@@ -832,6 +832,7 @@
 		EF5C753E2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */; };
 		EF5C75402BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
+		EF5F545F2C8718F000B7D1E7 /* StakeKitTransactionSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F545E2C8718F000B7D1E7 /* StakeKitTransactionSender.swift */; };
 		EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C1F2A288AEF0044986F /* AdaliteTokenDTO.swift */; };
 		EF666C2A2A2DFB120044986F /* WalletManagerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C292A2DFB120044986F /* WalletManagerFactory.swift */; };
 		EF666C2E2A2F3EE90044986F /* BitcoinLegacyAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */; };
@@ -1631,6 +1632,7 @@
 		DC87B9ED2B8F4D9700C61C5A /* BitcoreResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreResponse.swift; sourceTree = "<group>"; };
 		DC87B9EE2B8F4D9700C61C5A /* BitcoreTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoreTarget.swift; sourceTree = "<group>"; };
 		DC886FCC2AF5637D0098669C /* CommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTests.swift; sourceTree = "<group>"; };
+		DCDECB932C88D3E200E10564 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DCDF56B32C6F4F9800028424 /* account_contract.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = account_contract.pb.swift; sourceTree = "<group>"; };
 		DCDF56B42C6F4F9800028424 /* asset_issue_contract.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = asset_issue_contract.pb.swift; sourceTree = "<group>"; };
 		DCDF56B52C6F4F9800028424 /* balance_contract.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = balance_contract.pb.swift; sourceTree = "<group>"; };
@@ -1753,6 +1755,7 @@
 		EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionTask.State+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
+		EF5F545E2C8718F000B7D1E7 /* StakeKitTransactionSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakeKitTransactionSender.swift; sourceTree = "<group>"; };
 		EF666C1F2A288AEF0044986F /* AdaliteTokenDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteTokenDTO.swift; sourceTree = "<group>"; };
 		EF666C292A2DFB120044986F /* WalletManagerFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletManagerFactory.swift; sourceTree = "<group>"; };
 		EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinLegacyAddressService.swift; sourceTree = "<group>"; };
@@ -4129,12 +4132,13 @@
 		EF9E380E2B7A3A41004B694C /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				EF5F545E2C8718F000B7D1E7 /* StakeKitTransactionSender.swift */,
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
 				EF23FBD72BB6EB45008DBCDF /* TransactionFeeProvider.swift */,
+				DA4B80242BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift */,
 				EF937BD92B90EED0009B8374 /* BlockchainNotifications */,
 				EF9E382E2B7A4CF3004B694C /* TransactionValidator */,
-				DA4B80242BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift */,
 			);
 			path = Interfaces;
 			sourceTree = "<group>";
@@ -4364,6 +4368,7 @@
 				"zh-Hant",
 				ja,
 				"uk-UA",
+				es,
 			);
 			mainGroup = 5D14E4642397B80F00C15FC8;
 			packageReferences = (
@@ -4581,6 +4586,7 @@
 				DA0E98D42C0472DB00C92985 /* KoinosTarget.swift in Sources */,
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,
+				EF5F545F2C8718F000B7D1E7 /* StakeKitTransactionSender.swift in Sources */,
 				2DA13A022A8AD83B00E3C374 /* ChiaNetworkProvider.swift in Sources */,
 				DAB9BE722BBD902C00E77545 /* TaraxaExternalLinkProvider.swift in Sources */,
 				5DCC817623FAE6D500DFC460 /* AnyPublisher+Response.swift in Sources */,
@@ -5461,6 +5467,7 @@
 				DADB5450298BB10000491102 /* zh-Hant */,
 				DC4772892C2B0BDB00D2459D /* ja */,
 				DC47728B2C2B0C0500D2459D /* uk-UA */,
+				DCDECB932C88D3E200E10564 /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
