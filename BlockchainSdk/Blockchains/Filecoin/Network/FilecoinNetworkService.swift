@@ -30,6 +30,12 @@ class FilecoinNetworkService: MultiNetworkProvider {
                         nonce: response.nonce
                     )
                 }
+                .tryCatch { error -> AnyPublisher<FilecoinAccountInfo, Error> in
+                    if let error = error as? JSONRPC.APIError, error.code == 1 {
+                        return .justWithError(output: FilecoinAccountInfo(balance: 0, nonce: 0))
+                    }
+                    return .anyFail(error: error)
+                }
                 .eraseToAnyPublisher()
         }
     }
