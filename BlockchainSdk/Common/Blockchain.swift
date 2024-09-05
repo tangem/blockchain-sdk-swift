@@ -82,8 +82,9 @@ public indirect enum Blockchain: Equatable, Hashable {
     case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
+    case filecoin
     case sei(testnet: Bool)
-
+    
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet),
@@ -144,7 +145,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .kaspa,
                 .joystream,
                 .internetComputer,
-                .bittensor:
+                .bittensor,
+                .filecoin:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -271,7 +273,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .taraxa,
                 .base,
                 .cyber,
-                .blast:
+                .blast,
+                .filecoin:
             return 18
         case .cardano,
                 .xrp,
@@ -432,6 +435,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tKOIN" : "KOIN"
         case .internetComputer:
             return "ICP"
+        case .filecoin:
+            return "FIL"
         case .sei:
             return "SEI"
         }
@@ -893,6 +898,7 @@ extension Blockchain: Codable {
         case .internetComputer: return "internet-computer"
         case .cyber: return "cyber"
         case .blast: return "blast"
+        case .filecoin: return "filecoin"
         case .sei: return "sei"
         }
     }
@@ -984,6 +990,7 @@ extension Blockchain: Codable {
         case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
+        case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -1202,6 +1209,8 @@ private extension Blockchain {
             case .network: return "blast"
             case .coin: return "blast-ethereum"
             }
+        case .filecoin:
+            return "filecoin"
         case .sei:
             return "sei-network"
         }
@@ -1312,6 +1321,8 @@ extension Blockchain {
             return MantleWalletAssembly()
         case .internetComputer:
             return ICPWalletAssembly()
+        case .filecoin:
+            return FilecoinWalletAssembly()
         }
     }
 }
