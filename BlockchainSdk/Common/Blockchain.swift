@@ -82,6 +82,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
+    case sei(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -121,7 +122,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .base(let testnet),
                 .koinos(let testnet),
                 .cyber(let testnet),
-                .blast(let testnet):
+                .blast(let testnet),
+                .sei(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -277,7 +279,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .tron,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .sei:
             return 6
         case .stellar:
             return 7
@@ -429,6 +432,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tKOIN" : "KOIN"
         case .internetComputer:
             return "ICP"
+        case .sei:
+            return "SEI"
         }
     }
 
@@ -499,6 +504,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Manta Pacific" + testnetSuffix
         case .internetComputer:
             return "Internet Computer"
+        case .sei:
+            return "Sei Network"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -886,6 +893,7 @@ extension Blockchain: Codable {
         case .internetComputer: return "internet-computer"
         case .cyber: return "cyber"
         case .blast: return "blast"
+        case .sei: return "sei"
         }
     }
 
@@ -976,6 +984,7 @@ extension Blockchain: Codable {
         case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
+        case "sei": self = .sei(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1193,6 +1202,8 @@ private extension Blockchain {
             case .network: return "blast"
             case .coin: return "blast-ethereum"
             }
+        case .sei:
+            return "pacific-1"
         }
     }
 
@@ -1277,7 +1288,7 @@ extension Blockchain {
             return KaspaWalletAssembly()
         case .ravencoin:
             return RavencoinWalletAssembly()
-        case .cosmos, .terraV1, .terraV2:
+        case .cosmos, .terraV1, .terraV2, .sei:
             return CosmosWalletAssembly()
         case .chia:
             return ChiaWalletAssembly()
