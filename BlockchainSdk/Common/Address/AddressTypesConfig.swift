@@ -82,7 +82,8 @@ struct AddressTypesConfig {
              .internetComputer,
              .koinos,
              .cyber,
-             .blast:
+             .blast,
+             .filecoin:
             return [.default]
         }
     }
