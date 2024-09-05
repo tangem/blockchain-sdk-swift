@@ -13,6 +13,7 @@ enum CosmosChain {
     case cosmos(testnet: Bool)
     case terraV1
     case terraV2
+    case sei(isTestnet: Bool)
     // ancient testnet network, we only use it for unit tests
     case gaia
 }
@@ -33,6 +34,8 @@ extension CosmosChain {
             return "uluna"
         case .gaia:
             return "muon"
+        case .sei:
+            return "usei"
         }
     }
     
@@ -46,6 +49,8 @@ extension CosmosChain {
             return .terraV2
         case .gaia:
             return .cosmos(testnet: true)
+        case .sei(let isTestnet):
+            return .sei(testnet: isTestnet)
         }
     }
     
@@ -62,13 +67,15 @@ extension CosmosChain {
             return "phoenix-1"
         case .gaia:
             return "gaia-13003"
+        case .sei(let isTestnet):
+            return isTestnet ? "atlantic-2" : "pacific-1"
         }
     }
     
     // For some chains gas prices are hardcoded with the same value for all fee levels
     var allowsFeeSelection: Bool {
         switch self {
-        case .cosmos, .gaia, .terraV2:
+        case .cosmos, .gaia, .terraV2, .sei:
             return true
         case .terraV1:
             return false
@@ -100,6 +107,8 @@ extension CosmosChain {
                 0.025,
                 0.040,
             ]
+        case .sei(let isTestnet):
+            return isTestnet ? [0.08] : [0.02, 0.02, 0.04]
         case .gaia:
             fatalError()
         }
@@ -120,6 +129,8 @@ extension CosmosChain {
             return 5
         case .terraV2:
             return 2
+        case .sei:
+            return 2
         }
     }
     
@@ -129,7 +140,7 @@ extension CosmosChain {
     // Default multiplier value is 1
     var feeMultiplier: Double {
         switch self {
-        case .cosmos, .gaia:
+        case .cosmos, .gaia, .sei:
             return 1
         case .terraV1, .terraV2:
             return 1.5
@@ -144,12 +155,14 @@ extension CosmosChain {
             return .terra
         case .terraV2:
             return .terraV2
+        case .sei:
+            return .sei
         }
     }
     
     var allowCW20Tokens: Bool {
         switch self {
-        case .terraV2:
+        case .terraV2, .sei:
             return true
         case .cosmos, .terraV1, .gaia:
             return false
@@ -167,7 +180,7 @@ extension CosmosChain {
             }
         case .terraV2:
             return tokenCurrencySymbol
-        case .cosmos, .gaia:
+        case .cosmos, .gaia, .sei:
             return nil
         }
     }
@@ -182,7 +195,7 @@ extension CosmosChain {
             default:
                 return nil
             }
-        case .terraV2:
+        case .terraV2, .sei:
             return smallestDenomination
         case .cosmos, .gaia:
             return nil
@@ -195,7 +208,7 @@ extension CosmosChain {
             return [
                 "uusd": 0.2,
             ]
-        case .cosmos, .gaia, .terraV2:
+        case .cosmos, .gaia, .terraV2, .sei:
             return [:]
         }
     }
@@ -207,7 +220,7 @@ extension CosmosChain {
             // https://classic-docs.terra.money/docs/learn/fees.html#spread-fee
             let minimumSpreadFeePercentage: Decimal = 0.5
             return amount * 0.01 * minimumSpreadFeePercentage
-        case .cosmos, .terraV2, .gaia:
+        case .cosmos, .terraV2, .gaia, .sei:
             return nil
         }
     }

@@ -82,6 +82,8 @@ extension CoinType {
             self = .hedera
         case .internetComputer:
             self = .internetComputer
+        case .sei:
+            self = .sei
         case .ethereumPoW,
              .disChain,
              .rsk,
