@@ -103,20 +103,22 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 let sunPerBandwidthPoint = 1000
                 
-                let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
-                
+                let remainingBandwidth = resources.freeNetLimit - (resources.freeNetUsed ?? 0)
                 let additionalDataSize = 64
-                let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
+                let transactionSizeFee = transactionData.count + additionalDataSize
                 let consumedBandwidthFee: Int
-                if transactionSizeFee <= remainingBandwidthInSun {
+                if transactionSizeFee <= remainingBandwidth {
                     consumedBandwidthFee = 0
                 } else {
-                    consumedBandwidthFee = transactionSizeFee
+                    consumedBandwidthFee = transactionSizeFee * sunPerBandwidthPoint
                 }
                 
-                let totalFee = consumedBandwidthFee + energyFee
+                let remainingEnergy = resources.energyLimit - resources.energyUsed
+                let consumedEnergyFee = max(.zero, Decimal(energyFee) - remainingEnergy)
                 
-                let value = Decimal(totalFee) / blockchain.decimalValue
+                let totalFee = Decimal(consumedBandwidthFee) + consumedEnergyFee
+                
+                let value = totalFee / blockchain.decimalValue
                 let amount = Amount(with: blockchain, value: value)
                 return [Fee(amount)]
             }
