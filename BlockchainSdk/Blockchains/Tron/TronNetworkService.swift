@@ -152,32 +152,32 @@ class TronNetworkService: MultiNetworkProvider {
     }
 
     private func tokenBalances(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
-        let encodedAddressDataPublisher = Result {
+        Result {
             try TronUtils().convertAddressToBytesPadded(address).hexString.lowercased()
         }
-            .publisher
+        .publisher
+        .flatMap { encodedAddressData in
+            tokens
+                .publisher
+                .setFailureType(to: Error.self)
+                .map { (encodedAddressData, $0) }
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { args -> AnyPublisher<(Token, Decimal), Error> in
+            let (service, (encodedAddressData, token)) = args
 
-        let tokenPublisher = tokens
-            .publisher
-            .setFailureType(to: Error.self)
-
-        return encodedAddressDataPublisher.zip(tokenPublisher)
-            .withWeakCaptureOf(self)
-            .flatMap { args -> AnyPublisher<(Token, Decimal), Error> in
-               let (service, (encodedAddressData, token)) = args
-
-                return service
-                    .tokenBalance(address: address, token: token, encodedAddressData: encodedAddressData)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
+            return service
+                .tokenBalance(address: address, token: token, encodedAddressData: encodedAddressData)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+        .collect()
+        .map {
+            $0.reduce(into: [:]) { tokenBalances, tokenBalance in
+                tokenBalances[tokenBalance.0] = tokenBalance.1
             }
-            .collect()
-            .map {
-                $0.reduce(into: [:]) { tokenBalances, tokenBalance in
-                    tokenBalances[tokenBalance.0] = tokenBalance.1
-                }
-            }
-            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
     
     private func tokenBalance(address: String, token: Token, encodedAddressData: String) -> AnyPublisher<(Token, Decimal), Never> {
