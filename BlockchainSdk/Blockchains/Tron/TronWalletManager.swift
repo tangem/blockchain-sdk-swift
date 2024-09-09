@@ -72,7 +72,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let energyFeePublisher = energyFee(amount: amount, destination: destination)
+        let energyFeePublisher = energyFeeParameters(amount: amount, destination: destination)
 
         let blockchain = wallet.blockchain
 
@@ -95,39 +95,46 @@ class TronWalletManager: BaseManager, WalletManager {
             transactionDataPublisher,
             networkService.getAccountResource(for: wallet.address)
         )
-            .map { energyFee, destinationExists, transactionData, resources -> [Fee] in
-                if !destinationExists && amount.type == .coin {
-                    let amount = Amount(with: blockchain, value: 1.1)
-                    return [Fee(amount)]
-                }
-                
-                let sunPerBandwidthPoint = 1000
-                
-                let remainingBandwidth = resources.freeNetLimit - (resources.freeNetUsed ?? 0)
-                let additionalDataSize = 64
-                let transactionSizeFee = transactionData.count + additionalDataSize
-                let consumedBandwidthFee: Int
-                if transactionSizeFee <= remainingBandwidth {
-                    consumedBandwidthFee = 0
-                } else {
-                    consumedBandwidthFee = transactionSizeFee * sunPerBandwidthPoint
-                }
-                
-                let remainingEnergy = resources.energyLimit - resources.energyUsed
-                let consumedEnergyFee = max(.zero, Decimal(energyFee) - remainingEnergy)
-                
-                let totalFee = Decimal(consumedBandwidthFee) + consumedEnergyFee
-                
-                let value = totalFee / blockchain.decimalValue
-                let amount = Amount(with: blockchain, value: value)
+        .map {
+            energyFeeParameters,
+            destinationExists,
+            transactionData,
+            resources -> [Fee] in
+            if !destinationExists && amount.type == .coin {
+                let amount = Amount(with: blockchain, value: 1.1)
                 return [Fee(amount)]
             }
-            .eraseToAnyPublisher()
+            
+            let sunPerBandwidthPoint = 1000
+            
+            let remainingBandwidth = resources.freeNetLimit - (resources.freeNetUsed ?? 0)
+            let additionalDataSize = 64
+            let transactionSizeFee = transactionData.count + additionalDataSize
+            let consumedBandwidthFee: Int
+            if transactionSizeFee <= remainingBandwidth {
+                consumedBandwidthFee = 0
+            } else {
+                consumedBandwidthFee = transactionSizeFee * sunPerBandwidthPoint
+            }
+            
+            let remainingEnergy = resources.energyLimit - resources.energyUsed
+            let consumedEnergyFee = max(
+                .zero,
+                Decimal(energyFeeParameters.energyFee) - remainingEnergy
+            ) * Decimal(energyFeeParameters.sunPerEnergyUnit)
+            
+            let totalFee = Decimal(consumedBandwidthFee) + consumedEnergyFee
+            
+            let value = totalFee / blockchain.decimalValue
+            let amount = Amount(with: blockchain, value: value)
+            return [Fee(amount)]
+        }
+        .eraseToAnyPublisher()
     }
 
-    private func energyFee(amount: Amount, destination: String) -> AnyPublisher<Int, Error> {
+    private func energyFeeParameters(amount: Amount, destination: String) -> AnyPublisher<TronEnergyFeeData, Error> {
         guard let contractAddress = amount.type.token?.contractAddress else {
-            return .justWithError(output: 0)
+            return .justWithError(output: TronEnergyFeeData(energyFee: 0, sunPerEnergyUnit: 0))
         }
 
         let energyUsagePublisher = Result {
@@ -148,14 +155,14 @@ class TronWalletManager: BaseManager, WalletManager {
                 // Contract's energy fee changes every maintenance period (6 hours) and
                 // since we don't know what period the transaction is going to be executed in
                 // we increase the fee just in case by 20%
-                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let energyFee = Double(energyUse * sunPerEnergyUnit)
-                
                 let dynamicEnergyIncreaseFactorPresicion = 10_000
                 let dynamicEnergyIncreaseFactor = Double(chainParameters.dynamicEnergyIncreaseFactor) / Double(dynamicEnergyIncreaseFactorPresicion)
-                let conservativeEnergyFee = Int(energyFee * (1 + dynamicEnergyIncreaseFactor))
+                let conservativeEnergyFee = Int(Double(energyUse) * (1 + dynamicEnergyIncreaseFactor))
                 
-                return conservativeEnergyFee
+                return TronEnergyFeeData(
+                    energyFee: conservativeEnergyFee,
+                    sunPerEnergyUnit: chainParameters.sunPerEnergyUnit
+                )
             }
             .eraseToAnyPublisher()
     }

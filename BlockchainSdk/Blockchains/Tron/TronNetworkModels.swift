@@ -23,6 +23,11 @@ struct TronChainParameters {
     let dynamicEnergyIncreaseFactor: Int
 }
 
+struct TronEnergyFeeData {
+    let energyFee: Int
+    let sunPerEnergyUnit: Int
+}
+
 struct TronAccountInfo {
     let balance: Decimal
     let tokenBalances: [Token: Decimal]
