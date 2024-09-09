@@ -40,11 +40,12 @@ class KaspaTransactionBuilder {
     
     func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
         let availableInputValue = self.availableAmount()
-        if transaction.amount > availableInputValue{
+
+        guard transaction.amount.type == availableInputValue.type,
+              transaction.amount <= availableInputValue else {
             throw WalletError.failedToBuildTx
         }
-        
-        
+
         let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hexString.lowercased()
 
         var outputs: [KaspaOutput] = [

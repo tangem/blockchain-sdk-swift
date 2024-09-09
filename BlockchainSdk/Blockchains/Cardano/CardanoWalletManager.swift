@@ -178,7 +178,7 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
     private func validateCardanoCoinWithdrawal(amount: Amount, fee: Fee) throws {
         assert(!amount.type.isToken, "Only coin validation")
 
-        guard let adaBalance = wallet.amounts[.coin]?.value else {
+        guard wallet.amounts[.coin]?.value != nil else {
             throw ValidationError.balanceNotFound
         }
 
