@@ -23,6 +23,11 @@ struct TronChainParameters {
     let dynamicEnergyIncreaseFactor: Int
 }
 
+struct TronEnergyFeeData {
+    let energyFee: Int
+    let sunPerEnergyUnit: Int
+}
+
 struct TronAccountInfo {
     let balance: Decimal
     let tokenBalances: [Token: Decimal]
@@ -44,6 +49,12 @@ struct TronGetAccountResponse: Decodable {
 struct TronGetAccountResourceResponse: Decodable {
     let freeNetUsed: Int?
     let freeNetLimit: Int
+    let energyLimit: Decimal
+    let energyUsed: Decimal
+    
+    enum CodingKeys: String, CodingKey {
+        case freeNetUsed, freeNetLimit, energyLimit = "EnergyLimit", energyUsed = "EnergyUsed"
+    }
 }
 
 struct TronTransactionInfoRequest: Encodable {
