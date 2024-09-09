@@ -12,35 +12,27 @@ import WalletCore
 @testable import BlockchainSdk
 
 final class SeiTransactionTests: XCTestCase {
-    func testSeiTransaction() throws {
-        let cosmosChain = CosmosChain.sei(isTestnet: true)
-        let blockchain = cosmosChain.blockchain
-
-        let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
-        let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
-        
-        let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(from: publicKeyData)
-        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
-        
-        let txBuilder = try CosmosTransactionBuilder(
-            publicKey: wallet.publicKey.blockchainKey,
+    private var cosmosChain: CosmosChain!
+    private var blockchain: BlockchainSdk.Blockchain!
+    private var privateKey: PrivateKey!
+    private var publicKey: PublicKey!
+    private var txBuilder: CosmosTransactionBuilder!
+    
+    override func setUp() {
+        cosmosChain = CosmosChain.sei(testnet: true)
+        blockchain = cosmosChain.blockchain
+        privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
+        publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        txBuilder = try! CosmosTransactionBuilder(
+            publicKey: privateKey.getPublicKeySecp256k1(compressed: true).data,
             cosmosChain: cosmosChain
         )
-        txBuilder.setAccountNumber(1037)
-        txBuilder.setSequenceNumber(8)
-        
-        let transaction = Transaction(
-            amount: Amount(with: cosmosChain.blockchain, value: 0.000001),
-            fee: Fee(
-                Amount(with: cosmosChain.blockchain, value: 0.000200),
-                parameters: CosmosFeeParameters(gas: 200_000)
-            ),
-            sourceAddress: wallet.address,
-            destinationAddress: "sei1s4qpwajn36kk6dp0c4yu27v3w87xhc5ph6yekq",
-            changeAddress: wallet.address
-        )
-        
+    }
+    
+    func testSeiTransaction() throws {
+        let transaction = try makeSeiTransaction(txBuilder: txBuilder)
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)
+        
         XCTAssertEqual(dataForSign.hexString.lowercased(), "9a2af4a0e1519d73a5f44ee99e9e9b11077f1779b4486bb4bf7949d65516e3ad")
 
         let signature = try XCTUnwrap(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
@@ -58,5 +50,44 @@ final class SeiTransactionTests: XCTestCase {
             """
         
         XCTAssertJSONEqual(transactionString, expectedOutput)
+    }
+    
+    func testTransactionSize() throws {
+        let sizeTester = TransactionSizeTesterUtility()
+        let transaction = try makeSeiTransaction(txBuilder: txBuilder)
+        let dataForSign = try txBuilder.buildForSign(transaction: transaction)
+        
+        sizeTester.testTxSize(dataForSign)
+    }
+    
+    override func tearDown() {
+        cosmosChain = nil
+        blockchain = nil
+        privateKey = nil
+        publicKey = nil
+        txBuilder = nil
+    }
+}
+
+private extension SeiTransactionTests {
+    func makeSeiTransaction(txBuilder: CosmosTransactionBuilder) throws -> Transaction {
+        let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(from: publicKey.data)
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
+        
+        txBuilder.setAccountNumber(1037)
+        txBuilder.setSequenceNumber(8)
+        
+        let transaction = Transaction(
+            amount: Amount(with: cosmosChain.blockchain, value: 0.000001),
+            fee: Fee(
+                Amount(with: cosmosChain.blockchain, value: 0.000200),
+                parameters: CosmosFeeParameters(gas: 200_000)
+            ),
+            sourceAddress: wallet.address,
+            destinationAddress: "sei1s4qpwajn36kk6dp0c4yu27v3w87xhc5ph6yekq",
+            changeAddress: wallet.address
+        )
+        
+        return transaction
     }
 }

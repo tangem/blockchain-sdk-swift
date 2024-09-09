@@ -510,7 +510,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .internetComputer:
             return "Internet Computer"
         case .sei:
-            return "Sei Network"
+            return "Sei" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {

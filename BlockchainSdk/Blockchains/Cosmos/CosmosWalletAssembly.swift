@@ -21,7 +21,7 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
         case .terraV2:
             cosmosChain = .terraV2
         case .sei(let isTestnet):
-            cosmosChain = .sei(isTestnet: isTestnet)
+            cosmosChain = .sei(testnet: isTestnet)
         default:
             throw WalletError.empty
         }
