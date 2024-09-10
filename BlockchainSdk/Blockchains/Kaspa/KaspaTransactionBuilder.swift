@@ -95,6 +95,23 @@ class KaspaTransactionBuilder {
         return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
     }
     
+    func buildForMassCalculation(transaction: Transaction) throws -> KaspaTransactionData {
+//        let dummySignature = Data(repeating: 1, count: 65)
+        let builtTransaction = try buildForSign(transaction).0
+        
+        let inputs = builtTransaction.inputs.enumerated().map { (index, input) in
+            KaspaInput(
+                previousOutpoint: KaspaPreviousOutpoint(
+                    transactionId: input.transactionHash,
+                    index: input.outputIndex
+                ),
+                signatureScript: ""
+            )
+        }
+        
+        return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
+    }
+    
     private func amount(from transaction: Transaction) -> UInt64 {
         return ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uint64Value
     }
