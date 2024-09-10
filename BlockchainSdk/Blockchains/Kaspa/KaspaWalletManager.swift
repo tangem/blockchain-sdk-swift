@@ -88,8 +88,41 @@ class KaspaWalletManager: BaseManager, WalletManager {
             utxoCount: numberOfUtxos
         )
         
-        return Just([Fee(Amount(with: wallet.blockchain, value: fee), parameters: params)])
-            .setFailureType(to: Error.self)
+        let dummySignature = Data(repeating: 1, count: 65)
+        let transaction = Transaction(
+            amount: amount,
+            fee: Fee(Amount.zeroCoin(for: wallet.blockchain)),
+            sourceAddress: wallet.address,
+            destinationAddress: destination,
+            changeAddress: wallet.address
+        )
+        guard let kaspaTransaction = try? txBuilder.buildForSign(transaction).0 else {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+        let signatures = Array(repeating: dummySignature, count: kaspaTransaction.inputs.count)
+        let transactionData = txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
+        
+        let blockchain = wallet.blockchain
+        let decimalValue = wallet.blockchain.decimalValue
+        
+        return networkService.mass(data: transactionData)
+            .zip(networkService.feeEstimate())
+            .map { mass, feeEstimate in
+                let priorityFee = Decimal(feeEstimate.priorityBucket.feerate * mass.mass) / decimalValue
+                let normalFees = feeEstimate.normalBuckets.map { bucket in
+                    Decimal(bucket.feerate * mass.mass) / decimalValue
+                }
+                let lowFees = feeEstimate.lowBuckets.map { bucket in
+                    Decimal(bucket.feerate * mass.mass) / decimalValue
+                }
+                
+                return ([priorityFee] + normalFees + lowFees).map { fee in
+                    Fee(
+                        Amount(with: blockchain, value: fee),
+                        parameters: params
+                    )
+                }
+            }
             .eraseToAnyPublisher()
     }
     
