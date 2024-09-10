@@ -94,7 +94,7 @@ public struct AddressServiceFactory {
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
         case .kaspa:
-            return KaspaAddressService()
+            return KaspaAddressService(isTestnet: isTestnet)
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
