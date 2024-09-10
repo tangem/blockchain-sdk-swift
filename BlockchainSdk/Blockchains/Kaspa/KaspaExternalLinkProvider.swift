@@ -9,15 +9,23 @@
 import Foundation
 
 struct KaspaExternalLinkProvider: ExternalLinkProvider {
+    private let baseExplorerUrl: String
+    
+    init(isTestnet: Bool) {
+        baseExplorerUrl = isTestnet
+            ? "https://explorer-tn10.kaspa.org"
+            : "https://explorer.kaspa.org"
+    }
+    
     var testnetFaucetURL: URL? {
-        return URL(string: "https://faucet.kaspanet.io")
+        URL(string: "https://faucet-testnet.kaspanet.io")
     }
     
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://explorer.kaspa.org/txs/\(hash)")
+        URL(string: "\(baseExplorerUrl)/txs/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "https://explorer.kaspa.org/addresses/\(address)")
+        URL(string: "\(baseExplorerUrl)/addresses/\(address)")
     }
 }
