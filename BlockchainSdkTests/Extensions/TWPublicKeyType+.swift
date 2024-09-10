@@ -27,7 +27,8 @@ extension PublicKeyType {
                 .terraV2,
                 .radiant,
                 .koinos,
-                .filecoin:
+                .filecoin,
+                .sei:
             self = PublicKeyType.secp256k1
         case .ethereum,
                 .bsc,
