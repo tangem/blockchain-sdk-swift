@@ -80,6 +80,10 @@ class KaspaWalletManager: BaseManager, WalletManager {
                 .eraseToAnyPublisher()
         }
         
+        let blockchain = wallet.blockchain
+        let decimalValue = wallet.blockchain.decimalValue
+        let source = wallet.address
+        
         let feePerUtxo: Decimal = 0.0001
         let fee = feePerUtxo * Decimal(numberOfUtxos)
         
@@ -88,42 +92,35 @@ class KaspaWalletManager: BaseManager, WalletManager {
             utxoCount: numberOfUtxos
         )
         
-        let dummySignature = Data(repeating: 1, count: 65)
         let transaction = Transaction(
             amount: amount,
-            fee: Fee(Amount.zeroCoin(for: wallet.blockchain)),
-            sourceAddress: wallet.address,
+            fee: Fee(Amount.zeroCoin(for: blockchain)),
+            sourceAddress: source,
             destinationAddress: destination,
-            changeAddress: wallet.address
+            changeAddress: source
         )
-        guard let kaspaTransaction = try? txBuilder.buildForSign(transaction).0 else {
-            return .anyFail(error: WalletError.failedToGetFee)
+        
+        return Result {
+            try txBuilder.buildForMassCalculation(transaction: transaction)
         }
-        let signatures = Array(repeating: dummySignature, count: kaspaTransaction.inputs.count)
-        let transactionData = txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
-        
-        let blockchain = wallet.blockchain
-        let decimalValue = wallet.blockchain.decimalValue
-        
-        return networkService.mass(data: transactionData)
-            .zip(networkService.feeEstimate())
-            .map { mass, feeEstimate in
-                let priorityFee = Decimal(feeEstimate.priorityBucket.feerate * mass.mass) / decimalValue
-                let normalFees = feeEstimate.normalBuckets.map { bucket in
-                    Decimal(bucket.feerate * mass.mass) / decimalValue
-                }
-                let lowFees = feeEstimate.lowBuckets.map { bucket in
-                    Decimal(bucket.feerate * mass.mass) / decimalValue
-                }
-                
-                return ([priorityFee] + normalFees + lowFees).map { fee in
-                    Fee(
-                        Amount(with: blockchain, value: fee),
-                        parameters: params
-                    )
-                }
+        .publisher
+        .withWeakCaptureOf(networkService)
+        .flatMap { networkService, transactionData in
+            networkService.mass(data: transactionData)
+                .zip(networkService.feeEstimate())
+        }
+        .map { mass, feeEstimate in
+            let buckets = [feeEstimate.priorityBucket] + feeEstimate.normalBuckets + feeEstimate.lowBuckets
+            
+            return buckets.prefix(3).map { bucket in
+                let value = Decimal(bucket.feerate * mass.mass) / decimalValue
+                return Fee(
+                    Amount(with: blockchain, value: value),
+                    parameters: params
+                )
             }
-            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
     
     private func updateWallet(_ info: KaspaAddressInfo) {
