@@ -127,13 +127,13 @@ class KaspaNetworkService: MultiNetworkProvider {
         }
     }
     
-    private func mass(data: KaspaTransactionData) -> AnyPublisher<KaspaMassResponse, Error> {
+    func mass(data: KaspaTransactionData) -> AnyPublisher<KaspaMassResponse, Error> {
         providerPublisher { provider in
             provider.mass(data: data)
         }
     }
     
-    private func feeEstimate() -> AnyPublisher<KaspaFeeEstimateResponse, Error> {
+    func feeEstimate() -> AnyPublisher<KaspaFeeEstimateResponse, Error> {
         providerPublisher { provider in
             provider.feeEstimate()
         }
