@@ -50,7 +50,7 @@ struct TronGetAccountResourceResponse: Decodable {
     let freeNetUsed: Int?
     let freeNetLimit: Int
     let energyLimit: Decimal
-    let energyUsed: Decimal
+    let energyUsed: Decimal?
     
     enum CodingKeys: String, CodingKey {
         case freeNetUsed, freeNetLimit, energyLimit = "EnergyLimit", energyUsed = "EnergyUsed"

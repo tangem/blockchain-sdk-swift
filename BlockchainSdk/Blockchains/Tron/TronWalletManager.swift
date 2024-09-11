@@ -117,7 +117,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 consumedBandwidthFee = transactionSizeFee * sunPerBandwidthPoint
             }
             
-            let remainingEnergy = resources.energyLimit - resources.energyUsed
+            let remainingEnergy = resources.energyLimit - (resources.energyUsed ?? 0)
             let consumedEnergyFee = max(
                 .zero,
                 Decimal(energyFeeParameters.energyFee) - remainingEnergy
