@@ -12,11 +12,14 @@ import BitcoinCore
 
 @available(iOS 13.0, *)
 public class KaspaAddressService {
+    private let isTestnet: Bool
     private let prefix: String
-    private let version: KaspaAddressComponents.KaspaAddressType = .P2PK_ECDSA
+    private let version: KaspaAddressComponents.KaspaAddressType
 
     init(isTestnet: Bool) {
-        prefix = isTestnet ? "kaspatest" : "kaspa"
+        self.isTestnet = isTestnet
+        self.prefix = isTestnet ? "kaspatest" : "kaspa"
+        self.version = isTestnet ? .P2PK_Schnorr : .P2PK_ECDSA
     }
     
     func parse(_ address: String) -> KaspaAddressComponents? {
@@ -44,7 +47,12 @@ public class KaspaAddressService {
 extension KaspaAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
-        let address = CashAddrBech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
+        
+        let payloadData = isTestnet
+            ? compressedKey.dropFirst()
+            : compressedKey
+        
+        let address = CashAddrBech32.encode(version.rawValue.data + payloadData, prefix: prefix)
         return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
