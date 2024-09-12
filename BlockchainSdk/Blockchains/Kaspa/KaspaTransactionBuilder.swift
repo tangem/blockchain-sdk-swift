@@ -96,17 +96,17 @@ class KaspaTransactionBuilder {
     }
     
     func buildForMassCalculation(transaction: Transaction) throws -> KaspaTransactionData {
-//        let dummySignature = Data(repeating: 1, count: 65)
         let builtTransaction = try buildForSign(transaction).0
+        let dummySignature = Data(repeating: 1, count: 65)
         
         let inputs = builtTransaction.inputs.enumerated().map { (index, input) in
-            KaspaInput(
-                previousOutpoint: KaspaPreviousOutpoint(
-                    transactionId: input.transactionHash,
-                    index: input.outputIndex
-                ),
-                signatureScript: ""
-            )
+            let sigHashAll: UInt8 = 1
+            let script = dummySignature + sigHashAll.data
+            let size = UInt8(script.count)
+            
+            let signatureScript = (size.data + script).hexadecimal
+            let outpoint = KaspaPreviousOutpoint(transactionId: input.transactionHash, index: input.outputIndex)
+            return KaspaInput(previousOutpoint: outpoint, signatureScript: signatureScript)
         }
         
         return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
