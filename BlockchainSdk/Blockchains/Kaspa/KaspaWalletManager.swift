@@ -74,23 +74,9 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let numberOfUtxos = txBuilder.unspentOutputsCount(for: amount)
-        guard numberOfUtxos > 0 else {
-            return Fail(error: WalletError.failedToGetFee)
-                .eraseToAnyPublisher()
-        }
-        
         let blockchain = wallet.blockchain
         let decimalValue = wallet.blockchain.decimalValue
         let source = wallet.address
-        
-        let feePerUtxo: Decimal = 0.0001
-        let fee = feePerUtxo * Decimal(numberOfUtxos)
-        
-        let params = KaspaFeeParameters(
-            valuePerUtxo: feePerUtxo,
-            utxoCount: numberOfUtxos
-        )
         
         let transaction = Transaction(
             amount: amount,
@@ -112,13 +98,20 @@ class KaspaWalletManager: BaseManager, WalletManager {
         .map { mass, feeEstimate in
             let buckets = [feeEstimate.priorityBucket] + feeEstimate.normalBuckets + feeEstimate.lowBuckets
             
-            return buckets.prefix(3).map { bucket in
-                let value = Decimal(bucket.feerate * mass.mass) / decimalValue
+            let fees = buckets.prefix(3).reversed().map { bucket in
+                let mass = Decimal(mass.mass)
+                let feerate = Decimal(bucket.feerate)
+                let value = mass * feerate / decimalValue
                 return Fee(
                     Amount(with: blockchain, value: value),
-                    parameters: params
+                    parameters: KaspaFeeParameters(
+                        mass: mass,
+                        feerate: feerate
+                    )
                 )
             }
+            
+            return fees
         }
         .eraseToAnyPublisher()
     }
