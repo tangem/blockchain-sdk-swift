@@ -9,11 +9,11 @@
 import Foundation
 
 public struct KaspaFeeParameters: FeeParameters {
-    public let valuePerUtxo: Decimal
-    public let utxoCount: Int
+    public let mass: Decimal
+    public let feerate: Decimal
     
-    public init(valuePerUtxo: Decimal, utxoCount: Int) {
-        self.valuePerUtxo = valuePerUtxo
-        self.utxoCount = utxoCount
+    public init(mass: Decimal, feerate: Decimal) {
+        self.mass = mass
+        self.feerate = feerate
     }
 }
