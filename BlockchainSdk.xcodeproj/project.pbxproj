@@ -28,6 +28,7 @@
 		0A7E10B92C4E8E5700644977 /* ICPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E10B82C4E8E5700644977 /* ICPTests.swift */; };
 		0A92275F2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
+		0AAC111A2C92FF2700436A02 /* TronFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC11192C92FF2700436A02 /* TronFeeParameters.swift */; };
 		0ABC60F02C4101ED00065EBA /* TonSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC60EF2C4101ED00065EBA /* TonSwift */; };
 		0ABC60F32C41021000065EBA /* ScaleCodec in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC60F22C41021000065EBA /* ScaleCodec */; };
 		0ABC61042C41040500065EBA /* TweetNacl in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC61032C41040500065EBA /* TweetNacl */; };
@@ -957,6 +958,7 @@
 		0A7E10B82C4E8E5700644977 /* ICPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPTests.swift; sourceTree = "<group>"; };
 		0A92275E2C16E5D500CB7777 /* BittensorExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
+		0AAC11192C92FF2700436A02 /* TronFeeParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronFeeParameters.swift; sourceTree = "<group>"; };
 		0AEE1E6F2C1B1BEA000BFCB2 /* BittensorWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorWalletAssembly.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		0AEFED092C3D5A5200C0F400 /* ICPNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPNetworkProvider.swift; sourceTree = "<group>"; };
@@ -3602,6 +3604,7 @@
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
 			isa = PBXGroup;
 			children = (
+				0AAC11192C92FF2700436A02 /* TronFeeParameters.swift */,
 				DCDF56D22C6F50DF00028424 /* TronStakeKitTransactionHelper.swift */,
 				DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */,
 				B00B58C72BCEB9F4007475F7 /* TronAPIResolver.swift */,
@@ -5196,6 +5199,7 @@
 				EF2D9DA22BC3F6770055C485 /* EthereumAdditionalInfoProvider.swift in Sources */,
 				EF2D9DA12BC3F6770055C485 /* EthereumTransactionDataBuilder.swift in Sources */,
 				B6F89EAD2BB20DB50009A453 /* SubscanAPIResult.Error.swift in Sources */,
+				0AAC111A2C92FF2700436A02 /* TronFeeParameters.swift in Sources */,
 				2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */,
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
