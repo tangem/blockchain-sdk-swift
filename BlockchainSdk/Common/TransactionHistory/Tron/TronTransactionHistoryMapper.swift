@@ -200,13 +200,13 @@ final class TronTransactionHistoryMapper {
                 TronContractType.transferAssetContractType.rawValue:
                     .transfer
             case TronContractType.voteWitnessContractType.rawValue:
-                    .voteWitnessContract
+                    .tronStakingTransactionType(type: .voteWitnessContract)
             case TronContractType.withdrawBalanceContractType.rawValue:
-                    .withdrawBalanceContract
+                    .tronStakingTransactionType(type: .withdrawBalanceContract)
             case TronContractType.freezeBalanceV2ContractType.rawValue:
-                    .freezeBalanceV2Contract
+                    .tronStakingTransactionType(type: .freezeBalanceV2Contract)
             case TronContractType.unfreezeBalanceV2ContractType.rawValue:
-                    .unfreezeBalanceV2Contract
+                    .tronStakingTransactionType(type: .unfreezeBalanceV2Contract)
             default:
                     .contractMethodIdentifier(id: transaction.contractName ?? "")
             }
