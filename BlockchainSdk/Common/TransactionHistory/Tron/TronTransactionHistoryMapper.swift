@@ -194,11 +194,25 @@ final class TronTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> TransactionRecord.TransactionType {
         switch amountType {
-        case .coin where transaction.isContractInteraction:
-            return .contractMethodName(name: transaction.contractName ?? "")
-        case .coin, .reserve, .token, .feeResource:
+        case .coin:
+            switch transaction.contractType {
+            case TronContractType.transferContractType.rawValue,
+                TronContractType.transferAssetContractType.rawValue:
+                    .transfer
+            case TronContractType.voteWitnessContractType.rawValue:
+                    .voteWitnessContract
+            case TronContractType.withdrawBalanceContractType.rawValue:
+                    .withdrawBalanceContract
+            case TronContractType.freezeBalanceV2ContractType.rawValue:
+                    .freezeBalanceV2Contract
+            case TronContractType.unfreezeBalanceV2ContractType.rawValue:
+                    .unfreezeBalanceV2Contract
+            default:
+                    .contractMethodIdentifier(id: transaction.contractName ?? "")
+            }
+        default:
             // All TRC10 and TRC20 token transactions are considered simple & plain transfers
-            return .transfer
+            .transfer
         }
     }
 
@@ -334,8 +348,13 @@ private extension TronTransactionHistoryMapper {
         case transferContractType = 1
         /// TRC10 token transfers.
         case transferAssetContractType = 2
+        case voteWitnessContractType = 4
+        case withdrawBalanceContractType = 13
         /// TRC20 token transfers.
-        case triggerSmartContract = 31
+        case triggerSmartContractType = 31
+        case freezeBalanceV2ContractType = 54
+        case unfreezeBalanceV2ContractType = 55
+        case withdrawExpireUnfreezeContractType = 56
     }
 }
 
@@ -359,7 +378,7 @@ private extension BlockBookAddressResponse.Token {
 
 private extension BlockBookAddressResponse.Transaction {
     var isContractInteraction: Bool {
-        return contractType != nil
+        contractType != nil
         && contractType != TronTransactionHistoryMapper.TronContractType.transferContractType.rawValue
     }
 }

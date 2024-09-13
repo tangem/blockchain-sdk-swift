@@ -56,6 +56,10 @@ public extension TransactionRecord {
         case contractMethodIdentifier(id: String)
         /// Contains human-readable contract method name (like `swap`).
         case contractMethodName(name: String)
+        case freezeBalanceV2Contract
+        case unfreezeBalanceV2Contract
+        case voteWitnessContract
+        case withdrawBalanceContract
     }
 }
 
