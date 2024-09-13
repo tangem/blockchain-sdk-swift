@@ -127,7 +127,16 @@ class TronWalletManager: BaseManager, WalletManager {
             
             let value = totalFee / blockchain.decimalValue
             let amount = Amount(with: blockchain, value: value)
-            return [Fee(amount)]
+            
+            let feeParameters = TronFeeParameters(
+                energySpent: min(
+                    energyFeeParameters.energyFee,
+                    remainingEnergy.decimalNumber.intValue
+                ),
+                energyFullyCoversFee: consumedEnergyFee == .zero
+            )
+            
+            return [Fee(amount, parameters: feeParameters)]
         }
         .eraseToAnyPublisher()
     }
