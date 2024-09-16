@@ -45,7 +45,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case optimism(testnet: Bool)
     case ton(curve: EllipticCurve, testnet: Bool)
     case kava(testnet: Bool)
-    case kaspa
+    case kaspa(testnet: Bool)
     case ravencoin(testnet: Bool)
     case cosmos(testnet: Bool)
     case terraV1
@@ -124,7 +124,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .koinos(let testnet),
                 .cyber(let testnet),
                 .blast(let testnet),
-                .sei(let testnet):
+                .sei(let testnet),
+                .kaspa(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -142,7 +143,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa,
                 .joystream,
                 .internetComputer,
                 .bittensor,
@@ -914,7 +914,7 @@ extension Blockchain: Codable {
         let container = try decoder.container(keyedBy: Keys.self)
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
-        let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
+        let isTestnet = try container.decodeIfPresent(Bool.self, forKey: Keys.testnet) ?? false
 
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed
@@ -953,7 +953,7 @@ extension Blockchain: Codable {
         case "ethereumfair", "dischain": self = .disChain
         case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
-        case "kaspa": self = .kaspa
+        case "kaspa": self = .kaspa(testnet: isTestnet)
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         case "terra": self = .terraV1

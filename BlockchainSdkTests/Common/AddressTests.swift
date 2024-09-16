@@ -754,7 +754,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testKaspaAddressGeneration() throws {
-        let addressService = KaspaAddressService()
+        let addressService = KaspaAddressService(isTestnet: false)
         
         let expectedAddress = "kaspa:qypyrhxkfd055qulcvu6zccq4qe63qajrzgf7t4u4uusveguw6zzc3grrceeuex"
         XCTAssertEqual(try addressService.makeAddress(from: secpCompressedKey).value, expectedAddress)
@@ -772,7 +772,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testKaspaAddressComponentsAndValidation() throws {
-        let addressService = KaspaAddressService()
+        let addressService = KaspaAddressService(isTestnet: false)
         
         XCTAssertFalse(addressService.validate("kaspb:qyp5ez9p4q6xnh0jp5xq0ewy58nmsde5uus7vrty9w222v3zc37xwrgeqhkq7v3"))
         XCTAssertFalse(addressService.validate("kaspa:qyp5ez9p4q6xnh0jp5xq0ewy58nmsde5uus7vrty9w222v3zc37xwrgeqhkq7v4"))

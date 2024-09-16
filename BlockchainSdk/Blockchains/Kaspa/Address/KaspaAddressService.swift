@@ -12,9 +12,16 @@ import BitcoinCore
 
 @available(iOS 13.0, *)
 public class KaspaAddressService {
-    private let prefix = "kaspa"
+    private let isTestnet: Bool
+    private let prefix: String
     private let version: KaspaAddressComponents.KaspaAddressType = .P2PK_ECDSA
 
+    init(isTestnet: Bool) {
+        self.isTestnet = isTestnet
+        // TODO: Does testnet support ecdsa type addresses? If not, then we are not ready to work with different curves (secp256k1/schnorr) for now
+        self.prefix = isTestnet ? "kaspatest" : "kaspa"
+    }
+    
     func parse(_ address: String) -> KaspaAddressComponents? {
         guard
             let (prefix, data) = CashAddrBech32.decode(address),
