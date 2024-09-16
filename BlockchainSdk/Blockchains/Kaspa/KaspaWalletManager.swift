@@ -74,23 +74,32 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let numberOfUtxos = txBuilder.unspentOutputsCount(for: amount)
-        guard numberOfUtxos > 0 else {
-            return Fail(error: WalletError.failedToGetFee)
-                .eraseToAnyPublisher()
-        }
+        let blockchain = wallet.blockchain
+        let isTestnet = blockchain.isTestnet
+        let source = wallet.address
         
-        let feePerUtxo: Decimal = 0.0001
-        let fee = feePerUtxo * Decimal(numberOfUtxos)
-        
-        let params = KaspaFeeParameters(
-            valuePerUtxo: feePerUtxo,
-            utxoCount: numberOfUtxos
+        let transaction = Transaction(
+            amount: amount,
+            fee: Fee(Amount.zeroCoin(for: blockchain)),
+            sourceAddress: source,
+            destinationAddress: destination,
+            changeAddress: source
         )
         
-        return Just([Fee(Amount(with: wallet.blockchain, value: fee), parameters: params)])
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+        return Result {
+            try txBuilder.buildForMassCalculation(transaction: transaction)
+        }
+        .publisher
+        .withWeakCaptureOf(networkService)
+        .flatMap { networkService, transactionData in
+            networkService.mass(data: transactionData)
+                .zip(networkService.feeEstimate())
+        }
+        .map { mass, feeEstimate in
+            let feeMapper = KaspaFeeMapper(isTestnet: isTestnet)
+            return feeMapper.mapFee(mass: mass, feeEstimate: feeEstimate)
+        }
+        .eraseToAnyPublisher()
     }
     
     private func updateWallet(_ info: KaspaAddressInfo) {

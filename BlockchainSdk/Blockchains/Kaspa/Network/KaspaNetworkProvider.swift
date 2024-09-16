@@ -42,7 +42,15 @@ class KaspaNetworkProvider: HostProvider {
         requestPublisher(for: .transaction(hash: hash))
     }
     
-    private func requestPublisher<T: Codable>(for request: KaspaTarget.Request) -> AnyPublisher<T, Error> {
+    func mass(data: KaspaTransactionData) -> AnyPublisher<KaspaMassResponse, Error> {
+        requestPublisher(for: .mass(data: data))
+    }
+    
+    func feeEstimate() -> AnyPublisher<KaspaFeeEstimateResponse, Error> {
+        requestPublisher(for: .feeEstimate)
+    }
+    
+    private func requestPublisher<T: Decodable>(for request: KaspaTarget.Request) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
