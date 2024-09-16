@@ -82,6 +82,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
+    case sui(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -121,7 +122,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .base(let testnet),
                 .koinos(let testnet),
                 .cyber(let testnet),
-                .blast(let testnet):
+                .blast(let testnet),
+                .sui(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -162,6 +164,8 @@ public indirect enum Blockchain: Equatable, Hashable {
         switch self {
         case .cardano:
             return .ed25519
+        case .sui:
+            return .ed25519_slip0010
         case .stellar(let curve, _),
                 .solana(let curve, _),
                 .polkadot(let curve, _),
@@ -299,6 +303,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 8
         case .bittensor:
             return 9
+        case .sui:
+            return 9
         }
     }
 
@@ -429,6 +435,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tKOIN" : "KOIN"
         case .internetComputer:
             return "ICP"
+        case .sui:
+            return "SUI"
         }
     }
 
@@ -499,6 +507,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Manta Pacific" + testnetSuffix
         case .internetComputer:
             return "Internet Computer"
+        case .sui:
+            return "Sui"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -886,6 +896,7 @@ extension Blockchain: Codable {
         case .internetComputer: return "internet-computer"
         case .cyber: return "cyber"
         case .blast: return "blast"
+        case .sui: return "sui"
         }
     }
 
@@ -976,6 +987,7 @@ extension Blockchain: Codable {
         case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
+        case "sui": self = .sui(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1193,6 +1205,8 @@ private extension Blockchain {
             case .network: return "blast"
             case .coin: return "blast-ethereum"
             }
+        case .sui:
+            return "sui"
         }
     }
 
@@ -1301,6 +1315,8 @@ extension Blockchain {
             return MantleWalletAssembly()
         case .internetComputer:
             return ICPWalletAssembly()
+        case .sui:
+            return SuiWalletAssembly()
         }
     }
 }

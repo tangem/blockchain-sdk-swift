@@ -215,6 +215,10 @@ struct TestnetAPINodeInfoProvider {
                 .init(url: URL(string: "https://blast-sepolia.drpc.org")!),
                 .init(url: URL(string: "https://blast-sepolia.blockpi.network/v1/rpc/public")!)
             ]
+        case .sui:
+            return [
+                .init(url: URL(string: "https://fullnode.testnet.sui.io")!)
+            ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis, .kaspa,

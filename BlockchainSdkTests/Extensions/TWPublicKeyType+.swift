@@ -95,6 +95,8 @@ extension PublicKeyType {
             default:
                 throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
+        case .sui:
+            self = .ed25519
         case .ethereumPoW,
                 .disChain,
                 .rsk,
