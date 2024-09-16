@@ -593,6 +593,7 @@
 		DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */; };
 		DC136B432B1A6249008A7D41 /* Bech32Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */; };
 		DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC173AEB2A5D42EE0088F79E /* XRPTests.swift */; };
+		DC3026202C9842F6000B696C /* KaspaFeeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC30261F2C9842F6000B696C /* KaspaFeeMapper.swift */; };
 		DC31D9672C869BDA004AEFDF /* SeiExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC31D9662C869BDA004AEFDF /* SeiExternalLinkProvider.swift */; };
 		DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */; };
 		DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */; };
@@ -1541,6 +1542,7 @@
 		DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlareExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32Tests.swift; sourceTree = "<group>"; };
 		DC173AEB2A5D42EE0088F79E /* XRPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTests.swift; sourceTree = "<group>"; };
+		DC30261F2C9842F6000B696C /* KaspaFeeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaFeeMapper.swift; sourceTree = "<group>"; };
 		DC31D9662C869BDA004AEFDF /* SeiExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeiExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressService.swift; sourceTree = "<group>"; };
@@ -3569,6 +3571,7 @@
 				DA63B09529CB3FC700AC6E49 /* Address */,
 				DA63B08F29CB3FC700AC6E49 /* Network */,
 				DA7D86E62C5837E700D85866 /* KaspaFeeParameters.swift */,
+				DC30261F2C9842F6000B696C /* KaspaFeeMapper.swift */,
 			);
 			path = Kaspa;
 			sourceTree = "<group>";
@@ -5308,6 +5311,7 @@
 				DA95AE092C7CB1DE0055740F /* MantleUtils.swift in Sources */,
 				EF2D9DCF2BC40E280055C485 /* Result+.swift in Sources */,
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
+				DC3026202C9842F6000B696C /* KaspaFeeMapper.swift in Sources */,
 				B6A71D982B553E7900039991 /* FeePaidCurrency.swift in Sources */,
 				DC5E65042B1650F400E81AA5 /* OP_NUMEQUAL.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,

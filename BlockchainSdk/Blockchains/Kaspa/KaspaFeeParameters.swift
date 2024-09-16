@@ -10,10 +10,10 @@ import Foundation
 
 public struct KaspaFeeParameters: FeeParameters {
     public let mass: Decimal
-    public let feerate: Decimal
+    public let feeRate: Decimal
     
-    public init(mass: Decimal, feerate: Decimal) {
+    public init(mass: Decimal, feeRate: Decimal) {
         self.mass = mass
-        self.feerate = feerate
+        self.feeRate = feeRate
     }
 }

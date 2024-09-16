@@ -111,7 +111,11 @@ struct KaspaFeeEstimateResponse: Decodable {
     let lowBuckets: [KaspaFee]
 }
 
-struct KaspaFee: Decodable {
+struct KaspaFee: Decodable, Comparable {
     let feerate: UInt64
     let estimatedSeconds: Decimal
+
+    static func < (lhs: KaspaFee, rhs: KaspaFee) -> Bool {
+        lhs.feerate < rhs.feerate
+    }
 }
