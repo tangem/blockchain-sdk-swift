@@ -16,8 +16,6 @@ struct TONWalletAssembly: WalletManagerAssembly {
         let blockchain = input.blockchain
         let config = input.blockchainSdkConfig
 
-        let linkResolver = APINodeInfoResolver(blockchain: blockchain, config: config)
-        let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
         let providers: [TONProvider] = APIResolver(blockchain: blockchain, config: config)
             .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
                 TONProvider(node: nodeInfo, networkConfig: input.networkConfig)

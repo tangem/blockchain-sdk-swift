@@ -107,7 +107,6 @@ extension CardanoTransactionBuilder {
             return try minChange(exclude: nil)
             
         case .token(let token):
-            let asset = try self.asset(for: token)
             return try minChange(token: token, uint64Amount: amount.uint64Amount)
 
         case .reserve, .feeResource:

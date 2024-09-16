@@ -45,7 +45,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case optimism(testnet: Bool)
     case ton(curve: EllipticCurve, testnet: Bool)
     case kava(testnet: Bool)
-    case kaspa
+    case kaspa(testnet: Bool)
     case ravencoin(testnet: Bool)
     case cosmos(testnet: Bool)
     case terraV1
@@ -83,7 +83,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
     case filecoin
-
+    case sei(testnet: Bool)
+    
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet),
@@ -122,7 +123,9 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .base(let testnet),
                 .koinos(let testnet),
                 .cyber(let testnet),
-                .blast(let testnet):
+                .blast(let testnet),
+                .sei(let testnet),
+                .kaspa(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -140,7 +143,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa,
                 .joystream,
                 .internetComputer,
                 .bittensor,
@@ -280,7 +282,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .tron,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .sei:
             return 6
         case .stellar:
             return 7
@@ -434,6 +437,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "ICP"
         case .filecoin:
             return "FIL"
+        case .sei:
+            return "SEI"
         }
     }
 
@@ -504,6 +509,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Manta Pacific" + testnetSuffix
         case .internetComputer:
             return "Internet Computer"
+        case .sei:
+            return "Sei" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -892,6 +899,7 @@ extension Blockchain: Codable {
         case .cyber: return "cyber"
         case .blast: return "blast"
         case .filecoin: return "filecoin"
+        case .sei: return "sei"
         }
     }
 
@@ -906,7 +914,7 @@ extension Blockchain: Codable {
         let container = try decoder.container(keyedBy: Keys.self)
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
-        let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
+        let isTestnet = try container.decodeIfPresent(Bool.self, forKey: Keys.testnet) ?? false
 
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed
@@ -945,7 +953,7 @@ extension Blockchain: Codable {
         case "ethereumfair", "dischain": self = .disChain
         case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
-        case "kaspa": self = .kaspa
+        case "kaspa": self = .kaspa(testnet: isTestnet)
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         case "terra": self = .terraV1
@@ -983,6 +991,7 @@ extension Blockchain: Codable {
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
         case "filecoin": self = .filecoin
+        case "sei": self = .sei(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1202,6 +1211,8 @@ private extension Blockchain {
             }
         case .filecoin:
             return "filecoin"
+        case .sei:
+            return "sei-network"
         }
     }
 
@@ -1286,7 +1297,7 @@ extension Blockchain {
             return KaspaWalletAssembly()
         case .ravencoin:
             return RavencoinWalletAssembly()
-        case .cosmos, .terraV1, .terraV2:
+        case .cosmos, .terraV1, .terraV2, .sei:
             return CosmosWalletAssembly()
         case .chia:
             return ChiaWalletAssembly()

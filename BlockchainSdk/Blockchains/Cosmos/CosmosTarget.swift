@@ -29,17 +29,17 @@ extension CosmosTarget: TargetType {
     var path: String {
         switch type {
         case .accounts(let address):
-            return "/cosmos/auth/v1beta1/accounts/\(address)"
+            return "cosmos/auth/v1beta1/accounts/\(address)"
         case .balances(let address):
-            return "/cosmos/bank/v1beta1/balances/\(address)"
+            return "cosmos/bank/v1beta1/balances/\(address)"
         case .querySmartContract(let contractAddress, let query):
-            return "/cosmwasm/wasm/v1/contract/\(contractAddress)/smart/\(query.base64EncodedString())"
+            return "cosmwasm/wasm/v1/contract/\(contractAddress)/smart/\(query.base64EncodedString())"
         case .simulate:
-            return "/cosmos/tx/v1beta1/simulate"
+            return "cosmos/tx/v1beta1/simulate"
         case .txs:
-            return "/cosmos/tx/v1beta1/txs"
+            return "cosmos/tx/v1beta1/txs"
         case .transactionStatus(let hash):
-            return "/cosmos/tx/v1beta1/txs/\(hash)"
+            return "cosmos/tx/v1beta1/txs/\(hash)"
         }
     }
     

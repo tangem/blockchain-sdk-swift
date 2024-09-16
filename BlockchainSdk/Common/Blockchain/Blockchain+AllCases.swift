@@ -81,6 +81,7 @@ public extension Blockchain {
         case .cyber: break
         case .blast: break
         case .filecoin: break
+        case .sei: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -117,7 +118,7 @@ public extension Blockchain {
             .ethereumPoW(testnet: false),
             .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),
-            .kaspa,
+            .kaspa(testnet: false),
             .ravencoin(testnet: false),
             .cosmos(testnet: false),
             .terraV1,
@@ -155,6 +156,7 @@ public extension Blockchain {
             .cyber(testnet: false),
             .blast(testnet: false),
             .filecoin,
+            .sei(testnet: false)
         ]
     }
 }

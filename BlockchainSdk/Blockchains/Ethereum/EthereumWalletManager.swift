@@ -406,44 +406,24 @@ extension EthereumWalletManager: EthereumTransactionDataBuilder {
     }
 }
 
-extension EthereumWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(
-        transaction: StakeKitTransaction,
-        signer: any TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        let helper = EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder)
-        return Result {
-            try helper.prepareForSign(transaction)
-        }
-        .publisher
-        .withWeakCaptureOf(self)
-        .flatMap { walletManager, hashToSign in
-            signer.sign(hash: hashToSign, walletPublicKey: walletManager.wallet.publicKey)
-        }
-        .withWeakCaptureOf(self)
-        .tryMap { walletManager, signatureInfo -> String in
-            try helper.prepareForSend(
-                stakingTransaction: transaction,
-                signatureInfo: signatureInfo
-            )
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
+
+extension EthereumWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = String
+
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder).prepareForSign(transaction)
+    }
+
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        try EthereumStakeKitTransactionHelper(transactionBuilder: txBuilder)
+            .prepareForSend(stakingTransaction: transaction, signatureInfo: signature)
             .hexString
             .lowercased()
             .addHexPrefix()
-        }
-        .withWeakCaptureOf(self)
-        .flatMap { walletManager, rawTransaction in
-            walletManager.networkService.send(transaction: rawTransaction)
-                .mapSendError(tx: rawTransaction)
-        }
-        .withWeakCaptureOf(self)
-        .tryMap { walletManager, hash in
-            let mapper = PendingTransactionRecordMapper()
-            let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-            walletManager.wallet.addPendingTransaction(record)
-            
-            return TransactionSendResult(hash: hash)
-        }
-        .eraseSendError()
-        .eraseToAnyPublisher()
+    }
+
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.send(transaction: rawTransaction).async()
     }
 }

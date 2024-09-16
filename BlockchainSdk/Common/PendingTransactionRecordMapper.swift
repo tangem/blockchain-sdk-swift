@@ -44,14 +44,16 @@ struct PendingTransactionRecordMapper {
 
     func mapToPendingTransactionRecord(
         stakeKitTransaction: StakeKitTransaction,
+        source: String,
+        destination: String = .unknown,
         hash: String,
         date: Date = Date(),
         isIncoming: Bool = false
     ) -> PendingTransactionRecord {
         PendingTransactionRecord(
             hash: hash,
-            source: stakeKitTransaction.sourceAddress,
-            destination: .unknown,
+            source: source,
+            destination: destination,
             amount: stakeKitTransaction.amount,
             fee: stakeKitTransaction.fee,
             date: date,
