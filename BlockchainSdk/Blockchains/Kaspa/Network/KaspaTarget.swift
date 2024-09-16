@@ -25,24 +25,30 @@ struct KaspaTarget: TargetType {
             return "transactions"
         case .transaction(let hash):
             return "transactions/\(hash)"
+        case .mass:
+            return "transactions/mass"
+        case .feeEstimate:
+            return "info/fee-estimate"
         }
     }
     
     var method: Moya.Method {
         switch request {
-        case .blueScore, .balance, .utxos, .transaction:
+        case .blueScore, .balance, .utxos, .transaction, .feeEstimate:
             return .get
-        case .transactions:
+        case .transactions, .mass:
             return .post
         }
     }
     
     var task: Moya.Task {
         switch request {
-        case .blueScore, .balance, .utxos, .transaction:
+        case .blueScore, .balance, .utxos, .transaction, .feeEstimate:
             return .requestPlain
         case .transactions(let transaction):
             return .requestJSONEncodable(transaction)
+        case .mass(let data):
+            return .requestJSONEncodable(data)
         }
     }
     
@@ -58,5 +64,7 @@ extension KaspaTarget {
         case utxos(address: String)
         case transactions(transaction: KaspaTransactionRequest)
         case transaction(hash: String)
+        case mass(data: KaspaTransactionData)
+        case feeEstimate
     }
 }

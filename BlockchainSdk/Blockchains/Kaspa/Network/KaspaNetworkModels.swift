@@ -98,3 +98,24 @@ struct KaspaScriptPublicKey: Codable {
 struct KaspaTransactionResponse: Codable {
     let transactionId: String
 }
+
+struct KaspaMassResponse: Decodable {
+    let mass: UInt64
+    let storageMass: UInt64
+    let computeMass: UInt64
+}
+
+struct KaspaFeeEstimateResponse: Decodable {
+    let priorityBucket: KaspaFee
+    let normalBuckets: [KaspaFee]
+    let lowBuckets: [KaspaFee]
+}
+
+struct KaspaFee: Decodable, Comparable {
+    let feerate: UInt64
+    let estimatedSeconds: Decimal
+
+    static func < (lhs: KaspaFee, rhs: KaspaFee) -> Bool {
+        lhs.feerate < rhs.feerate
+    }
+}
