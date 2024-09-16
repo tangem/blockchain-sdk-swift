@@ -218,12 +218,16 @@ struct TestnetAPINodeInfoProvider {
         case .sui:
             return [
                 .init(url: URL(string: "https://fullnode.testnet.sui.io")!)
+                ]
+        case .sei:
+            return [
+                .init(url: URL(string: "https://rest.wallet.atlantic-2.sei.io")!)
             ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis, .kaspa,
                 .terraV1, .terraV2, .cronos, .octa, .playa3ullGames, .radiant, .joystream, 
-                .bittensor, .internetComputer:
+                .bittensor, .internetComputer, .filecoin:
             return nil
         }
     }

@@ -83,7 +83,9 @@ struct AddressTypesConfig {
              .koinos,
              .cyber,
              .blast,
-             .sui:
+             .sui,
+             .filecoin,
+             .sei:
             return [.default]
         }
     }

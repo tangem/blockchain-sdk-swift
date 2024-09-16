@@ -15,7 +15,7 @@ struct KaspaWalletAssembly: WalletManagerAssembly {
             $0.txBuilder = KaspaTransactionBuilder(blockchain: input.blockchain)
             
             let linkResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
-            var providers: [KaspaNetworkProvider] = input.apiInfo.compactMap {
+            let providers: [KaspaNetworkProvider] = input.apiInfo.compactMap {
                 guard  let nodeInfo = linkResolver.resolve(for: $0) else {
                     return nil
                 }

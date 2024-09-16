@@ -99,7 +99,7 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/111111'/0'/0/0"
         case .ravencoin:
             return "m/44'/175'/0'/0/0"
-        case .cosmos:
+        case .cosmos, .sei:
             return "m/44'/118'/0'/0/0"
         case .terraV1, .terraV2:
             return "m/44'/330'/0'/0/0"
@@ -135,6 +135,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/223'/0'/0/0"
         case .sui:
             return "m/44'/784'/0'/0/0"
+        case .filecoin:
+            return "m/44'/461'/0'/0/0"
         }
     }
 }

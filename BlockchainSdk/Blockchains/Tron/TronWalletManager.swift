@@ -72,7 +72,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let energyFeePublisher = energyFee(amount: amount, destination: destination)
+        let energyFeePublisher = energyFeeParameters(amount: amount, destination: destination)
 
         let blockchain = wallet.blockchain
 
@@ -95,37 +95,55 @@ class TronWalletManager: BaseManager, WalletManager {
             transactionDataPublisher,
             networkService.getAccountResource(for: wallet.address)
         )
-            .map { energyFee, destinationExists, transactionData, resources -> [Fee] in
-                if !destinationExists && amount.type == .coin {
-                    let amount = Amount(with: blockchain, value: 1.1)
-                    return [Fee(amount)]
-                }
-                
-                let sunPerBandwidthPoint = 1000
-                
-                let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
-                
-                let additionalDataSize = 64
-                let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
-                let consumedBandwidthFee: Int
-                if transactionSizeFee <= remainingBandwidthInSun {
-                    consumedBandwidthFee = 0
-                } else {
-                    consumedBandwidthFee = transactionSizeFee
-                }
-                
-                let totalFee = consumedBandwidthFee + energyFee
-                
-                let value = Decimal(totalFee) / blockchain.decimalValue
-                let amount = Amount(with: blockchain, value: value)
+        .map {
+            energyFeeParameters,
+            destinationExists,
+            transactionData,
+            resources -> [Fee] in
+            if !destinationExists && amount.type == .coin {
+                let amount = Amount(with: blockchain, value: 1.1)
                 return [Fee(amount)]
             }
-            .eraseToAnyPublisher()
+            
+            let sunPerBandwidthPoint = 1000
+            
+            let remainingBandwidth = resources.freeNetLimit - (resources.freeNetUsed ?? 0)
+            let additionalDataSize = 64
+            let transactionSizeFee = transactionData.count + additionalDataSize
+            let consumedBandwidthFee: Int
+            if transactionSizeFee <= remainingBandwidth {
+                consumedBandwidthFee = 0
+            } else {
+                consumedBandwidthFee = transactionSizeFee * sunPerBandwidthPoint
+            }
+            
+            let remainingEnergy = resources.energyLimit - (resources.energyUsed ?? 0)
+            let consumedEnergyFee = max(
+                .zero,
+                Decimal(energyFeeParameters.energyFee) - remainingEnergy
+            ) * Decimal(energyFeeParameters.sunPerEnergyUnit)
+            
+            let totalFee = Decimal(consumedBandwidthFee) + consumedEnergyFee
+            
+            let value = totalFee / blockchain.decimalValue
+            let amount = Amount(with: blockchain, value: value)
+            
+            let feeParameters = TronFeeParameters(
+                energySpent: min(
+                    energyFeeParameters.energyFee,
+                    remainingEnergy.decimalNumber.intValue
+                ),
+                energyFullyCoversFee: consumedEnergyFee == .zero
+            )
+            
+            return [Fee(amount, parameters: feeParameters)]
+        }
+        .eraseToAnyPublisher()
     }
 
-    private func energyFee(amount: Amount, destination: String) -> AnyPublisher<Int, Error> {
+    private func energyFeeParameters(amount: Amount, destination: String) -> AnyPublisher<TronEnergyFeeData, Error> {
         guard let contractAddress = amount.type.token?.contractAddress else {
-            return .justWithError(output: 0)
+            return .justWithError(output: TronEnergyFeeData(energyFee: 0, sunPerEnergyUnit: 0))
         }
 
         let energyUsagePublisher = Result {
@@ -146,14 +164,14 @@ class TronWalletManager: BaseManager, WalletManager {
                 // Contract's energy fee changes every maintenance period (6 hours) and
                 // since we don't know what period the transaction is going to be executed in
                 // we increase the fee just in case by 20%
-                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let energyFee = Double(energyUse * sunPerEnergyUnit)
-                
                 let dynamicEnergyIncreaseFactorPresicion = 10_000
                 let dynamicEnergyIncreaseFactor = Double(chainParameters.dynamicEnergyIncreaseFactor) / Double(dynamicEnergyIncreaseFactorPresicion)
-                let conservativeEnergyFee = Int(energyFee * (1 + dynamicEnergyIncreaseFactor))
+                let conservativeEnergyFee = Int(Double(energyUse) * (1 + dynamicEnergyIncreaseFactor))
                 
-                return conservativeEnergyFee
+                return TronEnergyFeeData(
+                    energyFee: conservativeEnergyFee,
+                    sunPerEnergyUnit: chainParameters.sunPerEnergyUnit
+                )
             }
             .eraseToAnyPublisher()
     }
@@ -259,75 +277,23 @@ extension TronWalletManager: TronTransactionDataBuilder {
     }
 }
 
-// MARK: - StakeKitTransactionSender
+// MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-extension TronWalletManager: StakeKitTransactionSender {
-    func sendStakeKit(transactions: [StakeKitTransaction], signer: TransactionSigner) -> AnyPublisher<[TransactionSendResult], SendTxError> {
+extension TronWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+    typealias RawTransaction = Data
 
-        let presignedInputsPublisher = Result {
-            try transactions.map {
-                try TronStakeKitTransactionHelper().prepareForSign($0.unsignedData)
-            }
-        }.publisher
-
-        let readyToSendTransactionsPublisher = presignedInputsPublisher
-            .withWeakCaptureOf(self)
-            .flatMap { manager, inputs -> AnyPublisher<[Data], Error> in
-                signer
-                    .sign(hashes: inputs.map { $0.hash }, walletPublicKey: manager.wallet.publicKey)
-                    .tryMap { signatures -> [Data] in
-                        try zip(inputs, signatures).map { (input, signature) in
-                            try manager.txBuilder.buildForSend(rawData: input.rawData, signature: signature)
-                        }
-                    }
-                    .eraseToAnyPublisher()
-            }
-
-        let sentTransactionsPublisher = readyToSendTransactionsPublisher
-            .flatMap { [weak self] transactionsData -> AnyPublisher<[TronBroadcastResponse], Error> in
-                guard let self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-
-                let sendPublishers = transactionsData
-                    .map { data in
-                        self.networkService
-                            .broadcastHex(data)
-                            .mapSendError(tx: data.hexString)
-                            .eraseToAnyPublisher()
-                    }
-
-                return Publishers.Sequence(sequence: sendPublishers)
-                    .flatMap(maxPublishers: .max(1)) { $0 }
-                    .collect()
-                    .eraseToAnyPublisher()
-            }
-
-        return sentTransactionsPublisher
-            .withWeakCaptureOf(self)
-            .tryMap { manager, broadcastResponses -> [TransactionSendResult] in
-                guard broadcastResponses.count == transactions.count,
-                      broadcastResponses.allSatisfy({ $0.result }) else {
-                    throw WalletError.failedToSendTx
-                }
-
-                var results: [TransactionSendResult] = []
-
-                for (transaction, broadcastResponse) in zip(transactions, broadcastResponses) {
-                    let hash = broadcastResponse.txid
-                    let mapper = PendingTransactionRecordMapper()
-                    let record = mapper.mapToPendingTransactionRecord(stakeKitTransaction: transaction, hash: hash)
-                    manager.wallet.addPendingTransaction(record)
-                    results.append(TransactionSendResult(hash: hash))
-                }
-
-                return results
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
+        try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).hash
     }
 
-    func sendStakeKit(transaction: StakeKitTransaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        return .anyFail(error: .init(error: BlockchainSdkError.notImplemented))
+    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
+        let rawData = try TronStakeKitTransactionHelper().prepareForSign(transaction.unsignedData).rawData
+        let unmarshalled = unmarshal(signature.signature, hash: signature.hash, publicKey: wallet.publicKey)
+        return try txBuilder.buildForSend(rawData: rawData, signature: unmarshalled)
+    }
+
+    func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
+        try await networkService.broadcastHex(rawTransaction).async().txid
     }
 }
+

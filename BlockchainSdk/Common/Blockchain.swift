@@ -83,7 +83,9 @@ public indirect enum Blockchain: Equatable, Hashable {
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
     case sui(testnet: Bool)
-
+    case filecoin
+    case sei(testnet: Bool)
+    
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet),
@@ -123,7 +125,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .koinos(let testnet),
                 .cyber(let testnet),
                 .blast(let testnet),
-                .sui(let testnet):
+                .sui(let testnet),
+                .sei(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -144,7 +147,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .kaspa,
                 .joystream,
                 .internetComputer,
-                .bittensor:
+                .bittensor,
+                .filecoin:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -273,7 +277,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .taraxa,
                 .base,
                 .cyber,
-                .blast:
+                .blast,
+                .filecoin:
             return 18
         case .cardano,
                 .xrp,
@@ -281,7 +286,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .tron,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .sei:
             return 6
         case .stellar:
             return 7
@@ -348,7 +354,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .bsc:
             return "BNB"
         case .polygon:
-            return "MATIC"
+            return "POL"
         case .avalanche:
             return "AVAX"
         case .solana:
@@ -437,6 +443,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "ICP"
         case .sui:
             return "SUI"
+        case .filecoin:
+            return "FIL"
+        case .sei:
+            return "SEI"
         }
     }
 
@@ -509,6 +519,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Internet Computer"
         case .sui:
             return "Sui"
+        case .sei:
+            return "Sei" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -897,6 +909,8 @@ extension Blockchain: Codable {
         case .cyber: return "cyber"
         case .blast: return "blast"
         case .sui: return "sui"
+        case .filecoin: return "filecoin"
+        case .sei: return "sei"
         }
     }
 
@@ -988,6 +1002,8 @@ extension Blockchain: Codable {
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
         case "sui": self = .sui(testnet: isTestnet)
+        case "filecoin": self = .filecoin
+        case "sei": self = .sei(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1207,6 +1223,10 @@ private extension Blockchain {
             }
         case .sui:
             return "sui"
+        case .filecoin:
+            return "filecoin"
+        case .sei:
+            return "sei-network"
         }
     }
 
@@ -1291,7 +1311,7 @@ extension Blockchain {
             return KaspaWalletAssembly()
         case .ravencoin:
             return RavencoinWalletAssembly()
-        case .cosmos, .terraV1, .terraV2:
+        case .cosmos, .terraV1, .terraV2, .sei:
             return CosmosWalletAssembly()
         case .chia:
             return ChiaWalletAssembly()
@@ -1317,6 +1337,8 @@ extension Blockchain {
             return ICPWalletAssembly()
         case .sui:
             return SuiWalletAssembly()
+        case .filecoin:
+            return FilecoinWalletAssembly()
         }
     }
 }

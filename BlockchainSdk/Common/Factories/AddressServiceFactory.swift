@@ -103,7 +103,8 @@ public struct AddressServiceFactory {
                 .terraV2,
                 .veChain,
                 .internetComputer,
-                .algorand:
+                .algorand,
+                .sei:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ton:
             return TonAddressService()
@@ -132,6 +133,8 @@ public struct AddressServiceFactory {
             return KoinosAddressService(networkParams: network.networkParams)
         case .sui:
             return SuiAddressService()
+        case .filecoin:
+            return WalletCoreAddressService(blockchain: .filecoin)
         }
     }
 }

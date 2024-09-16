@@ -84,6 +84,10 @@ extension CoinType {
             self = .internetComputer
         case .sui:
             self = .sui
+        case .filecoin:
+            self = .filecoin
+        case .sei:
+            self = .sei
         case .ethereumPoW,
              .disChain,
              .rsk,
