@@ -45,7 +45,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case optimism(testnet: Bool)
     case ton(curve: EllipticCurve, testnet: Bool)
     case kava(testnet: Bool)
-    case kaspa
+    case kaspa(testnet: Bool)
     case ravencoin(testnet: Bool)
     case cosmos(testnet: Bool)
     case terraV1
@@ -122,7 +122,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .base(let testnet),
                 .koinos(let testnet),
                 .cyber(let testnet),
-                .blast(let testnet):
+                .blast(let testnet),
+                .kaspa(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -140,7 +141,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa,
                 .joystream,
                 .internetComputer,
                 .bittensor,
@@ -945,7 +945,7 @@ extension Blockchain: Codable {
         case "ethereumfair", "dischain": self = .disChain
         case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
-        case "kaspa": self = .kaspa
+        case "kaspa": self = .kaspa(testnet: isTestnet)
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         case "terra": self = .terraV1
