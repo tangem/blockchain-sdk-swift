@@ -15,9 +15,11 @@ public class SuiTransactionBuilder {
 
     private var publicKey: Wallet.PublicKey
     private var coins: [SuiCoinObject] = []
+    private var decimals: Decimal
     
-    public init(publicKey: Wallet.PublicKey) {
+    public init(publicKey: Wallet.PublicKey, decimals: Decimal) {
         self.publicKey = publicKey
+        self.decimals = decimals
     }
     
     public func update(coins: [SuiCoinObject]) {
@@ -45,7 +47,7 @@ public class SuiTransactionBuilder {
             input.paySui = WalletCore.SuiPaySui.with({ pay in
                 pay.inputCoins = inputCoins
                 pay.recipients = [destination]
-                pay.amounts = [amount.value.uint64Value]
+                pay.amounts = [(amount.value * decimals).uint64Value]
             })
             
             input.signer = signer.value
@@ -115,7 +117,7 @@ public class SuiTransactionBuilder {
                 pay.inputCoins = inputCoins
                 
                 pay.recipients = [destination]
-                pay.amounts = [amount.value.uint64Value]
+                pay.amounts = [(amount.value * decimals).uint64Value]
             })
             
             input.signer = signer.value
