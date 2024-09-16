@@ -522,6 +522,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     
     public var coinDisplayName: String {
         switch self {
+        case _ where isL2EthereumNetwork:
+            "\(displayName) (ETH)"
         case .ton:
             "Toncoin"
         default:
@@ -562,20 +564,11 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     /// Should be used to get the actual currency rate.
     public var currencyId: String {
-        switch self {
-        case .arbitrum(let testnet),
-             .optimism(let testnet),
-             .aurora(let testnet),
-             .manta(let testnet),
-             .zkSync(let testnet),
-             .polygonZkEVM(let testnet),
-             .base(let testnet),
-             .cyber(let testnet),
-             .blast(let testnet):
-            return Blockchain.ethereum(testnet: testnet).coinId
-        default:
-            return coinId
+        if isL2EthereumNetwork {
+            return Blockchain.ethereum(testnet: isTestnet).coinId
         }
+
+        return coinId
     }
 
     public var tokenTypeName: String? {
@@ -726,6 +719,23 @@ extension Blockchain {
         case .blast: return isTestnet ? 168587773 : 81457
         default:
             return nil
+        }
+    }
+
+    public var isL2EthereumNetwork: Bool {
+        switch self {
+        case .arbitrum(let testnet),
+             .optimism(let testnet),
+             .aurora(let testnet),
+             .manta(let testnet),
+             .zkSync(let testnet),
+             .polygonZkEVM(let testnet),
+             .base(let testnet),
+             .cyber(let testnet),
+             .blast(let testnet):
+            return true
+        default:
+            return false
         }
     }
 
