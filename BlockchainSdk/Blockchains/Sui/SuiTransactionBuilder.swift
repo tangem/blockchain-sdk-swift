@@ -104,8 +104,8 @@ public class SuiTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let useCoins = getCoins(for: amount.value + suiFeeParameters.amount)
         let decimalAmount = amount.value * decimals
+        let useCoins = getCoins(for: decimalAmount + suiFeeParameters.amount)
 
         return WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in

@@ -18,6 +18,8 @@ final class SUITest: XCTestCase {
 
     func testBuildTransaction() throws {
         
+        let coinDecimals = Decimal(1_000_000_000)
+        
         let expectedMessageHash = Data(hex: "ab83d3b957d8cc3d50cb9c5c874bce11b8107e1be914afafad82902bccf9bcdb")
         let expectedUnsigendTx = "AAACAAjoAwAAAAAAAAAgVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rICAgABAQAAAQEDAAAAAAEBAFToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ayAQ3cofff68w1uKEjhmDazVBiERYUwRjM1s0boJWLpc/zNyzlEwAAAAAgAEjhf33FW2O7fAi2fBNdv3GP4r5VBU6W6S/8bpQJOAxU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsu4CAAAAAAAAwMYtAAAAAAAA"
         let expectedSignatureData = Data(hex: "f40d654e0fdd36d6270c25ca0691d941bc41a2f6d83ac8e8512b12fedd67b2dcb998f2378098af090532185e043f87b2d5719b7edd60cdfecb23d1b538d8ce0d")
@@ -30,7 +32,7 @@ final class SUITest: XCTestCase {
         let walletPublicKey = Wallet.PublicKey(seedKey: publicKey.data, derivationType: nil)
         let address = try! SuiAddressService().makeAddress(for: walletPublicKey, with: .default).value
         
-        let amount = Amount(with: .sui(testnet: false), value: Decimal(1000))
+        let amount = Amount(with: .sui(testnet: false), value: Decimal(1000) / coinDecimals)
         let fee = Fee(.init(with: .sui(testnet: false), value: 0), parameters: SuiFeeParameters(gasPrice: 750, gasBudget: 3000000))
         
         let transaction = Transaction(amount: amount,
@@ -40,7 +42,7 @@ final class SUITest: XCTestCase {
                                       changeAddress: "")
         
         
-        let txBuilder = SuiTransactionBuilder(publicKey: walletPublicKey)
+        let txBuilder = SuiTransactionBuilder(publicKey: walletPublicKey, decimals: coinDecimals)
         txBuilder.update(coins: inputs)
         
         let signature = expectedSignatureData
