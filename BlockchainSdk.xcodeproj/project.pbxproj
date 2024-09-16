@@ -888,6 +888,21 @@
 		EFF82D4E2B9F75C2004DF1A0 /* JSONRPCWebSocketProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D4D2B9F75C2004DF1A0 /* JSONRPCWebSocketProvider.swift */; };
 		EFF82D502B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D4F2B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift */; };
 		EFF82D522BA084CE004DF1A0 /* URLSessionWebSocketTaskWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D512BA084CE004DF1A0 /* URLSessionWebSocketTaskWrapper.swift */; };
+		F991B1C22C98463D00E3D0EC /* SuiBalanceFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B22C98463D00E3D0EC /* SuiBalanceFetcher.swift */; };
+		F991B1C32C98463D00E3D0EC /* SuiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B32C98463D00E3D0EC /* SuiNetworkProvider.swift */; };
+		F991B1C42C98463D00E3D0EC /* SuiNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B42C98463D00E3D0EC /* SuiNetworkService.swift */; };
+		F991B1C52C98463D00E3D0EC /* SuiResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B52C98463D00E3D0EC /* SuiResponse.swift */; };
+		F991B1C62C98463D00E3D0EC /* SuiTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B62C98463D00E3D0EC /* SuiTarget.swift */; };
+		F991B1C72C98463D00E3D0EC /* Sui.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B82C98463D00E3D0EC /* Sui.swift */; };
+		F991B1C82C98463D00E3D0EC /* SuiAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B92C98463D00E3D0EC /* SuiAddress.swift */; };
+		F991B1C92C98463D00E3D0EC /* SuiAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BA2C98463D00E3D0EC /* SuiAddressService.swift */; };
+		F991B1CA2C98463D00E3D0EC /* SuiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BB2C98463D00E3D0EC /* SuiError.swift */; };
+		F991B1CB2C98463D00E3D0EC /* SuiExternalLinkPrivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BC2C98463D00E3D0EC /* SuiExternalLinkPrivider.swift */; };
+		F991B1CC2C98463D00E3D0EC /* SuiFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BD2C98463D00E3D0EC /* SuiFeeParameters.swift */; };
+		F991B1CD2C98463D00E3D0EC /* SuiTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BE2C98463D00E3D0EC /* SuiTransactionBuilder.swift */; };
+		F991B1CE2C98463D00E3D0EC /* SuiWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BF2C98463D00E3D0EC /* SuiWalletAssembly.swift */; };
+		F991B1CF2C98463D00E3D0EC /* SuiWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1C02C98463D00E3D0EC /* SuiWalletManager.swift */; };
+		F991B1D22C98465300E3D0EC /* SUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1D02C98465300E3D0EC /* SUITest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1810,6 +1825,21 @@
 		EFF82D4F2B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumNetworkProvider.swift; sourceTree = "<group>"; };
 		EFF82D512BA084CE004DF1A0 /* URLSessionWebSocketTaskWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionWebSocketTaskWrapper.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
+		F991B1B22C98463D00E3D0EC /* SuiBalanceFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiBalanceFetcher.swift; sourceTree = "<group>"; };
+		F991B1B32C98463D00E3D0EC /* SuiNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiNetworkProvider.swift; sourceTree = "<group>"; };
+		F991B1B42C98463D00E3D0EC /* SuiNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiNetworkService.swift; sourceTree = "<group>"; };
+		F991B1B52C98463D00E3D0EC /* SuiResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiResponse.swift; sourceTree = "<group>"; };
+		F991B1B62C98463D00E3D0EC /* SuiTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiTarget.swift; sourceTree = "<group>"; };
+		F991B1B82C98463D00E3D0EC /* Sui.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sui.swift; sourceTree = "<group>"; };
+		F991B1B92C98463D00E3D0EC /* SuiAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiAddress.swift; sourceTree = "<group>"; };
+		F991B1BA2C98463D00E3D0EC /* SuiAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiAddressService.swift; sourceTree = "<group>"; };
+		F991B1BB2C98463D00E3D0EC /* SuiError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiError.swift; sourceTree = "<group>"; };
+		F991B1BC2C98463D00E3D0EC /* SuiExternalLinkPrivider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiExternalLinkPrivider.swift; sourceTree = "<group>"; };
+		F991B1BD2C98463D00E3D0EC /* SuiFeeParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiFeeParameters.swift; sourceTree = "<group>"; };
+		F991B1BE2C98463D00E3D0EC /* SuiTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiTransactionBuilder.swift; sourceTree = "<group>"; };
+		F991B1BF2C98463D00E3D0EC /* SuiWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiWalletAssembly.swift; sourceTree = "<group>"; };
+		F991B1C02C98463D00E3D0EC /* SuiWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiWalletManager.swift; sourceTree = "<group>"; };
+		F991B1D02C98465300E3D0EC /* SUITest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SUITest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2206,6 +2236,7 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
+				F991B1D12C98465300E3D0EC /* Sui */,
 				EF1339BD2AB8EF6400B78BA3 /* SmartContractMethods */,
 				DC173AEA2A5D42D40088F79E /* XRP */,
 				2D535E7A2A0CC5FA0081EB76 /* Vectors */,
@@ -2241,6 +2272,7 @@
 		5D14E4892397B87000C15FC8 /* Blockchains */ = {
 			isa = PBXGroup;
 			children = (
+				F991B1C12C98463D00E3D0EC /* Sui */,
 				2DDEFBBC2B59B36A00885675 /* Algorand */,
 				2D24F5732B6A423500D502A0 /* Aptos */,
 				5D4B33CB23F7DBF100C93A84 /* Binance */,
@@ -4239,6 +4271,43 @@
 			path = WebSocket;
 			sourceTree = "<group>";
 		};
+		F991B1B72C98463D00E3D0EC /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				F991B1B22C98463D00E3D0EC /* SuiBalanceFetcher.swift */,
+				F991B1B32C98463D00E3D0EC /* SuiNetworkProvider.swift */,
+				F991B1B42C98463D00E3D0EC /* SuiNetworkService.swift */,
+				F991B1B52C98463D00E3D0EC /* SuiResponse.swift */,
+				F991B1B62C98463D00E3D0EC /* SuiTarget.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		F991B1C12C98463D00E3D0EC /* Sui */ = {
+			isa = PBXGroup;
+			children = (
+				F991B1B72C98463D00E3D0EC /* Network */,
+				F991B1B82C98463D00E3D0EC /* Sui.swift */,
+				F991B1B92C98463D00E3D0EC /* SuiAddress.swift */,
+				F991B1BA2C98463D00E3D0EC /* SuiAddressService.swift */,
+				F991B1BB2C98463D00E3D0EC /* SuiError.swift */,
+				F991B1BC2C98463D00E3D0EC /* SuiExternalLinkPrivider.swift */,
+				F991B1BD2C98463D00E3D0EC /* SuiFeeParameters.swift */,
+				F991B1BE2C98463D00E3D0EC /* SuiTransactionBuilder.swift */,
+				F991B1BF2C98463D00E3D0EC /* SuiWalletAssembly.swift */,
+				F991B1C02C98463D00E3D0EC /* SuiWalletManager.swift */,
+			);
+			path = Sui;
+			sourceTree = "<group>";
+		};
+		F991B1D12C98465300E3D0EC /* Sui */ = {
+			isa = PBXGroup;
+			children = (
+				F991B1D02C98465300E3D0EC /* SUITest.swift */,
+			);
+			path = Sui;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4600,6 +4669,7 @@
 				B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */,
 				EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */,
 				DCDF56D12C6F4F9800028424 /* Tron.pb.swift in Sources */,
+				F991B1CE2C98463D00E3D0EC /* SuiWalletAssembly.swift in Sources */,
 				B6F89EA22BB20D5B0009A453 /* SubscanAPIParams.AccountInfo.swift in Sources */,
 				EF3B194C2AA85E880084AA1C /* GnosisExternalLinkProvider.swift in Sources */,
 				B6E5C1C02B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift in Sources */,
@@ -4624,6 +4694,7 @@
 				B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */,
 				DC5E65232B1650F400E81AA5 /* OP_CHECKLOCKTIMEVERIFY.swift in Sources */,
 				2D78F4072A5C319300962CCA /* ChiaWalletAssembly.swift in Sources */,
+				F991B1C22C98463D00E3D0EC /* SuiBalanceFetcher.swift in Sources */,
 				EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
 				0AEFED122C3D5B5D00C0F400 /* ICPNetworkService.swift in Sources */,
@@ -4634,6 +4705,7 @@
 				EF31EA1529DC31E000A59FBE /* RavencoinMainNetworkParams.swift in Sources */,
 				B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */,
 				2D9A91A329BB8C1700476EA6 /* TONProviderTarget.swift in Sources */,
+				F991B1C82C98463D00E3D0EC /* SuiAddress.swift in Sources */,
 				B61920892AE6ABD3001D6DDF /* NEARNetworkResult.swift in Sources */,
 				EF3B195A2AA85EE70084AA1C /* TerraV1ExternalLinkProvider.swift in Sources */,
 				0A6272652BD96736003B2F4D /* SS58.swift in Sources */,
@@ -4682,6 +4754,8 @@
 				DC47723D2C29F66100D2459D /* EthereumAddressConverterFactory.swift in Sources */,
 				EF34FD002A43378000E18670 /* CardanoError.swift in Sources */,
 				DC4772352C29EC7900D2459D /* EthereumAddressConverter.swift in Sources */,
+				F991B1C62C98463D00E3D0EC /* SuiTarget.swift in Sources */,
+				F991B1CF2C98463D00E3D0EC /* SuiWalletManager.swift in Sources */,
 				2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
 				DC5E64F82B1650F400E81AA5 /* OP_LESSTHANOREQUAL.swift in Sources */,
@@ -4775,6 +4849,7 @@
 				EF3B193A2AA85D170084AA1C /* AvalancheExternalLinkProvider.swift in Sources */,
 				DC5E65132B1650F400E81AA5 /* OP_SWAP.swift in Sources */,
 				DC5E65022B1650F400E81AA5 /* OP_NUMEQUALVERIFY.swift in Sources */,
+				F991B1C52C98463D00E3D0EC /* SuiResponse.swift in Sources */,
 				0AF503312C199A6200193358 /* ICPWalletAssembly.swift in Sources */,
 				DC5E65252B1650F400E81AA5 /* OP_RESERVED.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
@@ -4828,6 +4903,7 @@
 				0AF90CDB2B87657F00772F04 /* PulsechainExternalLinkProvider.swift in Sources */,
 				DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */,
 				DC5E65192B1650F400E81AA5 /* OP_2DUP.swift in Sources */,
+				F991B1CD2C98463D00E3D0EC /* SuiTransactionBuilder.swift in Sources */,
 				B633EA142B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift in Sources */,
 				DA5ACCC22C05BF4F005892AC /* KoinosNetworkParams.swift in Sources */,
 				DC5E65112B1650F400E81AA5 /* OP_TUCK.swift in Sources */,
@@ -4907,6 +4983,7 @@
 				2DA4A4442BB5431700E55526 /* RadiantWalletManager.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
 				DC5E64E62B1650F400E81AA5 /* OP_EQUAL.swift in Sources */,
+				F991B1CB2C98463D00E3D0EC /* SuiExternalLinkPrivider.swift in Sources */,
 				2D5DC9BD2BE910AD002D26AC /* SendTxErrorFactory.swift in Sources */,
 				5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */,
 				0A1399212B637DB900934D7D /* ShibariumExternalLinkProvider.swift in Sources */,
@@ -4962,6 +5039,7 @@
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
 				EF2D9DB22BC4033E0055C485 /* AnyEncodable.swift in Sources */,
 				EF3B19262AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift in Sources */,
+				F991B1C32C98463D00E3D0EC /* SuiNetworkProvider.swift in Sources */,
 				B6FC9DC82B62A45600448D8A /* HederaAddressService.swift in Sources */,
 				EFD717DB2A272D1B00E5430D /* PlainAddress.swift in Sources */,
 				B69824852B71AD4C00E1333D /* HederaNetworkResult.AccountsInfo.swift in Sources */,
@@ -5097,6 +5175,7 @@
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
 				B64A680B2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift in Sources */,
 				DC5E64E42B1650F400E81AA5 /* OP_AND.swift in Sources */,
+				F991B1C72C98463D00E3D0EC /* Sui.swift in Sources */,
 				DA52CBBB2C321026008ECB71 /* KoinosResourceLimitData.swift in Sources */,
 				0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */,
 				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,
@@ -5245,7 +5324,9 @@
 				DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */,
 				EF5820412B31B54D00940387 /* EstimationFeeAddressFactory.swift in Sources */,
 				DC5E65352B16541D00E81AA5 /* BitcoinScript.swift in Sources */,
+				F991B1CC2C98463D00E3D0EC /* SuiFeeParameters.swift in Sources */,
 				5D4B33CD23F7DC0400C93A84 /* BinanceWalletManager.swift in Sources */,
+				F991B1CA2C98463D00E3D0EC /* SuiError.swift in Sources */,
 				DC5E64FA2B1650F400E81AA5 /* OP_MUL.swift in Sources */,
 				2DA4A4462BB5431700E55526 /* RadiantAddressInfo.swift in Sources */,
 				5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
@@ -5332,6 +5413,7 @@
 				EF9E38302B7A4CFD004B694C /* ValidationError.swift in Sources */,
 				2DDEFBC22B59B36A00885675 /* AlgorandWalletManager.swift in Sources */,
 				DC5E651E2B1650F400E81AA5 /* OP_NIP.swift in Sources */,
+				F991B1C92C98463D00E3D0EC /* SuiAddressService.swift in Sources */,
 				EF32FEC22A3072B9002ED43F /* CashAddrService.swift in Sources */,
 				EF2BC62729DAD65F003D3F18 /* RavencoinTransactionInfo.swift in Sources */,
 				EF666C2E2A2F3EE90044986F /* BitcoinLegacyAddressService.swift in Sources */,
@@ -5352,6 +5434,7 @@
 				DC5E65182B1650F400E81AA5 /* OP_FROMALTSTACK.swift in Sources */,
 				2DDEFBE02B59B44700885675 /* AlgorandResponse+Transaction.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
+				F991B1C42C98463D00E3D0EC /* SuiNetworkService.swift in Sources */,
 				DAE657DB2BFC71B800D7D63A /* protocol.proto in Sources */,
 				DC5E64EB2B1650F400E81AA5 /* OP_RESERVED1.swift in Sources */,
 				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
@@ -5393,6 +5476,7 @@
 				2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */,
 				DAD62DE62C467718008509BE /* MantleTests.swift in Sources */,
 				B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */,
+				F991B1D22C98465300E3D0EC /* SUITest.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
 				DAE657E92BFCA3E400D7D63A /* KoinosTransactionBuilderTests.swift in Sources */,
