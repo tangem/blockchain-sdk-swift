@@ -14,12 +14,12 @@ import BitcoinCore
 public class KaspaAddressService {
     private let isTestnet: Bool
     private let prefix: String
-    private let version: KaspaAddressComponents.KaspaAddressType
+    private let version: KaspaAddressComponents.KaspaAddressType = .P2PK_ECDSA
 
     init(isTestnet: Bool) {
         self.isTestnet = isTestnet
+        // TODO: Does testnet support ecdsa type addresses? If not, then we are not ready to work with different curves (secp256k1/schnorr) for now
         self.prefix = isTestnet ? "kaspatest" : "kaspa"
-        self.version = isTestnet ? .P2PK_Schnorr : .P2PK_ECDSA
     }
     
     func parse(_ address: String) -> KaspaAddressComponents? {
@@ -47,12 +47,7 @@ public class KaspaAddressService {
 extension KaspaAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
-        
-        let payloadData = isTestnet
-            ? compressedKey.dropFirst()
-            : compressedKey
-        
-        let address = CashAddrBech32.encode(version.rawValue.data + payloadData, prefix: prefix)
+        let address = CashAddrBech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
         return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }

@@ -906,7 +906,7 @@ extension Blockchain: Codable {
         let container = try decoder.container(keyedBy: Keys.self)
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
-        let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
+        let isTestnet = try container.decodeIfPresent(Bool.self, forKey: Keys.testnet) ?? false
 
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed

@@ -75,7 +75,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let blockchain = wallet.blockchain
-        let decimalValue = wallet.blockchain.decimalValue
+        let isTestnet = blockchain.isTestnet
         let source = wallet.address
         
         let transaction = Transaction(
@@ -96,22 +96,8 @@ class KaspaWalletManager: BaseManager, WalletManager {
                 .zip(networkService.feeEstimate())
         }
         .map { mass, feeEstimate in
-            let buckets = [feeEstimate.priorityBucket] + feeEstimate.normalBuckets + feeEstimate.lowBuckets
-            
-            let fees = buckets.prefix(3).reversed().map { bucket in
-                let mass = Decimal(mass.mass)
-                let feerate = Decimal(bucket.feerate)
-                let value = mass * feerate / decimalValue
-                return Fee(
-                    Amount(with: blockchain, value: value),
-                    parameters: KaspaFeeParameters(
-                        mass: mass,
-                        feerate: feerate
-                    )
-                )
-            }
-            
-            return fees
+            let feeMapper = KaspaFeeMapper(isTestnet: isTestnet)
+            return feeMapper.mapFee(mass: mass, feeEstimate: feeEstimate)
         }
         .eraseToAnyPublisher()
     }
