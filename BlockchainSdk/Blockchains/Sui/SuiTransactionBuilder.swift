@@ -35,6 +35,8 @@ public class SuiTransactionBuilder {
             partialResult += coin.balance
         }
         
+        let decimalAmount = amount.value * decimals
+        
         let input = WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in
                 SuiObjectRef.with({ coins in
@@ -47,11 +49,11 @@ public class SuiTransactionBuilder {
             input.paySui = WalletCore.SuiPaySui.with({ pay in
                 pay.inputCoins = inputCoins
                 pay.recipients = [destination]
-                pay.amounts = [(amount.value * decimals).uint64Value]
+                pay.amounts = [decimalAmount.uint64Value]
             })
             
             input.signer = signer.value
-            input.gasBudget = (budget - amount.value).uint64Value
+            input.gasBudget = (budget - decimalAmount).uint64Value
             input.referenceGasPrice = referenceGasPrice.uint64Value
         }
         
@@ -103,6 +105,7 @@ public class SuiTransactionBuilder {
         }
         
         let useCoins = getCoins(for: amount.value + suiFeeParameters.amount)
+        let decimalAmount = amount.value * decimals
 
         return WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in
@@ -117,7 +120,7 @@ public class SuiTransactionBuilder {
                 pay.inputCoins = inputCoins
                 
                 pay.recipients = [destination]
-                pay.amounts = [(amount.value * decimals).uint64Value]
+                pay.amounts = [decimalAmount.uint64Value]
             })
             
             input.signer = signer.value
