@@ -126,4 +126,16 @@ class KaspaNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
+    
+    func mass(data: KaspaTransactionData) -> AnyPublisher<KaspaMassResponse, Error> {
+        providerPublisher { provider in
+            provider.mass(data: data)
+        }
+    }
+    
+    func feeEstimate() -> AnyPublisher<KaspaFeeEstimateResponse, Error> {
+        providerPublisher { provider in
+            provider.feeEstimate()
+        }
+    }
 }
