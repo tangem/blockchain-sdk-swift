@@ -119,7 +119,7 @@ public extension Blockchain {
             .ethereumPoW(testnet: false),
             .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),
-            .kaspa,
+            .kaspa(testnet: false),
             .ravencoin(testnet: false),
             .cosmos(testnet: false),
             .terraV1,
