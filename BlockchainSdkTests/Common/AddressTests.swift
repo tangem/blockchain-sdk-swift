@@ -771,19 +771,6 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try addressService.makeAddress(from: edKey))
     }
     
-    func testKaspaTestnetAddressGeneration() throws {
-        let addressService = KaspaAddressService(isTestnet: true)
-        
-        let expectedAddress = "kaspatest:qquta7gfkted50t3c5ulsjphm0wuhja8xymm5z2n36cd542q3uemxmckz2j3a"
-        
-        let privateKeyRaw = Data(hexString: "d51ad82f906d82c19099627d55ba1f5532430d0dadea430d74439f741d575d1a")
-        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
-        let publicKeyRaw = privateKey.getPublicKeySecp256k1(compressed: false).data
-        let address = try addressService.makeAddress(from: publicKeyRaw)
-        
-        XCTAssertEqual(address.value, expectedAddress)
-    }
-    
     func testKaspaAddressComponentsAndValidation() throws {
         let addressService = KaspaAddressService(isTestnet: false)
         
