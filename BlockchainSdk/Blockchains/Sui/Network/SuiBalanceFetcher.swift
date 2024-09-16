@@ -59,7 +59,7 @@ public class SuiBalanceFetcher {
                 
                 coins.formUnion(response.data)
                 
-                if !response.hasNextPage {
+                if response.hasNextPage {
                     guard let nextPublisher = self.requestPublisher?(address, coin, response.nextCursor) else {
                         self.subject.send(completion: .failure(WalletError.empty))
                         return
