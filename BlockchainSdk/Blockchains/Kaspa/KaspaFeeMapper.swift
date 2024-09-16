@@ -29,13 +29,7 @@ struct KaspaFeeMapper {
         let fees = buckets.map { bucket in
             let feeRate = Decimal(bucket.feerate)
             let value = mass * feeRate / blockchain.decimalValue
-            return Fee(
-                Amount(with: blockchain, value: value),
-                parameters: KaspaFeeParameters(
-                    mass: mass,
-                    feeRate: feeRate
-                )
-            )
+            return Fee(Amount(with: blockchain, value: value))
         }
 
         return fees
