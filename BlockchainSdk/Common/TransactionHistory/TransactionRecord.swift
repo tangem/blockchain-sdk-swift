@@ -56,13 +56,13 @@ public extension TransactionRecord {
         case contractMethodIdentifier(id: String)
         /// Contains human-readable contract method name (like `swap`).
         case contractMethodName(name: String)
-        case tronStakingTransactionType(type: TronStakingTransactionType)
+        case staking(type: StakingTransactionType, validator: String?)
         
-        public enum TronStakingTransactionType {
-            case freezeBalanceV2Contract
-            case unfreezeBalanceV2Contract
-            case voteWitnessContract
-            case withdrawBalanceContract
+        public enum StakingTransactionType {
+            case stake
+            case unstake
+            case vote
+            case withdraw
         }
     }
 }
