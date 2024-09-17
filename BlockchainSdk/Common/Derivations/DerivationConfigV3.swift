@@ -126,7 +126,7 @@ public struct DerivationConfigV3: DerivationConfig {
         case .internetComputer:
             return "m/44'/223'/0'/0/0"
         case .sui:
-            return "m/44'/784'/0'/0/0"
+            return "m/44'/784'/0'/0'/0'"
         case .filecoin:
             return "m/44'/461'/0'/0/0"
         }
