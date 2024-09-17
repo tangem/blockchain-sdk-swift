@@ -24,30 +24,34 @@ class SuiWalletManager: BaseManager, WalletManager {
             .sink(receiveCompletion: { [weak self] completionSubscriptions in
                 if case let .failure(error) = completionSubscriptions {
                     self?.wallet.clearAmounts()
-                    self?.wallet.clearPendingTransaction()
                     completion(.failure(error))
                 }
-            }, receiveValue: { [weak self] balances in
-                guard let self else {
-                    completion(.failure(WalletError.empty))
-                    return
-                }
-                
-                let coins = balances.compactMap({
-                    SuiCoinObject.from($0)
-                })
-                
-                self.transactionBuilder.update(coins: coins)
-                
-                let totalBalance = coins.reduce(into: Decimal(0)) { partialResult, coin in
-                    partialResult += coin.balance
-                }
-                
-                let coinValue = totalBalance / self.wallet.blockchain.decimalValue
-                
-                self.wallet.add(coinValue: coinValue)
+            }, receiveValue: { [weak self] coins in
+                self?.updateWallet(coins: coins)
                 completion(.success(()))
             })
+    }
+    
+    func updateWallet(coins: [SuiGetCoins.Coin]) {
+        let objects = coins.compactMap({
+            SuiCoinObject.from($0)
+        })
+        
+        let hashes = Set(coins.map({ $0.previousTransaction }))
+        let localHashes = Set(wallet.pendingTransactions.map { $0.hash })
+        
+        if hashes.isSuperset(of: localHashes) {
+            wallet.clearPendingTransaction()
+        }
+        
+        self.transactionBuilder.update(coins: objects)
+        
+        let totalBalance = objects.reduce(into: Decimal(0)) { partialResult, coin in
+            partialResult += coin.balance
+        }
+        
+        let coinValue = totalBalance / wallet.blockchain.decimalValue
+        wallet.add(coinValue: coinValue)
     }
 }
 
