@@ -58,8 +58,8 @@ struct PendingTransactionRecordMapper {
             fee: stakeKitTransaction.fee,
             date: date,
             isIncoming: isIncoming,
-            transactionType: .stake,
-            transactionParams: nil
+            transactionType: .stake(validator: stakeKitTransaction.params?.validator),
+            transactionParams: stakeKitTransaction.params
         )
     }
 

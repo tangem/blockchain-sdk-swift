@@ -49,6 +49,7 @@ extension BlockBookAddressResponse {
         let tronTXReceipt: TronTXReceipt?
         let fromAddress: String?
         let toAddress: String?
+        let voteList: [String: Int]?
         
         /// - Note: Generated using `Explicit `Codable` implementation` refactor menu option.
         private enum CodingKeys: String, CodingKey {
@@ -71,6 +72,7 @@ extension BlockBookAddressResponse {
             case tronTXReceipt
             case fromAddress
             case toAddress
+            case voteList
         }
         
         /// - Note: Generated using `Explicit `Codable` implementation` refactor menu option.
@@ -96,6 +98,7 @@ extension BlockBookAddressResponse {
             self.tronTXReceipt = try container.decodeIfPresent(TronTXReceipt.self, forKey: CodingKeys.tronTXReceipt)
             self.fromAddress = try container.decodeIfPresent(String.self, forKey: CodingKeys.fromAddress)
             self.toAddress = try container.decodeIfPresent(String.self, forKey: CodingKeys.toAddress)
+            self.voteList = try container.decodeIfPresent([String: Int].self, forKey: CodingKeys.voteList)
         }
     }
     
