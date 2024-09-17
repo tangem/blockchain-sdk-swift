@@ -14,10 +14,11 @@ class KaspaTransactionBuilder {
     
     private let blockchain: Blockchain
     private var unspentOutputs: [BitcoinUnspentOutput] = []
-    private let addressService = KaspaAddressService()
+    private let addressService: KaspaAddressService
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
+        self.addressService = KaspaAddressService(isTestnet: blockchain.isTestnet)
     }
     
     func availableAmount() -> Amount {
@@ -93,6 +94,18 @@ class KaspaTransactionBuilder {
         }
         
         return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
+    }
+    
+    func buildForMassCalculation(transaction: Transaction) throws -> KaspaTransactionData {
+        let builtTransaction = try buildForSign(transaction).0
+        let dummySignature = Data(repeating: 1, count: 65)
+        return buildForSend(
+            transaction: builtTransaction,
+            signatures: Array(
+                repeating: dummySignature,
+                count: builtTransaction.inputs.count
+            )
+        )
     }
     
     private func amount(from transaction: Transaction) -> UInt64 {
