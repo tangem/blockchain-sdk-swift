@@ -68,7 +68,8 @@ extension PublicKeyType {
                 .kusama,
                 .near, 
                 .algorand,
-                .aptos:
+                .aptos,
+                .sui:
             self = PublicKeyType.ed25519
         case .cardano(let extended):
             self = extended ? PublicKeyType.ed25519Cardano : .ed25519
@@ -97,8 +98,6 @@ extension PublicKeyType {
             default:
                 throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
-        case .sui:
-            self = .ed25519
         case .ethereumPoW,
                 .disChain,
                 .rsk,
