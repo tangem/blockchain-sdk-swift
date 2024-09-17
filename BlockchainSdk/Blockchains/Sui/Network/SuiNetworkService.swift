@@ -11,10 +11,8 @@ import Combine
 import WalletCore
 
 final class SuiNetworkService: MultiNetworkProvider {
-    
     let providers: [SuiNetworkProvider]
     var currentProviderIndex: Int 
-
     let balanceFetcher = SuiBalanceFetcher()
     
     public init(providers: [SuiNetworkProvider]) {

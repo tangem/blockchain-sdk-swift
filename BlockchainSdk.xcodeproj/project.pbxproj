@@ -592,8 +592,8 @@
 		DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */; };
 		DC136B432B1A6249008A7D41 /* Bech32Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */; };
 		DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC173AEB2A5D42EE0088F79E /* XRPTests.swift */; };
-		DC31D9672C869BDA004AEFDF /* SeiExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC31D9662C869BDA004AEFDF /* SeiExternalLinkProvider.swift */; };
 		DC3026202C9842F6000B696C /* KaspaFeeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC30261F2C9842F6000B696C /* KaspaFeeMapper.swift */; };
+		DC31D9672C869BDA004AEFDF /* SeiExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC31D9662C869BDA004AEFDF /* SeiExternalLinkProvider.swift */; };
 		DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */; };
 		DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */; };
 		DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */; };
@@ -919,6 +919,7 @@
 		F991B1CE2C98463D00E3D0EC /* SuiWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BF2C98463D00E3D0EC /* SuiWalletAssembly.swift */; };
 		F991B1CF2C98463D00E3D0EC /* SuiWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1C02C98463D00E3D0EC /* SuiWalletManager.swift */; };
 		F991B1D22C98465300E3D0EC /* SUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1D02C98465300E3D0EC /* SUITest.swift */; };
+		F9B4B3A52C99D4D90002C3D9 /* SuiCoinObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B4B3A42C99D4D90002C3D9 /* SuiCoinObject.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1877,6 +1878,7 @@
 		F991B1BF2C98463D00E3D0EC /* SuiWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiWalletAssembly.swift; sourceTree = "<group>"; };
 		F991B1C02C98463D00E3D0EC /* SuiWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiWalletManager.swift; sourceTree = "<group>"; };
 		F991B1D02C98465300E3D0EC /* SUITest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SUITest.swift; sourceTree = "<group>"; };
+		F9B4B3A42C99D4D90002C3D9 /* SuiCoinObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuiCoinObject.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -4401,6 +4403,7 @@
 				F991B1BE2C98463D00E3D0EC /* SuiTransactionBuilder.swift */,
 				F991B1BF2C98463D00E3D0EC /* SuiWalletAssembly.swift */,
 				F991B1C02C98463D00E3D0EC /* SuiWalletManager.swift */,
+				F9B4B3A42C99D4D90002C3D9 /* SuiCoinObject.swift */,
 			);
 			path = Sui;
 			sourceTree = "<group>";
@@ -5406,6 +5409,7 @@
 				EFF82D412B9F0B50004DF1A0 /* ElectrumWebSocketProvider.swift in Sources */,
 				5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */,
 				5D7D242B25136254001B9A4F /* HTTP.swift in Sources */,
+				F9B4B3A52C99D4D90002C3D9 /* SuiCoinObject.swift in Sources */,
 				DC5E65082B1650F400E81AA5 /* OP_1SUB.swift in Sources */,
 				5D7D242E25136254001B9A4F /* XrpData.swift in Sources */,
 				B6BE1BA52B7557D5005C937C /* HederaExchangeRate.swift in Sources */,
@@ -5553,7 +5557,6 @@
 				2DDEFBE02B59B44700885675 /* AlgorandResponse+Transaction.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
 				F991B1C42C98463D00E3D0EC /* SuiNetworkService.swift in Sources */,
-				DAE657DB2BFC71B800D7D63A /* protocol.proto in Sources */,
 				DC5E64EB2B1650F400E81AA5 /* OP_RESERVED1.swift in Sources */,
 				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				B6F2621E2B6D91F800B2E47B /* HederaConsensusNetworkProvider.swift in Sources */,

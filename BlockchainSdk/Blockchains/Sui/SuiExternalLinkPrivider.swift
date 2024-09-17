@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 struct SuiExternalLinkProvider {
     private let isTestnet: Bool
     

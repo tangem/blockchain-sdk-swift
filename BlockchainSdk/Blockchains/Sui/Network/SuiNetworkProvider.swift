@@ -9,9 +9,7 @@
 import Foundation
 import Combine
 
-
 final class SuiNetworkProvider: HostProvider {
-    
     var host: String {
         node.url.hostOrUnknown
     }
@@ -52,5 +50,4 @@ final class SuiNetworkProvider: HostProvider {
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
     }
-    
 }

@@ -9,9 +9,7 @@
 import Foundation
 import Combine
 
-
 class SuiWalletManager: BaseManager, WalletManager {
-    
     public let networkService: SuiNetworkService
     public let transactionBuilder: SuiTransactionBuilder
     
@@ -51,28 +49,19 @@ class SuiWalletManager: BaseManager, WalletManager {
                 completion(.success(()))
             })
     }
-    
 }
 
 extension SuiWalletManager: BlockchainDataProvider {
-    
     var currentHost: String {
         networkService.host
     }
-    
 }
 
 extension SuiWalletManager: TransactionFeeProvider {
-    
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .withWeakCaptureOf(self)
-            .flatMap { manager, transaction -> AnyPublisher<SuiReferenceGasPrice, Error> in
-                manager.networkService.getReferenceGasPrice()
-            }
+        return networkService.getReferenceGasPrice()
             .withWeakCaptureOf(self)
             .flatMap({ manager, referencedGasPrice -> AnyPublisher<SuiInspectTransaction, any Error> in
                 guard let decimalGasPrice = Decimal(stringValue: referencedGasPrice) else {
@@ -86,7 +75,6 @@ extension SuiWalletManager: TransactionFeeProvider {
                 guard let usedGasPrice = Decimal(stringValue: inspectTransaction.input.gasData.price),
                       let computationCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.computationCost),
                       let storageCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageCost),
-                      let storageRebate = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageRebate),
                       let nonRefundableStorageFee = Decimal(stringValue: inspectTransaction.effects.gasUsed.nonRefundableStorageFee) else {
                     throw WalletError.failedToParseNetworkResponse()
                 }
@@ -115,11 +103,9 @@ extension SuiWalletManager: TransactionFeeProvider {
             }
             .eraseToAnyPublisher()
     }
-    
 }
 
 extension SuiWalletManager: TransactionSender {
-    
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         Just(())
             .receive(on: DispatchQueue.global())
@@ -154,5 +140,4 @@ extension SuiWalletManager: TransactionSender {
             .eraseSendError()
             .eraseToAnyPublisher()
     }
-    
 }

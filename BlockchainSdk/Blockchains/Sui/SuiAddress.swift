@@ -8,9 +8,7 @@
 
 import Foundation
 
-
 struct SuiAddress {
-    
     public let formattedString: String
     public let curveID: Sui.EllipticCurveID
     
@@ -31,6 +29,5 @@ struct SuiAddress {
         self.formattedString = string.hasHexPrefix() ? string : "0x" + string
         self.curveID = curveID
     }
-    
 }
 

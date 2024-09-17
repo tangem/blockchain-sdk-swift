@@ -9,9 +9,7 @@
 import Foundation
 import Moya
 
-
 public struct SuiTarget: TargetType {
-    
     public var baseURL: URL
     public var request: SuiTarget.Request
     
@@ -28,12 +26,10 @@ public struct SuiTarget: TargetType {
     }
     
     public var headers: [String : String]?
-    
 }
 
 
 extension SuiTarget {
-    
     public enum Request {
         case getBalance(address: String, coin: String, cursor: String?)
         case getReferenceGasPrice
@@ -72,7 +68,5 @@ extension SuiTarget {
                 return [AnyEncodable(transaction), AnyEncodable([signature])]
             }
         }
-        
     }
-    
 }

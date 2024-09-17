@@ -10,9 +10,7 @@ import Foundation
 import WalletCore
 import TangemSdk
 
-
-public class SuiTransactionBuilder {
-
+class SuiTransactionBuilder {
     private var publicKey: Wallet.PublicKey
     private var coins: [SuiCoinObject] = []
     private var decimals: Decimal
@@ -25,7 +23,6 @@ public class SuiTransactionBuilder {
     public func update(coins: [SuiCoinObject]) {
         self.coins = coins
     }
-    
     
     public func buildForInspect(amount: Amount, destination: String, referenceGasPrice: Decimal) throws -> String {
         let signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
@@ -68,7 +65,6 @@ public class SuiTransactionBuilder {
         return output.unsignedTx
     }
     
-    
     public func buildForSign(transaction: Transaction) throws -> Data {
         let input = try input(amount: transaction.amount, destination: transaction.destinationAddress, fee: transaction.fee)
         
@@ -105,7 +101,7 @@ public class SuiTransactionBuilder {
         }
         
         let decimalAmount = amount.value * decimals
-        let useCoins = getCoins(for: decimalAmount + suiFeeParameters.amount)
+        let useCoins = getCoins(for: decimalAmount + suiFeeParameters.gasBudget)
 
         return WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in
@@ -127,7 +123,6 @@ public class SuiTransactionBuilder {
             input.gasBudget = suiFeeParameters.gasBudget.uint64Value
             input.referenceGasPrice = suiFeeParameters.gasPrice.uint64Value
         }
-        
     }
     
     private func getCoins(for amount: Decimal) -> [SuiCoinObject] {
@@ -145,29 +140,4 @@ public class SuiTransactionBuilder {
         
         return inputs
     }
-    
-}
-
-
-public struct SuiCoinObject {
-    
-    public let coinType: String
-    public let coinObjectId: String
-    public let version: UInt64
-    public let digest: String
-    public let balance: Decimal
-    
-    public static func from(_ response: SuiGetCoins.Coin) -> Self? {
-        guard let `version` = Decimal(stringValue: response.version)?.uint64Value,
-              let `balance` = Decimal(stringValue: response.balance) else {
-            return nil
-        }
-        
-        return SuiCoinObject(coinType: response.coinType,
-                             coinObjectId: response.coinObjectId,
-                             version: version,
-                             digest: response.digest,
-                             balance: balance)
-    }
-    
 }

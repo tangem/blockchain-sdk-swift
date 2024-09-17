@@ -9,15 +9,10 @@
 import Foundation
 import Combine
 
-
 public class SuiBalanceFetcher {
-    
     public typealias BuildRequestPublisher = (_ address: String, _ coin: String, _ cursor: String?) -> AnyPublisher<SuiGetCoins, Error>
-    
     private var cancellable = Set<AnyCancellable>()
-    
     private var coins = Set<SuiGetCoins.Coin>()
-    
     private var subject = PassthroughSubject<[SuiGetCoins.Coin], Error>()
     private var requestPublisher: BuildRequestPublisher?
     
@@ -82,5 +77,4 @@ public class SuiBalanceFetcher {
     func clear() {
         coins.removeAll()
     }
-    
 }

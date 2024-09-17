@@ -8,9 +8,7 @@
 
 import Foundation
 
-
-public struct Sui {
-    
+struct Sui {
     public static var SuiGasBudgetScaleUpConstant = Decimal(1000000)
     
     public enum EllipticCurveID: UInt8 {
@@ -24,7 +22,6 @@ public struct Sui {
     }
     
     public struct CoinType: Codable {
-        
         private static var separator: String { "::" }
         
         public let contract: String
@@ -58,7 +55,5 @@ public struct Sui {
             let string = try container.decode(String.self)
             try self.init(string: string)
         }
-        
     }
-    
 }

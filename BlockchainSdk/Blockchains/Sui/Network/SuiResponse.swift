@@ -8,10 +8,8 @@
 
 import Foundation
 
-
 //MARK: Balance
 public struct SuiGetCoins: Codable {
-    
     public struct Coin: Codable, Hashable {
         public var coinType: String
         public var coinObjectId: String
@@ -28,7 +26,6 @@ public struct SuiGetCoins: Codable {
     public var hasNextPage: Bool
     public var data: [Coin]
     public var nextCursor: String?
-    
 }
 
 
@@ -49,9 +46,7 @@ public struct SuiInspectTransaction: Codable {
 public struct SuiTransaction: Codable {
     
     //SubTypes
-    
     public struct Transaction: Codable {
-        
         public struct SuiTransactionInput: Codable {
             public var type: String
             //
@@ -73,7 +68,6 @@ public struct SuiTransaction: Codable {
     }
 
     public struct GasData: Codable {
-        
         public struct Payment: Codable {
             public var objectId: String
             public var version: UInt64
@@ -84,7 +78,6 @@ public struct SuiTransaction: Codable {
         public var price: String
         public var budget: String
         public var payment: [Payment]
-        
     }
     
     public struct SuiTransactionData: Codable {
@@ -92,7 +85,6 @@ public struct SuiTransaction: Codable {
         public var transaction: SuiTransaction.Transaction
         public var sender: String
         public var gasData: GasData
-        
     }
     
     public struct SuiTransactionGasUsed: Codable {
@@ -103,7 +95,6 @@ public struct SuiTransaction: Codable {
     }
     
     public struct SuiTransactionEffects: Codable {
-        
         public struct Status: Codable {
             public var status: String
         }
@@ -116,10 +107,8 @@ public struct SuiTransaction: Codable {
     }
     
     // Body
-    
     public var data: SuiTransactionData
     public var txSignatures: [String]
     public var rawTransaction: String
     public var effects: SuiTransactionEffects
-    
 }
