@@ -61,7 +61,7 @@ extension SuiWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
-        return networkService.getReferenceGasPrice()
+        networkService.getReferenceGasPrice()
             .withWeakCaptureOf(self)
             .flatMap({ manager, referencedGasPrice -> AnyPublisher<SuiInspectTransaction, any Error> in
                 guard let decimalGasPrice = Decimal(stringValue: referencedGasPrice) else {
@@ -91,53 +91,50 @@ extension SuiWalletManager: TransactionFeeProvider {
     }
     
     private func estimatedFee(amount: Amount, destination: String, referenceGasPrice: Decimal) -> AnyPublisher<SuiInspectTransaction, any Error> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .withWeakCaptureOf(self)
-            .tryMap { manager, _ in
-                return try manager.transactionBuilder.buildForInspect(amount: amount, destination: destination, referenceGasPrice: referenceGasPrice)
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { (manager, base64tx: String) -> AnyPublisher<SuiInspectTransaction, Error> in
-                return manager.networkService.dryTransaction(transaction: base64tx)
-            }
-            .eraseToAnyPublisher()
+        Result {
+            try transactionBuilder.buildForInspect(amount: amount, destination: destination, referenceGasPrice: referenceGasPrice)
+        }
+        .publisher
+        .withWeakCaptureOf(self)
+        .flatMap { (manager, base64tx: String) -> AnyPublisher<SuiInspectTransaction, Error> in
+            return manager.networkService.dryTransaction(transaction: base64tx)
+        }
+        .eraseToAnyPublisher()
     }
 }
 
 extension SuiWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Just(())
-            .receive(on: DispatchQueue.global())
-            .withWeakCaptureOf(self)
-            .tryMap({ manager, input in
-                try manager.transactionBuilder.buildForSign(transaction: transaction)
-            })
-            .withWeakCaptureOf(self)
-            .flatMap { (manager, dataHash: Data) -> AnyPublisher<SignatureInfo, Error> in
-                signer.sign(hash: dataHash, walletPublicKey: manager.wallet.publicKey)
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { manager, signatureInfo -> (txBytes: String, signature: String) in
-                let output = try manager.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo.signature)
-                return output
-            }
-            .withWeakCaptureOf(self)
-            .flatMap { manager, builtTransaction -> AnyPublisher<SuiExecuteTransaction, Error> in
-                return manager.networkService
-                    .sendTransaction(transaction: builtTransaction.txBytes, signature: builtTransaction.signature)
-                    .mapSendError(tx: builtTransaction.txBytes)
-                    .eraseToAnyPublisher()
-            }
-            .withWeakCaptureOf(self)
-            .tryMap { manager, tx in
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: tx.digest)
-                manager.wallet.addPendingTransaction(record)
-                
-                return TransactionSendResult(hash: tx.digest)
-            }
-            .eraseSendError()
-            .eraseToAnyPublisher()
+        Result {
+            try transactionBuilder.buildForSign(transaction: transaction)
+        }
+        .publisher
+        .withWeakCaptureOf(self)
+        .flatMap { (manager, dataHash: Data) -> AnyPublisher<SignatureInfo, Error> in
+            signer.sign(hash: dataHash, walletPublicKey: manager.wallet.publicKey)
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { manager, signatureInfo -> (txBytes: String, signature: String) in
+            let output = try manager.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo.signature)
+            return output
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { manager, builtTransaction -> AnyPublisher<SuiExecuteTransaction, Error> in
+            return manager.networkService
+                .sendTransaction(transaction: builtTransaction.txBytes, signature: builtTransaction.signature)
+                .mapSendError(tx: builtTransaction.txBytes)
+                .eraseToAnyPublisher()
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { manager, tx in
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: tx.digest)
+            
+            manager.wallet.addPendingTransaction(record)
+            
+            return TransactionSendResult(hash: tx.digest)
+        }
+        .eraseSendError()
+        .eraseToAnyPublisher()
     }
 }

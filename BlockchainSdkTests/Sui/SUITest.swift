@@ -81,7 +81,7 @@ final class SUITest: XCTestCase {
         XCTAssertEqual(address.value, "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2")
     }
     
-    func testAddressValudation()  {
+    func testAddressValidation()  {
         //32byte
         XCTAssertTrue(SuiAddressService().validate("0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2"))
         //Empty string
