@@ -82,7 +82,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
-    case sui(testnet: Bool)
+    case sui(curve: EllipticCurve, testnet: Bool)
     case filecoin
     case sei(testnet: Bool)
     
@@ -125,7 +125,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .koinos(let testnet),
                 .cyber(let testnet),
                 .blast(let testnet),
-                .sui(let testnet),
                 .sei(let testnet),
                 .kaspa(let testnet):
             return testnet
@@ -159,7 +158,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .near(_, let testnet),
                 .algorand(_, let testnet),
                 .aptos(_, let testnet),
-                .shibarium(let testnet):
+                .shibarium(let testnet),
+                .sui(_, let testnet):
             return testnet
         }
     }
@@ -168,8 +168,6 @@ public indirect enum Blockchain: Equatable, Hashable {
         switch self {
         case .cardano:
             return .ed25519
-        case .sui:
-            return .ed25519_slip0010
         case .stellar(let curve, _),
                 .solana(let curve, _),
                 .polkadot(let curve, _),
@@ -183,7 +181,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .algorand(let curve, _),
                 .aptos(let curve, _),
                 .hedera(let curve, _),
-                .bittensor(let curve):
+                .bittensor(let curve),
+                .sui(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -1011,7 +1010,7 @@ extension Blockchain: Codable {
         case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
-        case "sui": self = .sui(testnet: isTestnet)
+        case "sui": self = .sui(curve: curve, testnet: isTestnet)
         case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
         default:

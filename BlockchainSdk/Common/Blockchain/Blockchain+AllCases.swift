@@ -156,7 +156,7 @@ public extension Blockchain {
             .internetComputer,
             .cyber(testnet: false),
             .blast(testnet: false),
-            .sui(testnet: false),
+            .sui(curve: .ed25519_slip0010, testnet: false),
             .filecoin,
             .sei(testnet: false)
         ]
