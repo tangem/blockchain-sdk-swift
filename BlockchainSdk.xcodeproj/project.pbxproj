@@ -909,7 +909,7 @@
 		F991B1C42C98463D00E3D0EC /* SuiNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B42C98463D00E3D0EC /* SuiNetworkService.swift */; };
 		F991B1C52C98463D00E3D0EC /* SuiResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B52C98463D00E3D0EC /* SuiResponse.swift */; };
 		F991B1C62C98463D00E3D0EC /* SuiTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B62C98463D00E3D0EC /* SuiTarget.swift */; };
-		F991B1C72C98463D00E3D0EC /* Sui.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B82C98463D00E3D0EC /* Sui.swift */; };
+		F991B1C72C98463D00E3D0EC /* SUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B82C98463D00E3D0EC /* SUIUtils.swift */; };
 		F991B1C82C98463D00E3D0EC /* SuiAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1B92C98463D00E3D0EC /* SuiAddress.swift */; };
 		F991B1C92C98463D00E3D0EC /* SuiAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BA2C98463D00E3D0EC /* SuiAddressService.swift */; };
 		F991B1CA2C98463D00E3D0EC /* SuiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F991B1BB2C98463D00E3D0EC /* SuiError.swift */; };
@@ -1868,7 +1868,7 @@
 		F991B1B42C98463D00E3D0EC /* SuiNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiNetworkService.swift; sourceTree = "<group>"; };
 		F991B1B52C98463D00E3D0EC /* SuiResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiResponse.swift; sourceTree = "<group>"; };
 		F991B1B62C98463D00E3D0EC /* SuiTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiTarget.swift; sourceTree = "<group>"; };
-		F991B1B82C98463D00E3D0EC /* Sui.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sui.swift; sourceTree = "<group>"; };
+		F991B1B82C98463D00E3D0EC /* SUIUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SUIUtils.swift; sourceTree = "<group>"; };
 		F991B1B92C98463D00E3D0EC /* SuiAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiAddress.swift; sourceTree = "<group>"; };
 		F991B1BA2C98463D00E3D0EC /* SuiAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiAddressService.swift; sourceTree = "<group>"; };
 		F991B1BB2C98463D00E3D0EC /* SuiError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiError.swift; sourceTree = "<group>"; };
@@ -4394,7 +4394,7 @@
 			isa = PBXGroup;
 			children = (
 				F991B1B72C98463D00E3D0EC /* Network */,
-				F991B1B82C98463D00E3D0EC /* Sui.swift */,
+				F991B1B82C98463D00E3D0EC /* SUIUtils.swift */,
 				F991B1B92C98463D00E3D0EC /* SuiAddress.swift */,
 				F991B1BA2C98463D00E3D0EC /* SuiAddressService.swift */,
 				F991B1BB2C98463D00E3D0EC /* SuiError.swift */,
@@ -5290,7 +5290,7 @@
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
 				B64A680B2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift in Sources */,
 				DC5E64E42B1650F400E81AA5 /* OP_AND.swift in Sources */,
-				F991B1C72C98463D00E3D0EC /* Sui.swift in Sources */,
+				F991B1C72C98463D00E3D0EC /* SUIUtils.swift in Sources */,
 				DA52CBBB2C321026008ECB71 /* KoinosResourceLimitData.swift in Sources */,
 				0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */,
 				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,

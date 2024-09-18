@@ -1,5 +1,5 @@
 //
-// Sui.swift
+// SUIUtils.swift
 // BlockchainSdk
 //
 // Created by Sergei Iakovlev on 28.08.2024
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Sui {
+struct SUIUtils {
     public static var SuiGasBudgetScaleUpConstant = Decimal(1000000)
     
     public enum EllipticCurveID: UInt8 {

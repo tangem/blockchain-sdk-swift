@@ -83,7 +83,7 @@ extension SuiWalletManager: TransactionFeeProvider {
                     throw WalletError.failedToParseNetworkResponse()
                 }
                 
-                let budget = ((computationCost + storageCost + nonRefundableStorageFee) / Sui.SuiGasBudgetScaleUpConstant).rounded(scale: 1, roundingMode: .up) * Sui.SuiGasBudgetScaleUpConstant
+                let budget = ((computationCost + storageCost + nonRefundableStorageFee) / SUIUtils.SuiGasBudgetScaleUpConstant).rounded(scale: 1, roundingMode: .up) * SUIUtils.SuiGasBudgetScaleUpConstant
                 
                 let feeAmount = Amount(with: manager.wallet.blockchain, value: budget / manager.wallet.blockchain.decimalValue)
                 

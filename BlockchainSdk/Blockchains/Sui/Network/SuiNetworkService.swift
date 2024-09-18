@@ -20,7 +20,7 @@ final class SuiNetworkService: MultiNetworkProvider {
         self.currentProviderIndex = 0
     }
     
-    public func getBalance(address: String, coin: Sui.CoinType, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
+    public func getBalance(address: String, coin: SUIUtils.CoinType, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
         balanceFetcher
             .requestPublisher(with: { [weak self] nextAddress, nextCoin, nextCursor in
             guard let self else {
