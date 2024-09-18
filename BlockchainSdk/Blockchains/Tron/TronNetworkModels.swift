@@ -49,7 +49,7 @@ struct TronGetAccountResponse: Decodable {
 struct TronGetAccountResourceResponse: Decodable {
     let freeNetUsed: Int?
     let freeNetLimit: Int
-    let energyLimit: Decimal
+    let energyLimit: Decimal?
     let energyUsed: Decimal?
     
     enum CodingKeys: String, CodingKey {
