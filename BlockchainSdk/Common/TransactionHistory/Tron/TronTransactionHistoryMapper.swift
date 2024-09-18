@@ -194,9 +194,28 @@ final class TronTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> TransactionRecord.TransactionType {
         switch amountType {
-        case .coin where transaction.isContractInteraction:
-            return .contractMethodName(name: transaction.contractName ?? "")
-        case .coin, .reserve, .token, .feeResource:
+        case .coin:
+            switch transaction.contractType {
+            case TronContractType.transferContractType.rawValue,
+                TronContractType.transferAssetContractType.rawValue:
+                return .transfer
+            case TronContractType.voteWitnessContractType.rawValue:
+                // voteList is a dictionary with validator addresses as keys,
+                // not sure if it's possible to have several validators inside,
+                // moreover there are no place to display more than one on UI,
+                // so we take first
+                let validator = transaction.voteList?.keys.first
+                return .staking(type: .vote, validator: validator)
+            case TronContractType.withdrawBalanceContractType.rawValue:
+                return .staking(type: .withdraw, validator: nil)
+            case TronContractType.freezeBalanceV2ContractType.rawValue:
+                return .staking(type: .stake, validator: nil)
+            case TronContractType.unfreezeBalanceV2ContractType.rawValue:
+                return .staking(type: .unstake, validator: nil)
+            default:
+                return .contractMethodIdentifier(id: transaction.contractName ?? "")
+            }
+        default:
             // All TRC10 and TRC20 token transactions are considered simple & plain transfers
             return .transfer
         }
@@ -208,7 +227,7 @@ final class TronTransactionHistoryMapper {
         }
 
         return tokenTransfers.map { transfer -> TransactionRecord.TokenTransfer in
-            let amount = Decimal(transfer.value) ?? 0
+            let amount = Decimal(stringValue: transfer.value) ?? 0
             return TransactionRecord.TokenTransfer(
                 source: transfer.from,
                 destination: transfer.to,
@@ -238,7 +257,7 @@ extension TronTransactionHistoryMapper: TransactionHistoryMapper {
                 guard
                     let sourceAddress = transaction.fromAddress,
                     let destinationAddress = transaction.toAddress,
-                    let fees = Decimal(transaction.fees)
+                    let fees = Decimal(stringValue: transaction.fees)
                 else {
                     Log.log("Transaction \(transaction) doesn't contain a required information")
                     return
@@ -334,8 +353,13 @@ private extension TronTransactionHistoryMapper {
         case transferContractType = 1
         /// TRC10 token transfers.
         case transferAssetContractType = 2
+        case voteWitnessContractType = 4
+        case withdrawBalanceContractType = 13
         /// TRC20 token transfers.
-        case triggerSmartContract = 31
+        case triggerSmartContractType = 31
+        case freezeBalanceV2ContractType = 54
+        case unfreezeBalanceV2ContractType = 55
+        case withdrawExpireUnfreezeContractType = 56
     }
 }
 
@@ -359,7 +383,7 @@ private extension BlockBookAddressResponse.Token {
 
 private extension BlockBookAddressResponse.Transaction {
     var isContractInteraction: Bool {
-        return contractType != nil
+        contractType != nil
         && contractType != TronTransactionHistoryMapper.TronContractType.transferContractType.rawValue
     }
 }
