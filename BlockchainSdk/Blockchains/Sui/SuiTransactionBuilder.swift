@@ -11,9 +11,9 @@ import WalletCore
 import TangemSdk
 
 class SuiTransactionBuilder {
-    private var publicKey: Wallet.PublicKey
+    private let publicKey: Wallet.PublicKey
+    private let decimals: Decimal
     private var coins: [SuiCoinObject] = []
-    private var decimals: Decimal
     
     public init(publicKey: Wallet.PublicKey, decimals: Decimal) {
         self.publicKey = publicKey

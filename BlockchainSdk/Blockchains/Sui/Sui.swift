@@ -46,7 +46,7 @@ struct Sui {
             upperID  = elements[2]
         }
         
-        public  func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: any Encoder) throws {
             try string.encode(to: encoder)
         }
         

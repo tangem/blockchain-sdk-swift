@@ -13,9 +13,9 @@ class SuiWalletManager: BaseManager, WalletManager {
     public let networkService: SuiNetworkService
     public let transactionBuilder: SuiTransactionBuilder
     
-    public init(wallet: Wallet, networkService: SuiNetworkService) {
+    public init(wallet: Wallet, networkService: SuiNetworkService, transactionBuilder: SuiTransactionBuilder) {
         self.networkService = networkService
-        self.transactionBuilder = SuiTransactionBuilder(publicKey: wallet.publicKey, decimals: wallet.blockchain.decimalValue)
+        self.transactionBuilder = transactionBuilder
         super.init(wallet: wallet)
     }
 

@@ -9,23 +9,23 @@
 import Foundation
 import Moya
 
-public struct SuiTarget: TargetType {
-    public var baseURL: URL
-    public var request: SuiTarget.Request
+struct SuiTarget: TargetType {
+    let baseURL: URL
+    let request: SuiTarget.Request
     
-    public var path: String {
+    var path: String {
         ""
     }
     
-    public var method: Moya.Method {
+    var method: Moya.Method {
         .post
     }
     
-    public var task: Moya.Task {
+    var task: Moya.Task {
         .requestJSONRPC(id: request.id, method: request.method, params: request.params)
     }
     
-    public var headers: [String : String]?
+    var headers: [String : String]?
 }
 
 

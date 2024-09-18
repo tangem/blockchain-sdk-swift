@@ -19,14 +19,14 @@ struct SuiAddress {
             throw WalletCoreAddressService.TWError.makeAddressFailed
         }
         
-        let string = "0x" + hashed.hexString
+        let string = hashed.hexString.addHexPrefix()
         
         self.formattedString = string
         self.curveID = curveID
     }
     
     public init(hex string: String, curveID: Sui.EllipticCurveID) throws {
-        self.formattedString = string.hasHexPrefix() ? string : "0x" + string
+        self.formattedString = string.hasHexPrefix() ? string : string.addHexPrefix()
         self.curveID = curveID
     }
 }

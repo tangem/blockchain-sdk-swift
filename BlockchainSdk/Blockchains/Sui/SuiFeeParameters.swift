@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SuiFeeParameters: FeeParameters {
-    public var gasPrice: Decimal
-    public var gasBudget: Decimal
+struct SuiFeeParameters: FeeParameters {
+    public let gasPrice: Decimal
+    public let gasBudget: Decimal
 }

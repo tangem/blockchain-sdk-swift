@@ -11,21 +11,21 @@ import Foundation
 //MARK: Balance
 public struct SuiGetCoins: Codable {
     public struct Coin: Codable, Hashable {
-        public var coinType: String
-        public var coinObjectId: String
-        public var version: String
-        public var digest: String
-        public var balance: String
-        public var previousTransaction: String
+        public let coinType: String
+        public let coinObjectId: String
+        public let version: String
+        public let digest: String
+        public let balance: String
+        public let previousTransaction: String
         
         public func hash(into hasher: inout Hasher) {
             digest.hash(into: &hasher)
         }
     }
 
-    public var hasNextPage: Bool
-    public var data: [Coin]
-    public var nextCursor: String?
+    public let hasNextPage: Bool
+    public let data: [Coin]
+    public let nextCursor: String?
 }
 
 
@@ -34,13 +34,13 @@ public typealias SuiReferenceGasPrice = String
 
 //MARK: ExecuteTransaction
 public struct SuiExecuteTransaction: Codable {
-    public var digest: String
+    public let digest: String
 }
 
 //MARK: DryRunTransaction
 public struct SuiInspectTransaction: Codable {
-    public var effects: SuiTransaction.SuiTransactionEffects
-    public var input: SuiTransaction.SuiTransactionData
+    public let effects: SuiTransaction.SuiTransactionEffects
+    public let input: SuiTransaction.SuiTransactionData
 }
 
 public struct SuiTransaction: Codable {
@@ -48,67 +48,67 @@ public struct SuiTransaction: Codable {
     //SubTypes
     public struct Transaction: Codable {
         public struct SuiTransactionInput: Codable {
-            public var type: String
+            public let type: String
             //
-            public var valueType: String?
-            public var value: String?
+            public let valueType: String?
+            public let value: String?
             //
-            public var objectType: String?
-            public var objectId: String?
-            public var version: String?
-            public var digest: String?
+            public let objectType: String?
+            public let objectId: String?
+            public let version: String?
+            public let digest: String?
         }
         
         public struct SuiTransactions: Codable {
             
         }
         
-        public var kind: String
-        public var inputs: [SuiTransactionInput]
+        public let kind: String
+        public let inputs: [SuiTransactionInput]
     }
 
     public struct GasData: Codable {
         public struct Payment: Codable {
-            public var objectId: String
-            public var version: UInt64
-            public var digest: String
+            public let objectId: String
+            public let version: UInt64
+            public let digest: String
         }
         
-        public var owner: String
-        public var price: String
-        public var budget: String
-        public var payment: [Payment]
+        public let owner: String
+        public let price: String
+        public let budget: String
+        public let payment: [Payment]
     }
     
     public struct SuiTransactionData: Codable {
-        public var messageVersion: String
-        public var transaction: SuiTransaction.Transaction
-        public var sender: String
-        public var gasData: GasData
+        public let messageVersion: String
+        public let transaction: SuiTransaction.Transaction
+        public let sender: String
+        public let gasData: GasData
     }
     
     public struct SuiTransactionGasUsed: Codable {
-        public var computationCost: String
-        public var storageCost: String
-        public var storageRebate: String
-        public var nonRefundableStorageFee: String
+        public let computationCost: String
+        public let storageCost: String
+        public let storageRebate: String
+        public let nonRefundableStorageFee: String
     }
     
     public struct SuiTransactionEffects: Codable {
         public struct Status: Codable {
-            public var status: String
+            public let status: String
         }
         
-        public var messageVersion: String
-        public var status: Status
-        public var gasUsed: SuiTransactionGasUsed
-        public var transactionDigest: String
+        public let messageVersion: String
+        public let status: Status
+        public let gasUsed: SuiTransactionGasUsed
+        public let transactionDigest: String
         
     }
     
     // Body
-    public var data: SuiTransactionData
-    public var txSignatures: [String]
-    public var rawTransaction: String
-    public var effects: SuiTransactionEffects
+    public let data: SuiTransactionData
+    public let txSignatures: [String]
+    public let rawTransaction: String
+    public let effects: SuiTransactionEffects
 }
