@@ -15,12 +15,12 @@ final class SuiNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int 
     let balanceFetcher = SuiBalanceFetcher()
     
-    public init(providers: [SuiNetworkProvider]) {
+    init(providers: [SuiNetworkProvider]) {
         self.providers = providers
         self.currentProviderIndex = 0
     }
     
-    public func getBalance(address: String, coin: SUIUtils.CoinType, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
+    func getBalance(address: String, coin: SUIUtils.CoinType, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
         balanceFetcher
             .requestPublisher(with: { [weak self] nextAddress, nextCoin, nextCursor in
             guard let self else {
@@ -34,21 +34,21 @@ final class SuiNetworkService: MultiNetworkProvider {
         .fetchBalanceRequestPublisher(address: address, coin: coin.string, cursor: cursor)
     }
     
-    public func getReferenceGasPrice() -> AnyPublisher<SuiReferenceGasPrice, Error> {
+    func getReferenceGasPrice() -> AnyPublisher<SuiReferenceGasPrice, Error> {
         providerPublisher { provider in
             provider
                 .getReferenceGasPrice()
         }
     }
     
-    public func dryTransaction(transaction raw: String) -> AnyPublisher<SuiInspectTransaction, Error> {
+    func dryTransaction(transaction raw: String) -> AnyPublisher<SuiInspectTransaction, Error> {
         providerPublisher { provider in
             provider
                 .dryRunTransaction(transaction: raw)
         }
     }
     
-    public func devInspectTransaction(sender: String, transaction raw: String, referencedGasPrice: String?) -> AnyPublisher<SuiInspectTransaction, Error> {
+    func devInspectTransaction(sender: String, transaction raw: String, referencedGasPrice: String?) -> AnyPublisher<SuiInspectTransaction, Error> {
         providerPublisher { provider in
             provider
                 .devInspectTransaction(sender: sender, transaction: raw, referenceGasPrice: referencedGasPrice)
@@ -56,7 +56,7 @@ final class SuiNetworkService: MultiNetworkProvider {
         }
     }
     
-    public func sendTransaction(transaction raw: String, signature: String) -> AnyPublisher<SuiExecuteTransaction, Error> {
+    func sendTransaction(transaction raw: String, signature: String) -> AnyPublisher<SuiExecuteTransaction, Error> {
         providerPublisher { provider in
             provider
                 .sendTransaction(transaction: raw, signature: signature)

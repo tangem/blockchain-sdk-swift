@@ -9,13 +9,13 @@
 import Foundation
 
 struct SuiCoinObject {
-    public let coinType: String
-    public let coinObjectId: String
-    public let version: UInt64
-    public let digest: String
-    public let balance: Decimal
+    let coinType: String
+    let coinObjectId: String
+    let version: UInt64
+    let digest: String
+    let balance: Decimal
     
-    public static func from(_ response: SuiGetCoins.Coin) -> Self? {
+    static func from(_ response: SuiGetCoins.Coin) -> Self? {
         guard let `version` = Decimal(stringValue: response.version)?.uint64Value,
               let `balance` = Decimal(stringValue: response.balance) else {
             return nil

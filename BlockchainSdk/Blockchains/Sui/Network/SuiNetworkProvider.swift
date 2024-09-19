@@ -22,23 +22,23 @@ final class SuiNetworkProvider: HostProvider {
         self.provider = NetworkProvider<SuiTarget>.init(configuration: networkConfiguration)
     }
     
-    public func getBalance(address: String, coin: String, cursor: String?) -> AnyPublisher<SuiGetCoins, Error> {
+    func getBalance(address: String, coin: String, cursor: String?) -> AnyPublisher<SuiGetCoins, Error> {
         requestPublisher(for: .getBalance(address: address, coin: coin, cursor: cursor))
     }
     
-    public func getReferenceGasPrice() -> AnyPublisher<SuiReferenceGasPrice, Error> {
+    func getReferenceGasPrice() -> AnyPublisher<SuiReferenceGasPrice, Error> {
         requestPublisher(for: .getReferenceGasPrice)
     }
     
-    public func dryRunTransaction(transaction raw: String) -> AnyPublisher<SuiInspectTransaction, Error> {
+    func dryRunTransaction(transaction raw: String) -> AnyPublisher<SuiInspectTransaction, Error> {
         requestPublisher(for: .dryRunTransaction(transaction: raw))
     }
     
-    public func devInspectTransaction(sender: String, transaction raw: String, referenceGasPrice: String?) -> AnyPublisher<SuiInspectTransaction, Error> {
+    func devInspectTransaction(sender: String, transaction raw: String, referenceGasPrice: String?) -> AnyPublisher<SuiInspectTransaction, Error> {
         requestPublisher(for: .devInspectTransactionBlock(sender: sender, transaction: raw, gasPrice: referenceGasPrice))
     }
     
-    public func sendTransaction(transaction raw: String, signature: String) -> AnyPublisher<SuiExecuteTransaction, Error> {
+    func sendTransaction(transaction raw: String, signature: String) -> AnyPublisher<SuiExecuteTransaction, Error> {
         requestPublisher(for: .sendTransaction(transaction: raw, signature: signature))
     }
     

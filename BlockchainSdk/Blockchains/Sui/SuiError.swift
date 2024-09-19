@@ -9,7 +9,7 @@
 import Foundation
 
 struct SuiError {
-    public enum CoinType: Error {
+    enum CoinType: Error {
         case failedEncoding
         case failedDecoding
     }

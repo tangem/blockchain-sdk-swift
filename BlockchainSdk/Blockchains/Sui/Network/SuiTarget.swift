@@ -30,16 +30,16 @@ struct SuiTarget: TargetType {
 
 
 extension SuiTarget {
-    public enum Request {
+    enum Request {
         case getBalance(address: String, coin: String, cursor: String?)
         case getReferenceGasPrice
         case dryRunTransaction(transaction: String)
         case devInspectTransactionBlock(sender: String, transaction: String, gasPrice: String?, epoch: String? = nil)
         case sendTransaction(transaction: String, signature: String)
         
-        public var id: Int { 1 }
+        var id: Int { 1 }
         
-        public var method: String {
+        var method: String {
             switch self {
             case .getBalance:
                 return "suix_getCoins"
@@ -54,7 +54,7 @@ extension SuiTarget {
             }
         }
         
-        public var params: (any Encodable)? {
+        var params: (any Encodable)? {
             switch self {
             case .getBalance(let address, let coin, let cursor):
                 return [address, coin, cursor]

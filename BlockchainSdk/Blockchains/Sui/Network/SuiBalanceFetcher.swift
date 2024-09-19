@@ -9,23 +9,23 @@
 import Foundation
 import Combine
 
-public class SuiBalanceFetcher {
-    public typealias BuildRequestPublisher = (_ address: String, _ coin: String, _ cursor: String?) -> AnyPublisher<SuiGetCoins, Error>
+class SuiBalanceFetcher {
+    typealias BuildRequestPublisher = (_ address: String, _ coin: String, _ cursor: String?) -> AnyPublisher<SuiGetCoins, Error>
     private var cancellable = Set<AnyCancellable>()
     private var coins = Set<SuiGetCoins.Coin>()
     private var subject = PassthroughSubject<[SuiGetCoins.Coin], Error>()
     private var requestPublisher: BuildRequestPublisher?
     
-    public var publisher: AnyPublisher<[SuiGetCoins.Coin], Error> {
+    var publisher: AnyPublisher<[SuiGetCoins.Coin], Error> {
         subject.eraseToAnyPublisher()
     }
     
-    public func requestPublisher(with:  @escaping BuildRequestPublisher) -> Self {
+    func requestPublisher(with:  @escaping BuildRequestPublisher) -> Self {
         self.requestPublisher = with
         return self
     }
     
-    public func fetchBalanceRequestPublisher(address: String, coin: String, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
+    func fetchBalanceRequestPublisher(address: String, coin: String, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
         cancel()
         clear()
         

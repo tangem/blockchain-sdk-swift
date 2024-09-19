@@ -9,106 +9,106 @@
 import Foundation
 
 //MARK: Balance
-public struct SuiGetCoins: Codable {
-    public struct Coin: Codable, Hashable {
-        public let coinType: String
-        public let coinObjectId: String
-        public let version: String
-        public let digest: String
-        public let balance: String
-        public let previousTransaction: String
+struct SuiGetCoins: Codable {
+    struct Coin: Codable, Hashable {
+        let coinType: String
+        let coinObjectId: String
+        let version: String
+        let digest: String
+        let balance: String
+        let previousTransaction: String
         
-        public func hash(into hasher: inout Hasher) {
+        func hash(into hasher: inout Hasher) {
             digest.hash(into: &hasher)
         }
     }
 
-    public let hasNextPage: Bool
-    public let data: [Coin]
-    public let nextCursor: String?
+    let hasNextPage: Bool
+    let data: [Coin]
+    let nextCursor: String?
 }
 
 
 //MARK: GasPrice
-public typealias SuiReferenceGasPrice = String
+typealias SuiReferenceGasPrice = String
 
 //MARK: ExecuteTransaction
-public struct SuiExecuteTransaction: Codable {
-    public let digest: String
+struct SuiExecuteTransaction: Codable {
+    let digest: String
 }
 
 //MARK: DryRunTransaction
-public struct SuiInspectTransaction: Codable {
-    public let effects: SuiTransaction.SuiTransactionEffects
-    public let input: SuiTransaction.SuiTransactionData
+struct SuiInspectTransaction: Codable {
+    let effects: SuiTransaction.SuiTransactionEffects
+    let input: SuiTransaction.SuiTransactionData
 }
 
-public struct SuiTransaction: Codable {
+struct SuiTransaction: Codable {
     
     //SubTypes
-    public struct Transaction: Codable {
-        public struct SuiTransactionInput: Codable {
-            public let type: String
+    struct Transaction: Codable {
+        struct SuiTransactionInput: Codable {
+            let type: String
             //
-            public let valueType: String?
-            public let value: String?
+            let valueType: String?
+            let value: String?
             //
-            public let objectType: String?
-            public let objectId: String?
-            public let version: String?
-            public let digest: String?
+            let objectType: String?
+            let objectId: String?
+            let version: String?
+            let digest: String?
         }
         
-        public struct SuiTransactions: Codable {
+        struct SuiTransactions: Codable {
             
         }
         
-        public let kind: String
-        public let inputs: [SuiTransactionInput]
+        let kind: String
+        let inputs: [SuiTransactionInput]
     }
 
-    public struct GasData: Codable {
-        public struct Payment: Codable {
-            public let objectId: String
-            public let version: UInt64
-            public let digest: String
+    struct GasData: Codable {
+        struct Payment: Codable {
+            let objectId: String
+            let version: UInt64
+            let digest: String
         }
         
-        public let owner: String
-        public let price: String
-        public let budget: String
-        public let payment: [Payment]
+        let owner: String
+        let price: String
+        let budget: String
+        let payment: [Payment]
     }
     
-    public struct SuiTransactionData: Codable {
-        public let messageVersion: String
-        public let transaction: SuiTransaction.Transaction
-        public let sender: String
-        public let gasData: GasData
+    struct SuiTransactionData: Codable {
+        let messageVersion: String
+        let transaction: SuiTransaction.Transaction
+        let sender: String
+        let gasData: GasData
     }
     
-    public struct SuiTransactionGasUsed: Codable {
-        public let computationCost: String
-        public let storageCost: String
-        public let storageRebate: String
-        public let nonRefundableStorageFee: String
+    struct SuiTransactionGasUsed: Codable {
+        let computationCost: String
+        let storageCost: String
+        let storageRebate: String
+        let nonRefundableStorageFee: String
     }
     
-    public struct SuiTransactionEffects: Codable {
-        public struct Status: Codable {
-            public let status: String
+    struct SuiTransactionEffects: Codable {
+        struct Status: Codable {
+            let status: String
         }
         
-        public let messageVersion: String
-        public let status: Status
-        public let gasUsed: SuiTransactionGasUsed
-        public let transactionDigest: String
+        let messageVersion: String
+        let status: Status
+        let gasUsed: SuiTransactionGasUsed
+        let transactionDigest: String
         
     }
     
     // Body
-    public let data: SuiTransactionData
-    public let txSignatures: [String]
-    public let rawTransaction: String
-    public let effects: SuiTransactionEffects
+    let data: SuiTransactionData
+    let txSignatures: [String]
+    let rawTransaction: String
+    let effects: SuiTransactionEffects
 }

@@ -10,10 +10,10 @@ import Foundation
 import Combine
 
 class SuiWalletManager: BaseManager, WalletManager {
-    public let networkService: SuiNetworkService
-    public let transactionBuilder: SuiTransactionBuilder
+    let networkService: SuiNetworkService
+    let transactionBuilder: SuiTransactionBuilder
     
-    public init(wallet: Wallet, networkService: SuiNetworkService, transactionBuilder: SuiTransactionBuilder) {
+    init(wallet: Wallet, networkService: SuiNetworkService, transactionBuilder: SuiTransactionBuilder) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
         super.init(wallet: wallet)

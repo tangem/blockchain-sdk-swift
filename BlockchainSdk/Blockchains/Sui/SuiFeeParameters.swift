@@ -9,6 +9,6 @@
 import Foundation
 
 struct SuiFeeParameters: FeeParameters {
-    public let gasPrice: Decimal
-    public let gasBudget: Decimal
+    let gasPrice: Decimal
+    let gasBudget: Decimal
 }

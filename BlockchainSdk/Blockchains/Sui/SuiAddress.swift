@@ -9,10 +9,10 @@
 import Foundation
 
 struct SuiAddress {
-    public let formattedString: String
-    public let curveID: SUIUtils.EllipticCurveID
+    let formattedString: String
+    let curveID: SUIUtils.EllipticCurveID
     
-    public init(pubKey data: Data, curveID: SUIUtils.EllipticCurveID = .ed25519) throws {
+    init(pubKey data: Data, curveID: SUIUtils.EllipticCurveID = .ed25519) throws {
         let payload = curveID.uint8.data + data
         
         guard let hashed = payload.hashBlake2b(outputLength: 32) else {
@@ -25,7 +25,7 @@ struct SuiAddress {
         self.curveID = curveID
     }
     
-    public init(hex string: String, curveID: SUIUtils.EllipticCurveID) throws {
+    init(hex string: String, curveID: SUIUtils.EllipticCurveID) throws {
         self.formattedString = string.hasHexPrefix() ? string : string.addHexPrefix()
         self.curveID = curveID
     }

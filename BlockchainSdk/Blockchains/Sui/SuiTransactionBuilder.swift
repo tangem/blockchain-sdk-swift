@@ -15,16 +15,16 @@ class SuiTransactionBuilder {
     private let decimalValue: Decimal
     private var coins: [SuiCoinObject] = []
     
-    public init(publicKey: Wallet.PublicKey, decimalValue: Decimal) {
+    init(publicKey: Wallet.PublicKey, decimalValue: Decimal) {
         self.publicKey = publicKey
         self.decimalValue = decimalValue
     }
     
-    public func update(coins: [SuiCoinObject]) {
+    func update(coins: [SuiCoinObject]) {
         self.coins = coins
     }
     
-    public func buildForInspect(amount: Amount, destination: String, referenceGasPrice: Decimal) throws -> String {
+    func buildForInspect(amount: Amount, destination: String, referenceGasPrice: Decimal) throws -> String {
         let signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
 
         let useCoins = coins
@@ -65,7 +65,7 @@ class SuiTransactionBuilder {
         return output.unsignedTx
     }
     
-    public func buildForSign(transaction: Transaction) throws -> Data {
+    func buildForSign(transaction: Transaction) throws -> Data {
         let input = try input(amount: transaction.amount, destination: transaction.destinationAddress, fee: transaction.fee)
         
         let preImageHashes = try TransactionCompiler.preImageHashes(coinType: .sui, txInputData: input.serializedData())
@@ -80,7 +80,7 @@ class SuiTransactionBuilder {
         
     }
     
-    public func buildForSend(transaction: Transaction, signature: Data) throws -> (txBytes: String, signature: String) {
+    func buildForSend(transaction: Transaction, signature: Data) throws -> (txBytes: String, signature: String) {
         let input = try input(amount: transaction.amount, destination: transaction.destinationAddress, fee: transaction.fee)
         
         let compiled = try TransactionCompiler.compileWithSignaturesAndPubKeyType(coinType: .sui,
