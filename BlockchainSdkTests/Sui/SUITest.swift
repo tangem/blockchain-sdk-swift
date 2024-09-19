@@ -11,7 +11,7 @@ import WalletCore
 @testable import BlockchainSdk
 
 final class SUITest: XCTestCase {
-    var coinDecimals = Decimal(1_000_000_000)
+    var coinDecimalValue = Decimal(1_000_000_000)
     var inputs: [SuiCoinObject] = [
         SuiCoinObject(coinType: "0x2::sui::SUI", coinObjectId: "0x0ddca1f7dfebcc35b8a1238660dacd5062111614c118ccd6cd1ba0958ba5cff3", version: 333786167, digest: "127TTe3fyhURjzUxAhByCVxb5TkQbkBiLmk8xnpiuy2b", balance: 96322212)
     ]
@@ -29,7 +29,7 @@ final class SUITest: XCTestCase {
         let walletPublicKey = Wallet.PublicKey(seedKey: publicKey.data, derivationType: nil)
         let address = try! SuiAddressService().makeAddress(for: walletPublicKey, with: .default).value
         
-        let amount = Amount(with: .sui(curve: .ed25519_slip0010, testnet: false), value: Decimal(1000) / coinDecimals)
+        let amount = Amount(with: .sui(curve: .ed25519_slip0010, testnet: false), value: Decimal(1000) / coinDecimalValue)
         let fee = Fee(.init(with: .sui(curve: .ed25519_slip0010, testnet: false), value: 0), parameters: SuiFeeParameters(gasPrice: 750, gasBudget: 3000000))
         
         let transaction = Transaction(amount: amount,
@@ -39,7 +39,7 @@ final class SUITest: XCTestCase {
                                       changeAddress: "")
         
         
-        let txBuilder = SuiTransactionBuilder(publicKey: walletPublicKey, decimals: coinDecimals)
+        let txBuilder = SuiTransactionBuilder(publicKey: walletPublicKey, decimalValue: coinDecimalValue)
         txBuilder.update(coins: inputs)
         
         let signature = expectedSignatureData
@@ -57,7 +57,7 @@ final class SUITest: XCTestCase {
         let walletPublicKey = Wallet.PublicKey(seedKey: .init(hex: "85ebd1441fe4f954fbe5dc6077bf008e119a5e269297c6f7083d001d2ac876fe"), derivationType: nil)
         let address = try! SuiAddressService().makeAddress(for: walletPublicKey, with: .default).value
         
-        let amount = Amount(with: .sui(curve: .ed25519_slip0010, testnet: false), value: Decimal(1000) / coinDecimals)
+        let amount = Amount(with: .sui(curve: .ed25519_slip0010, testnet: false), value: Decimal(1000) / coinDecimalValue)
         let fee = Fee(.init(with: .sui(curve: .ed25519_slip0010, testnet: false), value: 0), parameters: SuiFeeParameters(gasPrice: 750, gasBudget: 3000000))
         
         let transaction = Transaction(amount: amount,
@@ -67,7 +67,7 @@ final class SUITest: XCTestCase {
                                       changeAddress: "")
         
         
-        let txBuilder = SuiTransactionBuilder(publicKey: walletPublicKey, decimals: coinDecimals)
+        let txBuilder = SuiTransactionBuilder(publicKey: walletPublicKey, decimalValue: coinDecimalValue)
         txBuilder.update(coins: inputs)
         
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)

@@ -12,12 +12,12 @@ import TangemSdk
 
 class SuiTransactionBuilder {
     private let publicKey: Wallet.PublicKey
-    private let decimals: Decimal
+    private let decimalValue: Decimal
     private var coins: [SuiCoinObject] = []
     
-    public init(publicKey: Wallet.PublicKey, decimals: Decimal) {
+    public init(publicKey: Wallet.PublicKey, decimalValue: Decimal) {
         self.publicKey = publicKey
-        self.decimals = decimals
+        self.decimalValue = decimalValue
     }
     
     public func update(coins: [SuiCoinObject]) {
@@ -32,7 +32,7 @@ class SuiTransactionBuilder {
             partialResult += coin.balance
         }
         
-        let decimalAmount = amount.value * decimals
+        let decimalAmount = amount.value * decimalValue
         
         let input = WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in
@@ -100,7 +100,7 @@ class SuiTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let decimalAmount = amount.value * decimals
+        let decimalAmount = amount.value * decimalValue
         let useCoins = getCoins(for: decimalAmount + suiFeeParameters.gasBudget)
 
         return WalletCore.SuiSigningInput.with { input in
