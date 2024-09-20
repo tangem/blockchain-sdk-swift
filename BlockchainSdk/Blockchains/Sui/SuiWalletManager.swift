@@ -76,15 +76,19 @@ extension SuiWalletManager: TransactionFeeProvider {
             })
             .withWeakCaptureOf(self)
             .tryMap({ manager, inspectTransaction in
+                guard inspectTransaction.effects.isSuccess() else {
+                    throw WalletError.failedToGetFee
+                }
+                
                 guard let usedGasPrice = Decimal(stringValue: inspectTransaction.input.gasData.price),
                       let computationCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.computationCost),
                       let storageCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageCost),
+                      let storageRebate = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageRebate),
                       let nonRefundableStorageFee = Decimal(stringValue: inspectTransaction.effects.gasUsed.nonRefundableStorageFee) else {
                     throw WalletError.failedToParseNetworkResponse()
                 }
                 
-                let budget = ((computationCost + storageCost + nonRefundableStorageFee) / SUIUtils.SuiGasBudgetScaleUpConstant).rounded(scale: 1, roundingMode: .up) * SUIUtils.SuiGasBudgetScaleUpConstant
-                
+                let budget = computationCost + storageCost
                 let feeAmount = Amount(with: manager.wallet.blockchain, value: budget / manager.wallet.blockchain.decimalValue)
                 
                 let params = SuiFeeParameters(gasPrice: usedGasPrice, gasBudget: budget)
@@ -101,7 +105,7 @@ extension SuiWalletManager: TransactionFeeProvider {
         .publisher
         .withWeakCaptureOf(self)
         .flatMap { (manager, base64tx: String) -> AnyPublisher<SuiInspectTransaction, Error> in
-            return manager.networkService.dryTransaction(transaction: base64tx)
+            manager.networkService.dryTransaction(transaction: base64tx)
         }
         .eraseToAnyPublisher()
     }

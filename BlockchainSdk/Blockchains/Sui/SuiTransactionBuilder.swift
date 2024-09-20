@@ -28,11 +28,18 @@ class SuiTransactionBuilder {
         let signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
 
         let useCoins = coins
-        let budget = coins.reduce(into: Decimal(0)) { partialResult, coin in
+        let totalAmount = coins.reduce(into: Decimal(0)) { partialResult, coin in
             partialResult += coin.balance
         }
         
-        let decimalAmount = amount.value * decimalValue
+        var decimalAmount = amount.value * decimalValue
+        let isSendMax = decimalAmount == totalAmount
+        //Send max amount
+        if isSendMax {
+            decimalAmount = Decimal(1)
+        }
+        
+        let budget = min(totalAmount - decimalAmount, SUIUtils.SuiGasBudgetMaxValue)
         
         let input = WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in
@@ -50,7 +57,7 @@ class SuiTransactionBuilder {
             })
             
             input.signer = signer.value
-            input.gasBudget = (budget - decimalAmount).uint64Value
+            input.gasBudget = budget.uint64Value
             input.referenceGasPrice = referenceGasPrice.uint64Value
         }
         

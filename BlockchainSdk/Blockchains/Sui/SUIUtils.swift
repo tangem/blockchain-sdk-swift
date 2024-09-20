@@ -10,6 +10,8 @@ import Foundation
 
 struct SUIUtils {
     static var SuiGasBudgetScaleUpConstant = Decimal(1000000)
+    static var SuiGasMinimumGasBudgetComputationUnits = Decimal(1000)
+    static var SuiGasBudgetMaxValue = Decimal(50000000000)
     
     enum EllipticCurveID: UInt8 {
         case ed25519    = 0x00

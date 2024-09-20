@@ -104,6 +104,9 @@ struct SuiTransaction: Codable {
         let gasUsed: SuiTransactionGasUsed
         let transactionDigest: String
         
+        func isSuccess() -> Bool {
+            status.status == "success"
+        }
     }
     
     // Body
