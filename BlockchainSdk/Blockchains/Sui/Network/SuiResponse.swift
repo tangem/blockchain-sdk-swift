@@ -8,7 +8,8 @@
 
 import Foundation
 
-//MARK: Balance
+//MARK: - Balance
+
 struct SuiGetCoins: Codable {
     struct Coin: Codable, Hashable {
         let coinType: String
@@ -29,15 +30,18 @@ struct SuiGetCoins: Codable {
 }
 
 
-//MARK: GasPrice
+//MARK: - GasPrice
+
 typealias SuiReferenceGasPrice = String
 
-//MARK: ExecuteTransaction
+//MARK: - ExecuteTransaction
+
 struct SuiExecuteTransaction: Codable {
     let digest: String
 }
 
-//MARK: DryRunTransaction
+//MARK: - DryRunTransaction
+
 struct SuiInspectTransaction: Codable {
     let effects: SuiTransaction.SuiTransactionEffects
     let input: SuiTransaction.SuiTransactionData
@@ -57,10 +61,6 @@ struct SuiTransaction: Codable {
             let objectId: String?
             let version: String?
             let digest: String?
-        }
-        
-        struct SuiTransactions: Codable {
-            
         }
         
         let kind: String
