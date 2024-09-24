@@ -32,10 +32,12 @@ class SuiTransactionBuilder {
             partialResult += coin.balance
         }
         
-        var decimalAmount = amount.value * decimalValue
+        let decimalAmount = amount.value * decimalValue
         let isSendMax = decimalAmount == totalAmount
         
-        let budget = min(totalAmount - Decimal(1), SUIUtils.SuiGasBudgetMaxValue)
+        let availableBudget = isSendMax ? totalAmount - Decimal(1) : totalAmount - decimalAmount
+        let budget = min(availableBudget, SUIUtils.SuiGasBudgetMaxValue)
+        
         let inputAmount = isSendMax ? totalAmount - budget : decimalAmount
         
         let input = try input(amount: inputAmount / decimalValue, destination: destination, fee: .init(gasPrice: referenceGasPrice, gasBudget: budget))
