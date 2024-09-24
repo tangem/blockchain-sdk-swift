@@ -11,11 +11,13 @@ import WalletCore
 import TangemSdk
 
 class SuiTransactionBuilder {
+    private let signer: any Address
     private let publicKey: Wallet.PublicKey
     private let decimalValue: Decimal
     private var coins: [SuiCoinObject] = []
     
-    init(publicKey: Wallet.PublicKey, decimalValue: Decimal) {
+    init(publicKey: Wallet.PublicKey, decimalValue: Decimal) throws {
+        self.signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
         self.publicKey = publicKey
         self.decimalValue = decimalValue
     }
@@ -25,8 +27,6 @@ class SuiTransactionBuilder {
     }
     
     func buildForInspect(amount: Amount, destination: String, referenceGasPrice: Decimal) throws -> String {
-        let signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
-
         let useCoins = coins
         let totalAmount = coins.reduce(into: Decimal(0)) { partialResult, coin in
             partialResult += coin.balance
