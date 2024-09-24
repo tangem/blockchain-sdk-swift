@@ -37,21 +37,18 @@ class SuiWalletManager: BaseManager, WalletManager {
             SuiCoinObject.from($0)
         })
         
-        let hashes = Set(coins.map({ $0.previousTransaction }))
-        let localHashes = Set(wallet.pendingTransactions.map { $0.hash })
-        
-        if hashes.isSuperset(of: localHashes) {
-            wallet.clearPendingTransaction()
-        }
-        
-        self.transactionBuilder.update(coins: objects)
-        
         let totalBalance = objects.reduce(into: Decimal(0)) { partialResult, coin in
             partialResult += coin.balance
         }
         
         let coinValue = totalBalance / wallet.blockchain.decimalValue
+        
+        if coinValue != wallet.amounts[.coin]?.value  {
+            wallet.clearPendingTransaction()
+        }
+        
         wallet.add(coinValue: coinValue)
+        self.transactionBuilder.update(coins: objects)
     }
 }
 
