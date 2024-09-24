@@ -34,10 +34,6 @@ final class SuiNetworkProvider: HostProvider {
         requestPublisher(for: .dryRunTransaction(transaction: raw))
     }
     
-    func devInspectTransaction(sender: String, transaction raw: String, referenceGasPrice: String?) -> AnyPublisher<SuiInspectTransaction, Error> {
-        requestPublisher(for: .devInspectTransactionBlock(sender: sender, transaction: raw, gasPrice: referenceGasPrice))
-    }
-    
     func sendTransaction(transaction raw: String, signature: String) -> AnyPublisher<SuiExecuteTransaction, Error> {
         requestPublisher(for: .sendTransaction(transaction: raw, signature: signature))
     }

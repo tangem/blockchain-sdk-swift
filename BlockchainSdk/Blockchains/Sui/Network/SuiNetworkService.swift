@@ -48,14 +48,6 @@ final class SuiNetworkService: MultiNetworkProvider {
         }
     }
     
-    func devInspectTransaction(sender: String, transaction raw: String, referencedGasPrice: String?) -> AnyPublisher<SuiInspectTransaction, Error> {
-        providerPublisher { provider in
-            provider
-                .devInspectTransaction(sender: sender, transaction: raw, referenceGasPrice: referencedGasPrice)
-            
-        }
-    }
-    
     func sendTransaction(transaction raw: String, signature: String) -> AnyPublisher<SuiExecuteTransaction, Error> {
         providerPublisher { provider in
             provider
