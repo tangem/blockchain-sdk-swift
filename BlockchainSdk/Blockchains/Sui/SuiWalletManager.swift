@@ -72,7 +72,7 @@ extension SuiWalletManager: TransactionFeeProvider {
                     return .anyFail(error: WalletError.failedToParseNetworkResponse())
                 }
                 
-                return manager.estimatedFee(amount: amount, destination: destination, referenceGasPrice: decimalGasPrice)
+                return manager.estimateFee(amount: amount, destination: destination, referenceGasPrice: decimalGasPrice)
             })
             .withWeakCaptureOf(self)
             .tryMap({ manager, inspectTransaction in
@@ -98,7 +98,7 @@ extension SuiWalletManager: TransactionFeeProvider {
             .eraseToAnyPublisher()
     }
     
-    private func estimatedFee(amount: Amount, destination: String, referenceGasPrice: Decimal) -> AnyPublisher<SuiInspectTransaction, any Error> {
+    private func estimateFee(amount: Amount, destination: String, referenceGasPrice: Decimal) -> AnyPublisher<SuiInspectTransaction, any Error> {
         Result {
             try transactionBuilder.buildForInspect(amount: amount, destination: destination, referenceGasPrice: referenceGasPrice)
         }

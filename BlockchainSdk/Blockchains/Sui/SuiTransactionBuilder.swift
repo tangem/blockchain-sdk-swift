@@ -34,32 +34,11 @@ class SuiTransactionBuilder {
         
         var decimalAmount = amount.value * decimalValue
         let isSendMax = decimalAmount == totalAmount
-        //Send max amount
-        if isSendMax {
-            decimalAmount = Decimal(1)
-        }
         
-        let budget = min(totalAmount - decimalAmount, SUIUtils.SuiGasBudgetMaxValue)
+        let budget = min(totalAmount - Decimal(1), SUIUtils.SuiGasBudgetMaxValue)
+        let inputAmount = isSendMax ? totalAmount - budget : decimalAmount
         
-        let input = WalletCore.SuiSigningInput.with { input in
-            let inputCoins = useCoins.map { coin in
-                SuiObjectRef.with({ coins in
-                    coins.version = coin.version
-                    coins.objectID = coin.coinObjectId
-                    coins.objectDigest = coin.digest
-                })
-            }
-            
-            input.paySui = WalletCore.SuiPaySui.with({ pay in
-                pay.inputCoins = inputCoins
-                pay.recipients = [destination]
-                pay.amounts = [decimalAmount.uint64Value]
-            })
-            
-            input.signer = signer.value
-            input.gasBudget = budget.uint64Value
-            input.referenceGasPrice = referenceGasPrice.uint64Value
-        }
+        let input = try input(amount: inputAmount / decimalValue, destination: destination, fee: .init(gasPrice: referenceGasPrice, gasBudget: budget))
         
         let signatureMock = Data(repeating: 0x01, count: 64)
         
@@ -73,7 +52,11 @@ class SuiTransactionBuilder {
     }
     
     func buildForSign(transaction: Transaction) throws -> Data {
-        let input = try input(amount: transaction.amount, destination: transaction.destinationAddress, fee: transaction.fee)
+        guard let suiFeeParameters = transaction.fee.parameters as? SuiFeeParameters else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let input = try input(amount: transaction.amount.value, destination: transaction.destinationAddress, fee: suiFeeParameters)
         
         let preImageHashes = try TransactionCompiler.preImageHashes(coinType: .sui, txInputData: input.serializedData())
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
@@ -88,7 +71,11 @@ class SuiTransactionBuilder {
     }
     
     func buildForSend(transaction: Transaction, signature: Data) throws -> (txBytes: String, signature: String) {
-        let input = try input(amount: transaction.amount, destination: transaction.destinationAddress, fee: transaction.fee)
+        guard let suiFeeParameters = transaction.fee.parameters as? SuiFeeParameters else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let input = try input(amount: transaction.amount.value, destination: transaction.destinationAddress, fee: suiFeeParameters)
         
         let compiled = try TransactionCompiler.compileWithSignaturesAndPubKeyType(coinType: .sui,
                                                                                   txInputData: input.serializedData(),
@@ -100,13 +87,9 @@ class SuiTransactionBuilder {
         return (output.unsignedTx, output.signature)
     }
     
-    private func input(amount: Amount, destination: String, fee: Fee) throws -> WalletCore.SuiSigningInput {
-        guard let suiFeeParameters = fee.parameters as? SuiFeeParameters else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        let decimalAmount = amount.value * decimalValue
-        let useCoins = getCoins(for: decimalAmount + suiFeeParameters.gasBudget)
+    private func input(amount: Decimal, destination: String, fee: SuiFeeParameters) throws -> WalletCore.SuiSigningInput {
+        let decimalAmount = amount * decimalValue
+        let useCoins = getCoins(for: decimalAmount + fee.gasBudget)
 
         return WalletCore.SuiSigningInput.with { input in
             let inputCoins = useCoins.map { coin in
@@ -124,8 +107,8 @@ class SuiTransactionBuilder {
             })
             
             input.signer = signer.value
-            input.gasBudget = suiFeeParameters.gasBudget.uint64Value
-            input.referenceGasPrice = suiFeeParameters.gasPrice.uint64Value
+            input.gasBudget = fee.gasBudget.uint64Value
+            input.referenceGasPrice = fee.gasPrice.uint64Value
         }
     }
     
