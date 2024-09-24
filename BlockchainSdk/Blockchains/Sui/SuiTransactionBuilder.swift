@@ -101,8 +101,6 @@ class SuiTransactionBuilder {
     }
     
     private func input(amount: Amount, destination: String, fee: Fee) throws -> WalletCore.SuiSigningInput {
-        let signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
-        
         guard let suiFeeParameters = fee.parameters as? SuiFeeParameters else {
             throw WalletError.failedToBuildTx
         }
@@ -121,7 +119,6 @@ class SuiTransactionBuilder {
             
             input.paySui = WalletCore.SuiPaySui.with({ pay in
                 pay.inputCoins = inputCoins
-                
                 pay.recipients = [destination]
                 pay.amounts = [decimalAmount.uint64Value]
             })
