@@ -63,6 +63,7 @@ public extension TransactionRecord {
             case unstake
             case vote
             case withdraw
+            case claimRewards
         }
     }
 }
