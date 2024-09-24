@@ -206,12 +206,14 @@ final class TronTransactionHistoryMapper {
                 // so we take first
                 let validator = transaction.voteList?.keys.first
                 return .staking(type: .vote, validator: validator)
-            case TronContractType.withdrawBalanceContractType.rawValue:
+            case TronContractType.withdrawExpireUnfreezeContractType.rawValue:
                 return .staking(type: .withdraw, validator: nil)
             case TronContractType.freezeBalanceV2ContractType.rawValue:
                 return .staking(type: .stake, validator: nil)
             case TronContractType.unfreezeBalanceV2ContractType.rawValue:
                 return .staking(type: .unstake, validator: nil)
+            case TronContractType.withdrawBalanceContractType.rawValue:
+                return .staking(type: .claimRewards, validator: nil)
             default:
                 return .contractMethodIdentifier(id: transaction.contractName ?? "")
             }

@@ -422,7 +422,10 @@ final class HederaWalletManager: BaseManager {
             let (exchangeRate, doesAccountExist) = input
             let feeBase = doesAccountExist ? transferFeeBase : Constants.cryptoCreateServiceCostInUSD
             let feeValue = exchangeRate.nextHBARPerUSD * feeBase * Constants.maxFeeMultiplier
-            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+            // Hedera fee calculation involves conversion from USD to HBar units, which ultimately results in a loss of precision.
+            // Therefore, the fee value is always approximate and rounding of the fee value is mandatory.
+            let feeRoundedValue = feeValue.rounded(blockchain: walletManager.wallet.blockchain, roundingMode: .up)
+            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeRoundedValue)
             let fee = Fee(feeAmount)
 
             return [fee]
@@ -553,7 +556,10 @@ extension HederaWalletManager: AssetRequirementsManager {
             }
 
             let feeValue = tokenAssociationFeeExchangeRate * Constants.tokenAssociateServiceCostInUSD
-            let feeAmount = Amount.init(with: wallet.blockchain, value: feeValue)
+            // Hedera fee calculation involves conversion from USD to HBar units, which ultimately results in a loss of precision.
+            // Therefore, the fee value is always approximate and rounding of the fee value is mandatory.
+            let feeRoundedValue = feeValue.rounded(blockchain: wallet.blockchain, roundingMode: .up)
+            let feeAmount = Amount(with: wallet.blockchain, value: feeRoundedValue)
 
             return .paidTransactionWithFee(feeAmount: feeAmount)
         }

@@ -58,6 +58,8 @@ final class HederaTransactionBuilder {
     ) throws -> CompiledTransaction {
         // At the moment, we intentionally don't support custom fees for HTS tokens (HIP-18 https://hips.hedera.com/HIP/hip-18.html)
         let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals)
+        // Hedera fee calculation involves conversion from USD to HBar units, which ultimately results in a loss of precision.
+        // Therefore, the fee value is always approximate and rounding of the fee value is mandatory.
         let feeRoundedValue = feeValue.rounded(roundingMode: .up)
         let feeAmount = try Hbar(feeRoundedValue, .tinybar)
 
