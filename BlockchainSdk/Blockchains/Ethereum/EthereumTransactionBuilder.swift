@@ -37,19 +37,19 @@ class EthereumTransactionBuilder {
         switch fee.amount.type {
         case .coin:
             let input = try buildSigningInput(
-                destination: .user(user: destination, value: valueData),
+                destination: .transfer(user: destination, coinValue: valueData, data: data),
                 fee: fee,
                 // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
-                parameters: EthereumTransactionParams(data: data, nonce: 1)
+                nonce: 1
             )
             return try buildTxCompilerPreSigningOutput(input: input).data
 
         case .token(let token):
             let input = try buildSigningInput(
-                destination: .contract(user: destination, contract: token.contractAddress, value: valueData),
+                destination: .erc20Transfer(user: destination, contract: token.contractAddress, tokenValue: valueData),
                 fee: fee,
                 // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
-                parameters: EthereumTransactionParams(data: data, nonce: 1)
+                nonce: 1
             )
 
             return try buildTxCompilerPreSigningOutput(input: input).data
@@ -78,8 +78,8 @@ class EthereumTransactionBuilder {
         return method.data
     }
     
-    func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams) throws -> EthereumSigningInput {
-        guard let nonce = parameters.nonce, nonce >= 0 else {
+    func buildSigningInput(destination: DestinationType, fee: Fee, nonce: Int?) throws -> EthereumSigningInput {
+        guard let nonce, nonce >= 0 else {
             throw EthereumTransactionBuilderError.invalidNonce
         }
         
@@ -106,31 +106,29 @@ class EthereumTransactionBuilder {
                 input.gasPrice = legacyParameters.gasPrice.serialize()
             }
 
-            input.transaction = .with {
+            input.transaction = .with { transaction in
                 switch destination {
-                case .user(let user, let value):
+                case .transfer(let user, let coinValue, let data):
                     input.toAddress = user
-                    $0.transfer = .with {
-                        $0.amount = value.serialize()
-                        if let data = parameters.data {
+                    transaction.transfer = .with {
+                        $0.amount = coinValue.serialize()
+                        if let data {
                             $0.data = data
                         }
                     }
-                case .contract(let user, let contract, let value):
-                    input.toAddress = contract
-                    let amount = value.serialize()
 
-                    if let data = parameters.data {
-                        $0.contractGeneric = .with {
-                            $0.amount = amount
-                            $0.data = data
-                        }
-                    } else {
-                        // Fallback to plain transfer if there is no payload available
-                        $0.erc20Transfer = .with {
-                            $0.amount = amount
-                            $0.to = user
-                        }
+                case .erc20Transfer(let user, let contract, let tokenValue):
+                    input.toAddress = contract
+                    transaction.erc20Transfer = .with {
+                        $0.amount = tokenValue.serialize()
+                        $0.to = user
+                    }
+
+                case .generic(let contract, let coinValue, let data):
+                    input.toAddress = contract
+                    transaction.contractGeneric = .with {
+                        $0.amount = coinValue.serialize()
+                        $0.data = data
                     }
                 }
             }
@@ -209,23 +207,32 @@ private extension EthereumTransactionBuilder {
             throw EthereumTransactionBuilderError.invalidAmount
         }
 
+        let parameters = transaction.params as? EthereumTransactionParams ?? .empty
+        let nonce = parameters.nonce
+
         switch transaction.amount.type {
         case .coin:
             return try buildSigningInput(
-                destination: .user(user: transaction.destinationAddress, value: amountValue),
-                fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams ?? .empty
-            )
-        case .token(let token):
-            return try buildSigningInput(
-                destination: .contract(
+                destination: .transfer(
                     user: transaction.destinationAddress,
-                    contract: transaction.contractAddress ?? token.contractAddress,
-                    value: amountValue
+                    coinValue: amountValue,
+                    data: parameters.data
                 ),
                 fee: transaction.fee,
-                parameters: transaction.params as? EthereumTransactionParams ?? .empty
+                nonce: nonce
             )
+        case .token(let token):
+            let contract = transaction.contractAddress ?? token.contractAddress
+
+            let destination: DestinationType = {
+                if let data = parameters.data {
+                    return .generic(contract: contract, coinValue: amountValue, data: data)
+                }
+
+                return .erc20Transfer(user: transaction.destinationAddress, contract: contract, tokenValue: amountValue)
+            }()
+
+            return try buildSigningInput(destination: destination, fee: transaction.fee, nonce: nonce)
         case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
@@ -234,8 +241,9 @@ private extension EthereumTransactionBuilder {
 
 extension EthereumTransactionBuilder {
     enum DestinationType: Hashable {
-        case user(user: String, value: BigUInt)
-        case contract(user: String, contract: String, value: BigUInt)
+        case transfer(user: String, coinValue: BigUInt, data: Data?)
+        case erc20Transfer(user: String, contract: String, tokenValue: BigUInt)
+        case generic(contract: String, coinValue: BigUInt, data: Data)
     }
 
     private enum Constants {
@@ -250,6 +258,7 @@ enum EthereumTransactionBuilderError: LocalizedError {
     case invalidNonce
     case transactionEncodingFailed
     case walletCoreError(message: String)
+    case invalidStakingTransaction
 
     public var errorDescription: String? {
         switch self {
@@ -265,6 +274,8 @@ enum EthereumTransactionBuilderError: LocalizedError {
             return "transactionEncodingFailed"
         case .walletCoreError(let message):
             return "walletCoreError: \(message)"
+        case .invalidStakingTransaction:
+            return "invalidStakingTransaction"
         }
     }
 }
