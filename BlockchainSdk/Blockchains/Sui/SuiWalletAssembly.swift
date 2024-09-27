@@ -18,8 +18,9 @@ struct SuiWalletAssembly: WalletManagerAssembly {
                 )
             }
 
-        let transactionBuilder = try SuiTransactionBuilder(publicKey: input.wallet.publicKey,
-                                                       decimalValue: input.wallet.blockchain.decimalValue)
+        let transactionBuilder = try SuiTransactionBuilder(walletAddress: input.wallet.address,
+                                                           publicKey: input.wallet.publicKey,
+                                                           decimalValue: input.wallet.blockchain.decimalValue)
 
         return SuiWalletManager(wallet: input.wallet, networkService: SuiNetworkService(providers: providers), transactionBuilder: transactionBuilder)
     }

@@ -11,13 +11,13 @@ import WalletCore
 import TangemSdk
 
 class SuiTransactionBuilder {
-    private let signer: any Address
+    private let walletAddress: String
     private let publicKey: Wallet.PublicKey
     private let decimalValue: Decimal
     private var coins: [SuiCoinObject] = []
     
-    init(publicKey: Wallet.PublicKey, decimalValue: Decimal) throws {
-        self.signer = try WalletCoreAddressService(coin: .sui).makeAddress(for: publicKey, with: .default)
+    init(walletAddress: String, publicKey: Wallet.PublicKey, decimalValue: Decimal) throws {
+        self.walletAddress = walletAddress
         self.publicKey = publicKey
         self.decimalValue = decimalValue
     }
@@ -27,7 +27,6 @@ class SuiTransactionBuilder {
     }
     
     func buildForInspect(amount: Amount, destination: String, referenceGasPrice: Decimal) throws -> String {
-        let useCoins = coins
         let totalAmount = coins.reduce(into: Decimal(0)) { partialResult, coin in
             partialResult += coin.balance
         }
@@ -40,16 +39,18 @@ class SuiTransactionBuilder {
         
         let inputAmount = isSendMax ? totalAmount - budget : decimalAmount
         
-        let input = try input(amount: inputAmount / decimalValue, destination: destination, fee: .init(gasPrice: referenceGasPrice, gasBudget: budget))
+        let input = try makeInput(amount: inputAmount / decimalValue, destination: destination, fee: .init(gasPrice: referenceGasPrice, gasBudget: budget))
         
         let signatureMock = Data(repeating: 0x01, count: 64)
         
-        let compiled = try TransactionCompiler.compileWithSignatures(coinType: .sui,
-                                                                     txInputData: input.serializedData(),
-                                                                     signatures: signatureMock.asDataVector(),
-                                                                     publicKeys: publicKey.blockchainKey.asDataVector())
-        let output = try SuiSigningOutput(serializedData: compiled)
+        let compiled = try TransactionCompiler.compileWithSignatures(
+            coinType: .sui,
+            txInputData: input.serializedData(),
+            signatures: signatureMock.asDataVector(),
+            publicKeys: publicKey.blockchainKey.asDataVector()
+        )
         
+        let output = try SuiSigningOutput(serializedData: compiled)
         return output.unsignedTx
     }
     
@@ -58,18 +59,17 @@ class SuiTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let input = try input(amount: transaction.amount.value, destination: transaction.destinationAddress, fee: suiFeeParameters)
+        let input = try makeInput(amount: transaction.amount.value, destination: transaction.destinationAddress, fee: suiFeeParameters)
         
         let preImageHashes = try TransactionCompiler.preImageHashes(coinType: .sui, txInputData: input.serializedData())
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
         
-        if preSigningOutput.error != .ok {
+        guard preSigningOutput.error == .ok else {
             Log.debug("SuiPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
             throw WalletError.failedToBuildTx
         }
         
         return preSigningOutput.dataHash
-        
     }
     
     func buildForSend(transaction: Transaction, signature: Data) throws -> (txBytes: String, signature: String) {
@@ -77,24 +77,26 @@ class SuiTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let input = try input(amount: transaction.amount.value, destination: transaction.destinationAddress, fee: suiFeeParameters)
+        let input = try makeInput(amount: transaction.amount.value, destination: transaction.destinationAddress, fee: suiFeeParameters)
         
-        let compiled = try TransactionCompiler.compileWithSignaturesAndPubKeyType(coinType: .sui,
-                                                                                  txInputData: input.serializedData(),
-                                                                                  signatures: signature.asDataVector(),
-                                                                                  publicKeys: publicKey.blockchainKey.asDataVector(),
-                                                                                  pubKeyType: .ed25519)
+        let compiled = try TransactionCompiler.compileWithSignaturesAndPubKeyType(
+            coinType: .sui,
+            txInputData: input.serializedData(),
+            signatures: signature.asDataVector(),
+            publicKeys: publicKey.blockchainKey.asDataVector(),
+            pubKeyType: .ed25519
+        )
         
         let output = try SuiSigningOutput(serializedData: compiled)
         return (output.unsignedTx, output.signature)
     }
     
-    private func input(amount: Decimal, destination: String, fee: SuiFeeParameters) throws -> WalletCore.SuiSigningInput {
+    private func makeInput(amount: Decimal, destination: String, fee: SuiFeeParameters) throws -> WalletCore.SuiSigningInput {
         let decimalAmount = amount * decimalValue
-        let useCoins = getCoins(for: decimalAmount + fee.gasBudget)
+        let coinToUse = getCoins(for: decimalAmount + fee.gasBudget)
 
         return WalletCore.SuiSigningInput.with { input in
-            let inputCoins = useCoins.map { coin in
+            let inputCoins = coinToUse.map { coin in
                 SuiObjectRef.with({ coins in
                     coins.version = coin.version
                     coins.objectID = coin.coinObjectId
@@ -108,7 +110,7 @@ class SuiTransactionBuilder {
                 pay.amounts = [decimalAmount.uint64Value]
             })
             
-            input.signer = signer.value
+            input.signer = walletAddress
             input.gasBudget = fee.gasBudget.uint64Value
             input.referenceGasPrice = fee.gasPrice.uint64Value
         }

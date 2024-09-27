@@ -10,26 +10,26 @@ import Foundation
 import Combine
 
 class SuiBalanceFetcher {
-    typealias BuildRequestPublisher = (_ address: String, _ coin: String, _ cursor: String?) -> AnyPublisher<SuiGetCoins, Error>
+    typealias RequestPublisherBuilder = (_ address: String, _ coin: String, _ cursor: String?) -> AnyPublisher<SuiGetCoins, Error>
     private var cancellable = Set<AnyCancellable>()
     private var coins = Set<SuiGetCoins.Coin>()
     private var subject = PassthroughSubject<[SuiGetCoins.Coin], Error>()
-    private var requestPublisher: BuildRequestPublisher?
+    private var requestPublisherBuilder: RequestPublisherBuilder?
     
     var publisher: AnyPublisher<[SuiGetCoins.Coin], Error> {
         subject.eraseToAnyPublisher()
     }
     
-    func requestPublisher(with:  @escaping BuildRequestPublisher) -> Self {
-        self.requestPublisher = with
+    func setupRequestPublisherBuilder(_ requestPublisherBuilder:  @escaping RequestPublisherBuilder) -> Self {
+        self.requestPublisherBuilder = requestPublisherBuilder
         return self
     }
     
-    func fetchBalanceRequestPublisher(address: String, coin: String, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
+    func fetchBalance(address: String, coin: String, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
         cancel()
         clear()
         
-        guard let `requestPublisher` = requestPublisher?(address, coin, cursor) else {
+        guard let requestPublisher = requestPublisherBuilder?(address, coin, cursor) else {
             return .anyFail(error: WalletError.empty)
         }
         
@@ -40,11 +40,21 @@ class SuiBalanceFetcher {
         return publisher
     }
     
+    func cancel() {
+        cancellable.forEach({ $0.cancel() })
+        cancellable.removeAll()
+    }
+    
+    func clear() {
+        coins.removeAll()
+    }
+    
     private func load(address: String, coin: String, cursor: String?, requestPublisher: AnyPublisher<SuiGetCoins, Error>) {
         requestPublisher
             .sink { [weak self] completionSubscriptions in
                 if case .failure = completionSubscriptions {
                     self?.subject.send(completion: completionSubscriptions)
+                    self?.clear()
                 }
             } receiveValue: { [weak self] response in
                 
@@ -55,8 +65,9 @@ class SuiBalanceFetcher {
                 coins.formUnion(response.data)
                 
                 if response.hasNextPage {
-                    guard let nextPublisher = self.requestPublisher?(address, coin, response.nextCursor) else {
+                    guard let nextPublisher = self.requestPublisherBuilder?(address, coin, response.nextCursor) else {
                         self.subject.send(completion: .failure(WalletError.empty))
+                        self.clear()
                         return
                     }
                     
@@ -67,14 +78,5 @@ class SuiBalanceFetcher {
                 }
             }
             .store(in: &cancellable)
-    }
-    
-    func cancel() {
-        cancellable.forEach({ $0.cancel() })
-        cancellable.removeAll()
-    }
-    
-    func clear() {
-        coins.removeAll()
     }
 }

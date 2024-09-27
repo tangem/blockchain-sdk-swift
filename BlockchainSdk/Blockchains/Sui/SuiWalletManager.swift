@@ -20,7 +20,7 @@ class SuiWalletManager: BaseManager, WalletManager {
     }
 
     override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
-        cancellable = networkService.getBalance(address: wallet.address, coin: .sui, cursor: nil)
+        cancellable = networkService.getBalance(address: wallet.address, coinType: .sui, cursor: nil)
             .sink(receiveCompletion: { [weak self] completionSubscriptions in
                 if case let .failure(error) = completionSubscriptions {
                     self?.wallet.clearAmounts()
@@ -62,7 +62,7 @@ extension SuiWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], any Error> {
-        networkService.getReferenceGasPrice()
+        return networkService.getReferenceGasPrice()
             .withWeakCaptureOf(self)
             .flatMap({ manager, referencedGasPrice -> AnyPublisher<SuiInspectTransaction, any Error> in
                 guard let decimalGasPrice = Decimal(stringValue: referencedGasPrice) else {
@@ -79,9 +79,7 @@ extension SuiWalletManager: TransactionFeeProvider {
                 
                 guard let usedGasPrice = Decimal(stringValue: inspectTransaction.input.gasData.price),
                       let computationCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.computationCost),
-                      let storageCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageCost),
-                      let storageRebate = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageRebate),
-                      let nonRefundableStorageFee = Decimal(stringValue: inspectTransaction.effects.gasUsed.nonRefundableStorageFee) else {
+                      let storageCost = Decimal(stringValue: inspectTransaction.effects.gasUsed.storageCost) else {
                     throw WalletError.failedToParseNetworkResponse()
                 }
                 
@@ -96,7 +94,7 @@ extension SuiWalletManager: TransactionFeeProvider {
     }
     
     private func estimateFee(amount: Amount, destination: String, referenceGasPrice: Decimal) -> AnyPublisher<SuiInspectTransaction, any Error> {
-        Result {
+        return Result {
             try transactionBuilder.buildForInspect(amount: amount, destination: destination, referenceGasPrice: referenceGasPrice)
         }
         .publisher
@@ -110,7 +108,7 @@ extension SuiWalletManager: TransactionFeeProvider {
 
 extension SuiWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: any TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        Result {
+        return Result {
             try transactionBuilder.buildForSign(transaction: transaction)
         }
         .publisher

@@ -9,9 +9,9 @@
 import Foundation
 
 struct SUIUtils {
-    static let SuiGasBudgetScaleUpConstant = Decimal(1000000)
+    static let SuiGasBudgetScaleUpConstant = Decimal(1_000_000)
     static let SuiGasMinimumGasBudgetComputationUnits = Decimal(1000)
-    static let SuiGasBudgetMaxValue = Decimal(50000000000)
+    static let SuiGasBudgetMaxValue = Decimal(50_000_000_000)
     
     enum EllipticCurveID: UInt8 {
         case ed25519    = 0x00
@@ -24,23 +24,28 @@ struct SUIUtils {
     }
     
     struct CoinType: Codable {
-        private static let separator = "::" 
-        
         let contract: String
         let lowerID: String
         let upperID: String
         
-        static let sui = try! Self(string: "0x2::sui::SUI")
-        
         var string: String {
             [contract, lowerID, upperID].joined(separator: Self.separator)
+        }
+        
+        static let sui = Self(contract: "0x2", lowerID: "sui", upperID: "SUI")
+        private static let separator = "::"
+        
+        init(contract: String, lowerID: String, upperID: String) {
+            self.contract = contract
+            self.lowerID = lowerID
+            self.upperID = upperID
         }
         
         init(string: String) throws {
             let elements = string.components(separatedBy: Self.separator)
             
             guard elements.count == 3 else {
-                throw SuiError.CoinType.failedDecoding
+                throw SuiError.CodingError.failedDecoding
             }
             
             contract = elements[0]
@@ -48,14 +53,14 @@ struct SUIUtils {
             upperID  = elements[2]
         }
         
-        func encode(to encoder: any Encoder) throws {
-            try string.encode(to: encoder)
-        }
-        
         init(from decoder: any Decoder) throws {
             let container = try decoder.singleValueContainer()
             let string = try container.decode(String.self)
             try self.init(string: string)
+        }
+        
+        func encode(to encoder: any Encoder) throws {
+            try string.encode(to: encoder)
         }
     }
 }

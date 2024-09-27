@@ -39,7 +39,7 @@ final class SUITest: XCTestCase {
                                       changeAddress: "")
         
         
-        let txBuilder = try SuiTransactionBuilder(publicKey: walletPublicKey, decimalValue: coinDecimalValue)
+        let txBuilder = try SuiTransactionBuilder(walletAddress: address, publicKey: walletPublicKey, decimalValue: coinDecimalValue)
         txBuilder.update(coins: inputs)
         
         let signature = expectedSignatureData
@@ -67,7 +67,7 @@ final class SUITest: XCTestCase {
                                       changeAddress: "")
         
         
-        let txBuilder = try SuiTransactionBuilder(publicKey: walletPublicKey, decimalValue: coinDecimalValue)
+        let txBuilder = try SuiTransactionBuilder(walletAddress: address, publicKey: walletPublicKey, decimalValue: coinDecimalValue)
         txBuilder.update(coins: inputs)
         
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)

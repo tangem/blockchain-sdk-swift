@@ -21,10 +21,12 @@ struct SuiCoinObject {
             return nil
         }
         
-        return SuiCoinObject(coinType: response.coinType,
-                             coinObjectId: response.coinObjectId,
-                             version: version,
-                             digest: response.digest,
-                             balance: balance)
+        return SuiCoinObject(
+            coinType: response.coinType,
+            coinObjectId: response.coinObjectId,
+            version: version,
+            digest: response.digest,
+            balance: balance
+        )
     }
 }

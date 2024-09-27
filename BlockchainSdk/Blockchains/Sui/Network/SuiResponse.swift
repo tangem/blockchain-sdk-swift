@@ -20,7 +20,7 @@ struct SuiGetCoins: Codable {
         let previousTransaction: String
         
         func hash(into hasher: inout Hasher) {
-            digest.hash(into: &hasher)
+            hasher.combine(digest)
         }
     }
 
