@@ -26,9 +26,15 @@ class SuiWalletManager: BaseManager, WalletManager {
                     self?.wallet.clearAmounts()
                     completion(.failure(error))
                 }
-            }, receiveValue: { [weak self] coins in
-                self?.updateWallet(coins: coins)
-                completion(.success(()))
+            }, receiveValue: { [weak self] result in
+                switch result {
+                case .success(let coins):
+                    self?.updateWallet(coins: coins)
+                    completion(.success(()))
+                case .failure(let error):
+                    self?.wallet.clearAmounts()
+                    completion(.failure(error))
+                }
             })
     }
     

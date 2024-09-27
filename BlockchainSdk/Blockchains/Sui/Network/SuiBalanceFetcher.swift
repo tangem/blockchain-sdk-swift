@@ -13,10 +13,10 @@ class SuiBalanceFetcher {
     typealias RequestPublisherBuilder = (_ address: String, _ coin: String, _ cursor: String?) -> AnyPublisher<SuiGetCoins, Error>
     private var cancellable = Set<AnyCancellable>()
     private var coins = Set<SuiGetCoins.Coin>()
-    private var subject = PassthroughSubject<[SuiGetCoins.Coin], Error>()
+    private var subject = PassthroughSubject<Result<[SuiGetCoins.Coin], Error>, Never>()
     private var requestPublisherBuilder: RequestPublisherBuilder?
     
-    var publisher: AnyPublisher<[SuiGetCoins.Coin], Error> {
+    var publisher: AnyPublisher<Result<[SuiGetCoins.Coin], Error>, Never> {
         subject.eraseToAnyPublisher()
     }
     
@@ -25,15 +25,16 @@ class SuiBalanceFetcher {
         return self
     }
     
-    func fetchBalance(address: String, coin: String, cursor: String?) -> AnyPublisher<[SuiGetCoins.Coin], Error> {
+    func fetchBalance(address: String, coin: String, cursor: String?) -> AnyPublisher<Result<[SuiGetCoins.Coin], Error>, Never> {
         cancel()
         clear()
         
-        guard let requestPublisher = requestPublisherBuilder?(address, coin, cursor) else {
-            return .anyFail(error: WalletError.empty)
-        }
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let requestPublisher = self?.requestPublisherBuilder?(address, coin, cursor) else {
+                self?.subject.send(.failure(WalletError.empty))
+                return
+            }
+            
             self?.load(address: address, coin: coin, cursor: cursor, requestPublisher: requestPublisher)
         }
         
@@ -53,7 +54,7 @@ class SuiBalanceFetcher {
         requestPublisher
             .sink { [weak self] completionSubscriptions in
                 if case .failure = completionSubscriptions {
-                    self?.subject.send(completion: completionSubscriptions)
+                    self?.subject.send(.failure(WalletError.empty))
                     self?.clear()
                 }
             } receiveValue: { [weak self] response in
@@ -66,14 +67,14 @@ class SuiBalanceFetcher {
                 
                 if response.hasNextPage {
                     guard let nextPublisher = self.requestPublisherBuilder?(address, coin, response.nextCursor) else {
-                        self.subject.send(completion: .failure(WalletError.empty))
+                        self.subject.send(.failure(WalletError.empty))
                         self.clear()
                         return
                     }
                     
                     self.load(address: address, coin: coin, cursor: response.nextCursor, requestPublisher: nextPublisher)
                 } else {
-                    self.subject.send(self.coins.asArray)
+                    self.subject.send(.success(self.coins.asArray))
                     self.clear()
                 }
             }
