@@ -26,7 +26,8 @@ struct SubstrateRuntimeVersionProvider {
             // 198 is from the first user report
             return meta.specVersion >= 198 ? .v15 : .v14
         case .azero,
-                .joystream:
+                .joystream,
+                .energyWebX: // TODO: [Energy Web X] Questionable
             return .v14
         }
     }

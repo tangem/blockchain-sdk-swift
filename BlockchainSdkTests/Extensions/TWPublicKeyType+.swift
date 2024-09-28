@@ -98,6 +98,13 @@ extension PublicKeyType {
             default:
                 throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
+        case .energyWebX(let curve, _):
+            switch curve {
+            case .ed25519, .ed25519_slip0010:
+                self = .ed25519
+            default:
+                throw NSError.makeUnsupportedCurveError(for: blockchain)
+            }
         case .ethereumPoW,
                 .disChain,
                 .rsk,

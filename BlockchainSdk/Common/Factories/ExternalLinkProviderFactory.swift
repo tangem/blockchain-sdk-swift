@@ -155,6 +155,8 @@ public struct ExternalLinkProviderFactory {
             return SeiExternalLinkProvider(isTestnet: isTestnet)
         case .energyWebChain:
             return EnergyWebChainExternalLinkProvider(isTestnet: isTestnet)
+        case .energyWebX:
+            return EnergyWebXExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

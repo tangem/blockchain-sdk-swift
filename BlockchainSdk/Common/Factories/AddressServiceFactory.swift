@@ -134,6 +134,8 @@ public struct AddressServiceFactory {
             return KoinosAddressService(networkParams: network.networkParams)
         case .filecoin:
             return WalletCoreAddressService(blockchain: .filecoin)
+        case .energyWebX(let curve, _):
+            return PolkadotAddressService(network: .energyWebX(curve: curve))
         }
     }
 }

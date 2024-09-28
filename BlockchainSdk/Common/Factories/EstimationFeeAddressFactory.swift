@@ -101,6 +101,9 @@ struct EstimationFeeAddressFactory {
             return "f1wxdu6d25dc4hmebdfgriswooum22plhmmpxibzq"
         case .sei:
             return "sei1lhjvds604fvac32j4eygpr820lyc82dlfv0ea4"
+        case .energyWebX:
+            // TODO: [Energy Web X] Need to generate
+            return ""
         }
     }
 }
