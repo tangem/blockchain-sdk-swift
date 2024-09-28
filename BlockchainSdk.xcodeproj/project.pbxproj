@@ -534,6 +534,7 @@
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA7C9A182C07B1C600C8C423 /* KoinosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */; };
 		DA7C9A1A2C07B30500C8C423 /* KoinosAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */; };
+		DA81B1BD2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA81B1BC2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
@@ -592,8 +593,8 @@
 		DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */; };
 		DC136B432B1A6249008A7D41 /* Bech32Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */; };
 		DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC173AEB2A5D42EE0088F79E /* XRPTests.swift */; };
-		DC31D9672C869BDA004AEFDF /* SeiExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC31D9662C869BDA004AEFDF /* SeiExternalLinkProvider.swift */; };
 		DC3026202C9842F6000B696C /* KaspaFeeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC30261F2C9842F6000B696C /* KaspaFeeMapper.swift */; };
+		DC31D9672C869BDA004AEFDF /* SeiExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC31D9662C869BDA004AEFDF /* SeiExternalLinkProvider.swift */; };
 		DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */; };
 		DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */; };
 		DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */; };
@@ -1477,6 +1478,7 @@
 		DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosNetworkService.swift; sourceTree = "<group>"; };
 		DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosAccountInfo.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
+		DA81B1BC2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyWebChainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
 		DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTarget.swift; sourceTree = "<group>"; };
@@ -3811,6 +3813,7 @@
 				B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */,
 				DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */,
 				1CF315322C39B5B0004EF522 /* CyberExternalLinkProvider.swift */,
+				DA81B1BC2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
 			sourceTree = "<group>";
@@ -5316,6 +5319,7 @@
 				DACAAB512BE8BAC20039ED3D /* KoinosWalletAssembly.swift in Sources */,
 				DC3C73912C2EF46E00B33990 /* EthereumModels.swift in Sources */,
 				2DDEFBC52B59B36A00885675 /* AlgorandTransactionParams.swift in Sources */,
+				DA81B1BD2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift in Sources */,
 				2D24F5B22B6D2C6500D502A0 /* AptosTransactionInfo.swift in Sources */,
 				DC5E65102B1650F400E81AA5 /* OP_2SWAP.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,

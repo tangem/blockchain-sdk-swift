@@ -84,7 +84,8 @@ struct AddressTypesConfig {
              .cyber,
              .blast,
              .filecoin,
-             .sei:
+             .sei,
+             .energyWebChain:
             return [.default]
         }
     }

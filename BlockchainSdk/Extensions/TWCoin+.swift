@@ -118,7 +118,8 @@ extension CoinType {
              .bittensor,
              .cyber,
              .koinos,
-             .blast:
+             .blast,
+             .energyWebChain:
             // Blockchains that are not in WalletCore yet
             return nil
         }

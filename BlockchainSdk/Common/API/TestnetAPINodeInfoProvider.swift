@@ -223,6 +223,10 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://api-tn10.kaspa.org")!)
             ]
+        case .energyWebChain:
+            return [
+                .init(url: URL(string: "https://73799.rpc.thirdweb.com")!)
+            ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis,
