@@ -1,5 +1,5 @@
 //
-//  CoreDAOExternalLinkProvider.swift
+//  CoreExternalLinkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Aleksei Muraveinik on 30.9.24..
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CoreDAOExternalLinkProvider {
+struct CoreExternalLinkProvider {
     private let baseExplorerUrl: String
 
     init(isTestnet: Bool) {
@@ -18,16 +18,16 @@ struct CoreDAOExternalLinkProvider {
     }
 }
 
-extension CoreDAOExternalLinkProvider: ExternalLinkProvider {
+extension CoreExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
         URL(string: "https://scan.test.btcs.network/faucet")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "\(baseExplorerUrl)/address/\(address)")
+        URL(string: "\(baseExplorerUrl)/address/\(address)")
     }
 
     func url(transaction hash: String) -> URL? {
-        return URL(string: "\(baseExplorerUrl)/tx/\(hash)")
+        URL(string: "\(baseExplorerUrl)/tx/\(hash)")
     }
 }

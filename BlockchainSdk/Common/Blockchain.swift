@@ -786,7 +786,7 @@ extension Blockchain {
         case .base: return true
         case .cyber: return false
         case .blast: return false
-        case .core: return true
+        case .core: return false
         default:
             assertionFailure("Don't forget about evm here")
             return false
@@ -917,7 +917,7 @@ extension Blockchain: Codable {
         case .blast: return "blast"
         case .filecoin: return "filecoin"
         case .sei: return "sei"
-        case .core: return "coreDAO"
+        case .core: return "core"
         }
     }
 
@@ -1010,7 +1010,7 @@ extension Blockchain: Codable {
         case "blast": self = .blast(testnet: isTestnet)
         case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
-        case "coreDAO": self = .core(testnet: isTestnet)
+        case "core": self = .core(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }

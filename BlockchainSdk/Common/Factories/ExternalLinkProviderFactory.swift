@@ -154,7 +154,7 @@ public struct ExternalLinkProviderFactory {
         case .sei:
             return SeiExternalLinkProvider(isTestnet: isTestnet)
         case .core:
-            return CoreDAOExternalLinkProvider(isTestnet: isTestnet)
+            return CoreExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }
