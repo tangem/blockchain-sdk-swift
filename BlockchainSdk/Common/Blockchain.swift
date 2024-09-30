@@ -84,6 +84,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case blast(testnet: Bool)
     case filecoin
     case sei(testnet: Bool)
+    case core(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -125,7 +126,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .cyber(let testnet),
                 .blast(let testnet),
                 .sei(let testnet),
-                .kaspa(let testnet):
+                .kaspa(let testnet),
+                .core(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -274,7 +276,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .base,
                 .cyber,
                 .blast,
-                .filecoin:
+                .filecoin,
+                .core:
             return 18
         case .cardano,
                 .xrp,
@@ -439,6 +442,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "FIL"
         case .sei:
             return "SEI"
+        case .core:
+            return isTestnet ? "tCORE" : "CORE"
         }
     }
 
@@ -717,6 +722,7 @@ extension Blockchain {
         case .base: return isTestnet ? 84532 : 8453
         case .cyber: return isTestnet ? 111557560 : 7560
         case .blast: return isTestnet ? 168587773 : 81457
+        case .core: return isTestnet ? 1115 : 1116
         default:
             return nil
         }
@@ -780,6 +786,7 @@ extension Blockchain {
         case .base: return true
         case .cyber: return false
         case .blast: return false
+        case .core: return true
         default:
             assertionFailure("Don't forget about evm here")
             return false
@@ -910,6 +917,7 @@ extension Blockchain: Codable {
         case .blast: return "blast"
         case .filecoin: return "filecoin"
         case .sei: return "sei"
+        case .core: return "coreDAO"
         }
     }
 
@@ -1002,6 +1010,7 @@ extension Blockchain: Codable {
         case "blast": self = .blast(testnet: isTestnet)
         case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
+        case "coreDAO": self = .core(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1223,6 +1232,8 @@ private extension Blockchain {
             return "filecoin"
         case .sei:
             return "sei-network"
+        case .core:
+            return "core"
         }
     }
 
@@ -1275,7 +1286,8 @@ extension Blockchain {
                 .taraxa,
                 .decimal,
                 .xdc,
-                .telos:
+                .telos,
+                .core:
             return EthereumWalletAssembly()
         case .optimism,
              .manta,
