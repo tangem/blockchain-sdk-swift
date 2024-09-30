@@ -59,7 +59,8 @@ extension PublicKeyType {
                 .internetComputer,
                 .base,
                 .blast,
-                .cyber:
+                .cyber,
+                .core:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
