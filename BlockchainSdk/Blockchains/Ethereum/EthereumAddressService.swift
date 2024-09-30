@@ -52,8 +52,7 @@ extension EthereumAddressService: AddressProvider {
             throw EthereumAddressServiceError.failedToGetChecksumAddress
         }
 
-//        return PlainAddress(value: checksumAddress, publicKey: publicKey, type: addressType)
-        return PlainAddress(value: "0xbe52B7AD4956d6fad191e92B56Bc532d4470b694", publicKey: publicKey, type: addressType)
+        return PlainAddress(value: checksumAddress, publicKey: publicKey, type: addressType)
     }
 }
 
