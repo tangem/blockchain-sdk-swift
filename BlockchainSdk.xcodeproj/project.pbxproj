@@ -5965,7 +5965,7 @@
 			repositoryURL = "https://github.com/tangem/ton-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = "1.0.10-tangem1";
+				version = "1.0.10-tangem2";
 			};
 		};
 		0ABC60F12C41021000065EBA /* XCRemoteSwiftPackageReference "ScaleCodec" */ = {
