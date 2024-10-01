@@ -97,15 +97,20 @@ final class ICPTransactionBuilder {
         ) throws {
             self.publicKey = publicKey
             self.domainSeparator = ICPDomainSeparator(stringLiteral: "ic-request")
-            let transactionParams = ICPTransactionParams(
+
+            let transactionParams = transaction.params as? ICPTransactionParams
+
+            let icpTransactionParams = ICPTransaction.TransactionParams(
                 destination: Data(hex: transaction.destinationAddress),
                 amount: (transaction.amount.value * decimalValue).uint64Value,
-                date: date
+                date: date,
+                memo: transactionParams?.memo
             )
+
             self.requestData = try ICPSign.makeRequestData(
                 publicKey: publicKey,
                 nonce: nonce,
-                transactionParams: transactionParams
+                transactionParams: icpTransactionParams
             )
         }
         
