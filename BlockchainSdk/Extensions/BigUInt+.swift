@@ -8,6 +8,7 @@
 
 import Foundation
 import struct BigInt.BigUInt
+import struct BigInt.BigInt
 
 public extension BigUInt {
     /// 1. For integers only, will return `nil` if the value isn't an integer number.
@@ -54,8 +55,38 @@ public extension BigUInt {
     }()
 }
 
+
+public extension BigInt {
+    /// - Note: Based on https://github.com/attaswift/BigInt/issues/52
+    /// - Warning: May lead to a loss of precision.
+    var decimal: Decimal? {
+        let bigUIntFormatted = String(self)
+
+        // Check that the decimal has been correctly formatted from the string without any loss
+        guard
+            let result = Decimal(string: bigUIntFormatted, locale: Locale.enUS),
+            let decimalFormatted = Self.decimalFormatter.string(from: NSDecimalNumber(decimal: result)),
+            decimalFormatted == bigUIntFormatted
+        else {
+            return nil
+        }
+
+        return result
+    }
+
+    private static var decimalFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.usesGroupingSeparator = false
+        return formatter
+    }()
+}
+
 // MARK: - Convenience extensions
 
 private extension Locale {
     static let enUS: Locale = Locale(identifier: "en_US")
 }
+
+
