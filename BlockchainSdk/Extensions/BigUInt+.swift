@@ -60,13 +60,13 @@ public extension BigInt {
     /// - Note: Based on https://github.com/attaswift/BigInt/issues/52
     /// - Warning: May lead to a loss of precision.
     var decimal: Decimal? {
-        let bigUIntFormatted = String(self)
+        let bigIntFormatted = String(self)
 
         // Check that the decimal has been correctly formatted from the string without any loss
         guard
-            let result = Decimal(string: bigUIntFormatted, locale: Locale.enUS),
+            let result = Decimal(string: bigIntFormatted, locale: Locale.enUS),
             let decimalFormatted = Self.decimalFormatter.string(from: NSDecimalNumber(decimal: result)),
-            decimalFormatted == bigUIntFormatted
+            decimalFormatted == bigIntFormatted
         else {
             return nil
         }
