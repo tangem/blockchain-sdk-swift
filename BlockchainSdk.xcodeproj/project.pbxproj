@@ -606,6 +606,7 @@
 		DC4772392C29F63700D2459D /* IdentityEthereumAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4772382C29F63700D2459D /* IdentityEthereumAddressConverter.swift */; };
 		DC47723B2C29F64B00D2459D /* EthereumAddressConverterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47723A2C29F64B00D2459D /* EthereumAddressConverterError.swift */; };
 		DC47723D2C29F66100D2459D /* EthereumAddressConverterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47723C2C29F66100D2459D /* EthereumAddressConverterFactory.swift */; };
+		DC49B1E12CAC04FE0018836B /* ICPTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC49B1E02CAC04FE0018836B /* ICPTransactionParams.swift */; };
 		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC5E646D2B16098C00E81AA5 /* RIPEMD160+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */; };
 		DC5E64702B160FCD00E81AA5 /* Opcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E646F2B160FCD00E81AA5 /* Opcode.swift */; };
@@ -1573,6 +1574,7 @@
 		DC47723C2C29F66100D2459D /* EthereumAddressConverterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressConverterFactory.swift; sourceTree = "<group>"; };
 		DC4772892C2B0BDB00D2459D /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DC47728B2C2B0C0500D2459D /* uk-UA */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "uk-UA"; path = "uk-UA.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DC49B1E02CAC04FE0018836B /* ICPTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICPTransactionParams.swift; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RIPEMD160+.swift"; sourceTree = "<group>"; };
 		DC5E646F2B160FCD00E81AA5 /* Opcode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Opcode.swift; sourceTree = "<group>"; };
@@ -1960,6 +1962,7 @@
 				0AF503342C199C2A00193358 /* ICPExternalLinkProvider.swift */,
 				0A7624DA2C2950E8002FA139 /* ICPTransactionBuilder.swift */,
 				0AEFED0E2C3D5AF300C0F400 /* Network */,
+				DC49B1E02CAC04FE0018836B /* ICPTransactionParams.swift */,
 			);
 			path = ICP;
 			sourceTree = "<group>";
@@ -5340,6 +5343,7 @@
 				EF1339BC2AB8E45D00B78BA3 /* AllowanceERC20TokenMethod.swift in Sources */,
 				2D9A919529BB8BFF00476EA6 /* TONWalletManager.swift in Sources */,
 				DC5E64E92B1650F400E81AA5 /* OP_OR.swift in Sources */,
+				DC49B1E12CAC04FE0018836B /* ICPTransactionParams.swift in Sources */,
 				DC5E64F52B1650F400E81AA5 /* OP_ADD.swift in Sources */,
 				5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */,
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
@@ -6045,7 +6049,7 @@
 			repositoryURL = "https://github.com/tangem/IcpKit";
 			requirement = {
 				kind = exactVersion;
-				version = "0.1.2-tangem3";
+				version = "0.1.2-tangem4";
 			};
 		};
 		0ABC60EE2C4101ED00065EBA /* XCRemoteSwiftPackageReference "ton-swift" */ = {
@@ -6053,7 +6057,7 @@
 			repositoryURL = "https://github.com/tangem/ton-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = "1.0.10-tangem1";
+				version = "1.0.10-tangem2";
 			};
 		};
 		0ABC60F12C41021000065EBA /* XCRemoteSwiftPackageReference "ScaleCodec" */ = {
