@@ -37,19 +37,24 @@ class EthereumTransactionBuilder {
         switch fee.amount.type {
         case .coin:
             let input = try buildSigningInput(
-                destination: .transfer(user: destination, coinValue: valueData, data: data),
+                destination: destination,
+                coinAmount: valueData,
                 fee: fee,
                 // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
-                nonce: 1
+                nonce: 1,
+                data: data
             )
             return try buildTxCompilerPreSigningOutput(input: input).data
 
         case .token(let token):
+            let data = TransferERC20TokenMethod(destination: destination, amount: valueData).data
             let input = try buildSigningInput(
-                destination: .erc20Transfer(user: destination, contract: token.contractAddress, tokenValue: valueData),
+                destination: token.contractAddress,
+                coinAmount: .zero,
                 fee: fee,
                 // The nonce for the dummy transaction won't be used later, so we can just mock it with any value
-                nonce: 1
+                nonce: 1,
+                data: data
             )
 
             return try buildTxCompilerPreSigningOutput(input: input).data
@@ -78,19 +83,28 @@ class EthereumTransactionBuilder {
         return method.data
     }
     
-    func buildSigningInput(destination: DestinationType, fee: Fee, nonce: Int?) throws -> EthereumSigningInput {
+    func buildSigningInput(destination: String, coinAmount: BigUInt, fee: Fee, nonce: Int?, data: Data?) throws -> EthereumSigningInput {
         guard let nonce, nonce >= 0 else {
             throw EthereumTransactionBuilderError.invalidNonce
         }
-        
-        let nonceValue = BigUInt(nonce)
+
+        guard let feeParameters = fee.parameters as? EthereumFeeParameters else {
+            throw EthereumTransactionBuilderError.feeParametersNotFound
+        }
 
         let input = try EthereumSigningInput.with { input in
             input.chainID = BigUInt(chainId).serialize()
-            input.nonce = nonceValue.serialize()
+            input.nonce = BigUInt(nonce).serialize()
+            input.toAddress = destination
 
-            guard let feeParameters = fee.parameters as? EthereumFeeParameters else {
-                throw EthereumTransactionBuilderError.feeParametersNotFound
+            input.transaction = .with { transaction in
+                input.toAddress = destination
+                transaction.contractGeneric = .with {
+                    $0.amount = coinAmount.serialize()
+                    if let data {
+                        $0.data = data
+                    }
+                }
             }
 
             switch feeParameters.parametersType {
@@ -104,33 +118,6 @@ class EthereumTransactionBuilder {
                 input.txMode = .legacy
                 input.gasLimit = legacyParameters.gasLimit.serialize()
                 input.gasPrice = legacyParameters.gasPrice.serialize()
-            }
-
-            input.transaction = .with { transaction in
-                switch destination {
-                case .transfer(let user, let coinValue, let data):
-                    input.toAddress = user
-                    transaction.transfer = .with {
-                        $0.amount = coinValue.serialize()
-                        if let data {
-                            $0.data = data
-                        }
-                    }
-
-                case .erc20Transfer(let user, let contract, let tokenValue):
-                    input.toAddress = contract
-                    transaction.erc20Transfer = .with {
-                        $0.amount = tokenValue.serialize()
-                        $0.to = user
-                    }
-
-                case .generic(let contract, let coinValue, let data):
-                    input.toAddress = contract
-                    transaction.contractGeneric = .with {
-                        $0.amount = coinValue.serialize()
-                        $0.data = data
-                    }
-                }
             }
         }
 
@@ -213,26 +200,25 @@ private extension EthereumTransactionBuilder {
         switch transaction.amount.type {
         case .coin:
             return try buildSigningInput(
-                destination: .transfer(
-                    user: transaction.destinationAddress,
-                    coinValue: amountValue,
-                    data: parameters.data
-                ),
+                destination: transaction.destinationAddress,
+                coinAmount: amountValue,
                 fee: transaction.fee,
-                nonce: nonce
+                nonce: nonce,
+                data: parameters.data
             )
         case .token(let token):
             let contract = transaction.contractAddress ?? token.contractAddress
+            let method = TransferERC20TokenMethod(destination: transaction.destinationAddress, amount: amountValue)
+            let data = parameters.data ?? method.data
 
-            let destination: DestinationType = {
-                if let data = parameters.data {
-                    return .generic(contract: contract, coinValue: amountValue, data: data)
-                }
+            return try buildSigningInput(
+                destination: contract,
+                coinAmount: .zero,
+                fee: transaction.fee,
+                nonce: nonce,
+                data: data
+            )
 
-                return .erc20Transfer(user: transaction.destinationAddress, contract: contract, tokenValue: amountValue)
-            }()
-
-            return try buildSigningInput(destination: destination, fee: transaction.fee, nonce: nonce)
         case .reserve, .feeResource:
             throw BlockchainSdkError.notImplemented
         }
@@ -240,12 +226,6 @@ private extension EthereumTransactionBuilder {
 }
 
 extension EthereumTransactionBuilder {
-    enum DestinationType: Hashable {
-        case transfer(user: String, coinValue: BigUInt, data: Data?)
-        case erc20Transfer(user: String, contract: String, tokenValue: BigUInt)
-        case generic(contract: String, coinValue: BigUInt, data: Data)
-    }
-
     private enum Constants {
         static let signatureSize = 64
     }

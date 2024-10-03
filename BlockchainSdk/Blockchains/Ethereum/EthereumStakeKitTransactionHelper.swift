@@ -57,12 +57,14 @@ struct EthereumStakeKitTransactionHelper {
         }
 
         return try transactionBuilder.buildSigningInput(
-            destination: .generic(contract: compiledTransaction.to, coinValue: .zero, data: data),
+            destination: compiledTransaction.to,
+            coinAmount: .zero,
             fee: Fee(
                 stakingTransaction.fee.amount,
                 parameters: EthereumEIP1559FeeParameters(gasLimit: gasLimit, baseFee: baseFee, priorityFee: priorityFee)
             ),
-            nonce: compiledTransaction.nonce
+            nonce: compiledTransaction.nonce,
+            data: data
         )
     }
 }
