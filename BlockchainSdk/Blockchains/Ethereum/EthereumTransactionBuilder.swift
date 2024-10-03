@@ -83,8 +83,8 @@ class EthereumTransactionBuilder {
         return method.data
     }
     
-    func buildSigningInput(destination: String, coinAmount: BigUInt, fee: Fee, nonce: Int?, data: Data?) throws -> EthereumSigningInput {
-        guard let nonce, nonce >= 0 else {
+    func buildSigningInput(destination: String, coinAmount: BigUInt, fee: Fee, nonce: Int, data: Data?) throws -> EthereumSigningInput {
+        guard nonce >= 0 else {
             throw EthereumTransactionBuilderError.invalidNonce
         }
 
@@ -194,8 +194,13 @@ private extension EthereumTransactionBuilder {
             throw EthereumTransactionBuilderError.invalidAmount
         }
 
-        let parameters = transaction.params as? EthereumTransactionParams ?? .empty
-        let nonce = parameters.nonce
+        guard let parameters = transaction.params as? EthereumTransactionParams else {
+            throw EthereumTransactionBuilderError.transactionParamsNotFound
+        }
+
+        guard let nonce = parameters.nonce else {
+            throw EthereumTransactionBuilderError.invalidNonce
+        }
 
         switch transaction.amount.type {
         case .coin:
@@ -233,6 +238,7 @@ extension EthereumTransactionBuilder {
 
 enum EthereumTransactionBuilderError: LocalizedError {
     case feeParametersNotFound
+    case transactionParamsNotFound
     case invalidSignatureCount
     case invalidAmount
     case invalidNonce
@@ -244,6 +250,8 @@ enum EthereumTransactionBuilderError: LocalizedError {
         switch self {
         case .feeParametersNotFound:
             return "feeParametersNotFound"
+        case .transactionParamsNotFound:
+            return "transactionParamsNotFound"
         case .invalidAmount:
             return "invalidAmount"
         case .invalidNonce:
