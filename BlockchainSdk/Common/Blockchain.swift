@@ -540,6 +540,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             "\(displayName) (ETH)"
         case .ton:
             "Toncoin"
+        case .fantom:
+            "Fantom"
         default:
             displayName
         }

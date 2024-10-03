@@ -165,7 +165,10 @@ class TronWalletManager: BaseManager, WalletManager {
                 // since we don't know what period the transaction is going to be executed in
                 // we increase the fee just in case by 20%
                 let dynamicEnergyIncreaseFactorPresicion = 10_000
-                let dynamicEnergyIncreaseFactor = Double(chainParameters.dynamicEnergyIncreaseFactor) / Double(dynamicEnergyIncreaseFactorPresicion)
+                let dynamicEnergyIncreaseFactor: Double = amount.type.token?.contractAddress == Constants.usdtContractAddress
+                    ? .zero
+                    : Double(chainParameters.dynamicEnergyIncreaseFactor) / Double(dynamicEnergyIncreaseFactorPresicion)
+                
                 let conservativeEnergyFee = Int(Double(energyUse) * (1 + dynamicEnergyIncreaseFactor))
                 
                 return TronEnergyFeeData(
@@ -297,3 +300,8 @@ extension TronWalletManager: StakeKitTransactionSender, StakeKitTransactionSende
     }
 }
 
+private extension TronWalletManager {
+    enum Constants {
+        static let usdtContractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+    }
+}
