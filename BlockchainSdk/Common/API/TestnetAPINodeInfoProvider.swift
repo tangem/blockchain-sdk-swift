@@ -215,6 +215,10 @@ struct TestnetAPINodeInfoProvider {
                 .init(url: URL(string: "https://blast-sepolia.drpc.org")!),
                 .init(url: URL(string: "https://blast-sepolia.blockpi.network/v1/rpc/public")!)
             ]
+        case .sui:
+            return [
+                .init(url: URL(string: "https://fullnode.testnet.sui.io")!)
+            ]
         case .sei:
             return [
                 .init(url: URL(string: "https://rest.wallet.atlantic-2.sei.io")!)

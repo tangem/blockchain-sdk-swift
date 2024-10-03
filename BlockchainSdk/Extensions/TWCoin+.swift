@@ -82,6 +82,8 @@ extension CoinType {
             self = .hedera
         case .internetComputer:
             self = .internetComputer
+        case .sui:
+            self = .sui
         case .filecoin:
             self = .filecoin
         case .sei:

@@ -82,6 +82,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
+    case sui(curve: EllipticCurve, testnet: Bool)
     case filecoin
     case sei(testnet: Bool)
     case energyWebChain(testnet: Bool)
@@ -161,6 +162,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .algorand(_, let testnet),
                 .aptos(_, let testnet),
                 .shibarium(let testnet),
+                .sui(_, let testnet),
                 .energyWebX(_, let testnet):
             return testnet
         }
@@ -184,6 +186,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .aptos(let curve, _),
                 .hedera(let curve, _),
                 .bittensor(let curve),
+                .sui(let curve, _),
                 .energyWebX(let curve, _):
             return curve
         case .chia:
@@ -294,7 +297,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 6
         case .stellar:
             return 7
-        case .solana, .ton, .bittensor, .energyWebX:
+        case .solana, .ton, .bittensor, .sui, .energyWebX:
             return 9
         case .polkadot(_, let testnet):
             return testnet ? 12 : 10
@@ -438,6 +441,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tKOIN" : "KOIN"
         case .internetComputer:
             return "ICP"
+        case .sui:
+            return "SUI"
         case .filecoin:
             return "FIL"
         case .sei:
@@ -514,6 +519,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Manta Pacific" + testnetSuffix
         case .internetComputer:
             return "Internet Computer"
+        case .sui:
+            return "Sui"
         case .sei:
             return "Sei" + testnetSuffix
         case .energyWebChain:
@@ -535,6 +542,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             "\(displayName) (ETH)"
         case .ton:
             "Toncoin"
+        case .fantom:
+            "Fantom"
         default:
             displayName
         }
@@ -919,6 +928,7 @@ extension Blockchain: Codable {
         case .internetComputer: return "internet-computer"
         case .cyber: return "cyber"
         case .blast: return "blast"
+        case .sui: return "sui"
         case .filecoin: return "filecoin"
         case .sei: return "sei"
         case .energyWebChain: return "energyWebChain"
@@ -1013,6 +1023,7 @@ extension Blockchain: Codable {
         case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
+        case "sui": self = .sui(curve: curve, testnet: isTestnet)
         case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
         case "energyWebChain": self = .energyWebChain(testnet: isTestnet)
@@ -1234,6 +1245,8 @@ private extension Blockchain {
             case .network: return "blast"
             case .coin: return "blast-ethereum"
             }
+        case .sui:
+            return "sui"
         case .filecoin:
             return "filecoin"
         case .sei:
@@ -1351,6 +1364,8 @@ extension Blockchain {
             return MantleWalletAssembly()
         case .internetComputer:
             return ICPWalletAssembly()
+        case .sui:
+            return SuiWalletAssembly()
         case .filecoin:
             return FilecoinWalletAssembly()
         }

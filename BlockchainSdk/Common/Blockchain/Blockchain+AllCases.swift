@@ -80,6 +80,7 @@ public extension Blockchain {
         case .internetComputer: break
         case .cyber: break
         case .blast: break
+        case .sui: break
         case .filecoin: break
         case .sei: break
         case .energyWebChain: break
@@ -157,6 +158,7 @@ public extension Blockchain {
             .internetComputer,
             .cyber(testnet: false),
             .blast(testnet: false),
+            .sui(curve: .ed25519_slip0010, testnet: false),
             .filecoin,
             .sei(testnet: false),
             .energyWebChain(testnet: false),
