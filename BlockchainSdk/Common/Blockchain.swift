@@ -82,6 +82,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case internetComputer
     case cyber(testnet: Bool)
     case blast(testnet: Bool)
+    case sui(curve: EllipticCurve, testnet: Bool)
     case filecoin
     case sei(testnet: Bool)
     case core(testnet: Bool)
@@ -159,7 +160,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .near(_, let testnet),
                 .algorand(_, let testnet),
                 .aptos(_, let testnet),
-                .shibarium(let testnet):
+                .shibarium(let testnet),
+                .sui(_, let testnet):
             return testnet
         }
     }
@@ -181,7 +183,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .algorand(let curve, _),
                 .aptos(let curve, _),
                 .hedera(let curve, _),
-                .bittensor(let curve):
+                .bittensor(let curve),
+                .sui(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -307,6 +310,8 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .aptos:
             return 8
         case .bittensor:
+            return 9
+        case .sui:
             return 9
         }
     }
@@ -438,6 +443,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tKOIN" : "KOIN"
         case .internetComputer:
             return "ICP"
+        case .sui:
+            return "SUI"
         case .filecoin:
             return "FIL"
         case .sei:
@@ -514,6 +521,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Manta Pacific" + testnetSuffix
         case .internetComputer:
             return "Internet Computer"
+        case .sui:
+            return "Sui"
         case .sei:
             return "Sei" + testnetSuffix
         default:
@@ -915,6 +924,7 @@ extension Blockchain: Codable {
         case .internetComputer: return "internet-computer"
         case .cyber: return "cyber"
         case .blast: return "blast"
+        case .sui: return "sui"
         case .filecoin: return "filecoin"
         case .sei: return "sei"
         case .core: return "core"
@@ -1008,6 +1018,7 @@ extension Blockchain: Codable {
         case "internet-computer": self = .internetComputer
         case "cyber": self = .cyber(testnet: isTestnet)
         case "blast": self = .blast(testnet: isTestnet)
+        case "sui": self = .sui(curve: curve, testnet: isTestnet)
         case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
         case "core": self = .core(testnet: isTestnet)
@@ -1228,6 +1239,8 @@ private extension Blockchain {
             case .network: return "blast"
             case .coin: return "blast-ethereum"
             }
+        case .sui:
+            return "sui"
         case .filecoin:
             return "filecoin"
         case .sei:
@@ -1343,6 +1356,8 @@ extension Blockchain {
             return MantleWalletAssembly()
         case .internetComputer:
             return ICPWalletAssembly()
+        case .sui:
+            return SuiWalletAssembly()
         case .filecoin:
             return FilecoinWalletAssembly()
         }

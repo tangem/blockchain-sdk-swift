@@ -132,6 +132,8 @@ public struct AddressServiceFactory {
         case .koinos:
             let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
             return KoinosAddressService(networkParams: network.networkParams)
+        case .sui:
+            return SuiAddressService()
         case .filecoin:
             return WalletCoreAddressService(blockchain: .filecoin)
         }
