@@ -97,6 +97,8 @@ struct EstimationFeeAddressFactory {
             return "EQAY92urFDKejoDRdi_EfRKLGB1JkGjD8z1inj_DhgBaD0Xo"
         case .koinos:
             return "1C423Vbd44zjghhJR5fKJdLFS3rgVFUc9A"
+        case .sui:
+            return "0xbca45e36a271e106546c89984108685215724e488570a0049a187c473cd521bc"
         case .filecoin:
             return "f1wxdu6d25dc4hmebdfgriswooum22plhmmpxibzq"
         case .sei:

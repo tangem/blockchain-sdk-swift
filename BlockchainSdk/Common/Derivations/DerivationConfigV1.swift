@@ -133,6 +133,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/659'/0'/0/0"
         case .internetComputer:
             return "m/44'/223'/0'/0/0"
+        case .sui:
+            return "m/44'/784'/0'/0'/0'"
         case .filecoin:
             return "m/44'/461'/0'/0/0"
         }

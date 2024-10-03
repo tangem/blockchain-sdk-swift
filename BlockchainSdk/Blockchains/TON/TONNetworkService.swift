@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TonSwift
+import BigInt
 
 /// Abstract layer for multi provide TON blockchain
 class TONNetworkService: MultiNetworkProvider {
@@ -139,10 +140,15 @@ class TONNetworkService: MultiNetworkProvider {
                             items: response.stack
                         )
                         
-                        let amount = (try? reader.readNumber()) ?? 0
+                        let bigAmount = (try? reader.readBigNumber()) ?? 0
+
+                        guard let decimalAmount = bigAmount.decimal else {
+                            throw WalletError.failedToParseNetworkResponse(nil)
+                        }
+
                         return TONWalletInfo.TokenInfo(
                             jettonWalletAddress: jettonWalletAddress,
-                            balance: Decimal(amount) / token.decimalValue
+                            balance: decimalAmount / token.decimalValue
                         )
                     }
             }.eraseToAnyPublisher()
