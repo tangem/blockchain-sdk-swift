@@ -155,6 +155,8 @@ public struct ExternalLinkProviderFactory {
             return FilecoinExternalLinkProvider()
         case .sei:
             return SeiExternalLinkProvider(isTestnet: isTestnet)
+        case .core:
+            return CoreExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

@@ -83,6 +83,7 @@ public extension Blockchain {
         case .sui: break
         case .filecoin: break
         case .sei: break
+        case .core: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -158,7 +159,8 @@ public extension Blockchain {
             .blast(testnet: false),
             .sui(curve: .ed25519_slip0010, testnet: false),
             .filecoin,
-            .sei(testnet: false)
+            .sei(testnet: false),
+            .core(testnet: false)
         ]
     }
 }

@@ -85,7 +85,8 @@ struct AddressTypesConfig {
              .blast,
              .sui,
              .filecoin,
-             .sei:
+             .sei,
+             .core:
             return [.default]
         }
     }
