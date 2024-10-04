@@ -1256,9 +1256,15 @@ private extension Blockchain {
         case .sei:
             return "sei-network"
         case .energyWebEVM:
-            return "energy-web-chain"
+            switch type {
+            case .network: return "energy-web-chain"
+            case .coin: return "energy-web-token"
+            }
         case .energyWebX:
-            return "energy-web-x"
+            switch type {
+            case .network: return "energy-web-x"
+            case .coin: return "energy-web-token"
+            }
         }
     }
 
