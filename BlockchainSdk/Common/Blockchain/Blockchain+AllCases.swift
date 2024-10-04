@@ -83,7 +83,7 @@ public extension Blockchain {
         case .sui: break
         case .filecoin: break
         case .sei: break
-        case .energyWebChain: break
+        case .energyWebEVM: break
         case .energyWebX: break
             // READ BELOW:
             //
@@ -161,8 +161,8 @@ public extension Blockchain {
             .sui(curve: .ed25519_slip0010, testnet: false),
             .filecoin,
             .sei(testnet: false),
-            .energyWebChain(testnet: false),
-            .energyWebX(curve: .ed25519_slip0010, testnet: false) // TODO: [Energy Web X] Questionable
+            .energyWebEVM(testnet: false),
+            .energyWebX(curve: .ed25519_slip0010)
         ]
     }
 }

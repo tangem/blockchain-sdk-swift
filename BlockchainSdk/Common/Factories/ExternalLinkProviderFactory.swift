@@ -155,7 +155,7 @@ public struct ExternalLinkProviderFactory {
             return FilecoinExternalLinkProvider()
         case .sei:
             return SeiExternalLinkProvider(isTestnet: isTestnet)
-        case .energyWebChain:
+        case .energyWebEVM:
             return EnergyWebChainExternalLinkProvider(isTestnet: isTestnet)
         case .energyWebX:
             return EnergyWebXExternalLinkProvider(isTestnet: isTestnet)

@@ -60,7 +60,7 @@ public struct AddressServiceFactory {
                 .base,
                 .cyber,
                 .blast,
-                .energyWebChain:
+                .energyWebEVM:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -136,7 +136,7 @@ public struct AddressServiceFactory {
             return SuiAddressService()
         case .filecoin:
             return WalletCoreAddressService(blockchain: .filecoin)
-        case .energyWebX(let curve, _):
+        case .energyWebX(let curve):
             return PolkadotAddressService(network: .energyWebX(curve: curve))
         }
     }

@@ -65,7 +65,7 @@ public struct DerivationConfigV2: DerivationConfig {
                 .base,
                 .cyber,
                 .blast,
-                .energyWebChain:
+                .energyWebEVM:
             return "m/44'/60'/0'/0/0"
         case .binance:
             return "m/44'/714'/0'/0/0"

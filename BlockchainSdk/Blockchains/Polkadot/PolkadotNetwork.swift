@@ -37,7 +37,7 @@ enum PolkadotNetwork {
             self = .joystream(curve: curve)
         case .bittensor(let curve):
             self = .bittensor(curve: curve)
-        case .energyWebX(let curve, _):
+        case .energyWebX(let curve):
             self = .energyWebX(curve: curve)
         default:
             return nil
@@ -83,7 +83,8 @@ extension PolkadotNetwork {
         case .bittensor(let curve):
             return Amount(with: .bittensor(curve: curve), value: Decimal(stringValue: "0.0000005")!)
         case .energyWebX(let curve):
-            return .zeroCoin(for: .energyWebX(curve: curve, testnet: false))
+            let blockchain = Blockchain.energyWebX(curve: curve)
+            return Amount(with: blockchain, value: blockchain.minimumValue)
         }
     }
 }

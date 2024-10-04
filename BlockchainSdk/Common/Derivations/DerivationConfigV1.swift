@@ -49,8 +49,7 @@ public struct DerivationConfigV1: DerivationConfig {
              .taraxa,
              .base,
              .cyber,
-             .blast,
-             .energyWebChain:
+             .blast:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"
@@ -138,7 +137,7 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/784'/0'/0'/0'"
         case .filecoin:
             return "m/44'/461'/0'/0/0"
-        case .energyWebX:
+        case .energyWebEVM, .energyWebX:
             return "m/44'/246'/0'/0'/0'"
         }
     }

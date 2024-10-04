@@ -85,8 +85,10 @@ public indirect enum Blockchain: Equatable, Hashable {
     case sui(curve: EllipticCurve, testnet: Bool)
     case filecoin
     case sei(testnet: Bool)
-    case energyWebChain(testnet: Bool)
-    case energyWebX(curve: EllipticCurve, testnet: Bool)
+    /// EVM
+    case energyWebEVM(testnet: Bool)
+    /// Polkadot parachain
+    case energyWebX(curve: EllipticCurve)
     
     public var isTestnet: Bool {
         switch self {
@@ -129,7 +131,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .blast(let testnet),
                 .sei(let testnet),
                 .kaspa(let testnet),
-                .energyWebChain(let testnet):
+                .energyWebEVM(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -150,7 +152,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .joystream,
                 .internetComputer,
                 .bittensor,
-                .filecoin:
+                .filecoin,
+                .energyWebX:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -162,8 +165,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .algorand(_, let testnet),
                 .aptos(_, let testnet),
                 .shibarium(let testnet),
-                .sui(_, let testnet),
-                .energyWebX(_, let testnet):
+                .sui(_, let testnet):
             return testnet
         }
     }
@@ -187,7 +189,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .hedera(let curve, _),
                 .bittensor(let curve),
                 .sui(let curve, _),
-                .energyWebX(let curve, _):
+                .energyWebX(let curve):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -284,7 +286,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .cyber,
                 .blast,
                 .filecoin,
-                .energyWebChain:
+                .energyWebEVM:
             return 18
         case .cardano,
                 .xrp,
@@ -447,8 +449,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "FIL"
         case .sei:
             return "SEI"
-        case .energyWebChain, .energyWebX:
+        case .energyWebEVM:
             return isTestnet ? "VT" : "EWT"
+        case .energyWebX:
+            return "EWT"
         }
     }
 
@@ -523,7 +527,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Sui"
         case .sei:
             return "Sei" + testnetSuffix
-        case .energyWebChain:
+        case .energyWebEVM:
             return "Energy Web Chain" + (isTestnet ? " Volta Testnet" : "")
         case .energyWebX:
             return "Energy Web X" + (isTestnet ? " Paseo Testnet" : "")
@@ -735,7 +739,7 @@ extension Blockchain {
         case .base: return isTestnet ? 84532 : 8453
         case .cyber: return isTestnet ? 111557560 : 7560
         case .blast: return isTestnet ? 168587773 : 81457
-        case .energyWebChain: return isTestnet ? 73799 : 246
+        case .energyWebEVM: return isTestnet ? 73799 : 246
         default:
             return nil
         }
@@ -799,7 +803,7 @@ extension Blockchain {
         case .base: return true
         case .cyber: return false
         case .blast: return false
-        case .energyWebChain: return false
+        case .energyWebEVM: return false
         default:
             assertionFailure("Don't forget about evm here")
             return false
@@ -931,7 +935,7 @@ extension Blockchain: Codable {
         case .sui: return "sui"
         case .filecoin: return "filecoin"
         case .sei: return "sei"
-        case .energyWebChain: return "energyWebChain"
+        case .energyWebEVM: return "energyWebEVM"
         case .energyWebX: return "energyWebX"
         }
     }
@@ -1026,8 +1030,8 @@ extension Blockchain: Codable {
         case "sui": self = .sui(curve: curve, testnet: isTestnet)
         case "filecoin": self = .filecoin
         case "sei": self = .sei(testnet: isTestnet)
-        case "energyWebChain": self = .energyWebChain(testnet: isTestnet)
-        case "energyWebX": self = .energyWebX(curve: curve, testnet: isTestnet)
+        case "energyWebEVM": self = .energyWebEVM(testnet: isTestnet)
+        case "energyWebX": self = .energyWebX(curve: curve)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1251,7 +1255,7 @@ private extension Blockchain {
             return "filecoin"
         case .sei:
             return "sei-network"
-        case .energyWebChain:
+        case .energyWebEVM:
             return "energy-web-chain"
         case .energyWebX:
             return "energy-web-x"
@@ -1308,7 +1312,7 @@ extension Blockchain {
                 .decimal,
                 .xdc,
                 .telos,
-                .energyWebChain:
+                .energyWebEVM:
             return EthereumWalletAssembly()
         case .optimism,
              .manta,

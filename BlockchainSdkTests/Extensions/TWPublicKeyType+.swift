@@ -60,7 +60,7 @@ extension PublicKeyType {
                 .base,
                 .blast,
                 .cyber,
-                .energyWebChain:
+                .energyWebEVM:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
@@ -70,7 +70,8 @@ extension PublicKeyType {
                 .near, 
                 .algorand,
                 .aptos,
-                .sui:
+                .sui,
+                .energyWebX:
             self = PublicKeyType.ed25519
         case .cardano(let extended):
             self = extended ? PublicKeyType.ed25519Cardano : .ed25519
@@ -93,13 +94,6 @@ extension PublicKeyType {
                 throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
         case .tezos(let curve):
-            switch curve {
-            case .ed25519, .ed25519_slip0010:
-                self = .ed25519
-            default:
-                throw NSError.makeUnsupportedCurveError(for: blockchain)
-            }
-        case .energyWebX(let curve, _):
             switch curve {
             case .ed25519, .ed25519_slip0010:
                 self = .ed25519

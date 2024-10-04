@@ -20,7 +20,7 @@ struct EnergyWebXExternalLinkProvider {
 
 extension EnergyWebXExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        nil // TODO: [Energy Web X] Questionable
+        nil
     }
 
     func url(address: String, contractAddress: String?) -> URL? {

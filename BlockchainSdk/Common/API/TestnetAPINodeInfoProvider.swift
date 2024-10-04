@@ -227,19 +227,15 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://api-tn10.kaspa.org")!)
             ]
-        case .energyWebChain:
+        case .energyWebEVM:
             return [
                 .init(url: URL(string: "https://73799.rpc.thirdweb.com")!)
-            ]
-        case .energyWebX:
-            return [
-                .init(url: URL(string: "")!) // TODO: [Energy Web X] Add testnet address
             ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis,
                 .terraV1, .terraV2, .cronos, .octa, .playa3ullGames, .radiant, .joystream, 
-                .bittensor, .internetComputer, .filecoin:
+                .bittensor, .internetComputer, .filecoin, .energyWebX:
             return nil
         }
     }
