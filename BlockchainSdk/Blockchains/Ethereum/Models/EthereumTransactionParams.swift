@@ -22,8 +22,4 @@ extension EthereumTransactionParams {
     func with(nonce: Int) -> EthereumTransactionParams {
         EthereumTransactionParams(data: data, nonce: nonce)
     }
-    
-    static var empty: EthereumTransactionParams {
-        EthereumTransactionParams()
-    }
 }
