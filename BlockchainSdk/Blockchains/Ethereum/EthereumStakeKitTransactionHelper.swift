@@ -12,62 +12,59 @@ import BigInt
 
 struct EthereumStakeKitTransactionHelper {
     private let transactionBuilder: EthereumTransactionBuilder
-    
+
     init(transactionBuilder: EthereumTransactionBuilder) {
         self.transactionBuilder = transactionBuilder
     }
-    
-    func prepareForSign(
-        _ stakingTransaction: StakeKitTransaction
-    ) throws -> Data {
-        let input = try buildSigningInput(
-            stakingTransaction: stakingTransaction
-        )
+
+    func prepareForSign(_ stakingTransaction: StakeKitTransaction) throws -> Data {
+        let input = try buildSigningInput(stakingTransaction: stakingTransaction)
         let preSigningOutput = try transactionBuilder.buildTxCompilerPreSigningOutput(input: input)
         return preSigningOutput.dataHash
     }
-    
+
     func prepareForSend(
         stakingTransaction: StakeKitTransaction,
         signatureInfo: SignatureInfo
     ) throws -> Data {
-        let input = try buildSigningInput(
-            stakingTransaction: stakingTransaction
-        )
+        let input = try buildSigningInput(stakingTransaction: stakingTransaction)
         let output = try transactionBuilder.buildSigningOutput(input: input, signatureInfo: signatureInfo)
         return output.encoded
     }
-    
+
     private func buildSigningInput(
         stakingTransaction: StakeKitTransaction
     ) throws -> EthereumSigningInput {
-        let compiledTransactionData = Data(hex: stakingTransaction.unsignedData)
-        let compiledTransaction = try JSONDecoder().decode(
-            EthereumCompiledTransaction.self,
-            from: compiledTransactionData
-        )
-        
-        guard let amountValue = stakingTransaction.amount.bigUIntValue else {
-            throw EthereumTransactionBuilderError.invalidAmount
+        guard let compiledTransactionData = stakingTransaction.unsignedData.data(using: .utf8) else {
+            throw EthereumTransactionBuilderError.invalidStakingTransaction
         }
-        
-        guard let gasLimit = BigUInt(compiledTransaction.gasLimit, radix: 16),
-              let baseFee = BigUInt(compiledTransaction.maxFeePerGas, radix: 16),
-              let priorityFee = BigUInt(compiledTransaction.maxPriorityFeePerGas, radix: 16) else {
+
+        let compiledTransaction = try JSONDecoder()
+            .decode(EthereumCompiledTransaction.self, from: compiledTransactionData)
+
+        let gasLimit = BigUInt(Data(hex: compiledTransaction.gasLimit))
+        let baseFee = BigUInt(Data(hex: compiledTransaction.maxFeePerGas))
+        let priorityFee = BigUInt(Data(hex: compiledTransaction.maxPriorityFeePerGas))
+
+        guard gasLimit > 0, baseFee > 0, priorityFee > 0 else {
             throw EthereumTransactionBuilderError.feeParametersNotFound
         }
-                
+
+        let data = Data(hex: compiledTransaction.data)
+
+        guard !data.isEmpty else {
+            throw EthereumTransactionBuilderError.invalidStakingTransaction
+        }
+
         return try transactionBuilder.buildSigningInput(
-            // TODO: refactor, 'user' field is used only in erc20Transfer, consider moving elsewhere?
-            destination: .contract(user: "", contract: compiledTransaction.to, value: amountValue),
+            destination: compiledTransaction.to,
+            coinAmount: .zero,
             fee: Fee(
                 stakingTransaction.fee.amount,
                 parameters: EthereumEIP1559FeeParameters(gasLimit: gasLimit, baseFee: baseFee, priorityFee: priorityFee)
             ),
-            parameters: EthereumTransactionParams(
-                data: Data(hex: compiledTransaction.data),
-                nonce: compiledTransaction.nonce
-            )
+            nonce: compiledTransaction.nonce,
+            data: data
         )
     }
 }
