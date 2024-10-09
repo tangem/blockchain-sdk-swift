@@ -15,8 +15,8 @@ import TangemSdk
 
 class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var cardWallets: [Card.Wallet] = []
-    @Published var destination: String = "5F92xKdkVC6qVxWS4QiHN5SrphiAnCv2eeuBQRWs7izPHJ7V"
-    @Published var amountToSend: String = "1"
+    @Published var destination: String = ""
+    @Published var amountToSend: String = ""
     @Published var feeDescriptions: [String] = []
     @Published var transactionResult: String = "--"
     @Published var blockchains: [(String, String)] = []
