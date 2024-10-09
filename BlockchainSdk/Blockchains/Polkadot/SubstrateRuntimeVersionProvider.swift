@@ -15,6 +15,7 @@ struct SubstrateRuntimeVersionProvider {
         self.network = network
     }
 
+    // Use experimentally obtained values, or try running the script in the PolkaParachainMetadataParser folder.
     func runtimeVersion(for meta: PolkadotBlockchainMeta) -> SubstrateRuntimeVersion {
         switch network {
         case .polkadot,
@@ -27,7 +28,7 @@ struct SubstrateRuntimeVersionProvider {
             return meta.specVersion >= 198 ? .v15 : .v14
         case .azero,
                 .joystream,
-                .energyWebX: // TODO: [Energy Web X] Questionable
+                .energyWebX:
             return .v14
         }
     }

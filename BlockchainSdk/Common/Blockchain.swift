@@ -289,6 +289,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .blast,
                 .filecoin,
                 .energyWebEVM,
+                .energyWebX,
                 .core:
             return 18
         case .cardano,
@@ -302,7 +303,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 6
         case .stellar:
             return 7
-        case .solana, .ton, .bittensor, .sui, .energyWebX:
+        case .solana, .ton, .bittensor, .sui:
             return 9
         case .polkadot(_, let testnet):
             return testnet ? 12 : 10
