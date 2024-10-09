@@ -85,6 +85,7 @@ public extension Blockchain {
         case .sei: break
         case .energyWebEVM: break
         case .energyWebX: break
+        case .core: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -162,7 +163,8 @@ public extension Blockchain {
             .filecoin,
             .sei(testnet: false),
             .energyWebEVM(testnet: false),
-            .energyWebX(curve: .ed25519_slip0010)
+            .energyWebX(curve: .ed25519_slip0010),
+            .core(testnet: false)
         ]
     }
 }

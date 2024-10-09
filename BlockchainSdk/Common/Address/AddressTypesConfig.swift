@@ -87,7 +87,8 @@ struct AddressTypesConfig {
              .filecoin,
              .sei,
              .energyWebEVM,
-             .energyWebX:
+             .energyWebX,
+             .core:
             return [.default]
         }
     }

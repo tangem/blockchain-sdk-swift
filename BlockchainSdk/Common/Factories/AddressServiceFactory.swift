@@ -60,7 +60,8 @@ public struct AddressServiceFactory {
                 .base,
                 .cyber,
                 .blast,
-                .energyWebEVM:
+                .energyWebEVM,
+                .core:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()

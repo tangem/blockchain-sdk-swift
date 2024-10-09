@@ -231,6 +231,10 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://73799.rpc.thirdweb.com")!)
             ]
+        case .core:
+            return [
+                .init(url: URL(string: "https://rpc.test.btcs.network")!)
+            ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, 
                 .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis,
