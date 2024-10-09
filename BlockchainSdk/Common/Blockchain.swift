@@ -809,7 +809,11 @@ extension Blockchain {
         case .base: return true
         case .cyber: return false
         case .blast: return false
-        case .energyWebEVM: return false
+        /// By default, eth_feeHistory returns the error:
+        /// "Invalid params: invalid type: integer 5, expected a 0x-prefixed hex string with length between (0; 64]."
+        /// To fix this, the integer 5 in the EthereumTarget's params for .feeHistory should be replaced with "0x5".
+        /// This change hasn't been made to avoid impacting other functionality, especially since the .energyWebEVM request isn't currently used.
+        case .energyWebEVM: return false // eth_feeHistory all zeroes
         case .core: return false
         default:
             assertionFailure("Don't forget about evm here")
