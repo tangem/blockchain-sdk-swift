@@ -535,6 +535,8 @@
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA7C9A182C07B1C600C8C423 /* KoinosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */; };
 		DA7C9A1A2C07B30500C8C423 /* KoinosAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */; };
+		DA81B1BD2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA81B1BC2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift */; };
+		DA81B1C02CA84D8600A78B6C /* EnergyWebXExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA81B1BF2CA84D8600A78B6C /* EnergyWebXExternalLinkProvider.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
@@ -1496,6 +1498,8 @@
 		DA7C9A172C07B1C600C8C423 /* KoinosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosNetworkService.swift; sourceTree = "<group>"; };
 		DA7C9A192C07B30500C8C423 /* KoinosAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinosAccountInfo.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
+		DA81B1BC2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyWebChainExternalLinkProvider.swift; sourceTree = "<group>"; };
+		DA81B1BF2CA84D8600A78B6C /* EnergyWebXExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyWebXExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
 		DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTarget.swift; sourceTree = "<group>"; };
@@ -2353,6 +2357,7 @@
 				DACAAB4F2BE8BA8A0039ED3D /* Koinos */,
 				DA1BA9A52C454AEE006F6839 /* Mantle */,
 				DA15D1E82C7782F300FD733B /* Filecoin */,
+				DA81B1BE2CA84D7800A78B6C /* EnergyWebX */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -3640,6 +3645,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		DA81B1BE2CA84D7800A78B6C /* EnergyWebX */ = {
+			isa = PBXGroup;
+			children = (
+				DA81B1BF2CA84D8600A78B6C /* EnergyWebXExternalLinkProvider.swift */,
+			);
+			path = EnergyWebX;
+			sourceTree = "<group>";
+		};
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
 			isa = PBXGroup;
 			children = (
@@ -3850,6 +3863,7 @@
 				B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */,
 				DA02C7AB2C61016A0086718D /* BlastExternalLinkProvider.swift */,
 				1CF315322C39B5B0004EF522 /* CyberExternalLinkProvider.swift */,
+				DA81B1BC2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift */,
 				DA5766AB2CAAD14F00F96564 /* CoreExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
@@ -4899,6 +4913,7 @@
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
 				B6B2EB6B2B56A830005FBE8E /* VeChainNetworkParams.ContractCall.swift in Sources */,
 				5D31EA2F27DA1C910031DBEB /* DetailedError.swift in Sources */,
+				DA81B1C02CA84D8600A78B6C /* EnergyWebXExternalLinkProvider.swift in Sources */,
 				DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */,
 				DC5E652D2B1650F400E81AA5 /* OP_VERIFY.swift in Sources */,
 				2DDE5BA029C4F8D200A5B708 /* BlockBookProviderType.swift in Sources */,
@@ -5406,6 +5421,7 @@
 				DACAAB512BE8BAC20039ED3D /* KoinosWalletAssembly.swift in Sources */,
 				DC3C73912C2EF46E00B33990 /* EthereumModels.swift in Sources */,
 				2DDEFBC52B59B36A00885675 /* AlgorandTransactionParams.swift in Sources */,
+				DA81B1BD2CA836AD00A78B6C /* EnergyWebChainExternalLinkProvider.swift in Sources */,
 				2D24F5B22B6D2C6500D502A0 /* AptosTransactionInfo.swift in Sources */,
 				DC5E65102B1650F400E81AA5 /* OP_2SWAP.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Set the JavaScript file path
+JS_FILE="script.js"
+
+# Check if Node.js is installed
+if ! command -v node &> /dev/null
+then
+    echo "Node.js is not installed. Please install it first."
+    exit 1
+fi
+
+# Check if npm is installed
+if ! command -v npm &> /dev/null
+then
+    echo "npm is not installed. Please install it first."
+    exit 1
+fi
+
+# Check if node_modules directory exists, and install dependencies if not
+if [ ! -d "node_modules" ]; then
+    echo "Installing npm dependencies..."
+    npm install
+fi
+
+# Check if the script file exists
+if [ ! -f "$JS_FILE" ]; then
+    echo "JavaScript file '$JS_FILE' not found!"
+    exit 1
+fi
+
+# Check if URL argument is provided
+if [ -z "$1" ]; then
+    echo "Please provide a WebSocket URL as an argument."
+    exit 1
+fi
+
+# Run the JavaScript file with the provided URL argument
+node "$JS_FILE" "$1"
