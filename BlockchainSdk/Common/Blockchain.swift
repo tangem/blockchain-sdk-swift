@@ -1280,7 +1280,10 @@ private extension Blockchain {
             case .coin: return "energy-web-token"
             }
         case .core:
-            return "core"
+            switch type {
+            case .network: return "core"
+            case .coin: return "coredaoorg"
+            }
         }
     }
 
