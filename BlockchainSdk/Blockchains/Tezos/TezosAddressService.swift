@@ -14,7 +14,7 @@ import TangemSdk
 @available(iOS 13.0, *)
 public struct TezosAddressService {
     private let curve: EllipticCurve
-    
+
     init(curve: EllipticCurve) {
         self.curve = curve
     }
