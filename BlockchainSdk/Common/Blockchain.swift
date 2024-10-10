@@ -1248,10 +1248,7 @@ private extension Blockchain {
         case .sei:
             return "sei-network"
         case .core:
-            switch type {
-            case .network: return "core"
-            case .coin: return "coredaoorg"
-            }
+            return "core"
         }
     }
 
