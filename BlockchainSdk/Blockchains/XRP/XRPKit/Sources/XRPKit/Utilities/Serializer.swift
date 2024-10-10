@@ -486,7 +486,7 @@ class Serializer {
         return idPrefix + fieldBinary
     }
 
-    public func serializeTx(tx: [String: Any], forSigning: Bool = false) -> Data {
+    func serializeTx(tx: [String: Any], forSigning: Bool = false) -> Data {
         /*
          Takes a transaction as decoded JSON and returns a bytes object representing
          the transaction in binary format.

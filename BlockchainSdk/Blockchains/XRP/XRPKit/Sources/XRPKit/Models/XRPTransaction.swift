@@ -10,15 +10,15 @@ import Foundation
 let HASH_TX_SIGN: [UInt8] = [0x53, 0x54, 0x58, 0x00]
 let HASH_TX_SIGN_TESTNET: [UInt8] = [0x73, 0x74, 0x78, 0x00]
 
-public class XRPTransaction {
+class XRPTransaction {
     var fields: [String: Any] = [:]
 
-    public init(fields: [String: Any], autofill: Bool = false) {
+    init(fields: [String: Any], autofill: Bool = false) {
         self.fields = enforceJSONTypes(fields: fields)
     }
 
 //    @available(iOS 10.0, *)
-//    public static func send(from wallet: XRPWallet, to address: String, amount: XRPAmount, completion: @escaping ((Result<NSDictionary, Error>) -> ())) {
+//    static func send(from wallet: XRPWallet, to address: String, amount: XRPAmount, completion: @escaping ((Result<NSDictionary, Error>) -> ())) {
 //
 //        // dictionary containing partial transaction fields
 //        let fields: [String:Any] = [
@@ -56,7 +56,7 @@ public class XRPTransaction {
 
     // autofills account address, ledger sequence, fee, and sequence
     @available(iOS 10.0, *)
-    public func autofill(address: String, completion: @escaping ((Result<XRPTransaction, Error>) -> Void)) {
+    func autofill(address: String, completion: @escaping ((Result<XRPTransaction, Error>) -> Void)) {
         // network calls to retrive current account and ledger info
         XRPLedger.currentLedgerInfo(completion: { result in
             switch result {
@@ -83,11 +83,11 @@ public class XRPTransaction {
         })
     }
 
-    public func dataToSign(publicKey: String) -> Data {
+    func dataToSign(publicKey: String) -> Data {
         // make sure all fields are compatible
         fields = enforceJSONTypes(fields: fields)
 
-        // add account public key to fields
+        // add account key to fields
         fields["SigningPubKey"] = publicKey as AnyObject
 
         // serialize transation to binary
@@ -99,7 +99,7 @@ public class XRPTransaction {
         return data
     }
 
-    public func sign(signature: [UInt8]) throws -> XRPTransaction {
+    func sign(signature: [UInt8]) throws -> XRPTransaction {
         // make sure all fields are compatible
         fields = enforceJSONTypes(fields: fields)
 
@@ -109,11 +109,11 @@ public class XRPTransaction {
         return signedTransaction
     }
 
-    public func getBlob() -> String {
+    func getBlob() -> String {
         return Serializer().serializeTx(tx: fields, forSigning: false).hexString.uppercased()
     }
 
-    public func submit(completion: @escaping ((Result<NSDictionary, Error>) -> Void)) {
+    func submit(completion: @escaping ((Result<NSDictionary, Error>) -> Void)) {
         let tx = Serializer().serializeTx(tx: fields, forSigning: false).hexString.uppercased()
         return XRPLedger.submit(txBlob: tx) { result in
             switch result {
@@ -125,7 +125,7 @@ public class XRPTransaction {
         }
     }
 
-    public func getJSONString() -> String {
+    func getJSONString() -> String {
         let jsonData = try! JSONSerialization.data(withJSONObject: fields, options: .prettyPrinted)
         return String(data: jsonData, encoding: .utf8)!
     }
