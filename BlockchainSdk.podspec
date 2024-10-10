@@ -45,10 +45,10 @@ Use BlockchainSdk for Tangem wallet integration
   # 'BigInt' dependency must be added via SPM
   # 'ScaleCodec' dependency must be added via SPM
   # 'TonSwift' dependency must be added via SPM
-  # 'Moya' dependency must be added via SPM
 
   s.dependency 'TangemSdk'
   s.dependency 'SwiftyJSON', '5.0.1'
+  s.dependency 'Moya', '15.0.0'
   s.dependency 'Sodium', '0.9.1'
   s.dependency 'SwiftCBOR', '0.4.5'
   s.dependency 'stellar-ios-mac-sdk', '2.5.4'
