@@ -43,7 +43,10 @@ async function main() {
       const callType = lookup.getSiType(callTypeId);
 
       // Find the 'transfer' call
-      const transferCall = callType.def.asVariant.variants.find(call => call.name.toString() === 'transfer');
+      let transferCall = callType.def.asVariant.variants.find(call => call.name.toString() === 'transfer');
+      if (!transferCall) {
+        transferCall = callType.def.asVariant.variants.find(call => call.name.toString() === 'transfer_allow_death');
+      }
 
       if (transferCall) {
         const callIndex = callType.def.asVariant.variants.indexOf(transferCall);
