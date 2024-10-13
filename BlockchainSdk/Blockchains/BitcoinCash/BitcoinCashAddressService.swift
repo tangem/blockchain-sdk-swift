@@ -14,10 +14,10 @@ import BitcoinCore
 public class BitcoinCashAddressService {
     private let legacyService: BitcoinLegacyAddressService
     private let cashAddrService: CashAddrService
-    
+
     public init(networkParams: INetwork) {
-        self.legacyService = .init(networkParams: networkParams)
-        self.cashAddrService = .init(networkParams: networkParams)
+        legacyService = .init(networkParams: networkParams)
+        cashAddrService = .init(networkParams: networkParams)
     }
 }
 
@@ -47,8 +47,8 @@ extension BitcoinCashAddressService: AddressProvider {
     }
 }
 
-extension BitcoinCashAddressService {
-    public func isLegacy(_ address: String) -> Bool {
+public extension BitcoinCashAddressService {
+    func isLegacy(_ address: String) -> Bool {
         legacyService.validate(address)
     }
 }

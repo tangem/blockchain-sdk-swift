@@ -12,7 +12,7 @@ import WalletCore
 
 public struct TONTransactionParams: TransactionParams {
     public var memo: String
-    
+
     public init(memo: String) {
         self.memo = memo
     }

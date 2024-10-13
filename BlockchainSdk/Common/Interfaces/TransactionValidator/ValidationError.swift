@@ -21,10 +21,10 @@ public enum ValidationError: Hashable, LocalizedError {
     case minimumBalance(minimumBalance: Amount)
     case maximumUTXO(blockchainName: String, newAmount: Amount, maxUtxo: Int)
     case reserve(amount: Amount)
-    
+
     case cardanoHasTokens(minimumAmount: Amount)
     case cardanoInsufficientBalanceToSendToken
-    
+
     case insufficientFeeResource(type: FeeResourceType, current: Decimal, max: Decimal)
     case amountExeedsFeeResourceCapacity(type: FeeResourceType, availableAmount: Decimal)
     case feeExceedsMaxFeeResource
@@ -38,7 +38,7 @@ public enum ValidationError: Hashable, LocalizedError {
         case .dustAmount(let minimumAmount):
             return String(format: "send_error_dust_amount_format".localized, minimumAmount.description)
         case .dustChange(let minimumAmount):
-           return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
+            return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
         case .minimumBalance(let minimumBalance):
             return String(format: "send_error_minimum_balance_format".localized, minimumBalance.string(roundingMode: .plain))
         case .feeExceedsBalance, .feeExceedsMaxFeeResource:
@@ -55,7 +55,7 @@ public enum ValidationError: Hashable, LocalizedError {
             )
         case .reserve(let amount):
             return String(format: "send_error_no_target_account".localized, amount.description)
-        case let .insufficientFeeResource(.mana, current, max):
+        case .insufficientFeeResource(.mana, let current, let max):
             return String(format: "koinos_insufficient_mana_to_send_koin_description", "\(current)", "\(max)")
         }
     }

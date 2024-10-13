@@ -9,12 +9,12 @@
 import Foundation
 
 public struct BitcoinScriptAddress: Address {
-	public let script: BitcoinScript
-	public let value: String
+    public let script: BitcoinScript
+    public let value: String
     public let publicKey: Wallet.PublicKey
-	public let type: AddressType
+    public let type: AddressType
     public var localizedName: String { type.defaultLocalizedName }
-    
+
     public init(script: BitcoinScript, value: String, publicKey: Wallet.PublicKey, type: AddressType) {
         self.script = script
         self.value = value
@@ -22,4 +22,3 @@ public struct BitcoinScriptAddress: Address {
         self.type = type
     }
 }
-

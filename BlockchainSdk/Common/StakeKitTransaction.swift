@@ -44,6 +44,6 @@ public struct StakeKitTransactionParams: Hashable, TransactionParams {
     public init(validator: String? = nil) {
         self.validator = validator
     }
-    
+
     public let validator: String?
 }

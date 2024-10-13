@@ -14,9 +14,9 @@ import Combine
 public class CommonSigner {
     public var cardId: String?
     public var initialMessage: Message?
-    
+
     private let sdk: TangemSdk
-    
+
     public init(sdk: TangemSdk, cardId: String? = nil, initialMessage: Message? = nil) {
         self.sdk = sdk
         self.cardId = cardId
@@ -32,13 +32,13 @@ extension CommonSigner: TransactionSigner {
                     promise(.failure(WalletError.empty))
                     return
                 }
-                
-                return self.sdk.sign(
+
+                return sdk.sign(
                     hashes: hashes,
                     walletPublicKey: walletPublicKey.seedKey,
-                    cardId: self.cardId,
+                    cardId: cardId,
                     derivationPath: walletPublicKey.derivationPath,
-                    initialMessage: self.initialMessage
+                    initialMessage: initialMessage
                 ) { signResult in
                     switch signResult {
                     case .success(let response):
@@ -51,7 +51,7 @@ extension CommonSigner: TransactionSigner {
         }
         .eraseToAnyPublisher()
     }
-    
+
     public func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         sign(hashes: [hash], walletPublicKey: walletPublicKey)
             .map {

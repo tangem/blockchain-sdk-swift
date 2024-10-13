@@ -26,12 +26,12 @@ public struct WalletCoreAddressService {
 
 // MARK: - Convenience init
 
-extension WalletCoreAddressService {
-    public init(coin: CoinType) {
+public extension WalletCoreAddressService {
+    init(coin: CoinType) {
         self.init(coin: coin, publicKeyType: coin.publicKeyType)
     }
 
-    public init(blockchain: Blockchain) {
+    init(blockchain: Blockchain) {
         let coin = CoinType(blockchain)!
         self.init(coin: coin)
     }
@@ -54,7 +54,7 @@ extension WalletCoreAddressService: AddressProvider {
                 let address = try makeByronAddress(publicKey: publicKey)
                 return PlainAddress(value: address, publicKey: publicKey, type: addressType)
             }
-            
+
             fatalError("WalletCoreAddressService don't support legacy address for \(coin)")
         }
     }
@@ -73,7 +73,7 @@ private extension WalletCoreAddressService {
         guard let publicKey = PublicKey(data: publicKey.blockchainKey, type: .ed25519Cardano) else {
             throw TWError.makeAddressFailed
         }
-        
+
         let byronAddress = Cardano.getByronAddress(publicKey: publicKey)
         return byronAddress
     }
